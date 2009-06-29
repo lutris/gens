@@ -32,7 +32,7 @@ extern "C" {
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-DLL_LOCAL int MDP_FNCALL mdp_render_scale4x_init(mdp_host_t *host_srv);
+DLL_LOCAL int MDP_FNCALL mdp_render_scale4x_init(const mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_scale4x_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_render_scale4x_cpp(mdp_render_info_t *render_info);
 

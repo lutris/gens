@@ -51,14 +51,14 @@
 #define MASK_DIV4_32		((uint32_t)(0x3F3F3F3F))
 
 // MDP Host Services.
-static mdp_host_t *mdp_render_scanline_25_host_srv = NULL;
+static const mdp_host_t *mdp_render_scanline_25_host_srv = NULL;
 
 
 /**
  * mdp_render_scanline_25_init(): Initialize the 25% Scanline rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_scanline_25_init(mdp_host_t *host_srv)
+int MDP_FNCALL mdp_render_scanline_25_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_scanline_25_host_srv = host_srv;

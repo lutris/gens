@@ -39,14 +39,14 @@
 #endif /* GENS_X86_ASM */
 
 // MDP Host Services.
-static mdp_host_t *mdp_render_super_eagle_host_srv = NULL;
+static const mdp_host_t *mdp_render_super_eagle_host_srv = NULL;
 
 
 /**
  * mdp_render_super_eagle_init(): Initialize the Super Eagle rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_super_eagle_init(mdp_host_t *host_srv)
+int MDP_FNCALL mdp_render_super_eagle_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_super_eagle_host_srv = host_srv;

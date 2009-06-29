@@ -36,7 +36,7 @@
 #include "mdp/mdp_constants.h"
 
 // MDP Host Services.
-mdp_host_t *ips_host_srv = NULL;
+const mdp_host_t *ips_host_srv = NULL;
 
 static int MDP_FNCALL ips_event_handler(int event_id, void *event_info);
 
@@ -51,7 +51,7 @@ static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf);
  * ips_init(): Initialize the IPS Patcher plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL ips_init(mdp_host_t *host_srv)
+int MDP_FNCALL ips_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	ips_host_srv = host_srv;

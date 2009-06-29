@@ -44,7 +44,7 @@
 #endif /* GENS_X86_ASM */
 
 // MDP Host Services.
-static mdp_host_t *mdp_render_hq2x_host_srv;
+static const mdp_host_t *mdp_render_hq2x_host_srv;
 
 // RGB lookup tables.
 uint32_t *mdp_render_hq2x_RGB16to32 = NULL;
@@ -60,7 +60,7 @@ uint32_t *mdp_render_hq2x_RGB16toYUV = NULL;
  * mdp_render_hq2x_end(): Initialize the hq2x plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_hq2x_init(mdp_host_t *host_srv)
+int MDP_FNCALL mdp_render_hq2x_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_hq2x_host_srv = host_srv;

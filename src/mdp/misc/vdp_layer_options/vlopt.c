@@ -36,7 +36,7 @@
 #include "mdp/mdp_event.h"
 
 // MDP Host Services.
-mdp_host_t *vlopt_host_srv = NULL;
+const mdp_host_t *vlopt_host_srv = NULL;
 static int vlopt_menuItemID = 0;
 
 
@@ -47,7 +47,7 @@ static int MDP_FNCALL vlopt_menu_handler(int menu_item_id);
  * vlopt_init(): Initialize the VDP Layer Options plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL vlopt_init(mdp_host_t *host_srv)
+int MDP_FNCALL vlopt_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	vlopt_host_srv = host_srv;

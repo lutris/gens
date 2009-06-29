@@ -30,10 +30,10 @@
 extern "C" {
 #endif
 
-DLL_LOCAL int MDP_FNCALL mdp_render_blargg_ntsc_init(mdp_host_t *host_srv);
+DLL_LOCAL int MDP_FNCALL mdp_render_blargg_ntsc_init(const mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_blargg_ntsc_end(void);
 
-DLL_LOCAL extern mdp_host_t *ntsc_host_srv;
+DLL_LOCAL extern const mdp_host_t *ntsc_host_srv;
 
 #ifdef __cplusplus
 }

@@ -30,10 +30,10 @@ extern "C" {
 #include "mdp/mdp.h"
 #include "mdp/mdp_host.h"
 
-DLL_LOCAL int MDP_FNCALL ips_init(mdp_host_t *host_srv);
+DLL_LOCAL int MDP_FNCALL ips_init(const mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL ips_end(void);
 
-DLL_LOCAL extern mdp_host_t *ips_host_srv;
+DLL_LOCAL extern const mdp_host_t *ips_host_srv;
 
 #ifdef __cplusplus
 }

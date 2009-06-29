@@ -39,7 +39,7 @@
 #include <errno.h>
 
 // MDP Host Services.
-mdp_host_t *ntsc_host_srv = NULL;
+const mdp_host_t *ntsc_host_srv = NULL;
 static int ntsc_menuItemID = 0;
 
 static int MDP_FNCALL ntsc_menu_handler(int menu_item_id);
@@ -50,7 +50,7 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info);
  * mdp_render_blargg_ntsc_init(): Initialize the Blargg NTSC rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_blargg_ntsc_init(mdp_host_t *host_srv)
+int MDP_FNCALL mdp_render_blargg_ntsc_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	ntsc_host_srv = host_srv;

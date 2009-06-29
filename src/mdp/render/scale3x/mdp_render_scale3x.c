@@ -32,14 +32,14 @@
 #include "mdp/mdp_error.h"
 
 // MDP Host Services.
-static mdp_host_t *mdp_render_scale3x_host_srv = NULL;
+static const mdp_host_t *mdp_render_scale3x_host_srv = NULL;
 
 
 /**
  * mdp_render_scale3x_init(): Initialize the Scale3x rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_scale3x_init(mdp_host_t *host_srv)
+int MDP_FNCALL mdp_render_scale3x_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_scale3x_host_srv = host_srv;

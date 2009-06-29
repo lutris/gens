@@ -34,11 +34,11 @@
 #include "mdp/mdp_event.h"
 
 // MDP Host Services.
-mdp_host_t *sgens_host_srv = NULL;
+const mdp_host_t *sgens_host_srv = NULL;
 static int sgens_menuItemID = 0;
 
 // Current ROM type.
-SGENS_ROM_TYPE	sgens_current_rom_type = SGENS_ROM_TYPE_NONE;
+SGENS_ROM_TYPE sgens_current_rom_type = SGENS_ROM_TYPE_NONE;
 
 static int MDP_FNCALL sgens_menu_handler(int menu_item_id);
 static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info);
@@ -48,7 +48,7 @@ static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info);
  * sgens_init(): Initialize the Sonic Gens plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL sgens_init(mdp_host_t *host_srv)
+int MDP_FNCALL sgens_init(const mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	sgens_host_srv = host_srv;
