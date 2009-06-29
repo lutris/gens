@@ -78,9 +78,9 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 		if (bppMD == 15)
 		{
 			// 15-bit color.
-			RGB_LUT = (uint32_t*)malloc(32768 * sizeof(uint32_t));
+			RGB_LUT = (uint32_t*)malloc(65536 * sizeof(uint32_t));
 			int i;
-			for (i = 0; i < 32768; i++)
+			for (i = 0; i < 65536; i++)
 				RGB_LUT[i] = ((i & 0x7C00) << 9) | ((i & 0x03E0) << 6) | ((i & 0x001F) << 3);
 		}
 		else if (bppMD == 16)
@@ -132,7 +132,6 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 	{
 		for (x = width; x != 0; x--)
 		{
-			// TODO: Apply mask in 15-bit color to prevent out-of-bounds?
 			*(dest32 + 0) = RGB_LUT[*(src16 + 0)];
 			*(dest32 + 1) = RGB_LUT[*(src16 + 1)];
 			*(dest32 + 2) = RGB_LUT[*(src16 + 2)];
