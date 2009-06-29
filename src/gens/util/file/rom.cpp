@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // Message logging.
 #include "macros/log_msg.h"
 
@@ -83,6 +87,11 @@ using std::deque;
 
 // File management functions.
 #include "file.hpp"
+
+// Debugger.
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
 
 char Rom_Dir[GENS_PATH_MAX];
 
@@ -792,6 +801,11 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
+	
+#ifdef GENS_DEBUGGER
+	// Stop the debugger.
+	Debug = 0;
+#endif
 	
 	if (SegaCD_Started)
 		Savestate::SaveBRAM();

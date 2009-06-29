@@ -408,7 +408,6 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_w:
 			if (allow_gtk_hotkeys && IS_KMOD_CTRL(mod))
 			{
-				audio_clear_sound_buffer();
 				ROM::freeROM(Game);
 			}
 			break;

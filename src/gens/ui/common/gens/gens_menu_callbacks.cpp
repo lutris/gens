@@ -74,11 +74,6 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-// Debugger
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
-
 // Video, Audio.
 #include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
@@ -215,13 +210,6 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 #endif /* GENS_OS_WIN32 */
 		
 		case IDM_FILE_CLOSEROM:
-			if (audio_initialized)
-				audio_clear_sound_buffer();
-	
-#ifdef GENS_DEBUGGER
-			Debug = 0;
-#endif /* GENS_DEBUGGER */
-	
 			/* TODO: NetPlay
 			if (Net_Play)
 			{
