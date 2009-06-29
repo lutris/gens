@@ -96,9 +96,11 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	
 	bool reinit = false;
 	
+#ifdef GENS_OS_WIN32
 	// Get the old scaling factor.
 	const int oldScale = (*oldRend)->scale;
-	
+#endif
+		
 	// Renderer function found.
 	mdp_render_t *rendPlugin = (*newMode);
 	rendFn = rendPlugin->blit;
