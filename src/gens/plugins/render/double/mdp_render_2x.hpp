@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-int MDP_FNCALL mdp_render_2x_init(mdp_host_t *host_srv);
+int MDP_FNCALL mdp_render_2x_init(const mdp_host_t *host_srv);
 int MDP_FNCALL mdp_render_2x_end(void);
 int MDP_FNCALL mdp_render_2x_cpp(mdp_render_info_t *render_info);
 
