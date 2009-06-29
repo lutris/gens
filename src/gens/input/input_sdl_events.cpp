@@ -405,23 +405,13 @@ void input_sdl_event_key_down(int key)
 			break;
 #endif /* GENS_CDROM */
 		
-		/*
 		case GENS_KEY_w:
-			if (IS_KMOD_CTRL(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_CTRL(mod))
 			{
-				if (Sound_Initialised)
-					Clear_Sound_Buffer ();
-				Debug = 0;
-				if (Net_Play)
-				{
-					//if (Full_Screen)
-						//Set_Render (0, -1, 1);
-					Sync_Gens_Window();
-				}
-				Free_Rom (Game);
+				audio_clear_sound_buffer();
+				ROM::freeROM(Game);
 			}
 			break;
-		*/
 		
 		/*
 		case GENS_KEY_f:
