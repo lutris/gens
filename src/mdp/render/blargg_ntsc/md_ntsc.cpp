@@ -311,7 +311,7 @@ void MDP_FNCALL mdp_md_ntsc_reinit_setup(void)
 }
 
 
-int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;

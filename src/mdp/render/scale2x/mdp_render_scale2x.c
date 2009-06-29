@@ -75,7 +75,7 @@ int MDP_FNCALL mdp_render_scale2x_end(void)
 }
 
 
-int MDP_FNCALL mdp_render_scale2x_cpp(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_render_scale2x_cpp(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;

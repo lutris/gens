@@ -145,7 +145,7 @@ static inline void T_mdp_render_epx_plus_cpp(pixel *destScreen, pixel *mdScreen,
 }
 
 
-int MDP_FNCALL mdp_render_epx_plus_cpp(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_render_epx_plus_cpp(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;

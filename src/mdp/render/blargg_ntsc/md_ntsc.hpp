@@ -142,7 +142,8 @@ struct md_ntsc_t {
 /* MDP Renderer Functions. */
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_init(void);
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info);
+
+DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info);
 
 /* NTSC setup struct. */
 DLL_LOCAL void MDP_FNCALL mdp_md_ntsc_reinit_setup(void);

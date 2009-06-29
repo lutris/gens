@@ -78,7 +78,7 @@ int MDP_FNCALL mdp_render_super_eagle_end(void)
  * @param render_info Render information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_super_eagle_cpp(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_render_super_eagle_cpp(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;

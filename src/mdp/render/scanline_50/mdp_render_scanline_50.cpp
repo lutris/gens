@@ -128,7 +128,7 @@ static inline void T_mdp_render_scanline_50_cpp(pixel *destScreen, pixel *mdScre
 #endif /* GENS_X86_ASM */
 
 
-int MDP_FNCALL mdp_render_scanline_50_cpp(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_render_scanline_50_cpp(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;

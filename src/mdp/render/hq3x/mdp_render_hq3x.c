@@ -100,7 +100,7 @@ int MDP_FNCALL mdp_render_hq3x_end(void)
  * @param render_info Render information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_hq3x_cpp(mdp_render_info_t *render_info)
+int MDP_FNCALL mdp_render_hq3x_cpp(const mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;

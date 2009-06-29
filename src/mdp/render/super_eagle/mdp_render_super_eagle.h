@@ -34,7 +34,8 @@ extern "C" {
 
 DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_init(const mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_cpp(mdp_render_info_t *render_info);
+
+DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_cpp(const mdp_render_info_t *render_info);
 
 #ifdef __cplusplus
 }

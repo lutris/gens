@@ -32,7 +32,8 @@ extern "C" {
 
 DLL_LOCAL int MDP_FNCALL mdp_render_epx_init(const mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_epx_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_epx_cpp(mdp_render_info_t *render_info);
+
+DLL_LOCAL int MDP_FNCALL mdp_render_epx_cpp(const mdp_render_info_t *render_info);
 
 #ifdef __cplusplus
 }
