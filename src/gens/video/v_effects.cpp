@@ -216,7 +216,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 
 
 /**
- * Pause_Screen_int(): Tint the screen a purple hue to indicate that emulation is paused.
+ * T_veffect_pause_tint(): Tint the screen a purple hue to indicate that emulation is paused.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param RMask Red component mask.
  * @param GMask Green component mask.
