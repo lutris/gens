@@ -78,7 +78,7 @@ typedef struct PACKED _mdp_render_info_t
 #define MDP_RENDER_FLAG_RGB_888to888	((uint32_t)(1 << 8))
 
 // Render plugin definition.
-typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
+typedef int (MDP_FNCALL *mdp_render_fn)(const mdp_render_info_t *renderInfo);
 
 #pragma pack(1)
 typedef struct PACKED _mdp_render_t
