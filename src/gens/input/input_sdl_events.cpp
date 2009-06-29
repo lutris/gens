@@ -363,9 +363,9 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_8:
 		case GENS_KEY_9:
 		{
-			int value = (key - GENS_KEY_0);
+			unsigned int value = (key - GENS_KEY_0);
 			
-			if (IS_KMOD_NONE(mod) && (value >= 0 && value <= 9))
+			if (IS_KMOD_NONE(mod) && (/*value >= 0 &&*/ value <= 9))
 			{
 				// No modifier key. Select save slot.
 				Options::setSaveSlot(value);
