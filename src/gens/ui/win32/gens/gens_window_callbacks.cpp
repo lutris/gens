@@ -424,7 +424,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 		
 		default:
 		{
-			int value = LOWORD(wParam) & 0x0F;
+			unsigned int value = LOWORD(wParam) & 0x0F;
 			
 			switch (LOWORD(wParam) & 0xFF00)
 			{
