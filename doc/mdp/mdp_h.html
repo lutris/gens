@@ -281,7 +281,7 @@ typedef struct _mdp_desc_t
 #include &quot;mdp/mdp.h&quot;
 #include &quot;mdp/mdp_host.h&quot;
 
-typedef void (MDP_FNCALL *mdp_init)(mdp_host_t *host_srv);
+typedef void (MDP_FNCALL *mdp_init)(const mdp_host_t *host_srv);
 typedef void (MDP_FNCALL *mdp_end)(void);
 
 typedef struct _mdp_func_t
