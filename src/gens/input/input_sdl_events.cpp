@@ -211,7 +211,7 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_F3:
 			if (allow_gtk_hotkeys && IS_KMOD_SHIFT(mod))
 			{
-				int newVSync = !(allow_gtk_hotkeys ? Video.VSync_FS : Video.VSync_W);
+				int newVSync = !(vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
 				Options::setVSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
@@ -324,7 +324,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (allow_gtk_hotkeys ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				if (rendMode != RenderMgr::begin())
 				{
 					rendMode--;
@@ -342,7 +342,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (allow_gtk_hotkeys ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				rendMode++;
 				if (rendMode != RenderMgr::end())
 				{
