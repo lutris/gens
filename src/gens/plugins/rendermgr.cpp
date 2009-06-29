@@ -116,11 +116,11 @@ list<mdp_render_t*>::iterator RenderMgr::getIterFromTag(string tag)
 
 
 /**
- * getIterFromTag(): Get a render plugin iterator from its index.
+ * getIterFromIndex(): Get a render plugin iterator from its index.
  * @param index Plugin index.
  * @return Render plugin iterator from lstRenderPlugins.
  */
-list<mdp_render_t*>::iterator RenderMgr::getIterFromIndex(int index)
+list<mdp_render_t*>::iterator RenderMgr::getIterFromIndex(unsigned int index)
 {
 	list<mdp_render_t*>::iterator renderIter = lstRenderPlugins.begin();
 	

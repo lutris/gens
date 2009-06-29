@@ -61,7 +61,7 @@ class RenderMgr
 		}
 		
 		static std::list<mdp_render_t*>::iterator getIterFromTag(std::string tag);
-		static std::list<mdp_render_t*>::iterator getIterFromIndex(int index);
+		static std::list<mdp_render_t*>::iterator getIterFromIndex(unsigned int index);
 		
 	private:
 		// List and map containing all loaded render plugins.
