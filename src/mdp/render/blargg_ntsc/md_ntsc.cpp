@@ -295,6 +295,9 @@ int MDP_FNCALL mdp_md_ntsc_init(void)
 	
 	// Initialize mdp_md_ntsc.
 	md_ntsc_init(mdp_md_ntsc, &mdp_md_ntsc_setup);
+	
+	// Initialized.
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_md_ntsc_end(void)
@@ -302,6 +305,9 @@ int MDP_FNCALL mdp_md_ntsc_end(void)
 	// Free mdp_md_ntsc.
 	free(mdp_md_ntsc);
 	mdp_md_ntsc = NULL;
+	
+	// Plugin shut down.
+	return MDP_ERR_OK;
 }
 
 void MDP_FNCALL mdp_md_ntsc_reinit_setup(void)
