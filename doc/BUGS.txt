@@ -7,8 +7,6 @@
   This is an Assembly issue, so don't ask me about it.
   Characters are printed without their accent (french example: Activé -> Active)
 
-- WAV Dumping is not (yet) implemented. GYM play back has not been completely tested.
-
 - Analog joystick have not been completely tested.
   If someone reports it runs OK, we could remove this potential misfeature from the bug list.
 
