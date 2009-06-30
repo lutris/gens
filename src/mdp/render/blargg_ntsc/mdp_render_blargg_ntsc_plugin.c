@@ -59,7 +59,7 @@ mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 1, 2),
+	.pluginVersion = MDP_VERSION(0, 9, 0),
 	
 	// CPU flags.
 	.cpuFlagsSupported = 0,
