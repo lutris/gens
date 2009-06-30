@@ -55,6 +55,9 @@ using std::string;
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
+// git version
+#include "macros/git.h"
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
