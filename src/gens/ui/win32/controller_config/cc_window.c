@@ -486,10 +486,10 @@ static void cc_window_create_options_frame(HWND container)
 	
 	// "Restrict Input" checkbox.
 	chkRestrictInput = CreateWindow(WC_BUTTON, TEXT("&Restrict Input\n(Disables Up+Down, Left+Right)"),
-					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_MULTILINE,
-					8, 16,
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX | BS_MULTILINE,
+					fraOptions_left+8, fraOptions_top+16,
 					CC_FRAME_OPTIONS_WIDTH-16, 32,
-					fraOptions, NULL, ghInstance, NULL);
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(chkRestrictInput, fntMain, TRUE);
 }
 
