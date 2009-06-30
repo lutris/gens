@@ -24,9 +24,11 @@
 #ifndef GENS_INPUT_HAIKU_HPP
 #define GENS_INPUT_HAIKU_HPP
 
-extern "C" {
-
 #include "input.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Haiku-specific input callback structure
 extern const input_backend_t input_backend_haiku;
@@ -35,6 +37,8 @@ extern const input_backend_t input_backend_haiku;
 void input_haiku_event_key_down(int key);
 void input_haiku_event_key_up(int key);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* GENS_INPUT_HAIKU_HPP */
