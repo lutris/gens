@@ -383,6 +383,10 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 				}
 				
 				Static_SetText(lblTabContents, sTabContents.c_str());
+				
+				// Invalidate the tab contents groupbox.
+				InvalidateRect(tabInfo, NULL, true);
+				UpdateWindow(about_window);
 			}
 			break;
 			
@@ -433,10 +437,8 @@ static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT mess
 	    (HWND)lParam == lblTabContents)
 	{
 		// Set the tab contents label to transparent.
-		{
-			SetBkMode((HDC)wParam, TRANSPARENT);
-			return (LRESULT)GetStockObject(NULL_BRUSH);
-		}
+		SetBkMode((HDC)wParam, TRANSPARENT);
+		return (LRESULT)GetStockObject(NULL_BRUSH);
 	}
 	
 	return CallWindowProc(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
