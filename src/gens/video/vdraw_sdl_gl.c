@@ -235,6 +235,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 		{
 			// Error setting the SDL video mode.
 			const char *sErr = SDL_GetError();
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
 			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 				"SDL_SetVideoMode() failed: %s", sErr);
 			return -1;

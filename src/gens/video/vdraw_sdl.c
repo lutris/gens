@@ -121,6 +121,7 @@ static int vdraw_sdl_init(void)
 	{
 		// Error setting the SDL video mode.
 		const char *sErr = SDL_GetError();
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 			"SDL_SetVideoMode() failed: %s", sErr);
 		return -2;
