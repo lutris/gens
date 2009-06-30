@@ -104,7 +104,7 @@ void selcd_window_show(void)
 		selcd_wndclass.cbClsExtra = 0;
 		selcd_wndclass.cbWndExtra = 0;
 		selcd_wndclass.hInstance = ghInstance;
-		selcd_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+		selcd_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		selcd_wndclass.hCursor = NULL;
 		selcd_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		selcd_wndclass.lpszMenuName = NULL;

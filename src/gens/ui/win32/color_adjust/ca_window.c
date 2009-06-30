@@ -113,7 +113,7 @@ void ca_window_show(void)
 		ca_wndclass.cbClsExtra = 0;
 		ca_wndclass.cbWndExtra = 0;
 		ca_wndclass.hInstance = ghInstance;
-		ca_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+		ca_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		ca_wndclass.hCursor = NULL;
 		ca_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ca_wndclass.lpszMenuName = NULL;

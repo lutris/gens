@@ -144,7 +144,7 @@ void ccode_window_show(void)
 		ccode_wndclass.cbClsExtra = 0;
 		ccode_wndclass.cbWndExtra = 0;
 		ccode_wndclass.hInstance = ghInstance;
-		ccode_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+		ccode_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		ccode_wndclass.hCursor = NULL;
 		ccode_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ccode_wndclass.lpszMenuName = NULL;

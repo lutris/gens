@@ -136,7 +136,7 @@ void about_window_show(void)
 		about_wndclass.cbClsExtra = 0;
 		about_wndclass.cbWndExtra = 0;
 		about_wndclass.hInstance = ghInstance;
-		about_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+		about_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		about_wndclass.hCursor = NULL;
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
