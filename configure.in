@@ -333,6 +333,7 @@ fi
 AM_CONDITIONAL([GENS_WIN32_CONSOLE], [test x$enable_win32_console = xyes])
 
 AC_ARG_WITH(opengl, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
+GL_LIBS=""
 if test x$with_opengl = xyes; then
 	AC_MSG_CHECKING(for OpenGL support)
 	with_opengl=no
@@ -353,9 +354,9 @@ if test x$with_opengl = xyes; then
 		AC_MSG_RESULT($with_opengl)
 		if test x$with_opengl = xyes; then
 			if test x$os = xmacosx; then
-				LDFLAGS="$LDFLAGS -framework OpenGL"
+				GL_LIBS="-framework OpenGL"
 			else
-				LDFLAGS="$LDFLAGS -lGL"
+				GL_LIBS="-lGL"
 			fi
 			AC_DEFINE(GENS_OPENGL, 1, OpenGL support)
 		fi
@@ -636,6 +637,7 @@ AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
+AC_SUBST(GL_LIBS)
 AC_SUBST(LIBS)
 AC_SUBST(GETTIMEFLAG)
 

@@ -137,3 +137,7 @@ gens_LDADD += @SDL_LIBS@
 if GENS_UI_GTK
 gens_LDADD += @GTK_LIBS@
 endif
+
+if GENS_OPENGL
+gens_LDADD += @GL_LIBS@
+endif
