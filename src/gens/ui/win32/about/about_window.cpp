@@ -78,12 +78,15 @@ static WNDCLASS about_wndclass;
 #endif
 
 // Window size.
-#define ABOUT_WINDOW_WIDTH  328
-#define ABOUT_WINDOW_HEIGHT (360+ABOUT_WINDOW_GIT_HEIGHT)
+#define ABOUT_WINDOW_WIDTH  344
+#define ABOUT_WINDOW_HEIGHT (396+ABOUT_WINDOW_GIT_HEIGHT)
+
+// Logo/Verison Height.
 
 // Tab content size.
-#define TAB_WIDTH  312
-#define TAB_HEIGHT 224
+#define TAB_TOP    (96+ABOUT_WINDOW_GIT_HEIGHT)
+#define TAB_WIDTH  (ABOUT_WINDOW_WIDTH-16)
+#define TAB_HEIGHT (ABOUT_WINDOW_HEIGHT-TAB_TOP-16-24)
 
 // Timer ID.
 #define IDT_ICETIMER 0x1234
@@ -213,18 +216,19 @@ static void about_window_create_child_windows(HWND hWnd)
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    128, 8, 192, 32+ABOUT_WINDOW_GIT_HEIGHT,
+				    128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, true);
 	
 	lblGensDesc = CreateWindow(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				   128, 42+ABOUT_WINDOW_GIT_HEIGHT, 192, 100,
+				   128, 42+ABOUT_WINDOW_GIT_HEIGHT,
+				   (ABOUT_WINDOW_WIDTH-128), 100,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, true);
 	
 	// Tab control.
 	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-			       8, 96+ABOUT_WINDOW_GIT_HEIGHT, TAB_WIDTH, TAB_HEIGHT,
+			       8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
 			       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(tabInfo, fntMain, true);
 	
