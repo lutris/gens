@@ -7,9 +7,9 @@ gens_SOURCES += \
 		emulator/g_main_haiku.cpp \
 		port/ini_old.c \
 		port/timer.c \
+		input/input_haiku.cpp
 #		video/vdraw_sdl_common.c \
 #		video/vdraw_haiku.c \
-		input/input_haiku.cpp
 #		audio/audio_haiku.c
 
 #if GENS_CDROM
