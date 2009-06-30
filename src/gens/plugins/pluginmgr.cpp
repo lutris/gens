@@ -148,8 +148,9 @@ void PluginMgr::init(void)
 	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
 #endif /* GENS_OS_WIN32 */
 	
-	// System-wide plugins: 	// If GENS_MDP_DIR is defined, load plugins from there.
 #ifdef GENS_MDP_DIR
+	// System-wide plugins.
+	// If GENS_MDP_DIR is defined, load plugins from there.
 	scanExternalPlugins(GENS_MDP_DIR);
 #endif /* GENS_MDP_DIR */
 }
