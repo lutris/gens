@@ -203,6 +203,12 @@ int vdraw_gl_is_supported(void)
 	// Close the X11 display.
 	XCloseDisplay(dpy);
 	
+	if (!rval)
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_WARNING,
+			"X server doesn't support the GLX extension. OpenGL will be disabled.");
+	}
+	
 	// If GLX was queried successfully, rval is TRUE; otherwise, it's FALSE.
 	return rval;
 }
