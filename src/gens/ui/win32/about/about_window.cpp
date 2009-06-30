@@ -95,12 +95,18 @@ static WNDCLASS about_wndclass;
 // Window procedure.
 static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+// Subclassed window procedure for the tab groupbox.
+static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 // Widgets.
 static HWND	tabInfo;
 static HWND	lblGensTitle;
 static HWND	lblGensDesc;
 static HWND	imgGensLogo;
 static HWND	lblTabContents;
+
+// Old window procedure for grpTabContents.
+static WNDPROC	grpTabContents_old_wndproc;
 
 // Gens logo.
 static HBITMAP	hbmpGensLogo = NULL;
@@ -250,6 +256,10 @@ static void about_window_create_child_windows(HWND hWnd)
 				      rectTab.bottom - rectTab.top - 4,
 				      tabInfo, NULL, ghInstance, NULL);
 	SetWindowFont(grpTabContents, fntMain, true);
+	
+	// Subclass the tab box.
+	grpTabContents_old_wndproc = (WNDPROC)SetWindowLongPtr(grpTabContents, GWL_WNDPROC,
+						(LONG_PTR)about_window_grpTabContents_wndproc);
 	
 	// Tab contents.
 	string sTabContents = charset_utf8_to_cp1252(about_window_copyright);
@@ -406,6 +416,30 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+/**
+ * about_window_grpTabContents_wndproc(): Subclassed window procedure for the tab groupbox.
+ * @param hWnd hWnd of the window.
+ * @param message Window message.
+ * @param wParam
+ * @param lParam
+ * @return
+ */
+static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if (message == WM_CTLCOLORSTATIC &&
+	    (HWND)lParam == lblTabContents)
+	{
+		// Set the tab contents label to transparent.
+		{
+			SetBkMode((HDC)wParam, TRANSPARENT);
+			return (LRESULT)GetStockObject(NULL_BRUSH);
+		}
+	}
+	
+	return CallWindowProc(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
 }
 
 
