@@ -181,6 +181,11 @@ static void clear_extension_table(void)
  */
 int vdraw_gl_is_supported(void)
 {
+	// Mesa 7.4.4/7.5-rc4 and earlier have a bug that causes the program
+	// to crash in GetGLXScreenConfigs() if GLX isn't suppported by the
+	// X server due to a null pointer dereference. So, we have to check
+	// if the X server supports GLX manually.
+	
 	// Get the X11 display.
 	Display *dpy;
 	char *dpyname = getenv("DISPLAY");
