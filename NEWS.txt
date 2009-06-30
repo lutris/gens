@@ -169,4 +169,8 @@ Release 7 has the following low-level code changes:
 - yasm is now supported as an alternative to nasm. To use yasm, add the option
   --with-nasm=yasm when using the ./configure script.
 
+- Precompiled binaries are now compiled for i686 or higher. If you want to
+  run Gens/GS on an original Intel Pentium or older, you will have to
+  compile your own Gens/GS binary.
+
 For information about previous releases, see the ChangeLog.txt file.
