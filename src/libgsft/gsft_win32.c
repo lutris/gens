@@ -35,20 +35,70 @@
  */
 void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 {
-	RECT r, r2;
+	// TODO: This function doesn't take the taskbar into account.
+	// If the window is offscreen on the bottom of the screen,
+	// then it will still be obscured by the taskbar.
+	
+	RECT r_bottom, r_top;
 	int dx1, dy1, dx2, dy2;
 	
-	GetWindowRect(hWnd_bottom, &r);
-	dx1 = (r.right - r.left) / 2;
-	dy1 = (r.bottom - r.top) / 2;
+	GetWindowRect(hWnd_bottom, &r_bottom);
+	dx1 = (r_bottom.right - r_bottom.left) / 2;
+	dy1 = (r_bottom.bottom - r_bottom.top) / 2;
 	
-	GetWindowRect(hWnd_top, &r2);
-	dx2 = (r2.right - r2.left) / 2;
-	dy2 = (r2.bottom - r2.top) / 2;
+	GetWindowRect(hWnd_top, &r_top);
+	dx2 = (r_top.right - r_top.left) / 2;
+	dy2 = (r_top.bottom - r_top.top) / 2;
 	
-	SetWindowPos(hWnd_top, NULL,
-		     gsft_win32_max(0, r.left + (dx1 - dx2)),
-		     gsft_win32_max(0, r.top + (dy1 - dy2)), 0, 0,
+	int win_left = r_bottom.left + (dx1 - dx2);
+	int win_top = r_bottom.top + (dy1 - dy2);
+	
+	// Window size.
+	const int win_width = (r_top.right - r_top.left);
+	const int win_height = (r_top.bottom - r_top.top);
+	
+	// Make sure the window isn't offscreen.
+	const int scrn_width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	const int scrn_height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	
+	RECT r_scrn;
+	if (scrn_width == 0 || scrn_height == 0)
+	{
+		// System does not support multiple monitors.
+		r_scrn.left = 0;
+		r_scrn.top = 0;
+		
+		// Check the single-monitor size.
+		r_scrn.right = GetSystemMetrics(SM_CXSCREEN);
+		r_scrn.bottom = GetSystemMetrics(SM_CYSCREEN);
+	}
+	else
+	{
+		// System supports multiple monitors.
+		
+		// Get the left/top.
+		r_scrn.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+		r_scrn.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+		
+		// Calculate the right/bottom.
+		r_scrn.right = r_scrn.left + scrn_width;
+		r_scrn.bottom = r_scrn.top + scrn_height;
+	}
+	
+	// Check if the window is offscreen. (X)
+	if (win_left + win_width >= r_scrn.right)
+		win_left = r_scrn.right - win_width;
+	else if (win_left < r_scrn.left)
+		win_left = r_scrn.left;
+	
+	// Check if the window is offscreen. (Y)
+	if (win_top + win_height >= r_scrn.bottom)
+		win_top = r_scrn.bottom - win_height;
+	else if (win_top < r_scrn.top)
+		win_top = r_scrn.top;
+	
+	// Set the window position.
+	SetWindowPos(hWnd_top, NULL, win_left, win_top, 0, 0,
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
