@@ -623,9 +623,19 @@ AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 # There currently aren't any, but there will be later on.
 libdir="$libdir/mdp"
 
-# Check for system libraries and functions.
-AC_CHECK_LIB(rt, clock_gettime)
-AC_CHECK_LIB(c, getopt)
+# Check for clock_gettime.
+AC_CHECK_LIB(rt, clock_gettime, has_librt=yes, has_librt=no)
+AM_CONDITIONAL([HAVE_LIBRT], [test x$has_librt = xyes])
+if test x$has_librt = xyes; then
+	AC_DEFINE(HAVE_LIBRT, 1, Define to 1 if you have the `rt' library (-lrt).)
+	RT_LIBS="-lrt"
+else
+	RT_LIBS=""
+fi
+
+# TODO: Check for getopt_long() and implement a fallback getopt() parser.
+#AC_CHECK_LIB(c, getopt)
+
 AC_FUNC_ALLOCA
 
 # Check for various functions.
@@ -640,6 +650,7 @@ AC_SUBST(SDL_LIBS)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(GL_LIBS)
+AC_SUBST(RT_LIBS)
 AC_SUBST(LIBS)
 AC_SUBST(GETTIMEFLAG)
 

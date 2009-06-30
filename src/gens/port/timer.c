@@ -31,14 +31,14 @@
 #include "timer.h"
 
 #include <unistd.h>
-#if HAVE_LIBRT
+#ifdef HAVE_LIBRT
 #include <time.h>
 #else
 #include <sys/time.h>
 #endif
 #include <stddef.h>
 
-// Time #defines from WINE's dlls/ntdll/time.c
+// Time #defines from Wine's dlls/ntdll/time.c
 #define TICKSPERSEC        10000000
 #define SECSPERDAY         86400
 #define SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)SECSPERDAY)
@@ -59,7 +59,7 @@ static void NtQuerySystemTime(int64_t* pTime)
 	if (!pTime)
 		return;
 	
-#if HAVE_LIBRT
+#ifdef HAVE_LIBRT
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 	*pTime = now.tv_sec * (int64_t)TICKSPERSEC + TICKS_1601_TO_1970;

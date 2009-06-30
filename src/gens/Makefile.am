@@ -335,7 +335,7 @@ gens_LDADD = \
 		$(top_builddir)/src/starscream/libstarscream.la \
 		$(top_builddir)/src/mdZ80/libmdZ80.la \
 		$(top_builddir)/src/libgsft/libgsft.la \
-		-lm
+		-lm @RT_LIBS@
 
 if GENS_MP3
 gens_LDADD += $(top_builddir)/src/mp3_dec/libmp3_dec.la
