@@ -21,19 +21,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_INPUT_HAIKU_H
-#define GENS_INPUT_HAIKU_H
+#ifndef GENS_INPUT_HAIKU_HPP
+#define GENS_INPUT_HAIKU_HPP
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 #include "input.h"
 
+// Haiku-specific input callback structure
 extern const input_backend_t input_backend_haiku;
 
-#ifdef __cplusplus
-}
-#endif
+// Haiku-specific key handler function declarations
+void input_haiku_event_key_down(int key);
+void input_haiku_event_key_up(int key);
 
-#endif /* GENS_INPUT_HAIKU_H */
+}
+
+#endif /* GENS_INPUT_HAIKU_HPP */

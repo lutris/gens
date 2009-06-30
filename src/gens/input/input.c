@@ -51,7 +51,7 @@ const char input_player_names[8][4] =
 #if defined(GENS_OS_WIN32)
 	#include "input_dinput_t.h"
 #elif defined(GENS_OS_HAIKU)
-	#include "input_haiku.h"
+	#include "input_haiku.hpp"
 #else /* GENS_OS_UNIX */
 	#include "input_sdl.h"
 #endif /* GENS_OS_WIN32 */

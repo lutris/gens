@@ -6,13 +6,11 @@ INCLUDES += -I@srcdir@/ui/haiku/
 gens_SOURCES += \
 		emulator/g_main_haiku.cpp \
 		port/ini_old.c \
-		port/timer.c
+		port/timer.c \
 #		video/vdraw_sdl_common.c \
-#		video/vdraw_sdl.c \
-#		input/input_sdl.c \
-#		input/input_sdl_events.cpp \
-#		input/input_sdl_key_names.c \
-#		audio/audio_sdl.c
+#		video/vdraw_haiku.c \
+		input/input_haiku.cpp
+#		audio/audio_haiku.c
 
 #if GENS_CDROM
 #if GENS_OS_HAIKU
@@ -55,14 +53,11 @@ noinst_HEADERS += \
 		emulator/g_main_haiku.hpp \
 		port/ini_old.h \
 		port/timer.h \
-#		video/vdraw_sdl_common.h \
-#		video/vdraw_sdl.h \
-#		input/input_sdl.h \
-#		input/input_sdl_events.hpp \
-		input/input_haiku_keys.h
+#		video/vdraw_haiku.h \
+		input/input_haiku.h
 #		input/input_sdl_key_names.h \
 #		input/input_sdl_joystate.h \
-#		audio/audio_sdl.h
+#		audio/audio_haiku.h
 
 #if GENS_CDROM
 #noinst_HEADERS += \
@@ -88,7 +83,7 @@ noinst_HEADERS += \
 
 #if GENS_OPENGL
 #noinst_HEADERS += \
-#		video/vdraw_sdl_gl.h \
+#		video/vdraw_haiku_gl.h \
 #		video/vdraw_gl.h \
 #		ui/haiku/opengl_resolution/glres_window.hpp
 #endif # GENS_OPENGL
