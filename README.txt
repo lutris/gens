@@ -1,8 +1,8 @@
-Gens/GS v2.15.5/GS-r6+ (Gens/GS)
+Gens/GS r7_pre1+ (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
-Copyright (c) 2008 by David Korth
+Copyright (c) 2008-2009 by David Korth
 
 This version of Gens is maintained by David Korth.
 E-mail: gerbilsoft@verizon.net
@@ -14,8 +14,8 @@ http://www.sonicretro.org
 
 1. What is Gens/GS?
 
-Gens v2.15.5/GS-r6+ is David Korth's fork of Gens, initially based
-on Gens for Linux v2.15.5. The number after the "r" indicates the
+Gens/GS r7_pre1+ is David Korth's fork of Gens, initially based on
+Gens for Linux v2.15.5. The number after the "r" indicates the
 Gens/GS release. Releases are usually made after a significant new
 feature has been added, with minor releases if a major bug is found.
 
