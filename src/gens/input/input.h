@@ -34,7 +34,7 @@
 #elif (defined(GENS_OS_WIN32))
 #include "input_win32_keys.h"
 #elif (defined(GENS_OS_HAIKU))
-#include "input_haiku_keys.h"
+// Nothing else to include
 #else
 #error Unsupported operating system.
 #endif

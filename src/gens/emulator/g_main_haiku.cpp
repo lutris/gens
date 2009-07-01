@@ -104,16 +104,6 @@ int main(int argc, char *argv[])
 		
 		fprintf(stderr, "%s\n", gensRootErr);
 		
-		#ifdef GENS_UI_GTK
-			// Check if X is running.
-			char *display = getenv("DISPLAY");
-			if (display)
-			{
-				if (gtk_init_check(NULL, NULL))
-					GensUI::msgBox(gensRootErr, GENS_APPNAME " - Permissions Error", GensUI::MSGBOX_ICON_ERROR);
-			}
-		#endif /* GENS_UI_GTK */
-		
 		return 1;
 	}
 	
@@ -129,10 +119,10 @@ int main(int argc, char *argv[])
 	
 	// Initialize vdraw_sdl.
 	vdraw_init();
-	vdraw_backend_init_subsystem(VDRAW_BACKEND_SDL);
+	vdraw_backend_init_subsystem(VDRAW_BACKEND_HAIKU);
 	
 	// Initialize input_sdl.
-	input_init(INPUT_BACKEND_SDL);
+	input_init(INPUT_BACKEND_HAIKU);
 	
 	// Initialize the Settings struct.
 	if (Init_Settings())
@@ -191,7 +181,7 @@ int main(int argc, char *argv[])
 	Sync_Gens_Window();
 	
 	// Show the Gens window.
-	gtk_widget_show(gens_window);
+	//gtk_widget_show(gens_window);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();
