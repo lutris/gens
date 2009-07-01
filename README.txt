@@ -60,7 +60,8 @@ Linux: [build requirements]
 Windows: [runtime requirements]
 - Windows 9x, Me, 2000 or later.
   - Tested on 95, 98SE, 2000, and XP.
-- DirectX 6
+- DirectX 3 or later for keyboard input and GDI rendering. (No audio)
+- DirectX 6 or later for joystick input and DirectDraw 4 rendering, and sound.
 
 Windows: [build requirements]
 - MinGW and mSYS
