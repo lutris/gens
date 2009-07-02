@@ -90,7 +90,14 @@ uint32_t CPU_Flags = 0;
 
 // Function to check if the OS supports SSE.
 static int check_os_level_sse(void);
-
+#define CPUFLAG_X86_SSE_ALL \
+	(MDP_CPUFLAG_X86_SSE2 | \
+	 MDP_CPUFLAG_X86_SSE3 | \
+	 MDP_CPUFLAG_X86_SSSE3 | \
+	 MDP_CPUFLAG_X86_SSE41 | \
+	 MDP_CPUFLAG_X86_SSE42 | \
+	 MDP_CPUFLAG_X86_SSE4A | \
+	 MDP_CPUFLAG_X86_SSE5)
 
 /**
  * getCPUFlags(): Get the CPU flags.
@@ -207,28 +214,13 @@ uint32_t getCPUFlags(void)
 	
 	// If the CPU claims it supports an SSE instruction set,
 	// make sure the operating system supports it, too.
-	if (CPU_Flags &
-		(MDP_CPUFLAG_X86_SSE |
-		 MDP_CPUFLAG_X86_SSE2 |
-		 MDP_CPUFLAG_X86_SSE3 |
-		 MDP_CPUFLAG_X86_SSSE3 |
-		 MDP_CPUFLAG_X86_SSE41 |
-		 MDP_CPUFLAG_X86_SSE42 |
-		 MDP_CPUFLAG_X86_SSE4A |
-		 MDP_CPUFLAG_X86_SSE5))
+	if (CPU_Flags & CPUFLAG_X86_SSE_ALL)
 	{
 		if (!check_os_level_sse())
 		{
 			// Operating system does not support SSE.
 			// Disable all SSE flags.
-			CPU_Flags &= ~(MDP_CPUFLAG_X86_SSE |
-					MDP_CPUFLAG_X86_SSE2 |
-					MDP_CPUFLAG_X86_SSE3 |
-					MDP_CPUFLAG_X86_SSSE3 |
-					MDP_CPUFLAG_X86_SSE41 |
-					MDP_CPUFLAG_X86_SSE42 |
-					MDP_CPUFLAG_X86_SSE4A |
-					MDP_CPUFLAG_X86_SSE5);
+			CPU_Flags &= ~CPUFLAG_X86_SSE_ALL;
 		}
 	}
 	
