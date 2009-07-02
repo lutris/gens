@@ -264,7 +264,6 @@ static int check_os_level_sse(void)
 	 * of Windows 98.
 	 */
 	const DWORD dwVersion = GetVersion();
-	printf("GetVersion(): 0x%08X\n", dwVersion);
 	
 	if (LOBYTE(LOWORD(dwVersion)) >= 5 ||
 	    (LOBYTE(LOWORD(dwVersion)) == 4 && HIBYTE(LOWORD(dwVersion)) >= 10))
