@@ -88,6 +88,9 @@
 // CPU Flags
 uint32_t CPU_Flags = 0;
 
+// Function to check if the OS supports SSE.
+static int check_os_level_sse(void);
+
 
 /**
  * getCPUFlags(): Get the CPU flags.
@@ -202,6 +205,33 @@ uint32_t getCPUFlags(void)
 			CPU_Flags |= MDP_CPUFLAG_X86_SSE5;
 	}
 	
+	// If the CPU claims it supports an SSE instruction set,
+	// make sure the operating system supports it, too.
+	if (CPU_Flags &
+		(MDP_CPUFLAG_X86_SSE |
+		 MDP_CPUFLAG_X86_SSE2 |
+		 MDP_CPUFLAG_X86_SSE3 |
+		 MDP_CPUFLAG_X86_SSSE3 |
+		 MDP_CPUFLAG_X86_SSE41 |
+		 MDP_CPUFLAG_X86_SSE42 |
+		 MDP_CPUFLAG_X86_SSE4A |
+		 MDP_CPUFLAG_X86_SSE5))
+	{
+		if (!check_os_level_sse())
+		{
+			// Operating system does not support SSE.
+			// Disable all SSE flags.
+			CPU_Flags &= ~(MDP_CPUFLAG_X86_SSE |
+					MDP_CPUFLAG_X86_SSE2 |
+					MDP_CPUFLAG_X86_SSE3 |
+					MDP_CPUFLAG_X86_SSSE3 |
+					MDP_CPUFLAG_X86_SSE41 |
+					MDP_CPUFLAG_X86_SSE42 |
+					MDP_CPUFLAG_X86_SSE4A |
+					MDP_CPUFLAG_X86_SSE5);
+		}
+	}
+	
 	// Return the CPU flags.
 	return CPU_Flags;
 	
@@ -211,3 +241,106 @@ uint32_t getCPUFlags(void)
 	
 #endif
 }
+
+
+#if defined(GENS_X86_ASM) && (defined(__i386__) || defined(__amd64__))
+
+// Function to check for OS-level SSE support.
+
+#if defined(_WIN32)
+
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
+/**
+ * check_os_level_sse(): Check for OS-level SSE support. (Win32 version.)
+ * @return 0 if SSE isn't supported; non-zero if SSE is supported.
+ */
+static int check_os_level_sse(void)
+{
+	/* SSE is supported in the following versions of Windows:
+	 * - Windows 98 (4.10.1998) and later 9x
+	 * - Windows 2000 (5.0.2195)
+	 * Hence, checking for Windows older than 4.10 is sufficient.
+	 *
+	 * TODO: Some sources say Windows 98 First Edition support SSE with
+	 * a DirectX upgrade, while others say Windows 98 Second Edition is
+	 * required for SSE support. For now, I'll enable it on both versions
+	 * of Windows 98.
+	 */
+	const DWORD dwVersion = GetVersion();
+	printf("GetVersion(): 0x%08X\n", dwVersion);
+	
+	if (LOBYTE(LOWORD(dwVersion)) >= 5 ||
+	    (LOBYTE(LOWORD(dwVersion)) == 4 && HIBYTE(LOWORD(dwVersion)) >= 10))
+	{
+		// Windows 4.10 or later.
+		// SSE is supported.
+		return 1;
+	}
+	else
+	{
+		// Older than Windows 4.10.
+		// SSE is not supported.
+		return 0;
+	}
+}
+
+#else /* !defined(_WIN32) */
+
+// POSIX version.
+#include <signal.h>
+
+// SSE Error variable.
+// If this is set, then the SSE test function failed.
+static int SSE_OS_Support;
+
+static void check_os_level_sse_sighandler(int signum)
+{
+	// If this function is called, it means SIGILL was thrown
+	// after an SSE instruction was executed in getCPUFlags().
+	// This means the OS doesn't support SSE.
+	if (signum == SIGILL)
+		SSE_OS_Support = 0;
+}
+
+static int check_os_level_sse(void)
+{
+	// Set the temporary signal handler.
+	sighandler_t prev_SIGILL = signal(SIGILL, check_os_level_sse_sighandler);
+	
+	// Assume SSE is supported initially.
+	// If the CPU doesn't support SSE, then the above signal handler
+	// will set SSE_OS_Support to 0.
+	SSE_OS_Support = 1;
+	
+	// Attempt to execute an SSE instruction.
+	__asm__ (
+		"orps	%xmm0, %xmm0"
+		);
+	
+	// Restore the signal handler.
+	signal(SIGILL, prev_SIGILL);
+	
+	return SSE_OS_Support;
+}
+
+#endif
+
+#else /* !(defined(GENS_X86_ASM) && (defined(__i386__) || defined(__amd64__))) */
+
+// SSE is not available.
+
+/**
+ * check_os_level_sse(): Check for OS-level SSE support. (Win32 version.)
+ * @return 0, since SSE isn't available.
+ */
+static int check_os_level_sse(void)
+{
+	return 0;
+}
+
+#endif /* defined(GENS_X86_ASM) && (defined(__i386__) || defined(__amd64__)) */
