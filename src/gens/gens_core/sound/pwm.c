@@ -230,8 +230,11 @@ void PWM_Update(int **buf, int length)
 	if (!PWM_Enable)
 		return;
 	
-	int tmpOutL = ((PWM_Out_L & 0xFFFF) << 5) - 0x4000;
-	int tmpOutR = ((PWM_Out_R & 0xFFFF) << 5) - 0x4000;
+	// TODO: Calculate PWM_adjust when PWM_Cycle is written.
+	// TODO: This supports a max cycle count of 1024. Figure out how to make it better.
+	const int PWM_adjust = (((PWM_Cycle >> 1) + 1) << 5);
+	int tmpOutL = ((PWM_Out_L & 0xFFFF) << 5) - PWM_adjust;
+	int tmpOutR = ((PWM_Out_R & 0xFFFF) << 5) - PWM_adjust;
 	
 	// Multiply PWM by 4 so it's audible.
 	tmpOutL <<= 2;
