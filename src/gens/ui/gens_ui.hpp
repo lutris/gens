@@ -49,6 +49,12 @@ typedef enum
  */
 void GensUI_update(void);
 
+/**
+ * GensUI_wakeup(): Wakeup from sleep.
+ * Wrapper function for C code.
+ */
+void GensUI_wakeup(void);
+
 #ifdef __cplusplus
 }
 #endif
