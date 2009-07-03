@@ -7,9 +7,9 @@ gens_SOURCES += \
 		emulator/g_main_haiku.cpp \
 		port/ini_old.c \
 		port/timer.c \
-		input/input_haiku.cpp
+		input/input_haiku.cpp \
+		input/vdraw_haiku.c
 #		video/vdraw_sdl_common.c \
-#		video/vdraw_haiku.c \
 #		audio/audio_haiku.c
 
 #if GENS_CDROM
@@ -40,7 +40,7 @@ gens_SOURCES += \
 
 #if GENS_OPENGL
 #gens_SOURCES += \
-#		video/vdraw_sdl_gl.c \
+#		video/vdraw_haiku_gl.c \
 #		ui/haiku/opengl_resolution/glres_window.cpp
 #endif # GENS_OPENGL
 
@@ -53,10 +53,8 @@ noinst_HEADERS += \
 		emulator/g_main_haiku.hpp \
 		port/ini_old.h \
 		port/timer.h \
-#		video/vdraw_haiku.h \
+		video/vdraw_haiku.h \
 		input/input_haiku.h
-#		input/input_sdl_key_names.h \
-#		input/input_sdl_joystate.h \
 #		audio/audio_haiku.h
 
 #if GENS_CDROM
@@ -67,22 +65,22 @@ noinst_HEADERS += \
 
 # UI headers.
 noinst_HEADERS += \
-#		ui/haiku/gens/gens_window.h \
-#		ui/haiku/gens/gens_window_callbacks.hpp \
-		ui/haiku/gens/gens_window_sync.hpp
-#		ui/haiku/gens/gens_menu.hpp \
-#		ui/haiku/controller_config/cc_window.h \
-#		ui/haiku/bios_misc_files/bmf_window.hpp \
-#		ui/haiku/directory_config/dir_window.hpp \
-#		ui/haiku/general_options/genopt_window.hpp \
-#		ui/haiku/color_adjust/ca_window.h \
-#		ui/haiku/country_code/ccode_window.h \
-#		ui/haiku/zip_select/zipsel_dialog.h \
-#		ui/haiku/plugin_manager/pmgr_window.hpp \
-#		ui/haiku/about/about_window.hpp
+		ui/haiku/gens/gens_window.h \
+		ui/haiku/gens/gens_window_callbacks.hpp \
+		ui/haiku/gens/gens_window_sync.hpp \
+		ui/haiku/gens/gens_menu.hpp \
+		ui/haiku/controller_config/cc_window.h \
+		ui/haiku/bios_misc_files/bmf_window.hpp \
+		ui/haiku/directory_config/dir_window.hpp \
+		ui/haiku/general_options/genopt_window.hpp \
+		ui/haiku/color_adjust/ca_window.h \
+		ui/haiku/country_code/ccode_window.h \
+		ui/haiku/zip_select/zipsel_dialog.h \
+		ui/haiku/plugin_manager/pmgr_window.hpp \
+		ui/haiku/about/about_window.hpp
 
 #if GENS_OPENGL
-#noinst_HEADERS += \
+noinst_HEADERS += \
 #		video/vdraw_haiku_gl.h \
 #		video/vdraw_gl.h \
 #		ui/haiku/opengl_resolution/glres_window.hpp

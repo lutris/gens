@@ -4,6 +4,7 @@
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -76,6 +77,8 @@
 #ifdef GENS_OS_WIN32
 	#include "vdraw_gdi.h"
 	#include "vdraw_ddraw_t.h"
+#elif GENS_OS_HAIKU
+	#include "vdraw_haiku.h"
 #else /* !GENS_OS_WIN32 */
 	#include "vdraw_sdl.h"
 	#ifdef GENS_OPENGL
@@ -88,6 +91,8 @@ const vdraw_backend_t* const vdraw_backends[] =
 	#ifdef GENS_OS_WIN32
 		&vdraw_backend_ddraw,
 		&vdraw_backend_gdi,
+	#elif GENS_OS_HAIKU
+		&vdraw_backend_haiku,
 	#else /* !GENS_OS_WIN32 */
 		&vdraw_backend_sdl,
 		#ifdef GENS_OPENGL
