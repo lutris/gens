@@ -68,6 +68,8 @@ extern uint8_t vdraw_backends_broken[VDRAW_BACKEND_MAX];
 // VDraw backend flags.
 #define VDRAW_BACKEND_FLAG_STRETCH	((uint32_t)(1 << 0))
 #define VDRAW_BACKEND_FLAG_VSYNC	((uint32_t)(1 << 1))
+#define VDRAW_BACKEND_FLAG_FULLSCREEN	((uint32_t)(1 << 2))
+#define VDRAW_BACKEND_FLAG_WINRESIZE	((uint32_t)(1 << 3))
 
 // VDraw backend function pointers.
 typedef struct
