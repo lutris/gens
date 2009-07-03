@@ -1881,7 +1881,8 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	ImportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
 	ImportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
 	ImportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
-
+	PWM_Recalc_Scale();
+	
 	ImportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
 	ImportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
 	ImportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));

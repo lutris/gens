@@ -47,6 +47,7 @@ extern unsigned int PWM_Out_R;
 extern unsigned int PWM_Out_L;
 
 void PWM_Init(void);
+void PWM_Recalc_Scale(void);
 
 /* Functions called by x86 asm. */
 void PWM_Set_Cycle(unsigned int cycle);

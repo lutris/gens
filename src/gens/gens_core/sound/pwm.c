@@ -72,6 +72,11 @@ unsigned int PWM_Int_Tmp;
 unsigned int PWM_FIFO_L_Tmp;
 unsigned int PWM_FIFO_R_Tmp;
 
+/* PWM scaling variables. */
+static int PWM_Offset;
+static int PWM_Scale;
+static int PWM_Loudness;
+
 
 /**
  * PWM_Init(): Initialize the PWM audio emulator.
@@ -94,8 +99,16 @@ void PWM_Init(void)
 	PWM_FIFO_L_Tmp = 0;
 	PWM_FIFO_R_Tmp = 0;
 	
+	PWM_Loudness = 0;
 	PWM_Set_Cycle(0);
 	PWM_Set_Int(0);
+}
+
+
+void PWM_Recalc_Scale(void)
+{
+	PWM_Offset = (PWM_Cycle / 2) + 1;
+	PWM_Scale = 0x7FFF00 / PWM_Offset;
 }
 
 
@@ -104,6 +117,8 @@ void PWM_Set_Cycle(unsigned int cycle)
 	cycle--;
 	PWM_Cycle = (cycle & 0xFFF);
 	PWM_Cycle_Cnt = PWM_Cycles;
+	
+	PWM_Recalc_Scale();
 }
 
 
@@ -198,6 +213,7 @@ static void PWM_Shift_Data(void)
 void PWM_Update_Timer(unsigned int cycle)
 {
 	// Don't do anything if PWM is disabled in the Sound menu.
+	// FIXME: This seems to cause some games to freeze.
 	if (!PWM_Enable)
 		return;
 	
@@ -230,11 +246,9 @@ void PWM_Update(int **buf, int length)
 	if (!PWM_Enable)
 		return;
 	
-	// TODO: Calculate PWM_adjust when PWM_Cycle is written.
-	// TODO: This supports a max cycle count of 1024. Figure out how to make it better.
-	const int PWM_adjust = (((PWM_Cycle >> 1) + 1) << 5);
-	int tmpOutL = ((PWM_Out_L & 0xFFFF) << 5) - PWM_adjust;
-	int tmpOutR = ((PWM_Out_R & 0xFFFF) << 5) - PWM_adjust;
+	// New PWM scaling algorithm provided by Chilly Willy on the Sonic Retro forums.
+	int tmpOutL = (((int)(PWM_Out_L & 0xFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
+	int tmpOutR = (((int)(PWM_Out_R & 0xFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
 	
 	// Multiply PWM by 4 so it's audible.
 	tmpOutL <<= 2;
