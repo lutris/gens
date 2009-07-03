@@ -278,6 +278,12 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	// Set the backend flags.
 	vdraw_cur_backend_flags		= vdraw_cur_backend->flags;
 	
+#ifdef GENS_OS_WIN32
+	// The Gens window must be reinitialized.
+	if (vdraw_cur_backend->reinit_gens_window)
+		return vdraw_cur_backend->reinit_gens_window();
+#endif /* GENS_OS_WIN32 */
+	
 	// Initialized successfully.
 	return 0;
 }
