@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -250,18 +250,3 @@ void PWM_Update(int **buf, int length)
 		length--;
 	}
 }
-
-
-// Symbol aliases for cross-OS asm compatibility.
-void _PWM_Init(void)
-		__attribute__ ((weak, alias ("PWM_Init")));
-void _PWM_Set_Cycle(unsigned int cycle)
-		__attribute__ ((weak, alias ("PWM_Set_Cycle")));
-void _PWM_Set_Int(unsigned int int_time)
-		__attribute__ ((weak, alias ("PWM_Set_Int")));
-void _PWM_Clear_Timer(void)
-		__attribute__ ((weak, alias ("PWM_Clear_Timer")));
-void _PWM_Update_Timer(void)
-		__attribute__ ((weak, alias ("PWM_Update_Timer")));
-void _PWM_Update(void)
-		__attribute__ ((weak, alias ("PWM_Update")));

@@ -321,12 +321,16 @@ section .text align=64
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define __32X_Set_FB	_32X_Set_FB
+		
+		%define _PWM_Set_Cycle	PWM_Set_Cycle
+		%define _PWM_Set_Int	PWM_Set_Int
 	%endif
 	
 	extern _Write_To_68K_Space
 	extern __32X_Set_FB
 	extern SH2_DMA0_Request
 	extern SH2_DMA1_Request
+	
 	extern _PWM_Set_Cycle
 	extern _PWM_Set_Int
 

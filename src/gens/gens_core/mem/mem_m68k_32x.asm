@@ -336,6 +336,8 @@ section .text align=64
 		%define _YM2612_Reset		YM2612_Reset
 		
 		%define __32X_Set_FB		_32X_Set_FB
+		
+		%define _PWM_Set_Cycle		PWM_Set_Cycle
 	%endif
 	
 	extern _Z80_ReadB_Table
@@ -394,8 +396,8 @@ section .text align=64
 	extern _M68K_32X_Mode
 	extern _M68K_Set_32X_Rom_Bank
 	extern __32X_Set_FB
+	
 	extern _PWM_Set_Cycle
-	extern _PWM_Set_Int
 	
 	; 32X extended Read Byte
 	; *******************************************

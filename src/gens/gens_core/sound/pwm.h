@@ -1,3 +1,25 @@
+/***************************************************************************
+ * Gens: PWM audio emulator.                                               *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
 #ifndef GENS_PWM_H
 #define GENS_PWM_H
 
@@ -25,8 +47,12 @@ extern unsigned int PWM_Out_R;
 extern unsigned int PWM_Out_L;
 
 void PWM_Init(void);
+
+/* Functions called by x86 asm. */
 void PWM_Set_Cycle(unsigned int cycle);
 void PWM_Set_Int(unsigned int int_time);
+
+/* Functions called by C/C++ code only. */
 void PWM_Clear_Timer(void);
 void PWM_Update_Timer(unsigned int cycle);
 void PWM_Update(int **buf, int length);
