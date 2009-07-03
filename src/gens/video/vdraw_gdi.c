@@ -126,8 +126,6 @@ static int vdraw_gdi_stretch_srcH;
  */
 static int vdraw_gdi_init(void)
 {
-	// TODO: GDI doesn't support fullscreen.
-	
 	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
@@ -337,10 +335,7 @@ static int vdraw_gdi_flip(void)
 	else
 	{
 		// Color conversion is not required.
-		if (vdraw_get_fullscreen())
-			vdraw_blitFS(&vdraw_rInfo);
-		else
-			vdraw_blitW(&vdraw_rInfo);
+		vdraw_blitW(&vdraw_rInfo);
 	}
 	
 	// Draw the border.
