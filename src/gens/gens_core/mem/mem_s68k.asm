@@ -332,6 +332,7 @@ section .text align=64
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_PCM_Write_Reg		PCM_Write_Reg
+		%define _MS68K_Set_Word_Ram	MS68K_Set_Word_Ram
 	%endif
 	
 	extern _sub68k_interrupt

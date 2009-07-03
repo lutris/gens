@@ -322,22 +322,24 @@ section .text align=64
 	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
-		%define	_Z80_ReadB_Table	Z80_ReadB_Table
-		%define	_Z80_WriteB_Table	Z80_WriteB_Table
+		%define _Z80_ReadB_Table		Z80_ReadB_Table
+		%define _Z80_WriteB_Table		Z80_WriteB_Table
 		
-		%define	_mdZ80_reset		mdZ80_reset
-		%define	_mdZ80_set_odo		mdZ80_set_odo
+		%define _mdZ80_reset			mdZ80_reset
+		%define _mdZ80_set_odo			mdZ80_set_odo
 		
-		%define _RD_Controller_1	RD_Controller_1
-		%define _RD_Controller_2	RD_Controller_2
-		%define _WR_Controller_1	WR_Controller_1
-		%define _WR_Controller_2	WR_Controller_2
+		%define _RD_Controller_1		RD_Controller_1
+		%define _RD_Controller_2		RD_Controller_2
+		%define _WR_Controller_1		WR_Controller_1
+		%define _WR_Controller_2		WR_Controller_2
 		
-		%define _YM2612_Reset		YM2612_Reset
+		%define _YM2612_Reset			YM2612_Reset
 		
-		%define __32X_Set_FB		_32X_Set_FB
+		%define _M68K_32X_Mode			M68K_32X_Mode
+		%define _M68K_Set_32X_Rom_Bank		M68K_Set_32X_Rom_Bank
+		%define __32X_Set_FB			_32X_Set_FB
 		
-		%define _PWM_Set_Cycle		PWM_Set_Cycle
+		%define _PWM_Set_Cycle			PWM_Set_Cycle
 	%endif
 	
 	extern _Z80_ReadB_Table

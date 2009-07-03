@@ -108,13 +108,13 @@ struct STARSCREAM_DATAREGION S68K_Write_Word[] =
 };
 
 
-void M68K_Reset_Handler(void)
+static void M68K_Reset_Handler(void)
 {
 	//Init_Memory_M68K(GENESIS);
 }
 
 
-void S68K_Reset_Handler(void)
+static void S68K_Reset_Handler(void)
 {
 	//Init_Memory_M68K(SEGACD);
 }
@@ -143,7 +143,7 @@ int M68K_Init(void)
 	Context_68K.s_writeword = Context_68K.u_writeword =
 		Context_68K.writeword = M68K_Write_Word;
 	
-	Context_68K.resethandler = (void*)M68K_Reset_Handler;
+	Context_68K.resethandler = M68K_Reset_Handler;
 	
 	main68k_SetContext(&Context_68K);
 	main68k_init();
@@ -175,7 +175,7 @@ int S68K_Init(void)
 	Context_68K.s_writeword = Context_68K.u_writeword =
 		Context_68K.writeword = S68K_Write_Word;
 	
-	Context_68K.resethandler = (void*)S68K_Reset_Handler;
+	Context_68K.resethandler = S68K_Reset_Handler;
 	
 	sub68k_SetContext(&Context_68K);
 	sub68k_init();
@@ -496,14 +496,3 @@ void S68K_Reset_CPU(void)
 {
 	sub68k_reset();
 }
-
-
-// Symbol aliases for cross-OS asm compatibility.
-void _M68K_Set_32X_Rom_Bank(void)
-	__attribute__ ((weak, alias ("M68K_Set_32X_Rom_Bank")));
-void _M68K_Set_Prg_Ram(void)
-	__attribute__ ((weak, alias ("M68K_Set_Prg_Ram")));
-void _M68K_32X_Mode(void)
-	__attribute__ ((weak, alias ("M68K_32X_Mode")));
-void _MS68K_Set_Word_Ram(void)
-	__attribute__ ((weak, alias ("MS68K_Set_Word_Ram")));

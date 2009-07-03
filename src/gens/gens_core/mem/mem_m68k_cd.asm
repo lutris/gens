@@ -149,8 +149,6 @@ section .data align=64
 	extern _Memory_Control_Status
 	extern _Cell_Conv_Tab
 	
-	extern _MS68K_Set_Word_Ram
-	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_Controller_1_Counter	Controller_1_Counter
@@ -288,8 +286,10 @@ section .text align=64
 		%define	_Z80_ReadB_Table	Z80_ReadB_Table
 		%define	_Z80_WriteB_Table	Z80_WriteB_Table
 		
-		%define	_mdZ80_reset		mdZ80_reset
-		%define	_mdZ80_set_odo		mdZ80_set_odo
+		%define _MS68K_Set_Word_Ram	MS68K_Set_Word_Ram
+		%define _M68K_Set_Prg_Ram	M68K_Set_Prg_Ram
+		%define _mdZ80_reset		mdZ80_reset
+		%define _mdZ80_set_odo		mdZ80_set_odo
 		
 		%define _RD_Controller_1	RD_Controller_1
 		%define _RD_Controller_2	RD_Controller_2
@@ -314,6 +314,9 @@ section .text align=64
 	extern M68K_Write_Word_VDP
 	extern M68K_Write_Word_Ram
 	
+	extern _MS68K_Set_Word_Ram
+	extern _M68K_Set_Prg_Ram
+	
 	extern _main68k_readOdometer
 	extern _sub68k_reset
 	extern _sub68k_interrupt
@@ -321,7 +324,6 @@ section .text align=64
 	extern z80_Exec
 	extern _mdZ80_set_odo
 	
-	extern _M68K_Set_Prg_Ram
 	extern _YM2612_Reset
 	
 	extern _Read_CDC_Host_MAIN
