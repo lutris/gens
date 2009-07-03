@@ -332,6 +332,14 @@ section .text align=64
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_PCM_Write_Reg		PCM_Write_Reg
+		%define _CDC_Read_Reg		CDC_Read_Reg
+		%define _CDC_Write_Reg		CDC_Write_Reg
+		%define _CDD_Processing		CDD_Processing
+		%define _CDD_Import_Command	CDD_Import_Command
+		%define _SCD_Read_Byte		SCD_Read_Byte
+		%define _SCD_Read_Word		SCD_Read_Word
+		%define _Check_CD_Command	Check_CD_Command
+		%define _Read_CDC_Host_SUB	Read_CDC_Host_SUB
 		%define _MS68K_Set_Word_Ram	MS68K_Set_Word_Ram
 	%endif
 	
