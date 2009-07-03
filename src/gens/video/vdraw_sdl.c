@@ -67,7 +67,7 @@ static SDL_Surface *vdraw_sdl_screen;
 const vdraw_backend_t vdraw_backend_sdl =
 {
 	.name = "SDL",
-	.flags = 0,
+	.flags = VDRAW_BACKEND_FLAG_FULLSCREEN,
 	
 	.init = vdraw_sdl_init,
 	.end = vdraw_sdl_end,

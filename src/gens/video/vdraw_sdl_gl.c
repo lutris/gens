@@ -90,7 +90,9 @@ double m_HStretch = 0.0, m_VStretch = 0.0;
 const vdraw_backend_t vdraw_backend_sdl_gl =
 {
 	.name = "SDL+OpenGL",
-	.flags = VDRAW_BACKEND_FLAG_VSYNC | VDRAW_BACKEND_FLAG_STRETCH,
+	.flags = VDRAW_BACKEND_FLAG_VSYNC |
+		 VDRAW_BACKEND_FLAG_STRETCH |
+		 VDRAW_BACKEND_FLAG_FULLSCREEN,
 	
 	.init = vdraw_sdl_gl_init,
 	.end = vdraw_sdl_gl_end,
