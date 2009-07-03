@@ -407,26 +407,20 @@ int vdraw_gdi_reinit_gens_window(void)
 	const int w = 320 * scale;
 	const int h = 240 * scale;
 	
-	if (vdraw_get_fullscreen())
-	{
-		while (ShowCursor(TRUE) < 1) { }
-		while (ShowCursor(FALSE) >= 0) { }
-		
-		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(NULL));
-		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
-	}
-	else
-	{
-		while (ShowCursor(FALSE) >= 0) { }
-		while (ShowCursor(TRUE) < 1) { }
-		
-		// MoveWindow / ResizeWindow code
-		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
-		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
-		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
-			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-		gsft_win32_set_actual_window_size(gens_window, w, h);
-	}
+	// Make sure the mouse pointer is visible.
+	while (ShowCursor(FALSE) >= 0) { }
+	while (ShowCursor(TRUE) < 1) { }
+	
+	// Make the window non-resizable.
+	LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+	curStyle &= ~WS_OVERLAPPEDWINDOW;
+	curStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX;
+	SetWindowLongPtr(gens_window, GWL_STYLE, curStyle);
+	
+	// Reposition the window.
+	SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+		     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+	gsft_win32_set_actual_window_size(gens_window, w, h);
 	
 	// Reinitialize DirectDraw.
 	return vdraw_gdi_init();

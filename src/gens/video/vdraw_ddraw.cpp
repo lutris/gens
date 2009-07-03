@@ -1218,9 +1218,13 @@ int vdraw_ddraw_reinit_gens_window(void)
 		while (ShowCursor(false) >= 0) { }
 		while (ShowCursor(true) < 1) { }
 		
-		// MoveWindow / ResizeWindow code
+		// Make the window resizable.
 		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		curStyle &= ~WS_POPUPWINDOW;
+		curStyle |= WS_OVERLAPPEDWINDOW;
 		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
+		
+		// Reposition the window.
 		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 		gsft_win32_set_actual_window_size(gens_window, w, h);
