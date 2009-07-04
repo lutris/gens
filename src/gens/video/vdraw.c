@@ -115,8 +115,8 @@ int		(*vdraw_init_subsystem)(void) = NULL;
 int		(*vdraw_shutdown)(void) = NULL;
 void		(*vdraw_clear_screen)(void) = NULL;
 void		(*vdraw_update_vsync)(const int data) = NULL;
-#ifdef GENS_OS_WIN32
 int		(*vdraw_reinit_gens_window)(void) = NULL;
+#ifdef GENS_OS_WIN32
 int		(*vdraw_clear_primary_screen)(void) = NULL;
 int		(*vdraw_clear_back_screen)(void) = NULL;
 int		(*vdraw_restore_primary)(void) = NULL;
@@ -272,8 +272,8 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_shutdown			= vdraw_cur_backend->shutdown;
 	vdraw_clear_screen		= vdraw_cur_backend->clear_screen;
 	vdraw_update_vsync		= vdraw_cur_backend->update_vsync;
-#ifdef GENS_OS_WIN32
 	vdraw_reinit_gens_window	= vdraw_cur_backend->reinit_gens_window;
+#ifdef GENS_OS_WIN32
 	vdraw_clear_primary_screen	= vdraw_cur_backend->clear_primary_screen;
 	vdraw_clear_back_screen		= vdraw_cur_backend->clear_back_screen;
 	vdraw_restore_primary		= vdraw_cur_backend->restore_primary;
@@ -283,14 +283,8 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	// Set the backend flags.
 	vdraw_cur_backend_flags		= vdraw_cur_backend->flags;
 	
-#ifdef GENS_OS_WIN32
 	// The Gens window must be reinitialized.
-	if (vdraw_cur_backend->reinit_gens_window)
-		return vdraw_cur_backend->reinit_gens_window();
-#endif /* GENS_OS_WIN32 */
-	
-	// Initialized successfully.
-	return 0;
+	return vdraw_cur_backend->reinit_gens_window();
 }
 
 
@@ -568,15 +562,14 @@ void vdraw_set_fullscreen(const BOOL new_fullscreen)
 	// Reset the renderer.
 	vdraw_reset_renderer(FALSE);
 	
-	#ifdef GENS_OS_WIN32
-		// Reinitialize the Gens window, if necessary.
-		if (vdraw_cur_backend && vdraw_cur_backend->reinit_gens_window)
-			vdraw_cur_backend->reinit_gens_window();
-	#else /* !GENS_OS_WIN32 */
+	// Reinitialize the Gens window, if necessary.
+	if (vdraw_cur_backend)
+		vdraw_cur_backend->reinit_gens_window();
+	#if !defined(GENS_OS_WIN32)
 		// Refresh the video subsystem, if Gens is running.
 		if (is_gens_running())
 			vdraw_refresh_video();
-	#endif /* GENS_OS_WIN32 */
+	#endif
 }
 
 
