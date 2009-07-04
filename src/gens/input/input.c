@@ -74,7 +74,7 @@ INPUT_BACKEND input_cur_backend_id;
 // Function and array pointers.
 int			(*input_update)(void) = NULL;
 BOOL			(*input_check_key_pressed)(uint16_t key) = NULL;
-unsigned int		(*input_get_key)(void) = NULL;
+uint16_t		(*input_get_key)(void) = NULL;
 const input_keymap_t	*input_keymap_default = NULL;
 #ifdef GENS_OS_WIN32
 int			(*input_set_cooperative_level)(HWND hWnd);

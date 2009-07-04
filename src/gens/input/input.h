@@ -173,7 +173,7 @@ typedef struct
 	BOOL	(*check_key_pressed)(uint16_t key);
 	
 	// Get a key. (Used for controller configuration.)
-	unsigned int	(*get_key)(void);
+	uint16_t (*get_key)(void);
 	
 	// Check if a joystick exists.
 	BOOL	(*joy_exists)(int joy_num);
@@ -197,7 +197,7 @@ extern INPUT_BACKEND input_cur_backend_id;
 // Function and array pointers.
 extern int			(*input_update)(void);
 extern BOOL			(*input_check_key_pressed)(uint16_t key);
-extern unsigned int		(*input_get_key)(void);
+extern uint16_t			(*input_get_key)(void);
 extern const input_keymap_t	*input_keymap_default;
 #ifdef GENS_OS_WIN32
 extern int			(*input_set_cooperative_level)(HWND hWnd);
