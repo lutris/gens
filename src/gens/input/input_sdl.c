@@ -47,13 +47,13 @@
 
 
 // Function prototypes.
-static int		input_sdl_init(void);
-static int		input_sdl_end(void);
+static int	input_sdl_init(void);
+static int	input_sdl_end(void);
 
-static int		input_sdl_update(void);
-static BOOL		input_sdl_check_key_pressed(uint16_t key);
-static unsigned int	input_sdl_get_key(void);
-static BOOL		input_sdl_joy_exists(int joy_num);
+static int	input_sdl_update(void);
+static BOOL	input_sdl_check_key_pressed(uint16_t key);
+static uint16_t	input_sdl_get_key(void);
+static BOOL	input_sdl_joy_exists(int joy_num);
 
 // Miscellaneous.
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
@@ -267,7 +267,7 @@ BOOL input_sdl_joy_exists(int joyNum)
  * input_sdl_get_key(): Get a key. (Used for controller configuration.)
  * @return Key value.
  */
-unsigned int input_sdl_get_key(void)
+uint16_t input_sdl_get_key(void)
 {
 	// TODO: Optimize this function.
 	GdkEvent *event;

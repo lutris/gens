@@ -24,6 +24,9 @@
 #ifndef GENS_INPUT_HAIKU_HPP
 #define GENS_INPUT_HAIKU_HPP
 
+#include "macros/bool_m.h"
+#include <stdint.h>
+
 #include "input.h"
 
 #ifdef __cplusplus
@@ -39,7 +42,7 @@ int		input_haiku_end(void);
 
 int		input_haiku_update(void);
 BOOL		input_haiku_check_key_pressed(uint16_t key);
-unsigned int	input_haiku_get_key(void);
+uint16_t	input_haiku_get_key(void);
 BOOL		input_haiku_joy_exists(int joy_num);
 
 // Haiku-specific key handler function declarations

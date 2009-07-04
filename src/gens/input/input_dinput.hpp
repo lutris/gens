@@ -23,12 +23,14 @@
 #ifndef GENS_INPUT_DINPUT_HPP
 #define GENS_INPUT_DINPUT_HPP
 
+#include "macros/bool_m.h"
+#include <stdint.h>
+
+#include "input.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "macros/bool_m.h"
-#include "input.h"
 
 // Function prototypes.
 int		input_dinput_init(void);
@@ -36,7 +38,7 @@ int		input_dinput_end(void);
 
 int		input_dinput_update(void);
 BOOL		input_dinput_check_key_pressed(uint16_t key);
-unsigned int	input_dinput_get_key(void);
+uint16_t	input_dinput_get_key(void);
 BOOL		input_dinput_joy_exists(int joy_num);
 
 // Win32-specific functions.

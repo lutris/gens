@@ -118,7 +118,7 @@ BOOL input_haiku_check_key_pressed(uint16_t key)
 	return true;
 }
 
-unsigned int input_haiku_get_key(void)
+uint16_t input_haiku_get_key(void)
 {
 	return (unsigned int)0;
 }

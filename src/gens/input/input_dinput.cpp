@@ -472,7 +472,7 @@ BOOL input_dinput_joy_exists(int joyNum)
  * input_dinput_get_key(): Get a key. (Used for controller configuration.)
  * @return Key value.
  */
-unsigned int input_dinput_get_key(void)
+uint16_t input_dinput_get_key(void)
 {
 	bool prevReady = false;
 	
