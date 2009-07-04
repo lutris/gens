@@ -54,9 +54,11 @@ static int	vdraw_sdl_end(void);
 static void	vdraw_sdl_clear_screen(void);
 
 static int	vdraw_sdl_flip(void);
-static void	vdraw_sdl_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_sdl_update_renderer(void);
+static int	vdraw_sdl_reinit_gens_window(void);
 
+// Used internally. (Not used in vdraw_backend_t.)
+static void	vdraw_sdl_draw_border(void);
 
 // Miscellaneous.
 #define VDRAW_SDL_FLAGS (SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL)
@@ -66,21 +68,22 @@ static SDL_Surface *vdraw_sdl_screen;
 // VDraw Backend struct.
 const vdraw_backend_t vdraw_backend_sdl =
 {
-	.name = "SDL",
-	.flags = VDRAW_BACKEND_FLAG_FULLSCREEN,
+	.name			= "SDL",
+	.flags			= VDRAW_BACKEND_FLAG_FULLSCREEN,
 	
-	.init = vdraw_sdl_init,
-	.end = vdraw_sdl_end,
+	.init			= vdraw_sdl_init,
+	.end			= vdraw_sdl_end,
 	
-	.init_subsystem = vdraw_sdl_common_init_subsystem,
-	.shutdown = vdraw_sdl_common_shutdown,
+	.init_subsystem		= vdraw_sdl_common_init_subsystem,
+	.shutdown		= vdraw_sdl_common_shutdown,
 	
-	.clear_screen = vdraw_sdl_clear_screen,
-	.update_vsync = NULL,
+	.clear_screen		= vdraw_sdl_clear_screen,
+	.update_vsync		= NULL,
 	
-	.flip = vdraw_sdl_flip,
-	.stretch_adjust = NULL,
-	.update_renderer = vdraw_sdl_update_renderer
+	.flip			= vdraw_sdl_flip,
+	.stretch_adjust		= NULL,
+	.update_renderer	= vdraw_sdl_update_renderer,
+	.reinit_gens_window	= vdraw_sdl_reinit_gens_window
 };
 
 
@@ -374,4 +377,15 @@ static void vdraw_sdl_update_renderer(void)
 	
 	// Clear the screen.
 	vdraw_sdl_clear_screen();
+}
+
+
+/**
+ * vdraw_sdl_reinit_gens_window(): Reinitialize the Gens window.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_sdl_reinit_gens_window(void)
+{
+	// TODO: Make the Gens window non-resizable.
+	return 0;
 }

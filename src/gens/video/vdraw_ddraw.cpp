@@ -26,6 +26,9 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 
@@ -1174,6 +1177,8 @@ static void vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RE
  */
 void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
 {
+	GENS_UNUSED_PARAMETER(fromInitDDraw);
+	
 	// If Full Screen, reinitialize the video subsystem.
 	if (vdraw_get_fullscreen())
 		vdraw_refresh_video();

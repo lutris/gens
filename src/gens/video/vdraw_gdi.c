@@ -69,9 +69,9 @@ static int	vdraw_gdi_flip(void);
 static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
+static int	vdraw_gdi_reinit_gens_window(void);
 
 // Win32-specific functions.
-static int	vdraw_gdi_reinit_gens_window(void);
 static int	vdraw_gdi_clear_primary_screen(void);
 static int	vdraw_gdi_clear_back_screen(void);
 static int	vdraw_gdi_restore_primary(void) { return 0; }
@@ -81,24 +81,24 @@ static int	vdraw_gdi_set_cooperative_level(void) { return 0; }
 // VDraw Backend struct.
 const vdraw_backend_t vdraw_backend_gdi =
 {
-	.name = "GDI",
-	.flags = VDRAW_BACKEND_FLAG_STRETCH,
+	.name			= "GDI",
+	.flags			= VDRAW_BACKEND_FLAG_STRETCH,
 	
-	.init = vdraw_gdi_init,
-	.end = vdraw_gdi_end,
+	.init			= vdraw_gdi_init,
+	.end			= vdraw_gdi_end,
 	
-	.init_subsystem = NULL,
-	.shutdown = NULL,
+	.init_subsystem		= NULL,
+	.shutdown		= NULL,
 	
-	.clear_screen = vdraw_gdi_clear_screen,
-	.update_vsync = NULL,
+	.clear_screen		= vdraw_gdi_clear_screen,
+	.update_vsync		= NULL,
 	
-	.flip = vdraw_gdi_flip,
-	.stretch_adjust = vdraw_gdi_stretch_adjust,
-	.update_renderer = vdraw_gdi_update_renderer,
+	.flip			= vdraw_gdi_flip,
+	.stretch_adjust		= vdraw_gdi_stretch_adjust,
+	.update_renderer	= vdraw_gdi_update_renderer,
+	.reinit_gens_window	= vdraw_gdi_reinit_gens_window,
 	
 	// Win32-specific functions.
-	.reinit_gens_window	= vdraw_gdi_reinit_gens_window,
 	.clear_primary_screen	= vdraw_gdi_clear_primary_screen,
 	.clear_back_screen	= vdraw_gdi_clear_back_screen,
 	.restore_primary	= vdraw_gdi_restore_primary,
@@ -381,7 +381,7 @@ static int vdraw_gdi_flip(void)
  * vdraw_gdi_reinit_gens_window(): Reinitialize the Gens window.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_gdi_reinit_gens_window(void)
+static int vdraw_gdi_reinit_gens_window(void)
 {
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();

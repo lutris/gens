@@ -33,13 +33,12 @@ extern "C" {
 int	vdraw_ddraw_init(void);
 int	vdraw_ddraw_end(void);
 
+int	vdraw_ddraw_flip(void);
 void	vdraw_ddraw_clear_screen(void);
 void	vdraw_ddraw_update_vsync(const BOOL fromInitDDraw);
-
-int	vdraw_ddraw_flip(void);
+int	vdraw_ddraw_reinit_gens_window(void);
 
 // Win32-specific functions.
-int	vdraw_ddraw_reinit_gens_window(void);
 int	vdraw_ddraw_clear_primary_screen(void);
 int	vdraw_ddraw_clear_back_screen(void);
 int	vdraw_ddraw_restore_primary(void);

@@ -339,6 +339,9 @@ uint16_t input_sdl_get_key(void)
 		if (!cc_window_is_configuring)
 			break;
 	}
+	
+	// No key returned.
+	return 0;
 }
 
 
