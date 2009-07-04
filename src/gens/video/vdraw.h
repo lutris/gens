@@ -92,10 +92,10 @@ typedef struct
 	int	(*flip)(void);
 	void	(*stretch_adjust)(void);
 	void	(*update_renderer)(void);
+	int	(*reinit_gens_window)(void);
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
-	int	(*reinit_gens_window)(void);
 	int	(*clear_primary_screen)(void);
 	int	(*clear_back_screen)(void);
 	int	(*restore_primary)(void);
