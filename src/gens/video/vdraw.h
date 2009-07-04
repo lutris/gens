@@ -51,17 +51,17 @@ extern "C" {
 // VDraw backends.
 typedef enum
 {
-	#ifdef GENS_OS_WIN32
+	#if defined(GENS_OS_WIN32)
 		VDRAW_BACKEND_DDRAW,
 		VDRAW_BACKEND_GDI,
-	#elif GENS_OS_HAIKU
+	#elif defined(GENS_OS_HAIKU)
 		VDRAW_BACKEND_HAIKU,
-	#else /* !GENS_OS_WIN32 */
+	#elif defined(GENS_OS_UNIX)
 		VDRAW_BACKEND_SDL,
 		#ifdef GENS_OPENGL
 			VDRAW_BACKEND_SDL_GL,
 		#endif /* GENS_OPENGL */
-	#endif /* GENS_OS_WIN32 */
+	#endif
 	VDRAW_BACKEND_MAX
 } VDRAW_BACKEND;
 

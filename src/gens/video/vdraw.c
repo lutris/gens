@@ -74,31 +74,31 @@
 
 
 // VDraw backends.
-#ifdef GENS_OS_WIN32
+#if defined(GENS_OS_WIN32)
 	#include "vdraw_gdi.h"
 	#include "vdraw_ddraw_t.h"
-#elif GENS_OS_HAIKU
+#elif defined(GENS_OS_HAIKU)
 	#include "vdraw_haiku.h"
-#else /* !GENS_OS_WIN32 */
+#elif defined(GENS_OS_UNIX)
 	#include "vdraw_sdl.h"
 	#ifdef GENS_OPENGL
 		#include "vdraw_sdl_gl.h"
 	#endif /* GENS_OPENGL */
-#endif /* GENS_OS_WIN32 */
+#endif
 
 const vdraw_backend_t* const vdraw_backends[] =
 {
-	#ifdef GENS_OS_WIN32
+	#if defined(GENS_OS_WIN32)
 		&vdraw_backend_ddraw,
 		&vdraw_backend_gdi,
-	#elif GENS_OS_HAIKU
+	#elif defined(GENS_OS_HAIKU)
 		&vdraw_backend_haiku,
-	#else /* !GENS_OS_WIN32 */
+	#elif defined(GENS_OS_UNIX)
 		&vdraw_backend_sdl,
 		#ifdef GENS_OPENGL
 			&vdraw_backend_sdl_gl,
 		#endif /* GENS_OPENGL */
-	#endif /* GENS_OS_WIN32 */
+	#endif
 	NULL
 };
 
