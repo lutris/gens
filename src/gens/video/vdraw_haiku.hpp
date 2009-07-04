@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Input Handler - Haiku Backend. (input_backend_t struct)           *
+ * Gens: Video Drawing - Haiku Backend.                                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,23 +21,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "input_haiku_t.h"
-#include "input_haiku.hpp"
+#ifndef GENS_VDRAW_HAIKU_HPP
+#define GENS_VDRAW_HAIKU_HPP
 
-extern const input_keymap_t input_haiku_keymap_default[8];
-extern int input_haiku_get_key_name(uint16_t key, char* buf, int size);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Input Backend struct.
-const input_backend_t input_backend_haiku =
-{
-	.init = input_haiku_init,
-	.end = input_haiku_end,
-	
-	.keymap_default = &input_haiku_keymap_default[0],
-	
-	.update			= input_haiku_update,
-	.check_key_pressed	= input_haiku_check_key_pressed,
-	.get_key		= input_haiku_get_key,
-	.joy_exists		= input_haiku_joy_exists,
-	.get_key_name		= input_haiku_get_key_name
-};
+#include "macros/bool_m.h"
+
+// Function prototypes.
+int	vdraw_haiku_init(void);
+int	vdraw_haiku_end(void);
+
+int	vdraw_haiku_flip(void);
+void vdraw_haiku_clear_screen(void);
+void vdraw_haiku_update_vsync(const BOOL fromInitHaiku);
+int	vdraw_haiku_reinit_gens_window(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_VDRAW_HAIKU_HPP */

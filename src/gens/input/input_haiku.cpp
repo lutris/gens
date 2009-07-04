@@ -73,7 +73,7 @@ using std::list;
 
 
 // Default keymap.
-static const input_keymap_t input_haiku_keymap_default[8] =
+const input_keymap_t input_haiku_keymap_default[8] =
 {
 	// Player 1
 	{{B_UP_ARROW, B_DOWN_ARROW, B_LEFT_ARROW, B_RIGHT_ARROW,

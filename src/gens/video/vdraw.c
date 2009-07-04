@@ -78,7 +78,7 @@
 	#include "vdraw_gdi.h"
 	#include "vdraw_ddraw_t.h"
 #elif defined(GENS_OS_HAIKU)
-	#include "vdraw_haiku.h"
+	#include "vdraw_haiku_t.h"
 #elif defined(GENS_OS_UNIX)
 	#include "vdraw_sdl.h"
 	#ifdef GENS_OPENGL

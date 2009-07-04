@@ -36,4 +36,4 @@ extern const input_backend_t input_backend_haiku;
 }
 #endif
 
-#endif /* GENS_INPUT_DINPUT_T_H */
+#endif /* GENS_INPUT_HAIKU_T_H */

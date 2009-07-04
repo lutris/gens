@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Input Handler - Haiku Backend. (input_backend_t struct)           *
+ * Gens: Video Drawing - Hailu Backend.                                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,23 +21,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "input_haiku_t.h"
-#include "input_haiku.hpp"
+#include "vdraw_haiku_t.h"
+#include "vdraw_haiku.hpp"
 
-extern const input_keymap_t input_haiku_keymap_default[8];
-extern int input_haiku_get_key_name(uint16_t key, char* buf, int size);
-
-// Input Backend struct.
-const input_backend_t input_backend_haiku =
+// VDraw Backend struct.
+const vdraw_backend_t vdraw_backend_ddraw =
 {
-	.init = input_haiku_init,
-	.end = input_haiku_end,
+	.name			= "BDirectWindow",
+	.flags			= 0x0,
 	
-	.keymap_default = &input_haiku_keymap_default[0],
+	.init			= vdraw_haiku_init,
+	.end			= vdraw_haiku_end,
 	
-	.update			= input_haiku_update,
-	.check_key_pressed	= input_haiku_check_key_pressed,
-	.get_key		= input_haiku_get_key,
-	.joy_exists		= input_haiku_joy_exists,
-	.get_key_name		= input_haiku_get_key_name
+	.init_subsystem		= NULL,
+	.shutdown		= NULL,
+	
+	.clear_screen		= vdraw_haiku_clear_screen,
+	.update_vsync		= vdraw_haiku_update_vsync,
+	
+	.flip = vdraw_haiku_flip,
+	.stretch_adjust = NULL,
+	.update_renderer = NULL,
+	.reinit_gens_window	= vdraw_haiku_reinit_gens_window
 };

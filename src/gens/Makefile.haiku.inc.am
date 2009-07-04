@@ -7,10 +7,10 @@ gens_SOURCES += \
 		emulator/g_main_haiku.cpp \
 		port/ini_old.c \
 		port/timer.c \
-		input/input_haiku.cpp \
 		input/input_haiku_t.c \
-		input/vdraw_haiku.c
-#		video/vdraw_sdl_common.c \
+		input/input_haiku.cpp \
+		video/vdraw_haiku_t.c \
+		video/vdraw_haiku.cpp
 #		audio/audio_haiku.c
 
 #if GENS_CDROM
@@ -54,7 +54,7 @@ noinst_HEADERS += \
 		emulator/g_main_haiku.hpp \
 		port/ini_old.h \
 		port/timer.h \
-		video/vdraw_haiku.h \
+		video/vdraw_haiku_t.h \
 		input/input_haiku.h \
 		input/input_haiku_t.h
 #		audio/audio_haiku.h
