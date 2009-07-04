@@ -71,7 +71,31 @@ using std::list;
 // Needed to handle controller input configuration.
 #include "controller_config/cc_window.h"
 
-extern "C" {
+
+// Default keymap.
+static const input_keymap_t input_haiku_keymap_default[8] =
+{
+	// Player 1
+	{{B_UP_ARROW, B_DOWN_ARROW, B_LEFT_ARROW, B_RIGHT_ARROW,
+	B_RETURN, 'a', 's', 'd',
+	B_RIGHT_SHIFT_KEY, 'q', 'w', 'e'}},
+	
+	// Player 2
+	{{'y', 'h', 'g', 'j',
+	'u', 'k', 'l', 'm',
+	't', 'i', 'o', 'p'}},
+	
+	// Players 1B, 1C, 1D
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	
+	// Players 2B, 2C, 2D
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+};
+
 
 // Haiku-specific handler function definitions
 int input_haiku_init(void)
@@ -105,29 +129,18 @@ BOOL input_haiku_joy_exists(int joy_num)
 	return false;
 }
 
-// Default keymap.
-static const input_keymap_t input_haiku_keymap_default[8] =
+void input_haiku_event_key_down(int key)
 {
-	// Player 1
-	{{B_UP_ARROW, B_DOWN_ARROW, B_LEFT_ARROW, B_RIGHT_ARROW,
-	B_RETURN, 'a', 's', 'd',
-	B_RIGHT_SHIFT_KEY, 'q', 'w', 'e'}},
-	
-	// Player 2
-	{{'y', 'h', 'g', 'j',
-	'u', 'k', 'l', 'm',
-	't', 'i', 'o', 'p'}},
-	
-	// Players 1B, 1C, 1D
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	
-	// Players 2B, 2C, 2D
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
-};
+	// TODO
+	STUB();
+}
+
+void input_haiku_event_key_up(int key)
+{
+	// TODO
+	STUB();
+}
+
 
 /**
  * input_haiku_get_key_name(): Get a Haiku key name.
@@ -254,30 +267,3 @@ int input_haiku_get_key_name(uint16_t key, char* buf, int size)
 	buf[size - 1] = 0x00;
 	return 0;
 }
-
-// Input Backend struct of pointers to the
-// above Haiku-specific callback functions
-const input_backend_t input_backend_haiku =
-{
-	.init = input_haiku_init,
-	.end = input_haiku_end,
-	
-	.keymap_default = &input_haiku_keymap_default[0],
-	
-	.update = input_haiku_update,
-	.check_key_pressed = input_haiku_check_key_pressed,
-	.get_key = input_haiku_get_key,
-	.joy_exists = input_haiku_joy_exists,
-	.get_key_name = input_haiku_get_key_name
-};
-
-// Haiku key event handler implementation
-void input_haiku_event_key_down(int key)
-{
-}
-
-void input_haiku_event_key_up(int key)
-{
-}
-
-} // extern "C"

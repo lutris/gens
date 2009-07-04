@@ -29,11 +29,11 @@
 #endif
 
 // OS-specific includes.
-#if (defined(GENS_OS_UNIX))
+#if defined(GENS_OS_UNIX)
 #include "input_sdl_keys.h"
-#elif (defined(GENS_OS_WIN32))
+#elif defined(GENS_OS_WIN32)
 #include "input_win32_keys.h"
-#elif (defined(GENS_OS_HAIKU))
+#elif defined(GENS_OS_HAIKU)
 // Nothing else to include
 #else
 #error Unsupported operating system.

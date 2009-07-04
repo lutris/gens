@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Input Handler - Haiku Backend.                                    *
+ * Gens: Input Handler - Haiku Backend. (input_backend_t struct)           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_INPUT_HAIKU_HPP
-#define GENS_INPUT_HAIKU_HPP
+#ifndef GENS_INPUT_HAIKU_T_H
+#define GENS_INPUT_HAIKU_T_H
 
 #include "input.h"
 
@@ -30,24 +30,10 @@
 extern "C" {
 #endif
 
-// Haiku-specific input callback structure
 extern const input_backend_t input_backend_haiku;
-
-// Function prototypes.
-int		input_haiku_init(void);
-int		input_haiku_end(void);
-
-int		input_haiku_update(void);
-BOOL		input_haiku_check_key_pressed(uint16_t key);
-unsigned int	input_haiku_get_key(void);
-BOOL		input_haiku_joy_exists(int joy_num);
-
-// Haiku-specific key handler function declarations
-void input_haiku_event_key_down(int key);
-void input_haiku_event_key_up(int key);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_INPUT_HAIKU_HPP */
+#endif /* GENS_INPUT_DINPUT_T_H */

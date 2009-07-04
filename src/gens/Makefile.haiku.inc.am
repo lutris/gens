@@ -8,6 +8,7 @@ gens_SOURCES += \
 		port/ini_old.c \
 		port/timer.c \
 		input/input_haiku.cpp \
+		input/input_haiku_t.c \
 		input/vdraw_haiku.c
 #		video/vdraw_sdl_common.c \
 #		audio/audio_haiku.c
@@ -54,7 +55,8 @@ noinst_HEADERS += \
 		port/ini_old.h \
 		port/timer.h \
 		video/vdraw_haiku.h \
-		input/input_haiku.h
+		input/input_haiku.h \
+		input/input_haiku_t.h
 #		audio/audio_haiku.h
 
 #if GENS_CDROM

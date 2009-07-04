@@ -51,10 +51,10 @@ const char input_player_names[8][4] =
 #if defined(GENS_OS_WIN32)
 	#include "input_dinput_t.h"
 #elif defined(GENS_OS_HAIKU)
-	#include "input_haiku.hpp"
-#else /* GENS_OS_UNIX */
+	#include "input_haiku_t.h"
+#elif defined(GENS_OS_UNIX)
 	#include "input_sdl.h"
-#endif /* GENS_OS_WIN32 */
+#endif
 
 static const input_backend_t * const input_backends[] =
 {
@@ -62,9 +62,9 @@ static const input_backend_t * const input_backends[] =
 		&input_backend_dinput,
 	#elif defined(GENS_OS_HAIKU)
 		&input_backend_haiku,
-	#else /* !GENS_OS_UNIX */
+	#elif defined(GENS_OS_UNIX)
 		&input_backend_sdl,
-	#endif /* GENS_OS_WIN32 */
+	#endif
 };
 
 // Current backend.
