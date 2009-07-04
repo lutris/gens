@@ -298,11 +298,6 @@ uint16_t input_sdl_get_key(void)
 									 sdl_event.jaxis.axis,
 									 INPUT_JOYSTICK_AXIS_POSITIVE);
 					}
-					else
-					{
-						// FIXME: WTF is this for?!
-						return input_sdl_get_key();
-					}
 					break;
 				
 				case SDL_JOYBUTTONUP:
