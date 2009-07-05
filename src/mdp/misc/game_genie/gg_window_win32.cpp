@@ -49,6 +49,10 @@ using std::list;
 #include "gg_code.h"
 #include "gg_engine.hpp"
 
+// Win32-specific includes.
+#include "gg_dllmain.h"
+#include "resource.h"
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 
@@ -97,7 +101,6 @@ static void	gg_window_create_lstCodes(HWND container);
 #define IDC_BTNDEACTIVATEALL	0x0012
 
 // Win32 instance and font.
-static HINSTANCE gg_hInstance;
 static HFONT gg_hFont = NULL;
 static HFONT gg_hFont_title = NULL;
 
@@ -131,6 +134,10 @@ void gg_window_show(void *parent)
 	
 	gg_window_child_windows_created = false;
 	
+	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
+	if (!gg_hInstance)
+		gg_hInstance = GetModuleHandle(NULL);
+	
 	// Create the window class.
 	if (gg_window_wndclass.lpfnWndProc != gg_window_wndproc)
 	{
@@ -138,8 +145,8 @@ void gg_window_show(void *parent)
 		gg_window_wndclass.lpfnWndProc = gg_window_wndproc;
 		gg_window_wndclass.cbClsExtra = 0;
 		gg_window_wndclass.cbWndExtra = 0;
-		gg_window_wndclass.hInstance = GetModuleHandle(NULL);
-		gg_window_wndclass.hIcon = NULL;
+		gg_window_wndclass.hInstance = gg_hInstance;
+		gg_window_wndclass.hIcon = LoadIcon(gg_hInstance, MAKEINTRESOURCE(IDI_GAME_GENIE));
 		gg_window_wndclass.hCursor = NULL;
 		gg_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		gg_window_wndclass.lpszMenuName = NULL;
@@ -148,8 +155,7 @@ void gg_window_show(void *parent)
 		RegisterClass(&gg_window_wndclass);
 	}
 	
-	// Get the HINSTANCE and fonts.
-	gg_hInstance = GetModuleHandle(NULL);
+	// Create the fonts.
 	gg_hFont = gsft_win32_get_message_font();
 	gg_hFont_title = gsft_win32_get_title_font();
 	

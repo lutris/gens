@@ -1,5 +1,9 @@
 # MDP Miscellaneous Plugin: Game Genie.
 
+# Win32 resources.
+.rc.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
+
 AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
@@ -40,6 +44,10 @@ mdp_misc_game_genie_la_LIBADD	+= @GTK_LIBS@
 endif
 
 if GENS_UI_WIN32
-mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.cpp
+mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.cpp gg_dllmain.c resource.rc
 mdp_misc_game_genie_la_LIBADD	+= -lgdi32
+noinst_HEADERS += \
+		gg.ico \
+		gg_dllmain.h \
+		resource.h
 endif
