@@ -364,7 +364,7 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 		}
 	}
 	
-	// Scanlines / Interpolation
+	// Scanlines / Interpolation / CXA2025AS
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), mdp_md_ntsc_scanline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkCXA2025AS), mdp_md_ntsc_use_cxa2025as);
