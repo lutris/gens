@@ -53,6 +53,7 @@ static WNDCLASS ntsc_window_wndclass;
 static HWND cboPresets;
 static HWND chkScanline;
 static HWND chkInterp;
+static HWND chkCXA2025AS;
 static HWND lblCtrlValues[NTSC_CTRL_COUNT];
 static HWND hscCtrlValues[NTSC_CTRL_COUNT];
 
@@ -60,6 +61,7 @@ static HWND hscCtrlValues[NTSC_CTRL_COUNT];
 #define IDC_NTSC_PRESETS  	0x1000
 #define IDC_NTSC_SCANLINE	0x1001
 #define IDC_NTSC_INTERP		0x1002
+#define IDC_NTSC_CXA2025AS	0x1003
 #define IDC_NTSC_TRACKBAR 	0x1100
 
 // Window Procedure.
@@ -75,16 +77,12 @@ static HFONT ntsc_hFont = NULL;
 // Callbacks.
 static void	ntsc_window_callback_cboPresets_changed(void);
 static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting);
-#if 0
-static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-#endif
 
 static BOOL	ntsc_window_do_callbacks;
 
 // Window size.
 #define NTSC_WINDOW_WIDTH  360
-#define NTSC_WINDOW_HEIGHT 360
+#define NTSC_WINDOW_HEIGHT 372
 
 // HINSTANCE.
 // TODO: Move to DllMain().
@@ -214,8 +212,15 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 				 hWnd, (HMENU)IDC_NTSC_INTERP, ntsc_hInstance, NULL);
 	SetWindowFont(chkInterp, ntsc_hFont, TRUE);
 	
+	// Interpolation checkbox.
+	chkCXA2025AS = CreateWindow(WC_BUTTON, "Use Sony C&X2025AS US decoder.",
+				WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				8+8, 8+16+24, 204, 16,
+				hWnd, (HMENU)IDC_NTSC_CXA2025AS, ntsc_hInstance, NULL);
+	SetWindowFont(chkCXA2025AS, ntsc_hFont, TRUE);
+	
 	// Create the adjustment widgets.
-	int hscTop = 8+16+24;
+	int hscTop = 8+16+16+24;
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
 		// Label.
@@ -291,11 +296,16 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 					break;
 				
 				case IDC_NTSC_SCANLINE:
-					mdp_md_ntsc_scanline = (Button_GetCheck(chkScanline) == BST_CHECKED ? 1 : 0);
+					mdp_md_ntsc_scanline = (Button_GetCheck(chkScanline) == BST_CHECKED);
 					break;
 				
 				case IDC_NTSC_INTERP:
-					mdp_md_ntsc_interp = (Button_GetCheck(chkInterp) == BST_CHECKED ? 1 : 0);
+					mdp_md_ntsc_interp = (Button_GetCheck(chkInterp) == BST_CHECKED);
+					break;
+				
+				case IDC_NTSC_CXA2025AS:
+					mdp_md_ntsc_use_cxa2025as = (Button_GetCheck(chkCXA2025AS) == BST_CHECKED);
+					mdp_md_ntsc_reinit_setup(); // Changing the decoder matrix requires reinitializing the filter.
 					break;
 				
 				default:
@@ -376,7 +386,9 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 		else
 		{
 			// Check if this preset matches the current setup.
-			if (!memcmp(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup)))
+			if (!memcmp(mdp_md_ntsc_setup.params,
+				    ntsc_presets[i].setup->params,
+				    sizeof(mdp_md_ntsc_setup.params)))
 			{
 				// Match found!
 				ComboBox_SetCurSel(cboPresets, i);
@@ -385,9 +397,10 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 		}
 	}
 	
-	// Scanlines / Interpolation
+	// Scanlines / Interpolation / CXA2025AS
 	Button_SetCheck(chkScanline, (mdp_md_ntsc_scanline ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkInterp, (mdp_md_ntsc_interp ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkCXA2025AS, (mdp_md_ntsc_use_cxa2025as ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Load all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
