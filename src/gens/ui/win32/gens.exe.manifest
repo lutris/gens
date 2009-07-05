@@ -28,7 +28,7 @@
 		<security>
 			<requestedPrivileges>
 				<requestedExecutionLevel
-					level="asInvoked"
+					level="asInvoker"
 					uiAccess="false"
 				/>
 			</requestedPrivileges>
