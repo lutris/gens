@@ -355,7 +355,9 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 		else
 		{
 			// Check if this preset matches the current setup.
-			if (!memcmp(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup)))
+			if (!memcmp(mdp_md_ntsc_setup.params,
+				    ntsc_presets[i].setup->params,
+				    sizeof(mdp_md_ntsc_setup.params)))
 			{
 				// Match found!
 				gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), i);
