@@ -182,7 +182,7 @@ void ntsc_window_show(void *parent)
 	// First column: Name
 	// Second column: Widget
 	GtkWidget *tblWidgets = gtk_table_new(NTSC_CTRL_COUNT, 3, FALSE);
-	gtk_table_set_row_spacings(GTK_TABLE(tblWidgets), 8);
+	gtk_table_set_row_spacings(GTK_TABLE(tblWidgets), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(tblWidgets), 8);
 	gtk_box_pack_start(GTK_BOX(vboxFrame), tblWidgets, TRUE, TRUE, 0);
 	
