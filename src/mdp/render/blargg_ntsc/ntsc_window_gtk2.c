@@ -87,29 +87,6 @@ void ntsc_window_show(void *parent)
 	gtk_window_set_type_hint(GTK_WINDOW(ntsc_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(ntsc_window), FALSE);
 	
-	// Add the window icons.
-	// TODO
-	/*
-	GList *icon_list = NULL;
-	GdkPixbuf *icon_pixbuf_16, *icon_pixbuf_32;
-	
-	// Load the 16x16 icon.
-	icon_pixbuf_16 = gdk_pixbuf_new_from_xpm_data(ntsc_icon_xpm_16x16);
-	icon_list = g_list_append(icon_list, icon_pixbuf_16);
-	
-	// Load the 32x32 icon.
-	icon_pixbuf_32 = gdk_pixbuf_new_from_xpm_data(ntsc_icon_xpm_32x32);
-	icon_list = g_list_append(icon_list, icon_pixbuf_32);
-	
-	// Set the icon list.
-	gtk_window_set_icon_list(GTK_WINDOW(ntsc_window), icon_list);
-	
-	// Unreference everything.
-	g_list_free(icon_list);
-	g_object_unref(icon_pixbuf_16);
-	g_object_unref(icon_pixbuf_32);
-	*/
-	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)ntsc_window, "delete_event",
 			 G_CALLBACK(ntsc_window_callback_close), NULL);
