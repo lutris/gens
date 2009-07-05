@@ -13,6 +13,7 @@ gens_SOURCES += \
 		input/input_dinput_key_names.c \
 		audio/audio_dsound_t.c \
 		audio/audio_dsound.cpp \
+		plugins/mdp_host_gens_win32.c \
 		util/file/decompressor/popen_wrapper.c \
 		ui/win32/charset.cpp \
 		ui/win32/fonts.c \
@@ -50,6 +51,7 @@ noinst_HEADERS += \
 		input/input_win32_keys.h \
 		audio/audio_dsound_t.h \
 		audio/audio_dsound.hpp \
+		plugins/mdp_host_gens_win32.h \
 		ui/win32/charset.hpp \
 		ui/win32/fonts.h \
 		ui/win32/gens/gens_window.h \

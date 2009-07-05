@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Host Services. (C++ Functions)           *
+ * Gens: MDP: Mega Drive Plugin - Host Services. (Win32 Functions)         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,25 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_GENS_CPP_HPP
-#define GENS_MDP_HOST_GENS_CPP_HPP
+#ifndef GENS_MDP_HOST_GENS_WIN32_H
+#define GENS_MDP_HOST_GENS_WIN32_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "mdp_host_gens.h"
-
-// Host Services functions. (C++)
-
-int MDP_FNCALL mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer);
-int MDP_FNCALL mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer);
-
-int MDP_FNCALL mdp_host_window_register(mdp_t *plugin, void *window);
-int MDP_FNCALL mdp_host_window_unregister(mdp_t *plugin, void *window);
+void mdp_host_win32_check_icon(void *window);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_HOST_GENS_CPP_HPP */
+#endif /* GENS_MDP_HOST_GENS_WIN32_H */

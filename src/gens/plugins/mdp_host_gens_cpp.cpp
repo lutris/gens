@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -34,6 +34,11 @@ using std::list;
 // Plugin Manager and Render Manager.
 #include "pluginmgr.hpp"
 #include "rendermgr.hpp"
+
+// Win32 functions.
+#ifdef _WIN32
+#include "mdp_host_gens_win32.h"
+#endif
 
 
 /**
@@ -88,6 +93,11 @@ int MDP_FNCALL mdp_host_window_register(mdp_t *plugin, void *window)
 	win.window = window;
 	win.owner = plugin;
 	PluginMgr::lstWindows.push_back(win);
+	
+#ifdef _WIN32
+	// Make sure the window has an icon.
+	mdp_host_win32_check_icon(window);
+#endif
 	
 	// Window is registered.
 	return MDP_ERR_OK;
