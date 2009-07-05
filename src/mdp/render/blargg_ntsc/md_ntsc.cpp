@@ -283,7 +283,8 @@ int mdp_md_ntsc_scanline = 1;
 int mdp_md_ntsc_interp = 1;
 
 /* Sony CXA2025AS US decoder matrix. */
-const float mdp_md_ntsc_sony_cxa2025as_us_matrix[6] = {1.630, 0.317, -0.378, -0.466, -1.089, 1.677};
+static const float sony_cxa2025as_us_matrix[6] = {1.630, 0.317, -0.378, -0.466, -1.089, 1.677};
+int mdp_md_ntsc_use_cxa2025as = 0;
 
 int MDP_FNCALL mdp_md_ntsc_init(void)
 {
@@ -292,6 +293,11 @@ int MDP_FNCALL mdp_md_ntsc_init(void)
 	
 	// Initialize mdp_md_ntsc_setup.
 	mdp_md_ntsc_setup = md_ntsc_composite;
+	
+	// Set the decoder matrix.
+	mdp_md_ntsc_setup.decoder_matrix = (mdp_md_ntsc_use_cxa2025as
+					    ? (const float*)&sony_cxa2025as_us_matrix
+					    : NULL);
 	
 	// Initialize mdp_md_ntsc.
 	md_ntsc_init(mdp_md_ntsc, &mdp_md_ntsc_setup);
@@ -312,6 +318,11 @@ int MDP_FNCALL mdp_md_ntsc_end(void)
 
 void MDP_FNCALL mdp_md_ntsc_reinit_setup(void)
 {
+	// Set the decoder matrix.
+	mdp_md_ntsc_setup.decoder_matrix = (mdp_md_ntsc_use_cxa2025as
+					    ? (const float*)&sony_cxa2025as_us_matrix
+					    : NULL);
+	
 	// Reinitialize mdp_md_ntsc.
 	md_ntsc_init(mdp_md_ntsc, &mdp_md_ntsc_setup);
 }

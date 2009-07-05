@@ -47,6 +47,7 @@ static GtkWidget *chkScanline;
 static GtkWidget *chkInterp;
 static GtkWidget *lblCtrlValues[NTSC_CTRL_COUNT];
 static GtkWidget *hscCtrlValues[NTSC_CTRL_COUNT];
+static GtkWidget *chkCXA2025AS;
 
 // Callbacks.
 static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -55,6 +56,7 @@ static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 static void	ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data);
 static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	ntsc_window_callback_chkCXA2025AS_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 static gboolean	ntsc_window_do_callbacks;
 
@@ -177,6 +179,13 @@ void ntsc_window_show(void *parent)
 	gtk_box_pack_start(GTK_BOX(hboxPresets), chkInterp, FALSE, FALSE, 0);
 	g_signal_connect((gpointer)chkInterp, "toggled",
 			 G_CALLBACK(ntsc_window_callback_chkInterp_toggled), NULL);
+	
+	// Sony CXA2025AS US decoder checkbox.
+	chkCXA2025AS = gtk_check_button_new_with_mnemonic("Use Sony C_XA2025AS US decoder.");
+	gtk_widget_show(chkCXA2025AS);
+	gtk_box_pack_start(GTK_BOX(vboxFrame), chkCXA2025AS, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)chkCXA2025AS, "toggled",
+			 G_CALLBACK(ntsc_window_callback_chkCXA2025AS_toggled), NULL);
 	
 	// Create a table for the adjustment widgets.
 	// First column: Name
@@ -358,6 +367,7 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 	// Scanlines / Interpolation
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), mdp_md_ntsc_scanline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkCXA2025AS), mdp_md_ntsc_use_cxa2025as);
 	
 	// Load all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
@@ -443,7 +453,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 
 
 /**
- * ntsc_window_callback_chkScanline_toggled): The "Scanlines" checkbox was toggled.
+ * ntsc_window_callback_chkScanline_toggled(): The "Scanlines" checkbox was toggled.
  * @param togglebutton
  * @param user_data
  */
@@ -459,7 +469,7 @@ static void ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutt
 
 
 /**
- * ntsc_window_callback_chkScanline_toggled): The "Interpolation" checkbox was toggled.
+ * ntsc_window_callback_chkScanline_toggled(): The "Interpolation" checkbox was toggled.
  * @param togglebutton
  * @param user_data
  */
@@ -471,4 +481,23 @@ static void ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton
 		return;
 	
 	mdp_md_ntsc_interp = gtk_toggle_button_get_active(togglebutton);
+}
+
+
+/**
+ * ntsc_window_callback_chkCXA2025AS_toggled(): The "Use Sony CXA2025AS US decoder." checkbox was toggled.
+ * @param togglebutton
+ * @param user_data
+ */
+static void ntsc_window_callback_chkCXA2025AS_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	if (!ntsc_window_do_callbacks)
+		return;
+	
+	mdp_md_ntsc_use_cxa2025as = gtk_toggle_button_get_active(togglebutton);
+	
+	// Reinitialize the NTSC filter with the new settings.
+	mdp_md_ntsc_reinit_setup();
 }
