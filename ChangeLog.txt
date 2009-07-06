@@ -105,6 +105,9 @@ Release 7 introduces the following new features:
   for the existance of SRAM and prevents the user from advancing past a certain
   point if it exists. (Puggsy uses a password system, not SRAM.)
 
+- Improved PWM scaling algorithm, provided by Chilly Willy on the
+  Sonic Retro forums.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
