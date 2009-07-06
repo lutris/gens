@@ -41,6 +41,8 @@ mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.cpp
 mdp_misc_game_genie_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_misc_game_genie_la_CXXFLAGS	+= @GTK_CFLAGS@
 mdp_misc_game_genie_la_LIBADD	+= @GTK_LIBS@
+noinst_HEADERS += \
+		gg_32x32.xpm
 endif
 
 if GENS_UI_WIN32

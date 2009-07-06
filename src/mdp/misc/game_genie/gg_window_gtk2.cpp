@@ -24,11 +24,9 @@
 #include <config.h>
 #endif
 
-#include "gg_window.hpp"
-#include "gg_plugin.h"
-#include "gg.hpp"
-#include "gg_code.h"
-#include "gg_engine.hpp"
+// GTK+ includes.
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 // C includes.
 #include <string.h>
@@ -38,9 +36,14 @@
 #include <list>
 using std::list;
 
-// GTK+ includes.
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
+#include "gg_window.hpp"
+#include "gg_plugin.h"
+#include "gg.hpp"
+#include "gg_code.h"
+#include "gg_engine.hpp"
+
+// XPM icon.
+#include "gg_32x32.xpm"
 
 // gtk_button_set_image() was added in GTK+ 2.6.
 #if (GTK_MAJOR_VERSION < 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION < 6))
@@ -106,6 +109,17 @@ void gg_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(gg_window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
+	
+	// Add the window icon.
+	GList *icon_list = NULL;
+	GdkPixbuf *icon_pixbuf_32;
+	
+	// Load the 32x32 icon.
+	icon_pixbuf_32 = gdk_pixbuf_new_from_xpm_data(gg_icon_xpm_32x32);
+	icon_list = g_list_append(icon_list, icon_pixbuf_32);
+	
+	// Set the icon list.
+	gtk_window_set_icon_list(GTK_WINDOW(gg_window), icon_list);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gg_window, "delete_event",
