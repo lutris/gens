@@ -49,6 +49,10 @@ BOOL		input_haiku_joy_exists(int joy_num);
 void input_haiku_event_key_down(int key);
 void input_haiku_event_key_up(int key);
 
+// Keymap variables and functions.
+extern const input_keymap_t input_haiku_keymap_default[8];
+int input_haiku_get_key_name(uint16_t key, char* buf, int size);
+
 #ifdef __cplusplus
 }
 #endif

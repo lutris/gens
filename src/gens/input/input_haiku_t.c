@@ -24,16 +24,13 @@
 #include "input_haiku_t.h"
 #include "input_haiku.hpp"
 
-extern const input_keymap_t input_haiku_keymap_default[8];
-extern int input_haiku_get_key_name(uint16_t key, char* buf, int size);
-
 // Input Backend struct.
 const input_backend_t input_backend_haiku =
 {
-	.init = input_haiku_init,
-	.end = input_haiku_end,
+	.init			= input_haiku_init,
+	.end			= input_haiku_end,
 	
-	.keymap_default = &input_haiku_keymap_default[0],
+	.keymap_default		= &input_haiku_keymap_default[0],
 	
 	.update			= input_haiku_update,
 	.check_key_pressed	= input_haiku_check_key_pressed,
