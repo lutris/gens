@@ -130,7 +130,7 @@ Release 7 fixes the following bugs:
 
 - Two VDP DMA bugs have been fixed:
 
-  - Zero-length DMA operations are now handled as 65,536-byte operations.
+  - Zero-length DMA operations are now handled as 65,536-word operations.
     This may break some badly-written hacks.
 
   - DMA operations now wrap on a 128k boundary. This bug was reported by TmEE.

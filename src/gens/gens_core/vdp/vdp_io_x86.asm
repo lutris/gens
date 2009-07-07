@@ -823,7 +823,7 @@ section .text align=64
 		mov	dword [_DMAT_Length], ecx
 		jnz	short .Loop
 		
-		; DMA length is 0. Set it to 65,536 bytes.
+		; DMA length is 0. Set it to 65,536 words.
 		mov	ecx, 0x10000
 		
 		mov	[_DMAT_Length], ecx
@@ -976,7 +976,7 @@ section .text align=64
 		and	ecx, 0xFFFF
 		mov	edi, [_Ctrl.Address]			; edi = Address Dest
 		
-		; If the DMA length is 0, set it to the total size of the destination memory.
+		; If the DMA length is 0, set it to 65,536 words.
 		jnz	short .non_zero_DMA
 		
 		; If Zero_Length_DMA is enabled, don't do any DMA request.
@@ -986,7 +986,7 @@ section .text align=64
 		; Zero_Length_DMA is disabled.
 		; The MD VDP decrements the DMA length counter before checking if it has
 		; reached zero. So, doing a zero-length DMA request will actually do a
-		; DMA request for the total size of the destination memory.
+		; DMA request for 65,536 words.
 		;
 		; NOTE: This only appears to be correct for MEM-to-VRAM, not MEM-to-CRAM or
 		; MEM-to-VSRAM. Zero-length CRAM and VSRAM transfers are ignored for now.
