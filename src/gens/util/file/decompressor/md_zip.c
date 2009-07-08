@@ -28,9 +28,17 @@
 // MiniZip.
 #include "minizip/unzip.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// MDP includes.
+#include "mdp/mdp_error.h"
+
+
 // Zip decompressor functions.
 static int decompressor_zip_detect_format(FILE *zF);
-static mdp_z_entry_t* decompressor_zip_get_file_info(FILE *zF, const char* filename);
+static int decompressor_zip_get_file_info(FILE *zF, const char* filename,
+					  mdp_z_entry_t** z_entry_out);
 static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size);
@@ -63,20 +71,23 @@ static int decompressor_zip_detect_format(FILE *zF)
 
 
 /**
- * decompressor_zip_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * decompressor_zip_get_file_info(): Get information about all files in the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-static mdp_z_entry_t* decompressor_zip_get_file_info(FILE *zF, const char* filename)
+static int decompressor_zip_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
+	
+	if (!filename || !z_entry_out)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Open the Zip file.
 	unzFile f = unzOpen(filename);
 	if (!f)
-		return NULL;
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	
 	mdp_z_entry_t *z_entry_head = NULL;
 	mdp_z_entry_t *z_entry_end = NULL;
@@ -117,8 +128,13 @@ static mdp_z_entry_t* decompressor_zip_get_file_info(FILE *zF, const char* filen
 	// Close the Zip file.
 	unzClose(f);
 	
+	// If there are no files in the archive, return an error.
+	if (!z_entry_head)
+		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
+	
 	// Return the list of files.
-	return z_entry_head;
+	*z_entry_out = z_entry_head;
+	return MDP_ERR_OK;
 }
 
 
@@ -135,6 +151,8 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
+	GENS_UNUSED_PARAMETER(zF);
+	
 	// All parameters (except zF) must be specified.
 	if (!filename || !z_entry || !buf || !size)
 		return 0;

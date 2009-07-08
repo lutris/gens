@@ -93,6 +93,9 @@ using std::deque;
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+// MDP includes.
+#include "mdp/mdp_error.h"
+
 char Rom_Dir[GENS_PATH_MAX];
 
 ROM_t* Game = NULL;
@@ -574,26 +577,75 @@ unsigned int ROM::loadROM(const string& filename,
 	mdp_z_entry_t *sel_file = NULL;
 	
 	// Get the file information.
-	mdp_z_entry_t *file_list = cmp->get_file_info(fROM, filename.c_str());
+	mdp_z_entry_t *z_list = NULL;
+	int rval = cmp->get_file_info(fROM, filename.c_str(), &z_list);
 	
 	// Check how many files are available.
-	if (!file_list)
+	if (rval != MDP_ERR_OK || !z_list)
 	{
-		// No files in the archive.
-		GensUI::msgBox("No files were detected in this archive.", "No Files Detected");
+		// An error occurred while trying to open the file.
+		switch (rval)
+		{
+			case -MDP_ERR_Z_ARCHIVE_NOT_FOUND:
+				// Archive wasn't found.
+				GensUI::msgBox("The selected file was not found.",
+						"File Not Found", GensUI::MSGBOX_ICON_ERROR);
+				break;
+			
+			case -MDP_ERR_Z_EXE_NOT_FOUND:
+				// External binary wasn't found.
+				GensUI::msgBox("The selected file requires an external decompressor program;\n"
+						"however, the decompressor program was not found.\n\n"
+						"Please verify the pathname to the decompressor program in\n"
+						"Options, BIOS/Misc Files.",
+						"External Program Required", GensUI::MSGBOX_ICON_ERROR);
+				break;
+			
+			case -MDP_ERR_Z_ARCHIVE_NOT_SUPPORTED:
+				// Archive not supported.
+				GensUI::msgBox("The specified file is compressed using an unsupported format.",
+						"Unsupported Compression Format", GensUI::MSGBOX_ICON_ERROR);
+				break;
+			
+			case -MDP_ERR_Z_CANT_OPEN_ARCHIVE:
+				// Can't open archive.
+				GensUI::msgBox("The specified file could not be opened. It may be corrupted.",
+						"Cannot Open File", GensUI::MSGBOX_ICON_ERROR);
+				break;
+			
+			case -MDP_ERR_Z_NO_FILES_IN_ARCHIVE:
+				// No files in archive.
+				GensUI::msgBox("No files were detected in this compressed archive.",
+						"No Files Detected", GensUI::MSGBOX_ICON_WARNING);
+				break;
+			
+			default:
+			{
+				// Unknown error.
+				char err_code[16];
+				snprintf(err_code, sizeof(err_code), "0x%08X", rval);
+				err_code[sizeof(err_code)-1] = 0x00;
+				
+				GensUI::msgBox("An unknown error occurred while attempting to open this file.\n"
+						"Please report this as a bug to the Gens/GS developers.\n\n"
+						"Error Code: " + string(err_code),
+						"Unknown Error", GensUI::MSGBOX_ICON_ERROR);
+				break;
+			}
+		}
 		
-		if (file_list)
-			z_entry_t_free(file_list);
+		if (z_list)
+			z_entry_t_free(z_list);
 		
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
-	else if (!file_list->next)
+	else if (!z_list->next)
 	{
 		// One file is in the archive. Load it.
-		sel_file = file_list;
+		sel_file = z_list;
 	}
 	else
 	{
@@ -602,7 +654,7 @@ unsigned int ROM::loadROM(const string& filename,
 		if (!z_filename.empty())
 		{
 			// Compressed filename provided. Check if it exists inside of the archive.
-			mdp_z_entry_t *cur = file_list;
+			mdp_z_entry_t *cur = z_list;
 			while (cur)
 			{
 #ifdef GENS_OS_WIN32
@@ -626,14 +678,14 @@ unsigned int ROM::loadROM(const string& filename,
 			// No file specified, or the specified file wasn't found.
 			// Show the Zip File Selection Dialog.
 			// TODO: Improve this!
-			sel_file = zipsel_dialog_get_file(file_list);
+			sel_file = zipsel_dialog_get_file(z_list);
 		}
 	}
 	
 	if (!sel_file)
 	{
 		// No file was selected and/or Cancel was clicked.
-		z_entry_t_free(file_list);
+		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -652,7 +704,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
 	{
 		// Unknown ROM type, or this is a SegaCD image.
-		z_entry_t_free(file_list);
+		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -664,7 +716,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (sel_file->filesize > ((6 * 1024 * 1024) + 512))
 	{
 		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
-		z_entry_t_free(file_list);
+		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -676,7 +728,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!myROM)
 	{
 		// Memory allocation error
-		z_entry_t_free(file_list);
+		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -695,7 +747,7 @@ unsigned int ROM::loadROM(const string& filename,
 			loaded_size, sel_file->filesize);
 		
 		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
-		z_entry_t_free(file_list);
+		z_entry_t_free(z_list);
 		fclose(fROM);
 		free(myROM);
 		myROM = NULL;
@@ -713,7 +765,7 @@ unsigned int ROM::loadROM(const string& filename,
 	Rom_Size = sel_file->filesize;
 	
 	// Set the compressed ROM filename.
-	if (file_list && file_list->next)
+	if (z_list && z_list->next)
 	{
 		// Multi-file archive.
 		z_filename = string(sel_file->filename);
@@ -724,8 +776,8 @@ unsigned int ROM::loadROM(const string& filename,
 		z_filename.clear();
 	}
 	
-	// Delete the file_list_t.
-	z_entry_t_free(file_list);
+	// Delete the mdp_z_entry_t.
+	z_entry_t_free(z_list);
 	
 	// Deinterleave the ROM, if necessary.
 	if (romType & ROMTYPE_FLAG_INTERLEAVED)

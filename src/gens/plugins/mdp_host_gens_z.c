@@ -96,12 +96,12 @@ int MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_ou
 int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 {
 	if (!filename || !z_out)
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Attempt to open the file.
 	FILE *f = fopen(filename, "rb");
 	if (!f)
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_Z_ARCHIVE_NOT_FOUND;
 	
 	/* Attempt to find a usable decompressor. */
 	const decompressor_t *cmp = NULL;
@@ -124,16 +124,24 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 		/* No decompressors found. */
 		/* This is an error, since the "dummy" decompressor should always be usable. */
 		fclose(f);
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_Z_ARCHIVE_NOT_SUPPORTED;
 	}
 	
 	/* Get the file information. */
-	mdp_z_entry_t *z_entry_head = cmp->get_file_info(f, filename);
-	if (!z_entry_head)
+	mdp_z_entry_t *z_entry_head = NULL;
+	int rval = cmp->get_file_info(f, filename, &z_entry_head);
+	if (rval != MDP_ERR_OK)
 	{
-		/* No files were in the archive. */
+		/* An error occurred while attempting to read the archive. */
 		fclose(f);
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		
+		if (z_entry_head)
+		{
+			// Free the allocated mdp_z_entry_t.
+			z_entry_t_free(z_entry_head);
+		}
+		
+		return rval;
 	}
 	
 	/* Allocate the mdp_z_t. */
@@ -166,12 +174,12 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	if (!z_file || !z_entry || !buf || size == 0)
 	{
 		/* Missing parameter. */
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_INVALID_PARAMETERS;
 	}
 	else if (!z_file->files || !z_file->filename || !z_file->f || !z_file->data)
 	{
 		/* One or more required elements in z_file is/are missing. */
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_INVALID_PARAMETERS;
 	}
 	
 	/* Get the file from the decompressor. */
@@ -180,9 +188,8 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	
 	/* If rval is positive, it's a filesize. */
 	/* If 0, return an error code. */
-	/* TODO: Add a specific error code for this. */
 	if (rval == 0)
-		return -MDP_ERR_UNKNOWN;
+		return -MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE;
 	else
 		return rval;
 }
@@ -199,7 +206,7 @@ int MDP_FNCALL mdp_host_z_close(mdp_z_t *z_file)
 	if (!z_file)
 	{
 		/* Missing parameter. */
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+		return -MDP_ERR_INVALID_PARAMETERS;
 	}
 	
 	/* Close the FILE stream. */

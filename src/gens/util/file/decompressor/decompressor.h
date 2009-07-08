@@ -51,12 +51,13 @@ void z_entry_t_free(mdp_z_entry_t *z_entry);
 typedef int (*decompressor_detect_format)(FILE *zF);
 
 /**
- * decompressor_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * decompressor_get_file_info(): Get information about all files in the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-typedef mdp_z_entry_t* (*decompressor_get_file_info)(FILE *zF, const char *filename);
+typedef int (*decompressor_get_file_info)(FILE *zF, const char *filename, mdp_z_entry_t** z_entry_out);
 
 /**
  * decompressor_get_file(): Get a file from the archive.

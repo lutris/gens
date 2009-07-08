@@ -25,9 +25,17 @@
 // ZLib.
 #include <zlib.h>
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// MDP includes.
+#include "mdp/mdp_error.h"
+
+
 // GZip decompressor functions.
 static int decompressor_gzip_detect_format(FILE *zF);
-static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename);
+static int decompressor_gzip_get_file_info(FILE *zF, const char* filename,
+					   mdp_z_entry_t** z_entry_out);
 static size_t decompressor_gzip_get_file(FILE *zF, const char* filename,
 					 mdp_z_entry_t *z_entry,
 					 void *buf, const size_t size);
@@ -56,15 +64,15 @@ static int decompressor_gzip_detect_format(FILE *zF)
 
 
 /**
- * decompressor_gzip_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * decompressor_gzip_get_file_info(): Get information about all files in the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename)
+static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
 	
 	// GZip-compressed files can only have one file.
 	gzFile gzfd;
@@ -74,7 +82,7 @@ static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* file
 	if (!gzfd)
 	{
 		// Error obtaining a GZip file descriptor.
-		return NULL;
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
 	// Read through the GZip file until we hit an EOF.
@@ -87,16 +95,17 @@ static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* file
 	// Close the GZip fd.
 	gzclose(gzfd);
 	
-	// Allocate memory for the file_list_t.
-	mdp_z_entry_t *file_list = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
+	// Allocate memory for the mdp_z_entry_t.
+	mdp_z_entry_t *z_entry = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 	
 	// Set the elements of the list.
-	file_list->filename = (filename ? gens_strdup(filename) : NULL);
-	file_list->filesize = filesize;
-	file_list->next = NULL;
+	z_entry->filename = (filename ? gens_strdup(filename) : NULL);
+	z_entry->filesize = filesize;
+	z_entry->next = NULL;
 	
 	// Return the list.
-	return file_list;
+	*z_entry_out = z_entry;
+	return MDP_ERR_OK;
 }
 
 
@@ -114,10 +123,10 @@ static size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
 					 void *buf, const size_t size)
 {
 	// Unused parameters.
-	((void)zF);
-	((void)z_entry);
+	GENS_UNUSED_PARAMETER(zF);
+	GENS_UNUSED_PARAMETER(z_entry);
 	
-	// All parameters (except zF and file_list) must be specified.
+	// All parameters (except zF and z_entry) must be specified.
 	if (!filename || !buf || !size)
 		return 0;
 	

@@ -32,7 +32,8 @@ extern "C" {
 
 // RAR decompressor functions.
 int decompressor_rar_detect_format(FILE *zF);
-mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename);
+int decompressor_rar_get_file_info(FILE *zF, const char* filename,
+				   mdp_z_entry_t** z_entry_out);
 size_t decompressor_rar_get_file(FILE *zF, const char* filename,
 				 mdp_z_entry_t *z_entry,
 				 void *buf, const size_t size);

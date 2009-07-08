@@ -39,10 +39,19 @@
 #define RAR_NAME "rar"
 #endif
 
+// C includes.
+#include <unistd.h>
+
 // C++ includes.
 #include <sstream>
 using std::string;
 using std::stringstream;
+
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// MDP includes.
+#include "mdp/mdp_error.h"
 
 
 /**
@@ -64,15 +73,25 @@ int decompressor_rar_detect_format(FILE *zF)
 
 
 /**
- * decompressor_rar_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * decompressor_rar_get_file_info(): Get information about all files in the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
+int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
+	
+	if (!z_entry_out)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
+	// Check that the RAR executable is available.
+	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+	{
+		// Cannot run the RAR executable.
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
+	}
 	
 	// Build the command line.
 	stringstream ssCmd;
@@ -83,8 +102,7 @@ mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	if (!pRAR)
 	{
 		// Error opening `rar`.
-		// TODO: Show an error message.
-		return NULL;
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	// Read from the pipe.
@@ -107,7 +125,7 @@ mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		return NULL;
+		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
 	}
 	
 	// Find the newline after the list start.
@@ -115,7 +133,7 @@ mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		return NULL;
+		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
 	}
 	
 	// File list pointers.
@@ -200,8 +218,13 @@ mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		curStartPos = curEndPos + RAR_NEWLINE_LENGTH;
 	}
 	
+	// If there are no files in the archive, return an error.
+	if (!z_entry_head)
+		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
+	
 	// Return the list of files.
-	return z_entry_head;
+	*z_entry_out = z_entry_head;
+	return MDP_ERR_OK;
 }
 
 
@@ -218,9 +241,19 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 				 mdp_z_entry_t *z_entry,
 				 void *buf, const size_t size)
 {
+	GENS_UNUSED_PARAMETER(zF);
+	
 	// All parameters (except zF) must be specified.
 	if (!filename || !z_entry || !buf || !size)
 		return 0;
+	
+	// Check that the RAR executable is available.
+	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+	{
+		// Cannot run the RAR executable.
+		// TODO: Show an error message and/or return an error code.
+		return 0;
+	}
 	
 	// Build the command line.
 	stringstream ssCmd;
@@ -235,7 +268,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	if (!pRAR)
 	{
 		// Error opening `rar`.
-		// TODO: Show an error message.
+		// TODO: Show an error message and/or return an error code.
 		return 0;
 	}
 	

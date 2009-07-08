@@ -33,9 +33,17 @@
 #include "lzma/Archive/7z/7zExtract.h"
 #include "lzma/Archive/7z/7zIn.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// MDP includes.
+#include "mdp/mdp_error.h"
+
+
 // 7z decompressor functions.
 static int decompressor_7z_detect_format(FILE *zF);
-static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filename);
+static int decompressor_7z_get_file_info(FILE *zF, const char* filename,
+					 mdp_z_entry_t** z_entry_out);
 static size_t decompressor_7z_get_file(FILE *zF, const char* filename,
 				       mdp_z_entry_t *z_entry,
 				       void *buf, const size_t size);
@@ -68,15 +76,18 @@ static int decompressor_7z_detect_format(FILE *zF)
 
 
 /**
- * decompressor_7z_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * decompressor_7z_get_file_info(): Get information about all files in the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filename)
+static int decompressor_7z_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
+	
+	if (!z_entry_out)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	CFileInStream archiveStream;
 	CLookToRead lookStream;
@@ -87,7 +98,7 @@ static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filena
 	
 	// Open the 7z file.
 	if (InFile_Open(&archiveStream.file, filename))
-		return NULL;
+		return -MDP_ERR_Z_ARCHIVE_NOT_FOUND;
 	
 	FileInStream_CreateVTable(&archiveStream);
 	LookToRead_CreateVTable(&lookStream, False);
@@ -110,7 +121,7 @@ static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filena
 		// Error opening the file.
 		SzArEx_Free(&db, &allocImp);
 		File_Close(&archiveStream.file);
-		return NULL;
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
 	mdp_z_entry_t *z_entry_head = NULL;
@@ -151,8 +162,13 @@ static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filena
 	SzArEx_Free(&db, &allocImp);
 	File_Close(&archiveStream.file);
 	
+	// If there are no files in the archive, return an error.
+	if (!z_entry_head)
+		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
+	
 	// Return the list of files.
-	return z_entry_head;
+	*z_entry_out = z_entry_head;
+	return MDP_ERR_OK;
 }
 
 
@@ -169,8 +185,7 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 				       mdp_z_entry_t *z_entry,
 				       void *buf, const size_t size)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
 	if (!filename || !z_entry || !buf || !size)

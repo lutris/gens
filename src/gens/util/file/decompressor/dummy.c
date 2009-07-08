@@ -26,9 +26,17 @@
 
 #include "dummy.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// MDP includes.
+#include "mdp/mdp_error.h"
+
+
 // Dummy decompressor functions.
 static int decompressor_dummy_detect_format(FILE *zF);
-static mdp_z_entry_t* decompressor_dummy_get_file_info(FILE *zF, const char* filename);
+static int decompressor_dummy_get_file_info(FILE *zF, const char* filename,
+					    mdp_z_entry_t** z_entry_out);
 static size_t decompressor_dummy_get_file(FILE *zF, const char* filename,
 					  mdp_z_entry_t *z_entry,
 					  void *buf, const size_t size);
@@ -49,8 +57,7 @@ const decompressor_t decompressor_dummy =
  */
 static int decompressor_dummy_detect_format(FILE *zF)
 {
-	// Unused parameters.
-	((void)zF);
+	GENS_UNUSED_PARAMETER(zF);
 	
 	// The dummy decompressor accepts all files.
 	return 1;
@@ -59,12 +66,18 @@ static int decompressor_dummy_detect_format(FILE *zF)
 
 /**
  * decompressor_dummy_get_file_info(): Get information from all files in the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @return Pointer to the first file in the list, or NULL on error.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
+ * @return MDP error code.
  */
-static mdp_z_entry_t* decompressor_dummy_get_file_info(FILE *zF, const char* filename)
+static int decompressor_dummy_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
+	GENS_UNUSED_PARAMETER(filename);
+	
+	if (!zF || !z_entry_out)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// The dummy decompressor treats the file as a single, uncompressed file.
 	
 	// Seek to the end of the file and get the position.
@@ -72,15 +85,16 @@ static mdp_z_entry_t* decompressor_dummy_get_file_info(FILE *zF, const char* fil
 	size_t filesize = ftell(zF);
 	
 	// Allocate memory for the mdp_z_entry_t.
-	mdp_z_entry_t *file_list = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
+	mdp_z_entry_t *z_entry = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 	
 	// Set the elements of the list.
-	file_list->filesize = filesize;
-	file_list->filename = (filename ? gens_strdup(filename) : NULL);
-	file_list->next = NULL;
+	z_entry->filesize = filesize;
+	z_entry->filename = (filename ? gens_strdup(filename) : NULL);
+	z_entry->next = NULL;
 	
 	// Return the list.
-	return file_list;
+	*z_entry_out = z_entry;
+	return MDP_ERR_OK;
 }
 
 
@@ -97,9 +111,8 @@ size_t decompressor_dummy_get_file(FILE *zF, const char *filename,
 				   mdp_z_entry_t *z_entry,
 				   void *buf, const size_t size)
 {
-	// Unused parameters.
-	((void)filename);
-	((void)z_entry);
+	GENS_UNUSED_PARAMETER(filename);
+	GENS_UNUSED_PARAMETER(z_entry);
 	
 	// All parameters (except filename and file_list) must be specified.
 	if (!zF || !buf || !size)
