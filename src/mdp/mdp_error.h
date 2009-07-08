@@ -109,4 +109,11 @@
 #define MDP_ERR_DIR_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_DIR_CATEGORY))
 #define MDP_ERR_DIR_INVALID_DIRID		((uint32_t)(0x0001 | MDP_ERR_DIR_CATEGORY))
 
+/* Compression errors. */
+#define MDP_ERR_Z_CATEGORY			((uint32_t)(0x0008 << 16))
+#define MDP_ERR_Z_UNKNOWN			((uint32_t)(0x0008 << 16))
+#define MDP_ERR_Z_ARCHIVE_NOT_FOUND		((uint32_t)(0x0001 | MDP_ERR_Z_CATEGORY))
+#define MDP_ERR_Z_EXE_NOT_FOUND			((uint32_t)(0x0002 | MDP_ERR_Z_CATEGORY))
+#define MDP_ERR_Z_NO_FILES_IN_ARCHIVE		((uint32_t)(0x0003 | MDP_ERR_Z_CATEGORY))
+
 #endif /* __MDP_ERROR_H */
