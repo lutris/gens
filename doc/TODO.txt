@@ -34,6 +34,8 @@ TODO for later:
 - Implement proper TMSS support using the !CartCE register ($A14101, bit 0)
 - Force a wakeup after an SDL hotkey is activated. (input_sdl_events.cpp)
 - Reimplement "MINIMIZE" for fullscreen.
+- Allow disabling SegaCD and 32X in build to make it easier to port to other platforms.
+- Allow disabling all emulation code to test the UI on other platforms.
 
 MDP TODO for later:
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
