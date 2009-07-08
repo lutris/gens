@@ -4,8 +4,6 @@ TODO for Gens/GS r7:
 - Don't show "Zip File Selection Dialog" if:
   - A ROM is opened in Full Screen.
   - An archive has multiple files but only one has a ROM file extension.
-- [GTK+] Update all windows to support gtk_dialog_set_alternative_button_order().
-  "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
 - cc_window.c: Add checkboxes to the "Input Devices" listbox for filtering.
 - Error handling in plugins.
 - If the RAR binary isn't found, it says "No files detected" instead of "Cannot run rar".
