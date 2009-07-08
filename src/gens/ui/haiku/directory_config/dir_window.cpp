@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) BIOS/Misc Files Window.                                   *
+ * Gens: (Haiku) Directory Configuration Window.                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,50 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-#define GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-void bmf_window_show(void);
-void bmf_window_close(void);
+#include "dir_window.hpp"
+#include "ui/common/dir_window_common.h"
+#include "gens/gens_window.h"
 
-#ifdef __cplusplus
+// Plugin Manager.
+#include "plugins/pluginmgr.hpp"
+
+// MDP error codes.
+#include "mdp/mdp_error.h"
+
+// C includes.
+#include <string.h>
+
+// C++ includes.
+#include <string>
+#include <list>
+using std::string;
+using std::list;
+
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// Gens includes.
+#include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
+#include "util/file/file.hpp"
+
+
+/**
+ * dir_window_show(): Show the Directory Configuration window.
+ */
+void dir_window_show(void)
+{
 }
-#endif
 
-#endif /* GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP */
+
+/**
+ * dir_window_close(): Close the OpenGL Resolution window.
+ */
+void dir_window_close(void)
+{
+}
+

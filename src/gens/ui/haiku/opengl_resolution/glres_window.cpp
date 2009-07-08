@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) BIOS/Misc Files Window.                                   *
+ * Gens: (haiku) OpenGL Resolution Window.                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-#define GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-void bmf_window_show(void);
-void bmf_window_close(void);
+#include "glres_window.hpp"
+#include "gens/gens_window.h"
 
-#ifdef __cplusplus
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// Gens options.
+#include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
+
+
+/**
+ * glres_window_show(): Show the OpenGL Resolution window.
+ */
+void glres_window_show(void)
+{
+	STUB();
 }
-#endif
 
-#endif /* GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP */
+
+/**
+ * glres_window_close(): Close the OpenGL Resolution window.
+ */
+void glres_window_close(void)
+{
+	STUB();
+}
+

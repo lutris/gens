@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) BIOS/Misc Files Window.                                   *
+ * Gens: (Haiku) Zip File Selection Dialog.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-#define GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
+#include "zipsel_dialog.h"
+#include "gens/gens_window.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
-void bmf_window_show(void);
-void bmf_window_close(void);
+#include "macros/unused.h"
 
-#ifdef __cplusplus
+
+/**
+ * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
+ */
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
+{
+	return file_list;
 }
-#endif
 
-#endif /* GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP */

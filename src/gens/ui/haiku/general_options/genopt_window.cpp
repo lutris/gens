@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) BIOS/Misc Files Window.                                   *
+ * Gens: (Haiku) General Options Window.                                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,41 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-#define GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-void bmf_window_show(void);
-void bmf_window_close(void);
+#include "genopt_window.hpp"
+#include "gens/gens_window.h"
 
-#ifdef __cplusplus
+// C includes.
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+// Main settings.
+#include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
+
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+// Video Drawing.
+#include "video/vdraw.h"
+
+
+/**
+ * genopt_window_show(): Show the General Options window.
+ */
+void genopt_window_show(void)
+{
 }
-#endif
 
-#endif /* GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP */
+
+/**
+ * genopt_window_close(): Close the General Options window.
+ */
+void genopt_window_close(void)
+{
+}
+

@@ -21,18 +21,40 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-#define GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-void bmf_window_show(void);
-void bmf_window_close(void);
+#include "bmf_window.hpp"
+#include "ui/common/bmf_window_common.h"
+#include "gens/gens_window.h"
 
-#ifdef __cplusplus
+#include "gens_ui.hpp"
+
+// C includes.
+#include <stdio.h>
+#include <string.h>
+
+// C++ includes.
+#include <string>
+using std::string;
+
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+
+/**
+ * bmf_window_show(): Show the BIOS/Misc Files window.
+ */
+void bmf_window_show(void)
+{
 }
-#endif
 
-#endif /* GENS_UI_HAIKU_BIOS_MISC_FILES_WINDOW_HPP */
+
+/**
+ * bmf_window_close(): Close the About window.
+ */
+void bmf_window_close(void)
+{
+}
+

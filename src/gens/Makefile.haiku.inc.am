@@ -22,22 +22,17 @@ gens_SOURCES += \
 
 # UI sources.
 gens_SOURCES += \
-#		ui/haiku/gens_ui_haiku.cpp \
-#		ui/haiku/haiku-misc.c \
-#		ui/haiku/haiku-uri.c \
-#		ui/haiku/gens/gens_window.c \
-#		ui/haiku/gens/gens_window_callbacks.cpp \
-		ui/haiku/gens/gens_window_sync.cpp
-#		ui/haiku/gens/gens_menu.cpp \
-#		ui/haiku/controller_config/cc_window.c \
-#		ui/haiku/bios_misc_files/bmf_window.cpp \
-#		ui/haiku/directory_config/dir_window.cpp \
-#		ui/haiku/general_options/genopt_window.cpp \
-#		ui/haiku/color_adjust/ca_window.c \
-#		ui/haiku/country_code/ccode_window.c \
-#		ui/haiku/zip_select/zipsel_dialog.c \
-#		ui/haiku/plugin_manager/pmgr_window.cpp \
-#		ui/haiku/about/about_window.cpp
+		ui/haiku/gens_ui_haiku.cpp \
+		ui/haiku/gens/gens_window_sync.cpp \
+		ui/haiku/controller_config/cc_window.cpp \
+		ui/haiku/bios_misc_files/bmf_window.cpp \
+		ui/haiku/directory_config/dir_window.cpp \
+		ui/haiku/general_options/genopt_window.cpp \
+		ui/haiku/color_adjust/ca_window.cpp \
+		ui/haiku/country_code/ccode_window.cpp \
+		ui/haiku/zip_select/zipsel_dialog.cpp \
+		ui/haiku/plugin_manager/pmgr_window.cpp \
+		ui/haiku/about/about_window.cpp
 
 #if GENS_OPENGL
 #gens_SOURCES += \

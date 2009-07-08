@@ -39,8 +39,8 @@
 
 // Internal functions.
 // TODO: Use appropriate parameters to indicate the parent menu.
-static void Sync_Gens_Window_GraphicsMenu_Backend(void);
-static void Sync_Gens_Window_GraphicsMenu_Render(void);
+//static void Sync_Gens_Window_GraphicsMenu_Backend(void);
+//static void Sync_Gens_Window_GraphicsMenu_Render(void);
 #ifdef GENS_DEBUGGER
 static void Sync_Gens_Window_CPUMenu_Debug(void);
 #endif /* GENS_DEBUGGER */
@@ -87,10 +87,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
  * Sync_Gens_Window_GraphicsMenu_Backend(): Synchronize the Graphics, Backend submenu.
  * TODO: Use appropriate parameters to indicate the parent menu.
  */
-static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
+/*
+static void Sync_Gens_Window_GraphicsMenu_Backend(void)
 {
 	STUB();
 }
+*/
 
 
 /**
