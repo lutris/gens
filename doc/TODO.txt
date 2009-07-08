@@ -49,8 +49,6 @@ Big Features TODO:
 - mdZ80 C port
 - ZOMG
 - Reimplement the language system.
-- Figure out how to do .section .rodata in a way that works on all platforms.
-  - .section .data / .section .text works on Win32 and Linux, but not MacOS X.
 - Fix the interpolated_scanline 16-bit color asm (non-mmx) renderer.
 
 High-Level TODO:
@@ -76,7 +74,6 @@ High-Level TODO:
   (Make it an option?)
 - [Win32] Add OpenGL renderer.
 - Combine common portions of the GTK+ and Win32 UIs.
-- Rework the language system.
 - Combine the two versions of Starscream. (It'll still output two asms, though.)
 - [Linux] Add a No GUI mode that runs in a plain SDL window.
 - [Linux] Add a configure option to disable the GTK+ interface.
