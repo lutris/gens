@@ -34,6 +34,12 @@
 #include "video/vdraw.h"
 
 // Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
 #include <shellapi.h>
 #include "ui/win32/resource.h"
 
@@ -55,6 +61,10 @@ void gens_window_init_hWnd(void)
 	
 	if (gens_wndclass.lpfnWndProc != Gens_Window_WndProc)
 	{
+		// Create the background color brush.
+		HBRUSH gens_bgcolor = CreateSolidBrush(RGB(0, 0, 0));
+		
+		// Set the window class information.
 		gens_wndclass.style = CS_HREDRAW | CS_VREDRAW;
 		gens_wndclass.lpfnWndProc = Gens_Window_WndProc;
 		gens_wndclass.cbClsExtra = 0;
@@ -62,7 +72,7 @@ void gens_window_init_hWnd(void)
 		gens_wndclass.hInstance = ghInstance;
 		gens_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		gens_wndclass.hCursor = NULL;
-		gens_wndclass.hbrBackground = NULL;
+		gens_wndclass.hbrBackground = gens_bgcolor;
 		gens_wndclass.lpszMenuName = NULL;
 		gens_wndclass.lpszClassName = "Gens";
 		
