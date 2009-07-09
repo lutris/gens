@@ -46,9 +46,9 @@
 /**
  * zipsel_dialog_init(): Initialize the Zip Select dialog.
  * @param hWndDlg hWnd of the Zip Select dialog.
- * @param file_list File list.
+ * @param z_list File list.
  */
-static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *file_list)
+static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
 {
 	gsft_win32_center_on_window(hWndDlg, gens_window);
 	
@@ -56,7 +56,7 @@ static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *file_list)
 	HWND lstFiles = GetDlgItem(hWndDlg, IDC_ZIPSELECT_LSTFILES);
 	
 	// Add all strings.
-	mdp_z_entry_t *z_entry_cur = file_list;
+	mdp_z_entry_t *z_entry_cur = z_list;
 	while (z_entry_cur)
 	{
 		int index = ListBox_InsertString(lstFiles, -1, z_entry_cur->filename);
@@ -121,9 +121,9 @@ static INT_PTR CALLBACK zipsel_dialog_dlgproc(HWND hWndDlg, UINT message, WPARAM
 /**
  * zipsel_dialog_get_file(): Opens the Zip File Selection Dialog.
  */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
 {
-	if (!file_list)
+	if (!z_list)
 	{
 		// NULL list pointer passed. Don't do anything.
 		return NULL;
@@ -133,7 +133,7 @@ mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
 	file = (mdp_z_entry_t*)(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
 				  gens_window, zipsel_dialog_dlgproc,
-				  (LPARAM)file_list));
+				  (LPARAM)z_list));
 	
 	// File was selected.
 	return file;

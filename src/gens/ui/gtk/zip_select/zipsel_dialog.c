@@ -134,9 +134,9 @@ static gboolean zipsel_dialog_callback_lstFiles_button_press(GtkWidget *widget, 
 /**
  * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
  */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
 {
-	if (!file_list)
+	if (!z_list)
 	{
 		// NULL list pointer passed. Don't do anything.
 		return NULL;
@@ -165,7 +165,7 @@ mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(zs.lstFiles), colText);
 	
 	// Add all files from the CompressedFile list.
-	mdp_z_entry_t *z_entry_cur = file_list;
+	mdp_z_entry_t *z_entry_cur = z_list;
 	while (z_entry_cur)
 	{
 		gtk_list_store_append(lstdataFiles, &iter);
@@ -219,6 +219,6 @@ mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
 	// Destroy the dialog.
 	gtk_widget_destroy(zs.dialog);
 	
-	// Return the selected file_list_t*.
+	// Return the selected mdp_z_entry_t*.
 	return z_entry_cur;
 }

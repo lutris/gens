@@ -36,7 +36,7 @@
 /**
  * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
  */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
 {
 	return file_list;
 }
