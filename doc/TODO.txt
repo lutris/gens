@@ -25,7 +25,8 @@ Stuff done in r7:
   (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
 
 TODO for later:
-- [Win32] Fix DirectDraw border bug.
+- [Win32] Improve DirectDraw border color drawing, especially when the window
+  is a different aspect ratio than 4:3.
 - [Win32] Use DirectDraw 7's built-in color conversion. (See AamirM's sample code.)
 - Re-add v5 32X savestate load support.
   - Rewrite all GSX savestate functions to use structs.
