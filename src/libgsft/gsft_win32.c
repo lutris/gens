@@ -106,19 +106,42 @@ void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 /**
  * gsft_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
  * @param hWnd Window handle.
- * @param reqW Required width.
- * @param reqH Required height.
+ * @param cx Requested width.
+ * @param cy Requested height.
  */
-void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int reqW, const int reqH)
+void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy)
 {
-	RECT r;
-	SetRect(&r, 0, 0, reqW, reqH);
+	// Improved function from http://blogs.msdn.com/oldnewthing/archive/2003/09/11/54885.aspx
+	HMENU hMenu = GetMenu(hWnd);
+	RECT rcWindow = {0, 0, cx, cy};
 	
-	// Adjust the rectangle.
-	AdjustWindowRectEx(&r, GetWindowStyle(hWnd), (GetMenu(hWnd) != NULL), GetWindowExStyle(hWnd));
+	/*
+	 * First, convert the client rectangle to a window rectangle
+	 * the menu-wrap-agnostic way.
+	 */
+	AdjustWindowRectEx(&rcWindow, GetWindowStyle(hWnd),
+			   (hMenu != NULL), GetWindowExStyle(hWnd));
+	
+	/*
+	 * If there is a menu, then check how much wrapping occurs
+	 * when we set a window to the width specified by AdjustWindowRectEx()
+	 * and an infinite amount of height. An infinite height allows
+	 * us to see every single menu wrap.
+	 */
+	if (hMenu)
+	{
+		RECT rcTemp = rcWindow;
+		rcTemp.bottom = 0x7FFF;		/* "Infinite" height. */
+		SendMessage(hWnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rcTemp);
+		
+		/* Adjust our previous calculation to compensate for menu wrapping. */
+		rcWindow.bottom += rcTemp.top;
+	}
 	
 	// Set the window size.
-	SetWindowPos(hWnd, NULL, 0, 0, r.right - r.left, r.bottom - r.top,
+	SetWindowPos(hWnd, NULL, 0, 0,
+		     rcWindow.right - rcWindow.left,
+		     rcWindow.bottom - rcWindow.top,
 		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 

@@ -46,10 +46,10 @@ DLL_LOCAL void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_
 /**
  * gsft_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
  * @param hWnd Window handle.
- * @param reqW Required width.
- * @param reqH Required height.
+ * @param cx Requested width.
+ * @param cy Requested height.
  */
-DLL_LOCAL void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int reqW, const int reqH);
+DLL_LOCAL void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy);
 
 /**
  * gsft_win32_get_message_font(): Get the message font.
