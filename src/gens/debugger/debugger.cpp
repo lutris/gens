@@ -882,13 +882,14 @@ static void Refresh_VDP_Palette(void)
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 110, BLANC);
 	
 	Print_Text_Constant("Sprite List:", strlen(Dbg_Out_Str), 176, 126, BLANC);
+	Print_Text_Constant("   X    Y W H  Addr", strlen(Dbg_Out_Str), 176, 134, BLANC);
 	for (unsigned int i = 0; i < 10; i++)
 	{
-		sprintf(Dbg_Out_Str, "%d %d %d %d %d",
+		sprintf(Dbg_Out_Str, "%4d %4d %d %d $%04X",
 			Sprite_Struct[i].Pos_X, Sprite_Struct[i].Pos_Y,
 			Sprite_Struct[i].Size_X, Sprite_Struct[i].Size_Y,
 			Sprite_Struct[i].Num_Tile);
-		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 134 + (i * 8), BLANC);
+		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 142 + (i * 8), BLANC);
 	}
 }
 
