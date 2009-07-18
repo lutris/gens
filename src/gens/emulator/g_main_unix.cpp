@@ -38,8 +38,10 @@
 #include <list>
 using std::list;
 
+#if !defined(GENS_DEBUG)
 // Signal handler.
 #include "sighandler.h"
+#endif
 
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
@@ -121,8 +123,10 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
+#if !defined(GENS_DEBUG)
 	// Install the signal handler.
 	gens_sighandler_init();
+#endif
 	
 	// Initialize the timer.
 	// TODO: Make this unnecessary.
@@ -208,8 +212,10 @@ int main(int argc, char *argv[])
 	
 	End_All();
 	
+#if !defined(GENS_DEBUG)
 	// Shut down the signal handler.
 	gens_sighandler_end();
+#endif
 	
 	return 0;
 }

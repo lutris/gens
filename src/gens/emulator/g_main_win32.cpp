@@ -32,8 +32,10 @@
 #include <algorithm>
 using std::list;
 
+#if !defined(GENS_DEBUG)
 // Signal handler.
 #include "sighandler.h"
+#endif
 
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
@@ -123,8 +125,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	
+#if !defined(GENS_DEBUG)
 	// Install the signal handler.
 	gens_sighandler_init();
+#endif
 	
 	// Initialize fonts.
 	fonts_init();
@@ -237,8 +241,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			return msg.wParam;
 	}
 	
+#if !defined(GENS_DEBUG)
 	// Shut down the signal handler.
 	gens_sighandler_end();
+#endif
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
 	

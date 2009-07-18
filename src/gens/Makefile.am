@@ -80,7 +80,6 @@ gens_SOURCES = \
 		emulator/parse.cpp \
 		emulator/options.cpp \
 		emulator/fw_32x.c \
-		emulator/sighandler.c \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
@@ -164,6 +163,11 @@ gens_SOURCES = \
 		plugins/eventmgr.cpp \
 		plugins/mdp_incompat.cpp
 
+if !GENS_DEBUG
+gens_SOURCES += \
+		emulator/sighandler.c
+endif
+
 if GENS_DEBUGGER
 gens_SOURCES += \
 		debugger/debugger.cpp \
@@ -202,7 +206,6 @@ noinst_HEADERS = \
 		emulator/parse.hpp \
 		emulator/options.hpp \
 		emulator/fw_32x.h \
-		emulator/sighandler.h \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \
 		gens_core/cpu/sh2/sh2.h \
@@ -291,6 +294,11 @@ noinst_HEADERS = \
 		plugins/reg/reg_set_all.h \
 		plugins/eventmgr.hpp \
 		plugins/mdp_incompat.hpp
+
+if !GENS_DEBUG
+noinst_HEADERS += \
+		emulator/sighandler.h
+endif
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
