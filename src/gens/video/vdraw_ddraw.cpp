@@ -377,10 +377,33 @@ int vdraw_ddraw_init(void)
 	rval = lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL);
 	if (FAILED(rval))
 	{
-		vdraw_ddraw_free_all(false);
-		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
-			"lpDD->CreateSurface(&lpDDS_Back) failed: 0x%08X", rval);
-		return -10;
+		// Failed to create the back surface.
+		// If we attempted to create it in video memory, try system memory instead.
+		if (ddsd.ddsCaps.dwCaps & DDSCAPS_VIDEOMEMORY)
+		{
+			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+				"lpDD->CreateSurface(&lpDDS_Back, DDSCAPS_VIDEOMEMORY) failed: 0x%08X", rval);
+			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+				"Attempting to use DDSCAPS_SYSTEMMEMORY instead.");
+			ddsd.ddsCaps.dwCaps &= ~DDSCAPS_VIDEOMEMORY;
+			ddsd.ddsCaps.dwCaps |= DDSCAPS_SYSTEMMEMORY;
+			rval = lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL);
+			if (FAILED(rval))
+			{
+				// Failed to create the back surface in system memory.
+				vdraw_ddraw_free_all(false);
+				LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+					"lpDD->CreateSurface(&lpDDS_Back, DDSCAPS_SYSTEMMEMORY) failed: 0x%08X", rval);
+				return -10;
+			}
+		}
+		else
+		{
+			vdraw_ddraw_free_all(false);
+			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+				"lpDD->CreateSurface(&lpDDS_Back, DDSCAPS_SYSTEMMEMORY) failed: 0x%08X", rval);
+			return -11;
+		}
 	}
 	
 	// TODO: Check if this is right.
@@ -401,7 +424,7 @@ int vdraw_ddraw_init(void)
 			vdraw_ddraw_free_all(false);
 			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 				"lpDDS_Back->GetSurfaceDesc() failed: 0x%08X", rval);
-			return -11;
+			return -12;
 		}
 		
 		ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_PITCH | DDSD_LPSURFACE | DDSD_PIXELFORMAT;
@@ -427,7 +450,7 @@ int vdraw_ddraw_init(void)
 			vdraw_ddraw_free_all(false);
 			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 				"lpDDS_Back->SetSurfaceDesc() failed: 0x%08X", rval);
-			return -12;
+			return -13;
 		}
 	}
 	
