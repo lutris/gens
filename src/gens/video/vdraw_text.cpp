@@ -157,7 +157,6 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	unsigned char charSize;
 	
 	const bool fullScreen = vdraw_get_fullscreen();
-	
 	const list<mdp_render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
 	
 	// The message must be specified.
@@ -171,57 +170,45 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		charSize = 8;
 	
 	// Bottom-left of the screen.
+	x = 8;
+	y = h;
+	
 #if defined(GENS_OS_WIN32)
 	if (isDDraw)
 	{
-		// Don't adjust for screen size.
-		// TODO: Fix this ugly pile of hacks.
-		
-		if (rendMode == RenderMgr::begin())
+		// Check if the text position needs to be adjusted.
+		if (vdraw_scale == 1)
 		{
-			// 1x rendering.
-			if (!fullScreen)
+			// With the DirectDraw renderer, the vertical shift is weird
+			// in normal (1x) rendering.
+			
+			if (fullScreen && vdraw_get_sw_render())
 			{
-				// Hack for windowed 1x rendering.
-				x = 8;
-				y = VDP_Num_Vis_Lines * vdraw_scale;
+				// Software rendering.
+				x = 0;
+				y -= (240 - VDP_Num_Vis_Lines) / 2;
 			}
 			else
 			{
-				// Hacks for fullscreen 1x rendering.
-				if (vdraw_get_sw_render())
-				{
-					x = ((vdraw_border_h / 2) * vdraw_scale);
-					y = VDP_Num_Vis_Lines + 8;
-				}
-				else
-				{
-					x = 8;
-					y = VDP_Num_Vis_Lines;
-				}
+				y -= (240 - VDP_Num_Vis_Lines);
 			}
 		}
 		else
 		{
-			x = ((vdraw_border_h / 2) * vdraw_scale);
-			y = VDP_Num_Vis_Lines * vdraw_scale;
+			// 2x or higher.
+			
+			// For whatever reason, text is always shifted over 8 pixels
+			// when not using Normal rendering.
+			x = 0;
+			
+			// Adjust the vertical position, if necessary.
+			if (VDP_Num_Vis_Lines < 240)
+			{
+				y -= (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+			}
 		}
-		
-		if (vdraw_scale > 1)
-			y += (8 * vdraw_scale);
 	}
-	else
 #endif /* defined(GENS_OS_WIN32) */
-	{
-		x = 8;
-		y = h;
-	}
-	
-	// Move the text down by another 2px in 1x rendering.
-	if (rendMode == RenderMgr::begin())
-	{
-		y += 2;
-	}
 	
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
