@@ -283,6 +283,10 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	// Set the backend flags.
 	vdraw_cur_backend_flags		= vdraw_cur_backend->flags;
 	
+	// If the backend doesn't support fullscreen, force it off.
+	if (!(vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_FULLSCREEN))
+		vdraw_prop_fullscreen = FALSE;
+	
 	// The Gens window must be reinitialized.
 	return vdraw_cur_backend->reinit_gens_window();
 }
@@ -556,6 +560,12 @@ void vdraw_set_fullscreen(const BOOL new_fullscreen)
 {
 	if (vdraw_prop_fullscreen == new_fullscreen)
 		return;
+	
+	if (vdraw_cur_backend && !(vdraw_cur_backend->flags & VDRAW_BACKEND_FLAG_FULLSCREEN))
+	{
+		// Current backend doesn't support fullscreen.
+		return;
+	}
 	
 	vdraw_prop_fullscreen = new_fullscreen;
 	

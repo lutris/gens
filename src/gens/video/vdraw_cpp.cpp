@@ -62,6 +62,7 @@ void vdraw_reset_renderer(const BOOL reset_video)
 {
 	// Reset the renderer.
 	const list<mdp_render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	
 	if (vdraw_set_renderer(rendMode, reset_video))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).

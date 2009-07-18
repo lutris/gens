@@ -222,6 +222,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	gens_menu_do_callbacks = 0;
 	
+	// Enable Full Screen only if the current backend supports it.
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_FULLSCREEN),
+				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_FULLSCREEN));
+	
 	// Simple checkbox items
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
