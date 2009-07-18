@@ -101,8 +101,8 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int w = 320 * vdraw_scale;
-	const int h = 240 * vdraw_scale;
+	const int w = (isFullXRes() ? 320 : 256) * vdraw_scale;
+	const int h = VDP_Num_Vis_Lines * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,

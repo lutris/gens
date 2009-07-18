@@ -41,6 +41,9 @@ using std::list;
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 
+// Inline video functions.
+#include "v_inline.h"
+
 // MDP Render.
 #include "mdp/mdp_render.h"
 
@@ -185,12 +188,13 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			if (fullScreen && vdraw_get_sw_render())
 			{
 				// Software rendering.
-				x = 0;
-				y -= (240 - VDP_Num_Vis_Lines) / 2;
-			}
-			else
-			{
-				y -= (240 - VDP_Num_Vis_Lines);
+				x = (isFullXRes() ? 0 : (32 * vdraw_scale));
+				
+				// Adjust the vertical position, if necessary.
+				if (VDP_Num_Vis_Lines < 240)
+				{
+					y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+				}
 			}
 		}
 		else
@@ -199,12 +203,12 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			
 			// For whatever reason, text is always shifted over 8 pixels
 			// when not using Normal rendering.
-			x = 0;
+			x = (isFullXRes() ? 0 : (32 * vdraw_scale));
 			
 			// Adjust the vertical position, if necessary.
 			if (VDP_Num_Vis_Lines < 240)
 			{
-				y -= (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+				y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
 			}
 		}
 	}
