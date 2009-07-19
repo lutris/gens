@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "vdraw_RGB.hpp"
 #include "vdraw.h"
 
@@ -36,7 +32,6 @@
 #include <stdlib.h>
 
 
-#include <port/timer.h>
 /**
  * vdraw_rgb_convert(): RGB conversion function.
  * @param rInfo Render information.
@@ -45,11 +40,11 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 {
 	static uint32_t	*RGB_LUT = NULL;
 	static void	*surface = NULL;
-	static uint32_t	surface_pitch = 0;
-	
-	static int	last_scale = 0;
+	static uint32_t	last_scale = 0;
 	static uint8_t	last_bppOut = 0;
 	static uint8_t	last_bppMD = 0;
+	
+	static uint32_t	pitch = 0;
 	
 	// TODO: This function only works for 15/16-bit to 32-bit.
 	if ((bppMD != 15 && bppMD != 16) || bppOut != 32)
@@ -67,8 +62,8 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 		
 		// Allocate a new surface.
 		last_scale = vdraw_scale;
-		surface_pitch = 320 * last_scale * (bppMD == 15 ? 2 : bppMD / 8);
-		surface = malloc(surface_pitch * 240 * last_scale);
+		pitch = 320 * last_scale * (bppMD == 15 ? 2 : bppMD / 8);
+		surface = malloc(pitch * 240 * last_scale);
 	}
 	
 	// Make sure the lookup table is initialized.
@@ -110,7 +105,7 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 	void *realDestScreen = rInfo->destScreen;
 	int realDestPitch = rInfo->destPitch;
 	rInfo->destScreen = surface;
-	rInfo->destPitch = surface_pitch;
+	rInfo->destPitch = pitch;
 	if (vdraw_get_fullscreen())
 		vdraw_blitFS(rInfo);
 	else
@@ -119,49 +114,23 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 	// Next, do color conversion.
 	
 	// Multiply the width and height by the scaling factor.
-	int width = (rInfo->width * vdraw_scale);
-	const int height = (rInfo->height * vdraw_scale);
+	unsigned int width = (rInfo->width * vdraw_scale);
+	const unsigned int height = (rInfo->height * vdraw_scale);
 	
-#if defined(HAVE_OPENMP)
-	// OpenMP version.
+	// Calculate the pitch differences based on the conversion being used.
+	const int pitchSrcDiff = ((pitch / (bppMD == 15 ? 2 : bppMD / 8)) - width);
+	const int pitchDestDiff = ((realDestPitch / (bppOut == 15 ? 2 : bppOut / 8)) - width);
 	
 	// Process four pixels at a time.
 	width >>= 2;
 	
-#pragma omp parallel for
-	for (int y = 0; y < height; y++)
-	{
-		const uint16_t *src16 = (const uint16_t*)surface + (y * surface_pitch / 2);
-		uint32_t *dest32 = (uint32_t*)realDestScreen + (y * realDestPitch / 4);
-		
-		for (int x = 0; x < width; x++)
-		{
-			*(dest32 + 0) = RGB_LUT[*(src16 + 0)];
-			*(dest32 + 1) = RGB_LUT[*(src16 + 1)];
-			*(dest32 + 2) = RGB_LUT[*(src16 + 2)];
-			*(dest32 + 3) = RGB_LUT[*(src16 + 3)];
-			
-			src16 += 4;
-			dest32 += 4;
-		}
-	}
-#else	/* !defined(HAVE_OPENMP) */
-	// Regular version.
-	
-	// Calculate the pitch differences based on the conversion being used.
-	const int pitchSrcDiff = ((surface_pitch / (bppMD == 15 ? 2 : bppMD / 8)) - width);
-	const int pitchDestDiff = ((realDestPitch / (bppOut == 15 ? 2 : bppOut / 8)) - width);
-	
-	// Initialize the surface pointers.
 	const uint16_t *src16 = (const uint16_t*)surface;
 	uint32_t *dest32 = (uint32_t*)realDestScreen;
 	
-	// Process four pixels at a time.
-	width >>= 2;
-	
-	for (unsigned int y = height; y != 0; y--)
+	unsigned int x, y;
+	for (y = height; y != 0; y--)
 	{
-		for (unsigned int x = width; x != 0; x--)
+		for (x = width; x != 0; x--)
 		{
 			*(dest32 + 0) = RGB_LUT[*(src16 + 0)];
 			*(dest32 + 1) = RGB_LUT[*(src16 + 1)];
@@ -175,5 +144,4 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 		src16 += pitchSrcDiff;
 		dest32 += pitchDestDiff;
 	}
-#endif	/* defined(HAVE_OPENMP) */
 }
