@@ -29,18 +29,16 @@
 #if defined(__i386__) || defined(__amd64__)
 
 #define MDP_CPUFLAG_X86_MMX		((uint32_t)(1 << 0))
-#define MDP_CPUFLAG_X86_SSE		((uint32_t)(1 << 1))
-#define MDP_CPUFLAG_X86_SSE2		((uint32_t)(1 << 2))
-#define MDP_CPUFLAG_X86_SSE3		((uint32_t)(1 << 3))
-#define MDP_CPUFLAG_X86_SSSE3		((uint32_t)(1 << 4))
-#define MDP_CPUFLAG_X86_SSE41		((uint32_t)(1 << 5))
-#define MDP_CPUFLAG_X86_SSE42		((uint32_t)(1 << 6))
-#define MDP_CPUFLAG_X86_SSE4A		((uint32_t)(1 << 7))
-
-/* CPU flags (IA32/x86_64; AMD only) */
-#define MDP_CPUFLAG_X86_MMXEXT		((uint32_t)(1 << 9))
-#define MDP_CPUFLAG_X86_3DNOW		((uint32_t)(1 << 10))
-#define MDP_CPUFLAG_X86_3DNOWEXT	((uint32_t)(1 << 11))
+#define MDP_CPUFLAG_X86_MMXEXT		((uint32_t)(1 << 1))	/* AMD only */
+#define MDP_CPUFLAG_X86_3DNOW		((uint32_t)(1 << 2))	/* AMD only */
+#define MDP_CPUFLAG_X86_3DNOWEXT	((uint32_t)(1 << 3))	/* AMD only */
+#define MDP_CPUFLAG_X86_SSE		((uint32_t)(1 << 4))
+#define MDP_CPUFLAG_X86_SSE2		((uint32_t)(1 << 5))
+#define MDP_CPUFLAG_X86_SSE3		((uint32_t)(1 << 6))
+#define MDP_CPUFLAG_X86_SSSE3		((uint32_t)(1 << 7))
+#define MDP_CPUFLAG_X86_SSE41		((uint32_t)(1 << 8))
+#define MDP_CPUFLAG_X86_SSE42		((uint32_t)(1 << 9))
+#define MDP_CPUFLAG_X86_SSE4A		((uint32_t)(1 << 10))
 
 #endif /* defined(__i386__) || defined(__amd64__) */
 
