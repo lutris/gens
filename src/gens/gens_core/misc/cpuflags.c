@@ -57,7 +57,6 @@
 
 // Flags stored in the ecx register.
 #define CPUFLAG_IA32_EXT_ECX_SSE4A	((uint32_t)(1 << 6))
-#define CPUFLAG_IA32_EXT_ECX_SSE5	((uint32_t)(1 << 11))
 
 // CPUID functions.
 #define CPUID_MAX_FUNCTIONS		((uint32_t)(0x00000000))
@@ -96,8 +95,7 @@ static int check_os_level_sse(void);
 	 MDP_CPUFLAG_X86_SSSE3 | \
 	 MDP_CPUFLAG_X86_SSE41 | \
 	 MDP_CPUFLAG_X86_SSE42 | \
-	 MDP_CPUFLAG_X86_SSE4A | \
-	 MDP_CPUFLAG_X86_SSE5)
+	 MDP_CPUFLAG_X86_SSE4A)
 
 /**
  * getCPUFlags(): Get the CPU flags.
@@ -208,8 +206,6 @@ uint32_t getCPUFlags(void)
 			CPU_Flags |= MDP_CPUFLAG_X86_3DNOWEXT;
 		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE4A)
 			CPU_Flags |= MDP_CPUFLAG_X86_SSE4A;
-		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE5)
-			CPU_Flags |= MDP_CPUFLAG_X86_SSE5;
 	}
 	
 	// If the CPU claims it supports an SSE instruction set,
