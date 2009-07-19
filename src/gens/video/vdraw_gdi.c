@@ -175,7 +175,7 @@ static int vdraw_gdi_init(void)
 	}
 	
 	// Select the bitmap object on the device context.
-	SelectBitmap(hdcComp, hbmpDraw);
+	(void)SelectBitmap(hdcComp, hbmpDraw);
 	
 	// Set bpp to 15-bit color.
 	// GDI doesn't actually support 16-bit color.
