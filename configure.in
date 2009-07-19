@@ -475,6 +475,17 @@ AM_CONDITIONAL([GENS_LZMA], [test x$with_7z = xyes])
 
 
 ###
+# OpenMP
+###
+
+AC_ARG_WITH(7z, AC_HELP_STRING([--without-openmp], [Build without OpenMP support [[default=no]]]), with_openmp=$withval, with_openmp=yes)
+if test x$with_openmp = xyes; then
+	AX_OPENMP
+fi
+AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST(OPENMP_CXXFLAGS)
+
+###
 # gcc -fvisibility-inlines-hidden option
 ###
 
