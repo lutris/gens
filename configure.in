@@ -483,6 +483,7 @@ if test x$with_openmp = xyes; then
 	AX_OPENMP
 fi
 AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST(OPENMP_CXXFLAGS)
 
 ###
 # gcc -fvisibility-inlines-hidden option
