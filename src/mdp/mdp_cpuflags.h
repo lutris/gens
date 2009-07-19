@@ -36,7 +36,6 @@
 #define MDP_CPUFLAG_X86_SSE41		((uint32_t)(1 << 5))
 #define MDP_CPUFLAG_X86_SSE42		((uint32_t)(1 << 6))
 #define MDP_CPUFLAG_X86_SSE4A		((uint32_t)(1 << 7))
-#define MDP_CPUFLAG_X86_SSE5		((uint32_t)(1 << 8))
 
 /* CPU flags (IA32/x86_64; AMD only) */
 #define MDP_CPUFLAG_X86_MMXEXT		((uint32_t)(1 << 9))
