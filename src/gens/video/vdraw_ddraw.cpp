@@ -1258,6 +1258,9 @@ int vdraw_ddraw_reinit_gens_window(void)
 		gsft_win32_set_actual_window_size(gens_window, w, h);
 	}
 	
+	// Synchronize menus.
+	Sync_Gens_Window();
+	
 	// Reinitialize DirectDraw.
 	return vdraw_ddraw_init();
 }

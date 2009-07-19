@@ -417,6 +417,9 @@ static int vdraw_gdi_reinit_gens_window(void)
 		     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 	gsft_win32_set_actual_window_size(gens_window, w, h);
 	
+	// Synchronize menus.
+	Sync_Gens_Window();
+	
 	// Reinitialize DirectDraw.
 	return vdraw_gdi_init();
 }
