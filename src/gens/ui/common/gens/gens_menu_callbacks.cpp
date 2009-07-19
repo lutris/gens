@@ -720,6 +720,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 		
 		case IDM_OPTIONS_SRAM_ENABLED:
 			Options::setSramEnabled(!state);
+			Sync_Gens_Window_OptionsMenu();
 			break;
 		
 #ifdef GENS_CDROM
