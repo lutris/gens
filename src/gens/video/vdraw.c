@@ -157,7 +157,7 @@ uint16_t	vdraw_border_color_16 = ~0;
 uint32_t	vdraw_border_color_32 = ~0;
 
 // RGB color conversion functions.
-#include "vdraw_RGB.h"
+#include "vdraw_RGB.hpp"
 BOOL		vdraw_needs_conversion = FALSE;
 
 

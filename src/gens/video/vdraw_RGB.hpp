@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_VDRAW_RGB_H
-#define GENS_VDRAW_RGB_H
+#ifndef GENS_VDRAW_RGB_HPP
+#define GENS_VDRAW_RGB_HPP
 
 #include "mdp/mdp_render.h"
 
@@ -35,4 +35,4 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo);
 }
 #endif
 
-#endif /* GENS_VDRAW_RGB_H */
+#endif /* GENS_VDRAW_RGB_HPP */

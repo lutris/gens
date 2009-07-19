@@ -45,7 +45,7 @@
 #include "vdraw_text.hpp"
 
 // RGB color conversion functions.
-#include "vdraw_RGB.h"
+#include "vdraw_RGB.hpp"
 
 // Aligned malloc().
 #include "macros/malloc_align.h"
