@@ -102,20 +102,20 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 	}
 	
 	// First, blit the image to the conversion surface.
-	void *realDestScreen = vdraw_rInfo.destScreen;
-	int realDestPitch = vdraw_rInfo.destPitch;
-	vdraw_rInfo.destScreen = surface;
-	vdraw_rInfo.destPitch = pitch;
+	void *realDestScreen = rInfo->destScreen;
+	int realDestPitch = rInfo->destPitch;
+	rInfo->destScreen = surface;
+	rInfo->destPitch = pitch;
 	if (vdraw_get_fullscreen())
-		vdraw_blitFS(&vdraw_rInfo);
+		vdraw_blitFS(rInfo);
 	else
-		vdraw_blitW(&vdraw_rInfo);
+		vdraw_blitW(rInfo);
 	
-	// Next do color conversion.
+	// Next, do color conversion.
 	
 	// Multiply the width and height by the scaling factor.
-	unsigned int width = vdraw_rInfo.width * vdraw_scale;
-	unsigned int height = vdraw_rInfo.height * vdraw_scale;
+	unsigned int width = (rInfo->width * vdraw_scale);
+	const unsigned int height = (rInfo->height * vdraw_scale);
 	
 	// Calculate the pitch differences based on the conversion being used.
 	const int pitchSrcDiff = ((pitch / (bppMD == 15 ? 2 : bppMD / 8)) - width);
@@ -124,7 +124,7 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 	// Process four pixels at a time.
 	width >>= 2;
 	
-	uint16_t *src16 = (uint16_t*)surface;
+	const uint16_t *src16 = (const uint16_t*)surface;
 	uint32_t *dest32 = (uint32_t*)realDestScreen;
 	
 	unsigned int x, y;
