@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "vdraw_RGB.hpp"
+#include "vdraw_RGB.h"
 #include "vdraw.h"
 
 #include "emulator/g_main.hpp"

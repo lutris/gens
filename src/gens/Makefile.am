@@ -141,7 +141,7 @@ gens_SOURCES = \
 		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
 		video/v_effects.cpp \
-		video/vdraw_RGB.cpp \
+		video/vdraw_RGB.c \
 		input/input.c \
 		input/input_update.c \
 		audio/audio.c \
@@ -273,7 +273,7 @@ noinst_HEADERS = \
 		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
 		video/v_effects.hpp \
-		video/vdraw_RGB.hpp \
+		video/vdraw_RGB.h \
 		input/input.h \
 		input/input_update.h \
 		audio/audio.h \
@@ -405,9 +405,9 @@ endif # GENS_LZMA
 CLEANFILES = ${ASMFILES}
 
 # Initialize CFLAGS, CXXFLAGS, and LDFLAGS.
-gens_CFLAGS	= $(AM_CFLAGS) $(OPENMP_CFLAGS)
-gens_CXXFLAGS	= $(AM_CXXFLAGS) $(OPENMP_CFLAGS)
-gens_LDFLAGS	= $(AM_LDFLAGS) $(OPENMP_CFLAGS)
+gens_CFLAGS	= $(AM_CFLAGS)
+gens_CXXFLAGS	= $(AM_CXXFLAGS)
+gens_LDFLAGS	= $(AM_LDFLAGS)
 
 # OS-specific includes
 

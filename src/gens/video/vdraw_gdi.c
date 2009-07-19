@@ -42,7 +42,7 @@
 #include "vdraw_text.hpp"
 
 // RGB color conversion functions.
-#include "vdraw_RGB.hpp"
+#include "vdraw_RGB.h"
 
 // Audio Handler.
 #include "audio/audio.h"
