@@ -103,9 +103,9 @@ string GetCPUFlags_string(const uint32_t cpuFlagsRequired,
 	// Check all CPU flags.
 	static const char* cpuFlagNames[] =
 	{
-		"MMX", "SSE", "SSE2", "SSE3", "SSSE3",
-		"SSE4.1", "SSE4.2", "SSE4A", "SSE5",
-		"MMXEXT", "3DNOW", "3DNOWEXT",
+		"MMX", "MMXEXT", "3DNOW", "3DNOWEXT",
+		"SSE", "SSE2", "SSE3", "SSSE3",
+		"SSE4.1", "SSE4.2", "SSE4A",
 		
 		NULL
 	};
