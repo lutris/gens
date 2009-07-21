@@ -192,16 +192,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		vdraw_backend_init(vdraw_cur_backend_id);
 	}
 	
-	if (strcmp(PathNames.Start_Rom, "") != 0)
-	{
-		if (ROM::openROM(PathNames.Start_Rom) == -1)
-		{
-			// Could not open the startup ROM.
-			// TODO: Show a message box?
-			LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-				"Failed to load ROM '%s'.", PathNames.Start_Rom);
-		}
-	}
+	// Check the startup mode.
+	check_startup_mode(&StartupInfo);
 	
 	// Update the UI.
 	GensUI::update();

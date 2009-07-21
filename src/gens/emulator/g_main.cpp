@@ -95,6 +95,7 @@ Gens_PathNames_t PathNames;
 Gens_BIOS_Filenames_t BIOS_Filenames;
 Gens_Misc_Filenames_t Misc_Filenames;
 Gens_VideoSettings_t Video;
+Gens_StartupInfo_t StartupInfo;
 
 // bpp settings.
 uint8_t bppMD;	// MD bpp
@@ -340,6 +341,52 @@ mdp_render_t* get_mdp_render_t(void)
 {
 	const list<mdp_render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	return (*rendMode);
+}
+
+
+/**
+ * check_startup_mode(): Check the startup mode.
+ * @param startup Pointer to Gens_StartupInfo_t struct containing the startup mode.
+ */
+void check_startup_mode(Gens_StartupInfo_t *startup)
+{
+	if (!startup)
+	{
+		// No startup mode. Assume idle.
+		return;
+	}
+	
+	// Check the startup mode.
+	switch (startup->mode)
+	{
+		case GSM_ROM:
+			// Startup ROM specified.
+			if (startup->Start_Rom[0] != 0x00)
+			{
+				if (ROM::openROM(startup->Start_Rom) == -1)
+				{
+					// Could not open the startup ROM.
+					// TODO: Show a message box?
+					LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+						"Failed to load ROM '%s'.", StartupInfo.Start_Rom);
+				}
+			}
+			break;
+		
+#ifdef GENS_CDROM
+		case GSM_BOOT_CD:
+			// TODO
+			LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+				"TODO: Implement support for GSM_BOOT_CD.");
+			break;
+#endif
+		
+		case GSM_IDLE:
+		case GSM_MAX:
+		default:
+			// Idle.
+			break;
+	}
 }
 
 

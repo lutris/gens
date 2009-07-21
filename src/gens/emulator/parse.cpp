@@ -400,6 +400,38 @@ if (!strcmp(long_options[option_index].name, option))		\
 
 
 /**
+ * parse_startup_rom(): Parse the startup ROM filename.
+ * @param filename Startup ROM filename.
+ */
+static void parse_startup_rom(const char *filename)
+{
+	// TODO: Concatenate the path to Rom_Dir?
+#ifdef GENS_OS_WIN32
+	/* Win32: Check for "C:\" and "\\" prefixes. */
+	if ((isalpha(filename[0]) && filename[1] == ':' && filename[2] == '\\') ||
+	    (filename[0] == '\\' && filename[1] == '\\'))
+#else /* !GENS_OS_WIN32 */
+	if (filename[0] == GENS_DIR_SEPARATOR_CHR)
+#endif /* GENS_OS_WIN32 */
+	{
+		// Absolute pathname.
+		strncpy(StartupInfo.Start_Rom, filename, sizeof(StartupInfo.Start_Rom));
+		StartupInfo.Start_Rom[sizeof(StartupInfo.Start_Rom)-1] = 0x00;
+	}
+	else
+	{
+		// Relative pathname.
+		getcwd(StartupInfo.Start_Rom, sizeof(StartupInfo.Start_Rom));
+		strcat(StartupInfo.Start_Rom, GENS_DIR_SEPARATOR_STR);
+		strcat(StartupInfo.Start_Rom, filename);
+	}
+	
+	// Set the startup mode.
+	StartupInfo.mode = GSM_ROM;
+}
+
+
+/**
  * parse_args(): Parse command line arguments.
  * @param argc Number of command line arguments.
  * @param argv Array of command line arguments.
@@ -408,6 +440,9 @@ void parse_args(int argc, char *argv[])
 {
 	int c;
 	int error = 0;
+	
+	// Set the default startup mode.
+	StartupInfo.mode = GSM_IDLE;
 	
 	while (1)
 	{
@@ -424,12 +459,10 @@ void parse_args(int argc, char *argv[])
 		
 		if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_GAME].option))
 		{
-			if (strcmp(optarg, "") != 0)
-			{
-				snprintf(PathNames.Start_Rom, sizeof(PathNames.Start_Rom),
-					 "%s" GENS_DIR_SEPARATOR_STR "%s", Rom_Dir, optarg);
-				PathNames.Start_Rom[sizeof(PathNames.Start_Rom)-1] = 0x00;
-			}
+			// Startup ROM.
+			if (optarg && optarg[0] != 0x00)
+				parse_startup_rom(optarg);
+			continue;
 		}
 		
 		// Test string options.
@@ -584,25 +617,7 @@ void parse_args(int argc, char *argv[])
 	else if (optind == (argc - 1))
 	{
 		// Startup ROM.
-		
-#ifdef GENS_OS_WIN32
-		/* Win32: Check for "C:\" and "\\" prefixes. */
-		if ((!isalpha(argv[optind][0]) && argv[optind][1] != ':' && argv[optind][2] != '\\') &&
-		    (argv[optind][0] != '\\' && argv[optind][1] != '\\'))
-#else /* !GENS_OS_WIN32 */
-		if (argv[optind][0] != GENS_DIR_SEPARATOR_CHR)
-#endif /* GENS_OS_WIN32 */
-		{
-			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
-			strcat(PathNames.Start_Rom, GENS_DIR_SEPARATOR_STR);
-			strcat(PathNames.Start_Rom, argv[optind]);
-		}
-		else
-		{
-			strncpy(PathNames.Start_Rom, argv[optind], sizeof(PathNames.Start_Rom));
-			PathNames.Start_Rom[sizeof(PathNames.Start_Rom)-1] = 0x00;
-		}
+		if (argv[optind] && argv[optind][0] != 0x00)
+			parse_startup_rom(argv[optind]);
 	}
 }
-
-
