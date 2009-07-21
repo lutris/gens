@@ -374,9 +374,14 @@ void check_startup_mode(Gens_StartupInfo_t *startup)
 		
 #ifdef GENS_CDROM
 		case GSM_BOOT_CD:
-			// TODO
-			LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
-				"TODO: Implement support for GSM_BOOT_CD.");
+			// Boot SegaCD.
+			if (!ASPI_Initialized || !Num_CD_Drive)
+			{
+				fprintf(stderr, "%s: ASPI not initialized and/or no CD-ROM drive(s) detected.\n", __func__);
+				break;
+			}
+			
+			SegaCD_Started = Init_SegaCD(NULL);
 			break;
 #endif
 		

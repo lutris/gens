@@ -155,6 +155,9 @@ static const opt0arg_str_t opt0arg_str[] =
 	{"fs",		"Run in full screen mode"},
 	{"window",	"Run in windowed mode"},
 	{"quickexit",	"Quick exit with ESC"},
+#ifdef GENS_CDROM
+	{"boot-cd",	"Boot SegaCD"},
+#endif
 	{NULL, NULL}
 };
 
@@ -164,6 +167,7 @@ enum opt0arg_enum
 	OPT0_FS,
 	OPT0_WINDOW,
 	OPT0_QUICKEXIT,
+	OPT0_BOOT_CD,
 	OPT0_TOTAL
 };
 
@@ -277,6 +281,7 @@ static const struct option long_options[] =
 	LONGOPT_0ARG(OPT0_FS),
 	LONGOPT_0ARG(OPT0_WINDOW),
 	LONGOPT_0ARG(OPT0_QUICKEXIT),
+	LONGOPT_0ARG(OPT0_BOOT_CD),
 	
 	// Boolean parameters.
 	LONGOPT_BARG(OPTB_STRETCH),
@@ -591,6 +596,11 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_QUICKEXIT].option))
 		{
 			Quick_Exit = 1;
+		}
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_BOOT_CD].option))
+		{
+			// Boot SegaCD on startup.
+			startup->mode = GSM_BOOT_CD;
 		}
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))
 		{
