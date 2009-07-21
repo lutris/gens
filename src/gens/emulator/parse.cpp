@@ -92,7 +92,7 @@ static const opt1arg_str_t opt1arg_str[] =
 	{"savepath",		"pathname",	"Path where to save your states files"},
 	{"srampath",		"pathname",	"Path where to save your SRAM files"},
 	{"brampath",		"pathname",	"Path where to save your BRAM files"},
-	{"dumppath",		"pathname",	"unused"},
+	{"dumpwavpath",		"pathname",	"Path where to save your WAV files"},
 	{"dumpgympath",		"pathname",	"Path where to save your GYM files"},
 	{"screenshotpath",	"pathname",	"Path where to save your screenshot files"},
 	{"patchpath",		"pathname",	"Path where to save your patch files"},
@@ -120,7 +120,7 @@ enum opt1arg_enum
 	OPT1_SAVEPATH,
 	OPT1_SRAMPATH,
 	OPT1_BRAMPATH,
-	OPT1_DUMPPATH,
+	OPT1_DUMPWAVPATH,
 	OPT1_DUMPGYMPATH,
 	OPT1_SCREENSHOTPATH,
 	OPT1_GENESISBIOS,
@@ -258,7 +258,7 @@ static const struct option long_options[] =
 	LONGOPT_1ARG(OPT1_SAVEPATH),
 	LONGOPT_1ARG(OPT1_SRAMPATH),
 	LONGOPT_1ARG(OPT1_BRAMPATH),
-	LONGOPT_1ARG(OPT1_DUMPPATH),
+	LONGOPT_1ARG(OPT1_DUMPWAVPATH),
 	LONGOPT_1ARG(OPT1_DUMPGYMPATH),
 	LONGOPT_1ARG(OPT1_SCREENSHOTPATH),
 	LONGOPT_1ARG(OPT1_GENESISBIOS),
@@ -479,7 +479,8 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SAVEPATH].option, State_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SRAMPATH].option, SRAM_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_BRAMPATH].option, BRAM_Dir);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPPATH].option, PathNames.Dump_WAV_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPWAVPATH].option, PathNames.Dump_WAV_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPGYMPATH].option, PathNames.Dump_GYM_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH].option, PathNames.Screenshot_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_GENESISBIOS].option, BIOS_Filenames.MD_TMSS);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_USACDBIOS].option, BIOS_Filenames.SegaCD_US);
