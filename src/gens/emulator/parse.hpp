@@ -23,11 +23,36 @@
 #ifndef GENS_PARSE_HPP
 #define GENS_PARSE_HPP
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+// TODO: Move GENS_PATH_MAX out of g_main.hpp.
+#include "g_main.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void parse_args(int argc, char *argv[]);
+// Startup mode.
+typedef enum _Gens_StartupMode_t
+{
+	GSM_IDLE = 0,
+	GSM_ROM = 1,
+#ifdef GENS_CDROM
+	GSM_BOOT_CD = 2,
+#endif
+	GSM_MAX
+} Gens_StartupMode_t;
+
+// Startup information.
+typedef struct _Gens_StartupInfo_t
+{
+	Gens_StartupMode_t mode;
+	char filename[GENS_PATH_MAX];
+} Gens_StartupInfo_t;
+
+Gens_StartupInfo_t* parse_args(int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

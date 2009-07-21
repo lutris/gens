@@ -161,8 +161,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Parse command line arguments.
 	argc_argv arg;
+	Gens_StartupInfo_t *startup;
+	
 	convertCmdLineToArgv(lpCmdLine, &arg);
-	parse_args(arg.c, arg.v);
+	startup = parse_args(arg.c, arg.v);
 	deleteArgcArgv(&arg);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
@@ -193,7 +195,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	}
 	
 	// Check the startup mode.
-	check_startup_mode(&StartupInfo);
+	check_startup_mode(startup);
+	free(startup);
 	
 	// Update the UI.
 	GensUI::update();

@@ -95,7 +95,6 @@ Gens_PathNames_t PathNames;
 Gens_BIOS_Filenames_t BIOS_Filenames;
 Gens_Misc_Filenames_t Misc_Filenames;
 Gens_VideoSettings_t Video;
-Gens_StartupInfo_t StartupInfo;
 
 // bpp settings.
 uint8_t bppMD;	// MD bpp
@@ -361,14 +360,14 @@ void check_startup_mode(Gens_StartupInfo_t *startup)
 	{
 		case GSM_ROM:
 			// Startup ROM specified.
-			if (startup->Start_Rom[0] != 0x00)
+			if (startup->filename[0] != 0x00)
 			{
-				if (ROM::openROM(startup->Start_Rom) == -1)
+				if (ROM::openROM(startup->filename) == -1)
 				{
 					// Could not open the startup ROM.
 					// TODO: Show a message box?
 					LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-						"Failed to load ROM '%s'.", StartupInfo.Start_Rom);
+						"Failed to load ROM '%s'.", startup->filename);
 				}
 			}
 			break;

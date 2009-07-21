@@ -109,25 +109,6 @@ typedef struct _Gens_VideoSettings_t
 } Gens_VideoSettings_t;
 
 
-typedef enum _Gens_StartupMode_t
-{
-	GSM_IDLE = 0,
-	GSM_ROM = 1,
-#ifdef GENS_CDROM
-	GSM_BOOT_CD = 2,
-#endif
-	GSM_MAX
-} Gens_StartupMode_t;
-
-
-// Startup mode.
-typedef struct _Gens_StartupInfo_t
-{
-	Gens_StartupMode_t mode;
-	char Start_Rom[GENS_PATH_MAX];
-} Gens_StartupInfo_t;
-
-
 // bpp settings.
 extern uint8_t bppMD;	// MD bpp
 extern uint8_t bppOut;	// Output bpp.
@@ -137,7 +118,6 @@ extern Gens_PathNames_t PathNames;
 extern Gens_BIOS_Filenames_t BIOS_Filenames;
 extern Gens_Misc_Filenames_t Misc_Filenames;
 extern Gens_VideoSettings_t Video;
-extern Gens_StartupInfo_t StartupInfo;
 
 // TODO: Only used for DirectDraw.
 extern int Flag_Clr_Scr;
@@ -200,6 +180,7 @@ extern int (*Update_Frame_Fast)(void);
 void Clear_Screen_MD(void);
 
 // Check startup mode.
+#include "parse.hpp"
 void check_startup_mode(Gens_StartupInfo_t *startup);
 
 // The main program loop.

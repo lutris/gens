@@ -402,8 +402,9 @@ if (!strcmp(long_options[option_index].name, option))		\
 /**
  * parse_startup_rom(): Parse the startup ROM filename.
  * @param filename Startup ROM filename.
+ * @param startup Pointer to startup information struct.
  */
-static void parse_startup_rom(const char *filename)
+static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 {
 	// TODO: Concatenate the path to Rom_Dir?
 #ifdef GENS_OS_WIN32
@@ -415,19 +416,19 @@ static void parse_startup_rom(const char *filename)
 #endif /* GENS_OS_WIN32 */
 	{
 		// Absolute pathname.
-		strncpy(StartupInfo.Start_Rom, filename, sizeof(StartupInfo.Start_Rom));
-		StartupInfo.Start_Rom[sizeof(StartupInfo.Start_Rom)-1] = 0x00;
+		strncpy(startup->filename, filename, sizeof(startup->filename));
+		startup->filename[sizeof(startup->filename)-1] = 0x00;
 	}
 	else
 	{
 		// Relative pathname.
-		getcwd(StartupInfo.Start_Rom, sizeof(StartupInfo.Start_Rom));
-		strcat(StartupInfo.Start_Rom, GENS_DIR_SEPARATOR_STR);
-		strcat(StartupInfo.Start_Rom, filename);
+		getcwd(startup->filename, sizeof(startup->filename));
+		strcat(startup->filename, GENS_DIR_SEPARATOR_STR);
+		strcat(startup->filename, filename);
 	}
 	
 	// Set the startup mode.
-	StartupInfo.mode = GSM_ROM;
+	startup->mode = GSM_ROM;
 }
 
 
@@ -435,14 +436,17 @@ static void parse_startup_rom(const char *filename)
  * parse_args(): Parse command line arguments.
  * @param argc Number of command line arguments.
  * @param argv Array of command line arguments.
+ * @return Pointer to startup information struct. (MUST BE free()'d BY CALLER!)
  */
-void parse_args(int argc, char *argv[])
+Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 {
 	int c;
 	int error = 0;
 	
-	// Set the default startup mode.
-	StartupInfo.mode = GSM_IDLE;
+	// Create the startup information struct.
+	Gens_StartupInfo_t *startup = (Gens_StartupInfo_t*)malloc(sizeof(Gens_StartupInfo_t));
+	startup->mode = GSM_IDLE;
+	startup->filename[0] = 0x00;
 	
 	while (1)
 	{
@@ -461,7 +465,7 @@ void parse_args(int argc, char *argv[])
 		{
 			// Startup ROM.
 			if (optarg && optarg[0] != 0x00)
-				parse_startup_rom(optarg);
+				parse_startup_rom(optarg, startup);
 			continue;
 		}
 		
@@ -618,6 +622,9 @@ void parse_args(int argc, char *argv[])
 	{
 		// Startup ROM.
 		if (argv[optind] && argv[optind][0] != 0x00)
-			parse_startup_rom(argv[optind]);
+			parse_startup_rom(argv[optind], startup);
 	}
+	
+	// Return the startup information.
+	return startup;
 }
