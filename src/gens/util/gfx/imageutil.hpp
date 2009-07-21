@@ -23,6 +23,10 @@
 #ifndef GENS_IMAGEUTIL_HPP
 #define GENS_IMAGEUTIL_HPP
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // TODO: Eliminate this include.
 // Move GENS_PATH_MAX somewhere else.
 #include "emulator/g_main.hpp"
@@ -45,9 +49,9 @@ class ImageUtil
 		enum ImageFormat
 		{
 			IMAGEFORMAT_BMP = 0,
-			#ifdef GENS_PNG
-				IMAGEFORMAT_PNG = 1,
-			#endif /* GENS_PNG */
+#ifdef GENS_PNG
+			IMAGEFORMAT_PNG = 1,
+#endif /* GENS_PNG */
 			IMAGEFORMAT_COUNT
 		};
 		
@@ -58,11 +62,11 @@ class ImageUtil
 			ALPHACHANNEL_TRANSPARENCY
 		};
 		
-		#ifdef GENS_PNG
-			static const ImageFormat DefaultImageFormat = IMAGEFORMAT_PNG;
-		#else /* !GENS_PNG */
-			static const ImageFormat DefaultImageFormat = IMAGEFORMAT_BMP;
-		#endif /* GENS_PNG */
+#ifdef GENS_PNG
+		static const ImageFormat DefaultImageFormat = IMAGEFORMAT_PNG;
+#else /* !GENS_PNG */
+		static const ImageFormat DefaultImageFormat = IMAGEFORMAT_BMP;
+#endif /* GENS_PNG */
 		
 		static int write(const char* filename, const ImageFormat format,
 				 const int w, const int h, const int pitch,
@@ -72,15 +76,17 @@ class ImageUtil
 		static int screenShot(void);
 	
 	protected:
-		ImageUtil() { }
-		~ImageUtil() { }
-		
 		static int writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 				    const void *screen, const int bpp);
 		
 		static int writePNG(FILE *fImg, const int w, const int h, const int pitch,
 				    const void *screen, const int bpp,
 				    const AlphaChannel alpha = ALPHACHANNEL_NONE);
+	
+	private:
+		// Don't allow instantiation of this class.
+		ImageUtil() { }
+		~ImageUtil() { }
 };
 
 #endif /* __cplusplus */

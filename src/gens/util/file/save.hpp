@@ -61,7 +61,7 @@ class Savestate
 		
 		static int LoadBRAM(void);
 		static int SaveBRAM(void);
-		
+	
 	protected:
 		// ImportData / ExportData functions from Gens Rerecording
 		
@@ -93,6 +93,11 @@ class Savestate
 		static void FormatSegaCD_BRAM(unsigned char *buf);
 		
 		static std::string GetBRAMFilename(void);
+	
+	private:
+		// Don't allow instantiation of this class.
+		Savestate() { }
+		~Savestate() { }
 };
 
 //int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext);

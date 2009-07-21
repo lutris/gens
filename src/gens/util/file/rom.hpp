@@ -118,6 +118,11 @@ class ROM
 		static void deinterleaveSMD(void);
 		static void fillROMInfo(void);
 		static unsigned short calcChecksum(void);
+	
+	private:
+		// Don't allow instantiation of this class.
+		ROM() { }
+		~ROM() { }
 };
 
 #endif /* __cplusplus */

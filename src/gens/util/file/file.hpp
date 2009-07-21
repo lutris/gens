@@ -52,7 +52,7 @@ class File
 			return (!access(filename.c_str(), F_OK));
 		}
 	
-	protected:
+	private:
 		// Don't allow instantiation of this class.
 		File() { }
 		~File() { }
