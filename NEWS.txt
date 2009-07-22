@@ -108,6 +108,9 @@ Release 7 introduces the following new features:
 - Improved PWM scaling algorithm, provided by Chilly Willy on the
   Sonic Retro forums.
 
+- A new command line option, "--boot-cd", can be specified to tell Gens/GS to
+  boot from an actual SegaCD CD-ROM on startup.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
