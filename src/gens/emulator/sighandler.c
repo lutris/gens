@@ -109,7 +109,7 @@ void gens_sighandler_init(void)
 
 
 /**
- * gens_sighandler_init(): Shut down the signal handler.
+ * gens_sighandler_end(): Shut down the signal handler.
  */
 void gens_sighandler_end(void)
 {
