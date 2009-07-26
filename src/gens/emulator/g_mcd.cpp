@@ -149,11 +149,9 @@ int Init_SegaCD(const char* iso_name)
 		return 0;
 	}
 	
+	// Update the CD-ROM name.
 	// FIXME: ROM::updateCDROMName() expects 48 bytes.
 	ROM::updateCDROMName((char*)&CD_Data[32]);
-	
-	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;

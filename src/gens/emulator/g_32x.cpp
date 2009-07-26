@@ -159,12 +159,6 @@ int Init_32X(ROM_t* MD_ROM)
 			break;
 	}
 	
-	// Get the ROM name.
-	string tmpROMName = ROM::getRomName(MD_ROM, Game_Mode);
-	
-	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 1) ? "32X (PAL)" : "32X (NTSC)"), tmpROMName);
-	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	

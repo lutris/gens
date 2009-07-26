@@ -49,6 +49,8 @@ using std::deque;
 #include "emulator/g_md.hpp"
 #include "emulator/g_mcd.hpp"
 #include "emulator/g_32x.hpp"
+#include "emulator/options.hpp"
+
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "segacd/cd_sys.hpp"
 #include "gens_core/mem/mem_m68k.h"
@@ -445,6 +447,9 @@ int ROM::openROM(const string& filename, string z_filename)
 			return -1;
 			break;
 	}
+	
+	// Update the window title.
+	Options::setGameName();
 	
 	// Raise the MDP_EVENT_OPEN_ROM event.
 	// TODO: Get rid of the file extension for event.rom_z_name.
