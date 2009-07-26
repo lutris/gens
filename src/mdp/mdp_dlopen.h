@@ -82,7 +82,7 @@ static inline const char* mdp_dlerror(void)
 extern "C" {
 #endif
 
-static inline const char* mdp_dlerror(void)
+static inline LPCTSTR mdp_dlerror(void)
 {
 	LPTSTR lpBuf;
 	
