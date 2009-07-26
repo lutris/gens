@@ -111,6 +111,16 @@ Release 7 introduces the following new features:
 - A new command line option, "--boot-cd", can be specified to tell Gens/GS to
   boot from an actual SegaCD CD-ROM on startup.
 
+- [Linux] Improved VSync support with the OpenGL backend. Both the MESA and SGI
+  swap control methods are now supported.
+
+- The video subsystem now supports fallbacks. For example, on the Linux
+  version, if SDL+OpenGL is selected but OpenGL isn't available, it will
+  simply revert back to SDL instead of crashing. As an added bonus, this
+  allows for Gens/GS to start up properly on Windows NT 4.0, since the
+  default backend on Win32 is DirectDraw 4, but NT4 doesn't support it.
+  Instead of crashing, it will fall back to the GDI backend.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
@@ -125,12 +135,6 @@ Release 7 fixes the following bugs:
   GLib 2.18.4 into Gens/GS. This function was introduced in GLib 2.16,
   but Gens/GS should be compatible with versions of GLib 2.4 and later.
 
-- Multitap support has been ported from x86 assembler to C. In the process,
-  both Sega Teamplayer and 4-Way Play support have been improved. Notably,
-  Teamplayer now works on "NBA Jam" and "NBA Jam TE", and 4-Way Play now
-  works (sometimes) on "Triple Play '96". A complete list of tested multitap
-  games can be found in doc/teamplayer.txt .
-
 - Two VDP DMA bugs have been fixed:
 
   - Zero-length DMA operations are now handled as 65,536-word operations.
@@ -140,16 +144,6 @@ Release 7 fixes the following bugs:
 
 - The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
   that produced "rain" on Gens, but not on Regen and the actual hardware.
-
-- [Linux] Improved VSync support with the OpenGL backend. Both the MESA and SGI
-  swap control methods are now supported.
-
-- The video subsystem now supports fallbacks. For example, on the Linux
-  version, if SDL+OpenGL is selected but OpenGL isn't available, it will
-  simply revert back to SDL instead of crashing. As an added bonus, this
-  allows for Gens/GS to start up properly on Windows NT 4.0, since the
-  default backend on Win32 is DirectDraw 4, but NT4 doesn't support it.
-  Instead of crashing, it will fall back to the GDI backend.
 
 Release 7 has the following low-level code changes:
 
@@ -171,6 +165,12 @@ Release 7 has the following low-level code changes:
 
 - Many assembler functions have been ported to C/C++, including the
   UPDATE_PALETTE macros and Reset_VDP() (now VDP_Reset()).
+
+- Multitap support has been ported from x86 assembler to C. In the process,
+  both Sega Teamplayer and 4-Way Play support have been improved. Notably,
+  Teamplayer now works on "NBA Jam" and "NBA Jam TE", and 4-Way Play now
+  works (sometimes) on "Triple Play '96". A complete list of tested multitap
+  games can be found in doc/teamplayer.txt .
 
 - yasm is now supported as an alternative to nasm. To use yasm, add the option
   --with-nasm=yasm when using the ./configure script.
