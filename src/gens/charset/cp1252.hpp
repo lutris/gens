@@ -20,11 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_CHARSET_HPP
-#define GENS_CHARSET_HPP
+#ifndef GENS_CP1252_HPP
+#define GENS_CP1252_HPP
 
 #include <string>
 
 std::string charset_utf8_to_cp1252(const char* s_utf8, const char replacementChar = '?');
 
-#endif /* GENS_CHARSET_HPP */
+#endif /* GENS_CP1252_HPP */
