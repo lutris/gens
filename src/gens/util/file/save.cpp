@@ -2053,6 +2053,7 @@ inline string Savestate::GetSRAMFilename(void)
 {
 	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
 		return "";
+	
 	return string(State_Dir) + string(ROM_Filename) + ".srm";
 }
 
@@ -2172,6 +2173,7 @@ inline string Savestate::GetBRAMFilename(void)
 {
 	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
 		return "";
+	
 	return string(State_Dir) + string(ROM_Filename) + ".brm";
 }
 
