@@ -11,6 +11,7 @@
 #include "g_mcd.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
+#include "options.hpp"
 
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_m68k_cd.h"
@@ -152,7 +153,6 @@ int Init_SegaCD(const char* iso_name)
 	}
 	
 	// Update the CD-ROM name.
-	// FIXME: ROM::updateCDROMName() expects 48 bytes.
 	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
 	Flag_Clr_Scr = 1;
@@ -237,14 +237,15 @@ int Reload_SegaCD(const char* iso_name)
 	// Save the current BRAM.
 	Savestate::SaveBRAM();
 	
+	// Set the window title to "Reinitializing..."
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
+	// Update the CD-ROM name.
 	Reset_CD((char*)SegaCD_Header, iso_name);
-	// FIXME: ROM::updateCDROMName() expects 48 bytes.
 	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
-	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
+	// Update the window title with the game name.
+	Options::setGameName();
 	
 	// Load the new BRAM.
 	Savestate::LoadBRAM();
@@ -289,7 +290,7 @@ void Reset_SegaCD(void)
 	Paused = 0;
 	BRAM_Ex_State &= 0x100;
 	
-	// FIXME: ROM::updateCDROMName() expects 48 bytes.
+	// Update the CD-ROM name.
 	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
 	// TODO: Why are these two bytes set to 0xFF?
