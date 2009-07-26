@@ -188,27 +188,23 @@ void ROM::updateROMName(const char* filename)
  */
 void ROM::updateCDROMName(const char *cdromName)
 {
-	int i, j;
-	bool validName = false;
-	
 	// Copy the CD-ROM name to ROM_Name.
-	// NOTE: cdromName is only 32 bytes.
-	// TODO: Increase it to 48 bytes.
-	memcpy(ROM_Name, cdromName, 32);
-	memset(&ROM_Name[32], ' ', 16);
+	memcpy(ROM_Name, cdromName, 48);
 	
 	// Check for invalid characters.
-	for (i = 0; i < 48; i++)
+	bool validName = false;
+	for (int i = 47; i >= 0; i--)
 	{
 		if (isalnum(ROM_Name[i]))
 		{
 			// Valid character.
 			validName = true;
-			continue;
 		}
-		
-		// Invalid character. Replace it with a space.
-		ROM_Name[i] = ' ';
+		else
+		{
+			// Invalid character. Replace it with a space.
+			ROM_Name[i] = ' ';
+		}
 	}
 	
 	if (!validName)
@@ -220,12 +216,15 @@ void ROM::updateCDROMName(const char *cdromName)
 	
 	// Make sure the name is null-terminated.
 	ROM_Name[48] = 0x00;
-	for (i = 47, j = 48; i >= 0; i--, j--)
+	
+	// Trim the CD-ROM name.
+	int i;
+	for (i = 47; i >= 0; i--)
 	{
 		if (ROM_Name[i] != ' ')
-			i = -1;
+			break;
 	}
-	ROM_Name[j + 1] = 0;
+	ROM_Name[i + 1] = 0;
 }
 
 // Temporary C wrapper functions.

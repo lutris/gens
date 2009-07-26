@@ -48,22 +48,24 @@
 #include "video/v_inline.h"
 
 
-unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name
+// SegaCD disc header.
+// Used for hard reset to know the game name.
+static unsigned char SegaCD_Header[512];
 
 
 /**
  * Detect_Country_SegaCD(): Detect the country code of a SegaCD game.
- * @return BIOS file for the required country.
+ * @return BIOS filename for the required country.
  */
 const char* Detect_Country_SegaCD(void)
 {
-	if (CD_Data[0x10B] == 0x64)
+	if (SegaCD_Header[0x10B] == 0x64)
 	{
 		Game_Mode = 1;
 		CPU_Mode = 1;
 		return BIOS_Filenames.MegaCD_EU;
 	}
-	else if (CD_Data[0x10B] == 0xA1)
+	else if (SegaCD_Header[0x10B] == 0xA1)
 	{
 		Game_Mode = 0;
 		CPU_Mode = 0;
@@ -95,7 +97,7 @@ int Init_SegaCD(const char* iso_name)
 	// Clear the SCD struct.
 	memset(&SCD, 0x00, sizeof(SCD));
 	
-	if (Reset_CD((char*)CD_Data, iso_name))
+	if (Reset_CD((char*)SegaCD_Header, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
 		// TODO: Show a message box.
@@ -151,7 +153,7 @@ int Init_SegaCD(const char* iso_name)
 	
 	// Update the CD-ROM name.
 	// FIXME: ROM::updateCDROMName() expects 48 bytes.
-	ROM::updateCDROMName((char*)&CD_Data[32]);
+	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -237,9 +239,9 @@ int Reload_SegaCD(const char* iso_name)
 	
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
-	Reset_CD((char*)CD_Data, iso_name);
+	Reset_CD((char*)SegaCD_Header, iso_name);
 	// FIXME: ROM::updateCDROMName() expects 48 bytes.
-	ROM::updateCDROMName((char*)&CD_Data[32]);
+	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
 	// Set the window title to the localized console name and the game name.
 	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
@@ -288,7 +290,7 @@ void Reset_SegaCD(void)
 	BRAM_Ex_State &= 0x100;
 	
 	// FIXME: ROM::updateCDROMName() expects 48 bytes.
-	ROM::updateCDROMName((char*)&CD_Data[32]);
+	ROM::updateCDROMName((char*)&SegaCD_Header[32]);
 	
 	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data[0x72] = 0xFF;
