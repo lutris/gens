@@ -98,9 +98,10 @@ using std::deque;
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+#ifdef HAVE_ICONV
 // String conversion.
-// TODO: Only #include if iconv is available.
 #include "charset/iconv_string.hpp"
+#endif
 
 
 char Rom_Dir[GENS_PATH_MAX];
@@ -947,7 +948,7 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
 	
-#if 1 //def HAVE_ICONV // TODO
+#ifdef HAVE_ICONV
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
 	{
