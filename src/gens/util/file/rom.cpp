@@ -116,6 +116,13 @@ int ROM_ByteSwap_State;
 // Double-ended queue containing all Recent ROMs.
 deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
 
+// Character conversion for Shift-JIS.
+// TODO: Move to a separate file.
+// TODO: Check for availability of wide character support and iconv before using.
+#include <wchar.h>
+#include <iconv.h>
+#include <errno.h>
+
 
 /**
  * updateRecentROMList(): Update the Recent ROM list with the given ROM filename.
@@ -929,7 +936,6 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	const char *romNameToUse = altRomName;
 	for (unsigned int cpos = (sizeof(rom->ROM_Name_US) - 1); cpos != 0; cpos--)
 	{
-		printf("defRomName[cpos]: 0x%02X\n", defRomName[cpos]);
 		if (isgraph(defRomName[cpos]))
 		{
 			// The default ROM name isn't blank. Use it.
@@ -943,5 +949,50 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
 	
+	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
+	if (romNameToUse == rom->ROM_Name_JP)
+	{
+		iconv_t cd;
+		cd = iconv_open("UTF-8", "SHIFT-JIS");
+		if (cd == (iconv_t)(-1))
+		{
+			// Error converting the string.
+			return string(RomName);
+		}
+		
+		char OutBuffer[256];			// Output buffer.
+		size_t srclen = sizeof(RomName);	// Input data length.
+		size_t outlen = sizeof(OutBuffer);	// Available buffer space.
+		char *srcbuf = &RomName[0];		// Input pointer.
+		char *outbuf = &OutBuffer[0];		// Output pointer.
+		
+		bool success = true;
+		
+		while (srclen > 0)
+		{
+			if (iconv(cd, &srcbuf, &srclen, &outbuf, &outlen) == (size_t)(-1))
+			{
+				// An error occurred while converting the string.
+				success = false;
+				break;
+			}
+		}
+		
+		// Close the iconv handle.
+		iconv_close(cd);
+		
+		if (success)
+		{
+			// The string was converted successfully.
+			
+			// Make sure the string is terminated.
+			// TODO: Check for buffer overflows.
+			if (outlen >= sizeof(*outbuf))
+				*outbuf = 0x00;
+			
+			return string(OutBuffer);
+		}
+	}
+
 	return string(RomName);
 }
