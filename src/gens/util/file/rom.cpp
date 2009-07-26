@@ -98,6 +98,11 @@ using std::deque;
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+// String conversion.
+// TODO: Only #include if iconv is available.
+#include "charset/iconv_string.hpp"
+
+
 char Rom_Dir[GENS_PATH_MAX];
 
 ROM_t* Game = NULL;
@@ -115,13 +120,6 @@ int ROM_ByteSwap_State;
 
 // Double-ended queue containing all Recent ROMs.
 deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
-
-// Character conversion for Shift-JIS.
-// TODO: Move to a separate file.
-// TODO: Check for availability of wide character support and iconv before using.
-#include <wchar.h>
-#include <iconv.h>
-#include <errno.h>
 
 
 /**
@@ -949,50 +947,19 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
 	
+#if 1 //def HAVE_ICONV // TODO
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
 	{
-		iconv_t cd;
-		cd = iconv_open("UTF-8", "SHIFT-JIS");
-		if (cd == (iconv_t)(-1))
+		// Attempt to convert the ROM name.
+		string romNameJP = gens_iconv_to_utf8(RomName, sizeof(RomName), "SHIFT-JIS");
+		if (!romNameJP.empty())
 		{
-			// Error converting the string.
-			return string(RomName);
-		}
-		
-		char OutBuffer[256];			// Output buffer.
-		size_t srclen = sizeof(RomName);	// Input data length.
-		size_t outlen = sizeof(OutBuffer);	// Available buffer space.
-		char *srcbuf = &RomName[0];		// Input pointer.
-		char *outbuf = &OutBuffer[0];		// Output pointer.
-		
-		bool success = true;
-		
-		while (srclen > 0)
-		{
-			if (iconv(cd, &srcbuf, &srclen, &outbuf, &outlen) == (size_t)(-1))
-			{
-				// An error occurred while converting the string.
-				success = false;
-				break;
-			}
-		}
-		
-		// Close the iconv handle.
-		iconv_close(cd);
-		
-		if (success)
-		{
-			// The string was converted successfully.
-			
-			// Make sure the string is terminated.
-			// TODO: Check for buffer overflows.
-			if (outlen >= sizeof(*outbuf))
-				*outbuf = 0x00;
-			
-			return string(OutBuffer);
+			// The ROM name was converted successfully.
+			return romNameJP;
 		}
 	}
-
+#endif
+	
 	return string(RomName);
 }
