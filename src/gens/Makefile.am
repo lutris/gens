@@ -40,15 +40,15 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
 NASM += $(NASM_INCLUDES)
-INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/ -I@srcdir@/ui/
+INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/ -I@top_srcdir@/src/extlib/ -I@srcdir@/ui/
 gens_CCASFLAGS = $(INCLUDES)
 
 if GENS_ZLIB_INTERNAL
-INCLUDES += -I@srcdir@/../zlib/
+INCLUDES += -I@top_srcdir@/src/extlib/zlib/
 endif # GENS_ZLIB_INTERNAL
 
 if GENS_PNG_INTERNAL
-INCLUDES += -I@srcdir@/../libpng/
+INCLUDES += -I@top_srcdir@/src/extlib/libpng/
 endif # GENS_PNG_INTERNAL
 
 # x86 assembly language (using gcc)
@@ -346,13 +346,13 @@ gens_LDADD = \
 		-lm @RT_LIBS@ @ICONV_LIBS@
 
 if GENS_MP3
-gens_LDADD += $(top_builddir)/src/mp3_dec/libmp3_dec.la
+gens_LDADD += $(top_builddir)/src/extlib/mp3_dec/libmp3_dec.la
 endif 
 
 if GENS_ZLIB
-gens_LDADD += $(top_builddir)/src/minizip/libminizip.la
+gens_LDADD += $(top_builddir)/src/extlib/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
-gens_LDADD += $(top_builddir)/src/zlib/libz.la
+gens_LDADD += $(top_builddir)/src/extlib/zlib/libz.la
 else
 gens_LDADD += -lz
 endif # GENS_ZLIB_INTERNAL
@@ -360,14 +360,14 @@ endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_LDADD += $(top_builddir)/src/libpng/libpng.la
+gens_LDADD += $(top_builddir)/src/extlib/libpng/libpng.la
 else
 gens_LDADD += -lpng
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_LDADD += $(top_builddir)/src/lzma/liblzma.la
+gens_LDADD += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
 
 
@@ -382,24 +382,24 @@ gens_DEPENDENCIES = \
 		$(top_builddir)/src/libgsft/libgsft.la
 
 if GENS_MP3
-gens_DEPENDENCIES += $(top_builddir)/src/mp3_dec/libmp3_dec.la
+gens_DEPENDENCIES += $(top_builddir)/src/extlib/mp3_dec/libmp3_dec.la
 endif
 
 if GENS_ZLIB
-gens_DEPENDENCIES += $(top_builddir)/src/minizip/libminizip.la
+gens_DEPENDENCIES += $(top_builddir)/src/extlib/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
-gens_DEPENDENCIES += $(top_builddir)/src/zlib/libz.la
+gens_DEPENDENCIES += $(top_builddir)/src/extlib/zlib/libz.la
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_DEPENDENCIES += $(top_builddir)/src/libpng/libpng.la
+gens_DEPENDENCIES += $(top_builddir)/src/extlib/libpng/libpng.la
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_DEPENDENCIES += $(top_builddir)/src/lzma/liblzma.la
+gens_DEPENDENCIES += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
 
 CLEANFILES = ${ASMFILES}
