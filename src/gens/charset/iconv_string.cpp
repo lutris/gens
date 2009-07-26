@@ -39,12 +39,18 @@ using std::string;
  * @param src 		[in] Source string.
  * @param src_bytes_len [in] Source length, in bytes.
  * @param src_charset	[in] Source character set.
+ * @param dest_charset	[in] Destination character set.
  * @return UTF-8 C++ string, or "" on error.
  */
-string gens_iconv_to_utf8(const char *src, size_t src_bytes_len, const char *src_charset)
+string gens_iconv(const char *src, size_t src_bytes_len, const char *src_charset, const char *dest_charset)
 {
-	if (!src || src_bytes_len == 0 || !src_charset)
+	if (!src || src_bytes_len == 0)
 		return "";
+	
+	if (!src_charset)
+		src_charset = "";
+	if (!dest_charset)
+		dest_charset = "";
 	
 	// Based on examples from:
 	// * http://www.delorie.com/gnu/docs/glibc/libc_101.html
@@ -52,7 +58,7 @@ string gens_iconv_to_utf8(const char *src, size_t src_bytes_len, const char *src
 	
 	// Open an iconv descriptor.
 	iconv_t cd;
-	cd = iconv_open("UTF-8", src_charset);
+	cd = iconv_open(dest_charset, src_charset);
 	if (cd == (iconv_t)(-1))
 	{
 		// Error opening iconv.

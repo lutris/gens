@@ -952,7 +952,7 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	if (romNameToUse == rom->ROM_Name_JP)
 	{
 		// Attempt to convert the ROM name.
-		string romNameJP = gens_iconv_to_utf8(RomName, sizeof(RomName), "SHIFT-JIS");
+		string romNameJP = gens_iconv(RomName, sizeof(RomName), "SHIFT-JIS", "");
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.

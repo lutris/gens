@@ -27,7 +27,8 @@
 
 #include <string>
 
-std::string gens_iconv_to_utf8(const char *src, size_t src_bytes_len, const char *src_charset);
+std::string gens_iconv(const char *src, size_t src_bytes_len,
+		       const char *src_charset, const char *dest_charset);
 
 #else /* ! __cplusplus */
 
