@@ -57,17 +57,23 @@ typedef struct _Gens_Settings_t
 } Gens_Settings_t;
 
 
+#ifdef GENS_OS_WIN32
+#include <tchar.h>
+#endif
+
 // Gens Pathnames
 typedef struct _Gens_PathNames_t
 {
 	char Gens_Path[GENS_PATH_MAX];	// TODO: Rename to Gens_Save_Path.
-#ifdef GENS_OS_WIN32
-	char Gens_EXE_Path[GENS_PATH_MAX];
-#endif
 	char Language_Path[GENS_PATH_MAX];
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];
 	char Screenshot_Dir[GENS_PATH_MAX];
+	
+#ifdef GENS_OS_WIN32
+	// Win32-specific pathnames.
+	TCHAR Gens_EXE_Path[GENS_PATH_MAX];
+#endif
 } Gens_PathNames_t;
 
 

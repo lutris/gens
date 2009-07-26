@@ -42,6 +42,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 #include "charset/cp1252.hpp"
@@ -111,7 +112,7 @@ static HWND	lstPluginList[PMGR_MAX];
 // Widget creation functions.
 static void	pmgr_window_create_child_windows(HWND hWnd);
 static void	pmgr_window_create_plugin_list_tab_control(HWND container);
-static void	pmgr_window_create_plugin_list_tab(HWND container, const char *title, int id);
+static void	pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, int id);
 static void	pmgr_window_create_plugin_info_frame(HWND container);
 static void	pmgr_window_populate_plugin_lists(void);
 
@@ -245,8 +246,8 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
 #endif
 	
 	// Create the tabs.
-	pmgr_window_create_plugin_list_tab(tabPluginList, "&Internal", PMGR_INTERNAL);
-	pmgr_window_create_plugin_list_tab(tabPluginList, "&External", PMGR_EXTERNAL);
+	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&Internal"), PMGR_INTERNAL);
+	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&External"), PMGR_EXTERNAL);
 	// TODO
 	//pmgr_window_create_plugin_list_tab(tabPluginList, "I&ncompatible", PMGR_INCOMPAT);
 }
@@ -258,12 +259,12 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
  * @param title Title of the tab.
  * @param id Tab ID.
  */
-static void pmgr_window_create_plugin_list_tab(HWND container, const char *title, int id)
+static void pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, int id)
 {
 	// Insert a tab.
 	TCITEM tabItem;
 	tabItem.mask = TCIF_TEXT;
-	tabItem.pszText = const_cast<char*>(title);
+	tabItem.pszText = const_cast<LPTSTR>(title);
 	TabCtrl_InsertItem(container, id, &tabItem);
 	
 	// Create the plugin ListView.
@@ -467,7 +468,7 @@ static void pmgr_window_populate_plugin_lists(void)
 		
 		// Second column: Plugin name.
 		lviPlugin.iSubItem = 1;
-		lviPlugin.pszText = const_cast<char*>(pluginName.c_str());
+		lviPlugin.pszText = const_cast<LPTSTR>(pluginName.c_str());
 		ListView_SetItem(lstPluginList[pmType], &lviPlugin);
 	}
 }

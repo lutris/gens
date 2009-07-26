@@ -33,7 +33,9 @@ extern "C" {
 #endif
 
 /* Make sure ROM_t is packed. */
+#ifndef PACKED
 #define PACKED __attribute__ ((packed))
+#endif
 
 /**
  * ROM_t: Contains a ROM header.

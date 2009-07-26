@@ -273,13 +273,15 @@ static void cc_window_create_child_windows(HWND hWnd)
  */
 static void cc_window_create_controller_port_frame(HWND container, int port)
 {
-	char tmp[32];
+	TCHAR tmp[32];
 	
 	// Top of the frame.
 	const int fraPort_top = 8 + ((port-1)*(CC_FRAME_PORT_HEIGHT + 8));
 	
 	// Create the frame.
-	sprintf(tmp, "Port %d", port);
+	// NOTE: _sntprintf() is the TCHAR version of snprintf().
+	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)), TEXT("Port %d"), port);
+	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 	HWND fraPort = CreateWindow(WC_BUTTON, tmp,
 				    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 				    8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
@@ -304,7 +306,10 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 	
 	for (i = 0; i < 4; i++)
 	{
-		sprintf(tmp, "Player %d%c", port, (i == 0 ? 0x00 : 'A' + i));
+		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+				TEXT("Player %d%c"),
+				port, (i == 0 ? 0x00 : 'A' + i));
+		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 		
 		// Determine the player number to use for the callback and widget pointer storage.
 		if (i == 0)
@@ -411,11 +416,13 @@ static void cc_window_create_configure_controller_frame(HWND container)
 	
 	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
-	char tmp[16];
+	TCHAR tmp[16];
 	for (button = 0; button < 12; button++)
 	{
 		// Button label.
-		sprintf(tmp, "%s:", input_key_names[button]);
+		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+			   TEXT("%s:"), input_key_names[button]);
+		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 		lblButton[button] = CreateWindow(WC_STATIC, tmp,
 						 WS_CHILD | WS_VISIBLE | SS_RIGHT,
 						 fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
@@ -596,13 +603,15 @@ static void cc_window_save(void)
  */
 static inline void cc_window_display_key_name(HWND label, uint16_t key)
 {
-	char key_name[32];
+	TCHAR key_name[32];
 	
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
 	
 	#ifdef GENS_DEBUG
-		char tmp[64];
-		sprintf(tmp, "0x%04X: %s", key, key_name);
+		TCHAR tmp[64];
+		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+				TEXT("0x%04X: %s"), key, key_name);
+		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 		Static_SetText(label, tmp);
 	#else
 		Static_SetText(label, key_name);
@@ -621,13 +630,15 @@ static void cc_window_show_configuration(int player)
 	if (player < 0 || player > 8)
 		return;
 	
-	char tmp[64];
+	TCHAR tmp[64];
 	
 	// Set the current player number.
 	cc_cur_player = player;
 	
 	// Set the "Configure Controller" frame title.
-	sprintf(tmp, "Configure Player %s", &input_player_names[player][1]);
+	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+			TEXT("Configure Player %s"), &input_player_names[player][1]);
+	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 	Button_SetText(fraConfigure, tmp);
 	
 	// Make sure the "Change All Buttons" and "Clear All Buttons" buttons aren't

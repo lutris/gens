@@ -27,6 +27,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 
 // C includes.
 #include <math.h>
@@ -199,21 +200,21 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	}
 	
 	// Scanlines checkbox.
-	chkScanline = CreateWindow(WC_BUTTON, "S&canlines",
+	chkScanline = CreateWindow(WC_BUTTON, TEXT("S&canlines"),
 				   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				   8+64+8+96+8, 8+16+2, 64, 16,
 				   hWnd, (HMENU)IDC_NTSC_SCANLINE, ntsc_hInstance, NULL);
 	SetWindowFont(chkScanline, ntsc_hFont, TRUE);
 	
 	// Interpolation checkbox.
-	chkInterp = CreateWindow(WC_BUTTON, "&Interpolation",
+	chkInterp = CreateWindow(WC_BUTTON, TEXT("&Interpolation"),
 				 WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				 8+64+8+96+8+64+8, 8+16+2, 88, 16,
 				 hWnd, (HMENU)IDC_NTSC_INTERP, ntsc_hInstance, NULL);
 	SetWindowFont(chkInterp, ntsc_hFont, TRUE);
 	
 	// Interpolation checkbox.
-	chkCXA2025AS = CreateWindow(WC_BUTTON, "Use Sony C&X2025AS US decoder.",
+	chkCXA2025AS = CreateWindow(WC_BUTTON, TEXT("Use Sony C&X2025AS US decoder."),
 				WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				8+8, 8+16+24, 204, 16,
 				hWnd, (HMENU)IDC_NTSC_CXA2025AS, ntsc_hInstance, NULL);
@@ -449,20 +450,23 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 		return;
 	
 	// Update the label for the adjustment widget.
-	char tmp[16];
+	TCHAR tmp[16];
 	int val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
 	
 	// Adjust the value to have the appropriate number of decimal places.
 	if (setting == 0)
 	{
 		// Hue. No decimal places.
-		snprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
+		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+				TEXT("%d"), NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
+		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+				TEXT("%0.2f"), ((double)val / 100.0));
 	}
+	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 	
 	Static_SetText(lblCtrlValues[setting], tmp);
 	

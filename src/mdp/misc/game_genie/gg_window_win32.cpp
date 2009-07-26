@@ -555,8 +555,8 @@ static int gg_window_add_code_from_textboxes(void)
 	gg_code.name[0] = 0x00;
 	gg_code.enabled = 0;
 	
-	char code_txt[32];
-	Edit_GetText(txtCode, code_txt, sizeof(code_txt));
+	TCHAR code_txt[32];
+	Edit_GetText(txtCode, code_txt, (sizeof(code_txt)/sizeof(TCHAR)));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
 	
 	if (gcp_rval != GGCE_OK)
@@ -568,7 +568,7 @@ static int gg_window_add_code_from_textboxes(void)
 		switch (gcp_rval)
 		{
 			case GGCE_UNRECOGNIZED:
-				_tcscpy(err_msg, "The code could not be parsed correctly.");
+				_tcscpy(err_msg, TEXT("The code could not be parsed correctly."));
 				break;
 			case GGCE_ADDRESS_RANGE:
 				// TODO: Show range depending on the selected CPU.
@@ -586,12 +586,16 @@ static int gg_window_add_code_from_textboxes(void)
 				break;
 			default:
 				// Other error.
-				sprintf(err_msg, "Unknown error code %d.", gcp_rval);
+				_sntprintf(err_msg, (sizeof(err_msg)/sizeof(TCHAR)),
+						TEXT("Unknown error code %d."), gcp_rval);
+				err_msg[(sizeof(err_msg)/sizeof(TCHAR))-1] = 0x00;
 				break;
 		}
 		
-		sprintf(err_msg_full, "The specified code, \"%s\", could not be added due to an error:\n\n%s",
-				      code_txt, err_msg);
+		_sntprintf(err_msg_full, (sizeof(err_msg_full)/sizeof(TCHAR)),
+				TEXT("The specified code, \"%s\", could not be added due to an error:\n\n%s"),
+				code_txt, err_msg);
+		err_msg_full[(sizeof(err_msg)/sizeof(TCHAR))-1] = 0x00;
 		
 		// Show an error message.
 		MessageBox(gg_window, err_msg_full, TEXT("Game Genie: Code Error"), MB_ICONSTOP);
@@ -603,8 +607,8 @@ static int gg_window_add_code_from_textboxes(void)
 	}
 	
 	// Get the name entry.
-	char s_name[128];
-	Edit_GetText(txtName, s_name, sizeof(s_name));
+	TCHAR s_name[128];
+	Edit_GetText(txtName, s_name, (sizeof(s_name)/sizeof(TCHAR)));
 	
 	// Add the code.
 	int ggw_ac_rval = gg_window_add_code(&gg_code, s_name);
@@ -633,7 +637,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		return 1;
 	
 	// Create the hex version of the code.
-	char s_code_hex[32];
+	TCHAR s_code_hex[32];
 	if (gg_code_format_hex(gg_code, s_code_hex, sizeof(s_code_hex)))
 	{
 		// TODO: Show an error message.
@@ -641,17 +645,17 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	}
 	
 	// CPU string.
-	static const TCHAR* const s_cpu_list[8] = {NULL, TEXT("M68K"), TEXT("S68K"), TEXT("Z80"), TEXT("MSH2"), TEXT("SSH2"), NULL, NULL};
-	const TCHAR* s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
+	static LPCTSTR const s_cpu_list[8] = {NULL, TEXT("M68K"), TEXT("S68K"), TEXT("Z80"), TEXT("MSH2"), TEXT("SSH2"), NULL, NULL};
+	const LPCTSTR s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
 	if (!s_cpu)
 		return 1;
 	
 	// Determine what should be used for the Game Genie code.
-	const char* s_code_gg;
+	LPCTSTR s_code_gg;
 	if (!gg_code->game_genie[0])
 	{
 		// The code can't be converted to Game Genie.
-		s_code_gg = "N/A";
+		s_code_gg = TEXT("N/A");
 	}
 	else
 	{
@@ -692,17 +696,17 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	
 	// Second column: Code (GG)
 	lviCode.iSubItem = 1;
-	lviCode.pszText = const_cast<char*>(s_code_gg);
+	lviCode.pszText = const_cast<LPTSTR>(s_code_gg);
 	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Third column: CPU
 	lviCode.iSubItem = 2;
-	lviCode.pszText = (TCHAR*)s_cpu;
+	lviCode.pszText = const_cast<LPTSTR>(s_cpu);
 	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Fourth column: Name
 	lviCode.iSubItem = 3;
-	lviCode.pszText = const_cast<char*>(name);
+	lviCode.pszText = const_cast<LPTSTR>(name);
 	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Set the "Enabled" state.

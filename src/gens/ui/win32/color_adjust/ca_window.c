@@ -38,6 +38,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -272,16 +273,18 @@ void ca_window_close(void)
  */
 static void ca_window_init(void)
 {
-	char buf[16];
+	TCHAR buf[16];
 	
 	// Contrast.
 	SendMessage(trkContrast, TBM_SETPOS, TRUE, (Contrast_Level - 100));
-	sprintf(buf, "%d", (Contrast_Level - 100));
+	_sntprintf(buf, (sizeof(buf)/sizeof(TCHAR)), TEXT("%d"), (Contrast_Level - 100));
+	buf[(sizeof(buf)/sizeof(TCHAR))-1] = 0x00;
 	SetWindowText(lblContrastVal, buf);
 	
 	// Brightness.
 	SendMessage(trkBrightness, TBM_SETPOS, TRUE, (Brightness_Level - 100));
-	sprintf(buf, "%d", (Brightness_Level - 100));
+	_sntprintf(buf, (sizeof(buf)/sizeof(TCHAR)), TEXT("%d"), (Brightness_Level - 100));
+	buf[(sizeof(buf)/sizeof(TCHAR))-1] = 0x00;
 	SetWindowText(lblBrightnessVal, buf);
 	
 	// Checkboxes.
@@ -359,7 +362,7 @@ static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 		case WM_HSCROLL:
 		{
 			// Trackbar scroll.
-			char buf[16];
+			TCHAR buf[16];
 			int scrlPos;
 			
 			switch (LOWORD(wParam))
@@ -377,7 +380,8 @@ static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			}
 			
 			// Convert the scroll position to a string.
-			sprintf(buf, "%d", scrlPos);
+			_sntprintf(buf, (sizeof(buf)/sizeof(TCHAR)), TEXT("%d"), scrlPos);
+			buf[(sizeof(buf)/sizeof(TCHAR))-1] = 0x00;
 			
 			// Set the value label.
 			if ((HWND)lParam == trkContrast)

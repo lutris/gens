@@ -32,6 +32,9 @@
 #include <algorithm>
 using std::list;
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 #if !defined(GENS_DEBUG)
 // Signal handler.
 #include "sighandler.h"
@@ -99,8 +102,8 @@ void get_default_save_path(char *buf, size_t size)
 	// Set the current directory.
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 	
-	// Eliminate the filename portion of the pathname.
-	char *last_backslash = strrchr(PathNames.Gens_EXE_Path, '\\');
+	// Eliminate the filename portion of the pathname. (_tcsrchr() == strrchr())
+	TCHAR *last_backslash = _tcsrchr(PathNames.Gens_EXE_Path, '\\');
 	if (last_backslash)
 	{
 		*(last_backslash + 1) = 0x00;
@@ -122,6 +125,9 @@ void get_default_save_path(char *buf, size_t size)
  */
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+	// hPrevInst is a leftover from Win16.
+	GENS_UNUSED_PARAMETER(hPrevInst);
+	
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	

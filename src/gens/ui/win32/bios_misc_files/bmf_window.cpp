@@ -47,6 +47,7 @@ using std::string;
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -350,13 +351,15 @@ static void bmf_window_callback_btnChange_clicked(int file)
 	if (!bmf_entries[file].entry)
 		return;
 	
-	char tmp[64];
-	sprintf(tmp, "Select %s File", bmf_entries[file].title);
+	TCHAR tmp[64];
+	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+			TEXT("Select %s File"), bmf_entries[file].title);
+	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 	
 	// Get the currently entered filename.
-	char cur_file[GENS_PATH_MAX];
-	GetWindowText(txtFile[file], cur_file, sizeof(cur_file));
-	cur_file[GENS_PATH_MAX-1] = 0x00;
+	TCHAR cur_file[GENS_PATH_MAX];
+	GetWindowText(txtFile[file], cur_file, (sizeof(cur_file)/sizeof(TCHAR)));
+	cur_file[(sizeof(cur_file)/sizeof(TCHAR))-1] = 0x00;
 	
 	// Request a new file.
 	string new_file = GensUI::openFile(tmp, cur_file, bmf_entries[file].filter, bmf_window);

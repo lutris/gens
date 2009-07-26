@@ -30,7 +30,9 @@ extern "C" {
 #include <stdint.h>
 
 // Make sure structs are packed.
+#ifndef PACKED
 #define PACKED __attribute__ ((packed))
+#endif
 
 // GSX savestate structs.
 // All integer data types are stored in little-endian.

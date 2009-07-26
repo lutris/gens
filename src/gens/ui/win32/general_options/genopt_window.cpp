@@ -40,6 +40,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -122,7 +123,7 @@ static HPEN	penIntroEffect[8][2];
 
 // Widget creation functions.
 static void	genopt_window_create_child_windows(HWND hWnd);
-static void	genopt_window_create_osd_frame(HWND container, const char* title, const int index,
+static void	genopt_window_create_osd_frame(HWND container, LPCTSTR title, const int index,
 					       const int x, const int y, const int w, const int h);
 
 // Configuration load/save functions.
@@ -344,7 +345,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 }
 
 
-static void genopt_window_create_osd_frame(HWND container, const char* title, const int index,
+static void genopt_window_create_osd_frame(HWND container, LPCTSTR title, const int index,
 					   const int x, const int y, const int w, const int h)
 {
 	// Message frame

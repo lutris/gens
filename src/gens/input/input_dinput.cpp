@@ -41,6 +41,7 @@
 #endif
 #include <windows.h>
 #include <windowsx.h>
+#include <tchar.h>
 
 // DirectInput versions.
 #define DIRECTINPUT_VERSION_5 0x0500
@@ -950,20 +951,23 @@ void input_dinput_add_joysticks_to_listbox(HWND lstBox)
  */
 static BOOL CALLBACK input_dinput_callback_add_joysticks_to_listbox(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
-	char joy_name[64];
+	TCHAR joy_name[64];
 	
+	// NOTE: _sntprintf() is the TCHAR version of snprintf().
 	if (lpDIIJoy->tszProductName)
 	{
-		snprintf(joy_name, sizeof(joy_name), "Joystick %d: %s",
-			 input_dinput_add_joysticks_count,
-			 lpDIIJoy->tszProductName);
+		_sntprintf(joy_name, (sizeof(joy_name)/sizeof(TCHAR)),
+				TEXT("Joystick %d: %s"),
+				input_dinput_add_joysticks_count,
+				lpDIIJoy->tszProductName);
 	}
 	else
 	{
-		snprintf(joy_name, sizeof(joy_name), "Joystick %d",
-			 input_dinput_add_joysticks_count);
+		_sntprintf(joy_name, (sizeof(joy_name)/sizeof(TCHAR)),
+				TEXT("Joystick %d"),
+				input_dinput_add_joysticks_count);
 	}
-	joy_name[sizeof(joy_name) - 1] = 0x00;
+	joy_name[(sizeof(joy_name)/sizeof(TCHAR))-1] = 0x00;
 	
 	// Add the joystick name to the listbox.
 	ListBox_AddString((HWND)pvRef, joy_name);

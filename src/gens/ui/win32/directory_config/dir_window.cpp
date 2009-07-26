@@ -53,6 +53,7 @@ using std::list;
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -100,7 +101,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 
 // Widget creation functions.
 static void	dir_window_create_child_windows(HWND hWnd);
-static HWND	dir_window_create_dir_widgets(const char* title, HWND parent, int y, int id);
+static HWND	dir_window_create_dir_widgets(LPCTSTR title, HWND parent, int y, int id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -256,7 +257,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 }
 
 
-static HWND dir_window_create_dir_widgets(const char* title, HWND container, int y, int id)
+static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container, int y, int id)
 {
 	// Create the label for the directory.
 	HWND lblTitle = CreateWindow(WC_STATIC, title,
@@ -469,13 +470,13 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	string new_dir;
 	
 	HWND txtDir;
-	const char* dir_title;
+	LPCTSTR dir_title;
 	
 	if (dir >= 0x10)
 	{
 		// Plugin directory.
 		txtDir = vectPluginDirs[dir - 0x10].txt;
-		dir_title = "TODO"; // TODO
+		dir_title = TEXT("TODO"); // TODO
 	}
 	else
 	{

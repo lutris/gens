@@ -6,6 +6,7 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#include <tchar.h>
 
 // C includes.
 #include <string.h>
@@ -74,7 +75,7 @@ int ASPI_Init(void)
 	
 	// Attempt to load the ASPI DLL.
 	ASPI_Initialized = 0;
-	hASPI_DLL = LoadLibrary("wnaspi32.dll");
+	hASPI_DLL = LoadLibrary(TEXT("wnaspi32.dll"));
 	if (hASPI_DLL)
 	{
 		// ASPI loaded.

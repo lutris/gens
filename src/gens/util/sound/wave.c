@@ -43,7 +43,9 @@
 #include "audio/audio.h"
 
 /* Make sure the structs are packed. */
+#ifndef PACKED
 #define PACKED __attribute__ ((packed))
+#endif
 
 /* WAV header struct. */
 /* Description from http://ccrma.stanford.edu/courses/422/projects/WaveFormat/ */

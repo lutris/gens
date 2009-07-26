@@ -74,9 +74,9 @@ void fonts_init(void)
 	lfMonoFont.lfCharSet = DEFAULT_CHARSET;
 	lfMonoFont.lfPitchAndFamily = 0;
 	_tcscpy(lfMonoFont.lfFaceName, TEXT("Fixedsys"));
-	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, font_enum_callback_fixedsys, 0, 0);
+	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)font_enum_callback_fixedsys, 0, 0);
 	_tcscpy(lfMonoFont.lfFaceName, TEXT("Courier New"));
-	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, font_enum_callback_courier_new, 0, 0);
+	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)font_enum_callback_courier_new, 0, 0);
 	
 }
 
