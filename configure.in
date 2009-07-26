@@ -645,6 +645,28 @@ AM_CONDITIONAL([HAVE_STRDUP], [test x$has_strdup = xyes])
 AC_CHECK_FUNCS(strtok_r, has_strtok_r=yes, has_strtok_r=no)
 AM_CONDITIONAL([HAVE_STRTOK_R], [test x$has_strtok_r = xyes])
 
+# Check for iconv().
+# First, check for iconv() in the C library.
+ICONV_LIBS=""
+AC_CHECK_FUNCS(iconv, has_iconv=yes, has_iconv=no)
+if test x$has_iconv = xno; then
+	# iconv() was not found in the C library.
+	# Check for libiconv.
+	# TODO: Verify that the libiconv check works.
+	AC_CHECK_LIB(iconv, iconv, has_iconv=yes, has_iconv=no)
+	if test x$has_iconv = xyes; then
+		# iconv() was found in libiconv.
+		AC_DEFINE(HAVE_LIBICONV, 1, Define to 1 if you have the `iconv' library (-liconv).)
+		AC_DEFINE(HAVE_ICONV, 1, Define to 1 if you have the `iconv' function.)
+		ICONV_LIBS="-liconv"
+	fi
+fi
+AM_CONDITIONAL([HAVE_ICONV], [test x$has_iconv = xyes])
+AC_SUBST(ICONV_LIBS)
+
+
+# Autoconf substitutions.
+
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
 AC_SUBST(GTK_CFLAGS)
