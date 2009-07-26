@@ -206,7 +206,7 @@ void ROM::updateCDROMName(const char *cdromName)
 	bool validName = false;
 	for (int i = 47; i >= 0; i--)
 	{
-		if (isgraph(ROM_Filename[i]))
+		if (!isspace(ROM_Filename[i]))
 		{
 			// Valid character.
 			validName = true;
@@ -232,7 +232,7 @@ void ROM::updateCDROMName(const char *cdromName)
 	int i;
 	for (i = 47; i >= 0; i--)
 	{
-		if (isgraph(ROM_Filename[i]))
+		if (!isspace(ROM_Filename[i]))
 			break;
 	}
 	ROM_Filename[i + 1] = 0;
@@ -936,7 +936,7 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	const char *romNameToUse = altRomName;
 	for (unsigned int cpos = (sizeof(rom->ROM_Name_US) - 1); cpos != 0; cpos--)
 	{
-		if (isgraph(defRomName[cpos]))
+		if (!isspace(defRomName[cpos]))
 		{
 			// The default ROM name isn't blank. Use it.
 			romNameToUse = defRomName;
