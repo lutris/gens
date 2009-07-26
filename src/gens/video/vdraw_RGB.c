@@ -40,7 +40,7 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 {
 	static uint32_t	*RGB_LUT = NULL;
 	static void	*surface = NULL;
-	static uint32_t	last_scale = 0;
+	static int	last_scale = 0;
 	static uint8_t	last_bppOut = 0;
 	static uint8_t	last_bppMD = 0;
 	
@@ -59,6 +59,9 @@ void vdraw_rgb_convert(mdp_render_info_t *rInfo)
 		// Free the surface.
 		free(surface);
 		surface = NULL;
+		
+		if (vdraw_scale <= 0)
+			return;
 		
 		// Allocate a new surface.
 		last_scale = vdraw_scale;
