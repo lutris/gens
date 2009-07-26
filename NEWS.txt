@@ -121,6 +121,12 @@ Release 7 introduces the following new features:
   default backend on Win32 is DirectDraw 4, but NT4 doesn't support it.
   Instead of crashing, it will fall back to the GDI backend.
 
+- Gens/GS no longer changes non-alphanumeric characters in SegaCD game names
+  to spaces. This may cause some games to have different names, which will
+  prevent their BRAM files from being loaded properly. If you have any of
+  these games, you will need to rename the BRAM files in order to get them
+  to load correctly.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
