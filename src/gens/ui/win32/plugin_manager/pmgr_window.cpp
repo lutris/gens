@@ -381,12 +381,13 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
  */
 static void pmgr_window_populate_plugin_lists(void)
 {
-	if (!lstPluginList)
-		return;
-	
 	// Clear the plugin lists.
 	for (int i = 0; i < PMGR_MAX; i++)
+	{
+		if (!lstPluginList[i])
+			return;
 		ListView_DeleteAllItems(lstPluginList[i]);
+	}
 	
 	// Add all plugins to the ListView.
 	string pluginName;
