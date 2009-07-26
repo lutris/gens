@@ -927,9 +927,10 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	
 	// If the default ROM name is blank, use the alternate ROM name.
 	const char *romNameToUse = altRomName;
-	for (unsigned int cpos = sizeof(rom->ROM_Name_US); cpos != 0; cpos--)
+	for (unsigned int cpos = (sizeof(rom->ROM_Name_US) - 1); cpos != 0; cpos--)
 	{
-		if (defRomName[cpos] > 0x20)
+		printf("defRomName[cpos]: 0x%02X\n", defRomName[cpos]);
+		if (isgraph(defRomName[cpos]))
 		{
 			// The default ROM name isn't blank. Use it.
 			romNameToUse = defRomName;
