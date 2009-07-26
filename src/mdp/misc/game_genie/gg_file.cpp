@@ -248,6 +248,9 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	
 	// Close the file.
 	fclose(f_codes);
+	
+	// Loaded successfully.
+	return 0;
 }
 
 
@@ -372,4 +375,7 @@ int MDP_FNCALL gg_file_save(const char* filename)
 	
 	// Close the file.
 	fclose(f_codes);
+	
+	// Saved successfully.
+	return 0;
 }

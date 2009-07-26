@@ -225,4 +225,6 @@ int MDP_FNCALL gg_engine_pre_frame(int event_id, void *event_info)
 				break;
 		}
 	}
+	
+	return MDP_ERR_OK;
 }
