@@ -35,6 +35,12 @@
 // Win32 resources.
 #include "ui/win32/resource.h"
 
+// MinGW's WinAPI headers (and probably the official MS SDK)
+// only define ICON_SMALL2 if _WIN32_WINNT >= 0x0501.
+#ifndef ICON_SMALL2
+#define ICON_SMALL2 2
+#endif
+
 
 /**
  * mdp_host_win32_check_icon(): Check if a window has an icon. If it doesn't, assign one.
