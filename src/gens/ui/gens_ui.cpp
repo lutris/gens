@@ -73,7 +73,7 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 	// Condense the game name by removing excess spaces.
 	for (unsigned int cpos = 0; cpos < gameName.length(); cpos++)
 	{
-		if (curChar == ' ' && gameName.at(cpos) == ' ')
+		if (curChar <= ' ' && gameName.at(cpos) <= ' ')
 			continue;
 		curChar = gameName.at(cpos);
 		ss << curChar;
@@ -83,12 +83,12 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 	condGameName = ss.str();
 	
 	if (condGameName.length() > 0 &&
-	    condGameName.at(condGameName.length() - 1) == ' ')
+	    condGameName.at(condGameName.length() - 1) <= ' ')
 	{
 		condGameName = condGameName.substr(0, condGameName.length() - 1);
 	}
 	
-	if (condGameName.length() > 0 && condGameName.at(0) == ' ')
+	if (condGameName.length() > 0 && condGameName.at(0) <= ' ')
 	{
 		condGameName = condGameName.substr(1, condGameName.length() - 1);
 	}
