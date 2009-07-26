@@ -112,7 +112,7 @@ int wav_dump_start(void)
 	do
 	{
 		num++;
-		snprintf(filename, sizeof(filename), "%s%s_%03d.wav", PathNames.Dump_WAV_Dir, ROM_Name, num);
+		snprintf(filename, sizeof(filename), "%s%s_%03d.wav", PathNames.Dump_WAV_Dir, ROM_Filename, num);
 		filename[sizeof(filename)-1] = 0x00;
 	} while (!access(filename, F_OK));
 	

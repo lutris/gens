@@ -63,7 +63,7 @@ typedef struct PACKED _ROM_t
 extern char Rom_Dir[GENS_PATH_MAX];
 
 extern ROM_t* Game;
-extern char ROM_Name[512];
+extern char ROM_Filename[512];
 
 // Current byteswap state.
 // A '1' in any bit indicates that the ROM is byteswapped.

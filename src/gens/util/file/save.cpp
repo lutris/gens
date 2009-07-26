@@ -183,7 +183,7 @@ FILE* Savestate::GetStateFile(void)
  */
 string Savestate::GetStateFilename(void)
 {
-	return string(State_Dir) + string(ROM_Name) + ".gs" + (char)('0' + Current_State);
+	return string(State_Dir) + string(ROM_Filename) + ".gs" + (char)('0' + Current_State);
 }
 
 
@@ -2051,9 +2051,9 @@ void Savestate::GsxExport32X(unsigned char* data)
  */
 inline string Savestate::GetSRAMFilename(void)
 {
-	if (strlen(ROM_Name) == 0)
+	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
 		return "";
-	return string(State_Dir) + string(ROM_Name) + ".srm";
+	return string(State_Dir) + string(ROM_Filename) + ".srm";
 }
 
 
@@ -2170,9 +2170,9 @@ void Savestate::FormatSegaCD_BackupRAM(void)
  */
 inline string Savestate::GetBRAMFilename(void)
 {
-	if (strlen(ROM_Name) == 0)
+	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
 		return "";
-	return string(State_Dir) + string(ROM_Name) + ".brm";
+	return string(State_Dir) + string(ROM_Filename) + ".brm";
 }
 
 

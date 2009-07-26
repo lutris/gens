@@ -471,7 +471,7 @@ int ImageUtil::screenShot(void)
 	do
 	{
 		num++;
-		snprintf(filename, sizeof(filename), "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Name, num, ext);
+		snprintf(filename, sizeof(filename), "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Filename, num, ext);
 		filename[sizeof(filename)-1] = 0x00;
 	} while (File::Exists(filename));
 	

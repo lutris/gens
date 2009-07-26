@@ -101,7 +101,11 @@ using std::deque;
 char Rom_Dir[GENS_PATH_MAX];
 
 ROM_t* Game = NULL;
-char ROM_Name[512];
+
+// ROM Filename.
+// MD/32X: This is the ROM's filename without extensions.
+// SegaCD: This is the CD-ROM's internal name (in the SegaCD header).
+char ROM_Filename[512];
 
 // Current byteswap state.
 // A '1' in any bit indicates that the ROM is byteswapped.
@@ -176,9 +180,9 @@ void ROM::updateROMName(const char* filename)
 	
 	int i = 0;
 	while ((filename[length]) && (filename[length] != '.'))
-		ROM_Name[i++] = filename[length++];
+		ROM_Filename[i++] = filename[length++];
 	
-	ROM_Name[i] = 0;
+	ROM_Filename[i] = 0;
 }
 
 
@@ -188,14 +192,14 @@ void ROM::updateROMName(const char* filename)
  */
 void ROM::updateCDROMName(const char *cdromName)
 {
-	// Copy the CD-ROM name to ROM_Name.
-	memcpy(ROM_Name, cdromName, 48);
+	// Copy the CD-ROM name to ROM_Filename.
+	memcpy(ROM_Filename, cdromName, 48);
 	
 	// Check for invalid characters.
 	bool validName = false;
 	for (int i = 47; i >= 0; i--)
 	{
-		if (isalnum(ROM_Name[i]))
+		if (isalnum(ROM_Filename[i]))
 		{
 			// Valid character.
 			validName = true;
@@ -203,28 +207,28 @@ void ROM::updateCDROMName(const char *cdromName)
 		else
 		{
 			// Invalid character. Replace it with a space.
-			ROM_Name[i] = ' ';
+			ROM_Filename[i] = ' ';
 		}
 	}
 	
 	if (!validName)
 	{
 		// CD-ROM name is invalid. Assume that no disc is inserted.
-		ROM_Name[0] = 0x00;
+		ROM_Filename[0] = 0x00;
 		return;
 	}
 	
 	// Make sure the name is null-terminated.
-	ROM_Name[48] = 0x00;
+	ROM_Filename[48] = 0x00;
 	
 	// Trim the CD-ROM name.
 	int i;
 	for (i = 47; i >= 0; i--)
 	{
-		if (ROM_Name[i] != ' ')
+		if (ROM_Filename[i] != ' ')
 			break;
 	}
-	ROM_Name[i + 1] = 0;
+	ROM_Filename[i + 1] = 0;
 }
 
 // Temporary C wrapper functions.
@@ -453,7 +457,7 @@ int ROM::openROM(const string& filename, string z_filename)
 	// Raise the MDP_EVENT_OPEN_ROM event.
 	// TODO: Get rid of the file extension for event.rom_z_name.
 	mdp_event_open_rom_t event;
-	event.rom_name = ROM_Name;
+	event.rom_name = ROM_Filename;
 	event.rom_z_name = (z_filename.empty() ? NULL : z_filename.c_str());
 	event.system_id = sysID;
 	EventMgr::RaiseEvent(MDP_EVENT_OPEN_ROM, &event);

@@ -1223,7 +1223,7 @@ void Options::setGameName(void)
 			systemName = "MegaCD";
 		else
 			systemName = "SegaCD";
-		gameName = ROM_Name;
+		gameName = ROM_Filename;
 		emptyGameName = "No Disc";
 	}
 	else
