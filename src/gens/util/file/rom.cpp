@@ -101,6 +101,12 @@ char Rom_Dir[GENS_PATH_MAX];
 ROM_t* Game = NULL;
 char ROM_Name[512];
 
+// Current byteswap state.
+// A '1' in any bit indicates that the ROM is byteswapped.
+// This does not necessarily mean it has actually been byteswapped;
+// instead, it means that the byteswap macro has been executed.
+int ROM_ByteSwap_State;
+
 ROM_t* myROM = NULL;
 
 // Double-ended queue containing all Recent ROMs.
@@ -536,6 +542,9 @@ unsigned int ROM::loadROM(const string& filename,
 	const decompressor_t *cmp = NULL;
 	unsigned int romType;
 	
+	// Reset the ROM byteswap state.
+	ROM_ByteSwap_State = 0;
+	
 	// Open the file.
 	FILE *fROM = fopen(filename.c_str(), "rb");
 	if (!fROM)
@@ -880,6 +889,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	Genesis_Started = 0;
 	_32X_Started = 0;
 	SegaCD_Started = 0;
+	
+	// Reset the ROM byteswap state.
+	ROM_ByteSwap_State = 0;
 	
 	// Clear the border color palette entries.
 	MD_Palette[0] = 0;

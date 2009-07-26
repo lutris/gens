@@ -73,6 +73,7 @@ int Init_32X(ROM_t* MD_ROM)
 	memset(&_32X_SSH2_Rom[0], 0x00, sizeof(_32X_SSH2_Rom));
 
 	// Read the 32X MC68000 firmware. (usually "32X_G_BIOS.BIN")
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_68K;
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
 		// External firmware file opened.
@@ -86,8 +87,10 @@ int Init_32X(ROM_t* MD_ROM)
 		memcpy(&_32X_Genesis_Rom[0], &fw_re_32X_mc68000[0], sizeof(fw_re_32X_mc68000));
 		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(fw_re_32X_mc68000));
 	}
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_68K;
 	
 	// Read the Master SH2 firmware. (usually "32X_M_BIOS.BIN")	
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_MSH2;
 	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
 		fread(&_32X_MSH2_Rom[0], 1, sizeof(_32X_MSH2_Rom), f);
@@ -100,8 +103,10 @@ int Init_32X(ROM_t* MD_ROM)
 		memcpy(&_32X_MSH2_Rom[0], &fw_re_32X_msh2[0], sizeof(fw_re_32X_msh2));
 		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(fw_re_32X_msh2));
 	}
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_MSH2;
 	
 	// Read the Slave SH2 firmware. (usually "32X_S_BIOS.BIN")
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_SSH2;
 	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
 		fread(&_32X_SSH2_Rom[0], 1, sizeof(_32X_SSH2_Rom), f);
@@ -114,6 +119,7 @@ int Init_32X(ROM_t* MD_ROM)
 		memcpy(&_32X_SSH2_Rom[0], &fw_re_32X_ssh2[0], sizeof(fw_re_32X_ssh2));
 		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(fw_re_32X_ssh2));
 	}
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_SSH2;
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -129,7 +135,7 @@ int Init_32X(ROM_t* MD_ROM)
 	{
 		default:
 		case -1: // Autodetection.
-			Detect_Country_Genesis ();
+			Detect_Country_Genesis();
 			break;
 		
 		case 0: // Japan (NTSC)
@@ -180,11 +186,15 @@ int Init_32X(ROM_t* MD_ROM)
 	// First, copy the ROM to the 32X ROM section.
 	memcpy(_32X_Rom, Rom_Data, 4 * 1024 * 1024);
 	
-	// Byteswap the SH2 ROM data from little-endian (SH2) to host-endian.
-	le16_to_cpu_array(_32X_Rom, Rom_Size);
-	
 	// Byteswap the 68000 ROM data from big-endian (MC68000) to host-endian.
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_MD_ROM;
 	be16_to_cpu_array(Rom_Data, Rom_Size);
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
+	
+	// Byteswap the SH2 ROM data from little-endian (SH2) to host-endian.
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_ROM;
+	le16_to_cpu_array(_32X_Rom, Rom_Size);
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_ROM;
 	
 	// Reset all CPUs and other components.
 	MSH2_Reset();

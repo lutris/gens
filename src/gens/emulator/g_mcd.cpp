@@ -171,6 +171,7 @@ int Init_SegaCD(const char* iso_name)
 	Rom_Data[0x72] = 0xFF;
 	Rom_Data[0x73] = 0xFF;
 	be16_to_cpu_array(Rom_Data, Rom_Size);
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.
 	M68K_Reset(2);
@@ -271,6 +272,7 @@ void Reset_SegaCD(void)
 	
 	// Load the BIOS file.
 	string z_filename;
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_MD_ROM;
 	if (ROM::loadROM(BIOS_To_Use, z_filename, Game) <= 0)
 	{
 		GensUI::msgBox(
@@ -294,6 +296,7 @@ void Reset_SegaCD(void)
 	Rom_Data[0x72] = 0xFF;
 	Rom_Data[0x73] = 0xFF;
 	be16_to_cpu_array(Rom_Data, Rom_Size);
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.
 	M68K_Reset(2);

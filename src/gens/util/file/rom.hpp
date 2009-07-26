@@ -57,6 +57,19 @@ extern char Rom_Dir[GENS_PATH_MAX];
 extern ROM_t* Game;
 extern char ROM_Name[512];
 
+// Current byteswap state.
+// A '1' in any bit indicates that the ROM is byteswapped.
+// This does not necessarily mean it has actually been byteswapped;
+// instead, it means that the byteswap macro has been executed.
+// MD_ROM refers to Rom_Data; this is also used by SegaCD firmware.
+#define ROM_BYTESWAPPED_MD_ROM		(1 << 0)
+#define ROM_BYTESWAPPED_MD_TMSS		(1 << 1)
+#define ROM_BYTESWAPPED_32X_ROM		(1 << 2)
+#define ROM_BYTESWAPPED_32X_FW_68K	(1 << 3)
+#define ROM_BYTESWAPPED_32X_FW_MSH2	(1 << 4)
+#define ROM_BYTESWAPPED_32X_FW_SSH2	(1 << 5)
+extern int ROM_ByteSwap_State;
+
 #ifdef __cplusplus
 }
 #endif

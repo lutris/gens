@@ -146,6 +146,7 @@ void Init_Genesis_Bios(void)
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
+	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_MD_TMSS;
 	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
 		fread(&Genesis_Rom[0], 1, 2 * 1024, f);
@@ -157,6 +158,7 @@ void Init_Genesis_Bios(void)
 		// No Genesis BIOS. Clear the Genesis ROM buffer.
 		memset(Genesis_Rom, 0, 2 * 1024);
 	}
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_TMSS;
 	
 	Rom_Size = 2 * 1024;
 	memcpy(Rom_Data, Genesis_Rom, 2 * 1024);
@@ -301,6 +303,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	
 	// Byteswap the ROM data.
 	be16_to_cpu_array(Rom_Data, Rom_Size);
+	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.
 	M68K_Reset(0);
