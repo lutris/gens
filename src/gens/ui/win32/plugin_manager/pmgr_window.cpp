@@ -44,7 +44,7 @@
 #include <commctrl.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
-#include "ui/win32/charset.hpp"
+#include "charset/cp1252.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"

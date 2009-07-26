@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: Character set conversion functions.                               *
+ * Gens: cp1252 character set conversion functions.                        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,7 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "charset.hpp"
+// NOTE: This code does not use libiconv, and may not be very efficient.
+// However, it works for now. It may be replaced with libiconv later on,
+// but that requires including a copy of libiconv in the Gens/GS source,
+// since MinGW doesn't include it.
+
+#include "cp1252.hpp"
 
 // C includes
 #include <cstring>
