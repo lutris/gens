@@ -135,7 +135,7 @@ int Init_32X(ROM_t* MD_ROM)
 	{
 		default:
 		case -1: // Autodetection.
-			Detect_Country_Genesis();
+			Detect_Country_Genesis(MD_ROM);
 			break;
 		
 		case 0: // Japan (NTSC)
@@ -159,19 +159,8 @@ int Init_32X(ROM_t* MD_ROM)
 			break;
 	}
 	
-	// Check which ROM name should be used.
-	// Default: ROM_Name_W
-	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
-	const char* tmpROMName = MD_ROM->ROM_Name;
-	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
-	{
-		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
-		{
-			// ROM_Name_W isn't blank. Use it.
-			tmpROMName = MD_ROM->ROM_Name_W;
-			break;
-		}
-	}
+	// Get the ROM name.
+	string tmpROMName = ROM::getRomName(MD_ROM, Game_Mode);
 	
 	// Set the window title to the localized console name and the game name.
 	GensUI::setWindowTitle_Game(((CPU_Mode == 1) ? "32X (PAL)" : "32X (NTSC)"), tmpROMName);

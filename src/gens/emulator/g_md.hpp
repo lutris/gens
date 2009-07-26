@@ -13,7 +13,7 @@ extern "C" {
 
 extern int congratulations;
 
-void Detect_Country_Genesis(void);
+void Detect_Country_Genesis(ROM_t* MD_ROM);
 
 void Init_Genesis_Bios(void);
 void Init_Genesis_SRAM(ROM_t* MD_ROM);

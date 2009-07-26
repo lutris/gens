@@ -42,27 +42,31 @@ int congratulations = 0;
 
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.
+ * @param MD_ROM Pointer to the MD_ROM struct.
  */
-void Detect_Country_Genesis(void)
+void Detect_Country_Genesis(ROM_t* MD_ROM)
 {
-	const int c_tab[3] = { 4, 1, 8 };
-	const int gm_tab[3] = { 1, 0, 1 };
-	const int cm_tab[3] = { 0, 0, 1 };
+	static const int c_tab[3]  = { 4, 1, 8 };
+	static const int gm_tab[3] = { 1, 0, 1 };
+	static const int cm_tab[3] = { 0, 0, 1 };
 	
 	int i, coun = 0;
 	char c;
 	
-	if (!strncasecmp((char*)&Rom_Data[0x1F0], "eur", 3))
+	if (!MD_ROM)
+		return;
+	
+	if (!strncasecmp(MD_ROM->Country_Codes, "eur", 3))
 		coun |= 8;
-	else if (!strncasecmp((char*)&Rom_Data[0x1F0], "usa", 3))
+	else if (!strncasecmp(MD_ROM->Country_Codes, "usa", 3))
 		coun |= 4;
-	else if (!strncasecmp((char*)&Rom_Data[0x1F0], "jap", 3))
+	else if (!strncasecmp(MD_ROM->Country_Codes, "jap", 3))
 		coun |= 1;
 	else
 	{
 		for (i = 0; i < 4; i++)
 		{
-			c = toupper(Rom_Data[0x1F0 + i]);
+			c = toupper(MD_ROM->Country_Codes[i]);
 			
 			if (c == 'U')
 				coun |= 4;
@@ -182,14 +186,14 @@ void Init_Genesis_Bios(void)
  */
 void Init_Genesis_SRAM(ROM_t* MD_ROM)
 {
-	if (MD_ROM->RAM_Info[8] == 'R' &&
-	    MD_ROM->RAM_Info[9] == 'A' &&
-	    (MD_ROM->RAM_Info[10] & 0x40))
+	if (MD_ROM->SRAM_Info[0] == 'R' &&
+	    MD_ROM->SRAM_Info[1] == 'A' &&
+	    (MD_ROM->SRAM_Info[2] & 0x40))
 	{
 		// SRAM specified in the ROM header. Use this address.
 		// SRAM starting position must be a multiple of 0x080000.
-		SRAM_Start = MD_ROM->RAM_Start_Address & 0xF80000;
-		SRAM_End = MD_ROM->RAM_End_Address;
+		SRAM_Start = MD_ROM->SRAM_Start_Address & 0xF80000;
+		SRAM_End = MD_ROM->SRAM_End_Address;
 	}
 	else
 	{
@@ -257,7 +261,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	{
 		default:
 		case -1: // Autodetection.
-			Detect_Country_Genesis ();
+			Detect_Country_Genesis(MD_ROM);
 			break;
 		
 		case 0: // Japan (NTSC)
@@ -281,19 +285,8 @@ int Init_Genesis(ROM_t* MD_ROM)
 			break;
 	}
 	
-	// Check which ROM name should be used.
-	// Default: ROM_Name_W
-	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
-	const char* tmpROMName = MD_ROM->ROM_Name;
-	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
-	{
-		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
-		{
-			// ROM_Name_W isn't blank. Use it.
-			tmpROMName = MD_ROM->ROM_Name_W;
-			break;
-		}
-	}
+	// Get the ROM name.
+	string tmpROMName = ROM::getRomName(MD_ROM, Game_Mode);
 	
 	// Set the window title to the localized console name and the game name.	
 	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "Genesis" : "Mega Drive"), tmpROMName);

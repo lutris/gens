@@ -26,30 +26,38 @@
 #include "emulator/gens.hpp"
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct _ROM_t
+/* Make sure ROM_t is packed. */
+#define PACKED __attribute__ ((packed))
+
+/**
+ * ROM_t: Contains a ROM header.
+ * NOTE: Strings are NOT null-terminated!
+ */
+typedef struct PACKED _ROM_t
 {
-	char Console_Name[17];
-	char Copyright[17];
-	char ROM_Name[49];
-	char ROM_Name_W[49];
-	char Type[3];
-	char Version[13];
-	unsigned int Checksum;
-	char IO_Support[17];
-	unsigned int ROM_Start_Address;
-	unsigned int ROM_End_Address;
-	unsigned int R_Size;
-	char RAM_Info[13];
-	unsigned int RAM_Start_Address;
-	unsigned int RAM_End_Address;
-	char Modem_Info[13];
-	char Description[41];
-	char Countries[4];
+	char Console_Name[16];
+	char Copyright[16];
+	char ROM_Name_JP[48];	// Japanese ROM name.
+	char ROM_Name_US[48];	// US/Europe ROM name.
+	char Serial_Number[14];
+	uint16_t CheckSum;
+	char IO_Support[16];
+	uint32_t ROM_Start_Address;
+	uint32_t ROM_End_Address;
+	uint32_t RAM_Start_Address;
+	uint32_t RAM_End_Address;
+	char SRAM_Info[4];
+	uint32_t SRAM_Start_Address;
+	uint32_t SRAM_End_Address;
+	char Modem_Info[12];
+	char Notes[40];
+	char Country_Codes[16];
 } ROM_t;
 
 extern char Rom_Dir[GENS_PATH_MAX];
@@ -110,6 +118,8 @@ class ROM
 		static void fixChecksum(void);
 		static void freeROM(ROM_t* ROM_MD);
 		
+		static std::string getRomName(ROM_t *rom, bool overseas);
+		
 		// Recent ROM struct.
 		struct Recent_ROM_t
 		{
@@ -129,7 +139,7 @@ class ROM
 		static void updateROMDir(const std::string& filename);
 		static void updateROMName(const char* filename);
 		static void deinterleaveSMD(void);
-		static void fillROMInfo(void);
+		static void fillROMInfo(ROM_t *rom);
 		static unsigned short calcChecksum(void);
 	
 	private:

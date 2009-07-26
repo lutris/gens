@@ -107,8 +107,6 @@ char ROM_Name[512];
 // instead, it means that the byteswap macro has been executed.
 int ROM_ByteSwap_State;
 
-ROM_t* myROM = NULL;
-
 // Double-ended queue containing all Recent ROMs.
 deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
 
@@ -346,50 +344,23 @@ void ROM::deinterleaveSMD(void)
 
 /**
  * fillROMInfo(): Fill in game information from the ROM header.
+ * @param rom Pointer to ROM_t to fill in.
  */
-void ROM::fillROMInfo(void)
+void ROM::fillROMInfo(ROM_t *rom)
 {
-	// Copy ROM text.
-	// TODO: Use constants for the ROM addresses.
-	memcpy(myROM->Console_Name,	&Rom_Data[0x100], 16);
-	memcpy(myROM->Copyright,	&Rom_Data[0x110], 16);
-	memcpy(myROM->ROM_Name,		&Rom_Data[0x120], 48);
-	memcpy(myROM->ROM_Name_W,	&Rom_Data[0x150], 48);
-	memcpy(myROM->Type,		&Rom_Data[0x180], 2);
-	memcpy(myROM->Version,		&Rom_Data[0x182], 12);
-	myROM->Checksum			= be16_to_cpu_from_ptr(&Rom_Data[0x18E]);
-	memcpy(myROM->IO_Support,	&Rom_Data[0x190], 16);
-	myROM->ROM_Start_Address	= be32_to_cpu_from_ptr(&Rom_Data[0x1A0]);
-	myROM->ROM_End_Address		= be32_to_cpu_from_ptr(&Rom_Data[0x1A4]);
-	memcpy(myROM->RAM_Info,		&Rom_Data[0x1A8], 12);
-	myROM->RAM_Start_Address	= be32_to_cpu_from_ptr(&Rom_Data[0x1B4]);
-	myROM->RAM_End_Address		= be32_to_cpu_from_ptr(&Rom_Data[0x1B8]);
-	memcpy(myROM->Modem_Info,	&Rom_Data[0x1BC], 12);
-	memcpy(myROM->Description,	&Rom_Data[0x1C8], 40);
-	memcpy(myROM->Countries,	&Rom_Data[0x1F0], 4);
+	if (!rom)
+		return;
 	
-	char tmp[14];
-	memcpy(&tmp[0], myROM->Type, 2);
-	memcpy(&tmp[2], myROM->Version, 12);
-	if (memcmp(tmp, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060", 14) == 0)
+	// Load the ROM header.
+	memcpy(rom, &Rom_Data[0x100], sizeof(*rom));
+	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
+	{
+		// ROM is byteswapped. Unswap the header.
+		be16_to_cpu_array(rom, sizeof(*rom));
+	}
+	
+	if (memcmp(rom->Serial_Number, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060", sizeof(rom->Serial_Number)) == 0)
 		ice = 1;
-	
-	// Calculate internal ROM size using the ROM header's
-	// starting address and ending address.
-	myROM->R_Size = myROM->ROM_End_Address - myROM->ROM_Start_Address + 1;
-	
-	// Null-terminate the strings.
-	myROM->Console_Name[16] = 0;
-	myROM->Copyright[16] = 0;
-	myROM->ROM_Name[48] = 0;
-	myROM->ROM_Name_W[48] = 0;
-	myROM->Type[2] = 0;
-	myROM->Version[12] = 0;
-	myROM->IO_Support[12] = 0;
-	myROM->RAM_Info[12] = 0;
-	myROM->Modem_Info[12] = 0;
-	myROM->Description[40] = 0;
-	myROM->Countries[3] = 0;
 }
 
 
@@ -733,7 +704,7 @@ unsigned int ROM::loadROM(const string& filename,
 		return ROMTYPE_SYS_NONE;
 	}
 	
-	myROM = (ROM_t*)malloc(sizeof(ROM_t));
+	ROM_t *myROM = (ROM_t*)malloc(sizeof(ROM_t));
 	if (!myROM)
 	{
 		// Memory allocation error
@@ -792,7 +763,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (romType & ROMTYPE_FLAG_INTERLEAVED)
 		deinterleaveSMD();
 	
-	fillROMInfo();
+	fillROMInfo(myROM);
 	
 	GensUI::setMousePointer(false);
 	out_ROM = myROM;
@@ -914,4 +885,54 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	EventMgr::RaiseEvent(MDP_EVENT_CLOSE_ROM, NULL);
 	
 	GensUI::setWindowTitle_Idle();
+}
+
+
+/**
+ * getRomName(): Get the ROM name from the specified ROM.
+ * @param rom ROM_t to check.
+ * @param japan If true, use the US/Europe name; otherwise, use the Japan name.
+ */
+string ROM::getRomName(ROM_t *rom, bool overseas)
+{
+	if (!rom)
+		return "";
+	
+	// Check which ROM name should be used.
+	// Default: ROM_Name_US for US/Europe, ROM_Name_JP for Japan.
+	// NOTE: These strings are *not* null-terminated!
+	const char *defRomName;
+	const char *altRomName;
+	
+	if (!overseas)
+	{
+		// Japan.
+		defRomName = rom->ROM_Name_JP;
+		altRomName = rom->ROM_Name_US;
+	}
+	else
+	{
+		// US/Europe.
+		defRomName = rom->ROM_Name_US;
+		altRomName = rom->ROM_Name_JP;
+	}
+	
+	// If the default ROM name is blank, use the alternate ROM name.
+	const char *romNameToUse = altRomName;
+	for (unsigned int cpos = sizeof(rom->ROM_Name_US); cpos != 0; cpos--)
+	{
+		if (defRomName[cpos] > 0x20)
+		{
+			// The default ROM name isn't blank. Use it.
+			romNameToUse = defRomName;
+			break;
+		}
+	}
+	
+	// Convert the ROM name to a null-terminated string.
+	char RomName[49];
+	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
+	RomName[sizeof(RomName)-1] = 0x00;
+	
+	return string(RomName);
 }

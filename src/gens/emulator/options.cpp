@@ -228,7 +228,7 @@ void Options::setCountry(const int newCountry)
 		case -1:
 			// Auto-detect.
 			if (Genesis_Started || _32X_Started)
-				Detect_Country_Genesis();
+				Detect_Country_Genesis(Game);
 			else if (SegaCD_Started)
 				Detect_Country_SegaCD();
 			break;
@@ -1207,7 +1207,7 @@ void Options::setGameName(void)
 			systemName = "Mega Drive";
 		else
 			systemName = "Genesis";
-		gameName = Game->ROM_Name_W;
+		gameName = ROM::getRomName(Game, Game_Mode);
 	}
 	else if (_32X_Started)
 	{
@@ -1215,7 +1215,7 @@ void Options::setGameName(void)
 			systemName = "32X (PAL)";
 		else
 			systemName = "32X (NTSC)";
-		gameName = Game->ROM_Name_W;
+		gameName = ROM::getRomName(Game, Game_Mode);
 	}
 	else if (SegaCD_Started)
 	{
