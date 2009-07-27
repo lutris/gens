@@ -106,7 +106,7 @@ extern int ROM_ByteSwap_State;
 class ROM
 {
 	public:
-		static void updateCDROMName(const char *cdromName);
+		static void updateCDROMName(const unsigned char *cdromHeader, bool overseas);
 		
 		static int getROM(void);
 		static int openROM(const std::string& filename, std::string z_filename = "");

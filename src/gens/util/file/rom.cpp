@@ -194,12 +194,23 @@ void ROM::updateROMName(const char* filename)
 
 /**
  * updateCDROMName(): Update the name of a SegaCD game.
- * @param cdromName Name of the SegaCD game.
+ * @param cdromHeader SegaCD header.
+ * @param overseas If true, use the US/Europe name; otherwise, use the Japan name.
  */
-void ROM::updateCDROMName(const char *cdromName)
+void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 {
 	// Copy the CD-ROM name to ROM_Filename.
-	memcpy(ROM_Filename, cdromName, 48);
+	// TODO: Do this whenever getRomName() would be used.
+	if (!overseas)
+	{
+		// Japan.
+		memcpy(ROM_Filename, &cdromHeader[0x20], 48);
+	}
+	else
+	{
+		// US/Europe.
+		memcpy(ROM_Filename, &cdromHeader[0x50], 48);
+	}
 	
 	// Check for invalid characters.
 	bool validName = false;
@@ -235,6 +246,21 @@ void ROM::updateCDROMName(const char *cdromName)
 			break;
 	}
 	ROM_Filename[i + 1] = 0;
+	
+#ifdef HAVE_ICONV
+	// If overseas is false (Japan), convert from Shift-JIS to UTF-8, if necessary.
+	if (!overseas)
+	{
+		// Attempt to convert the ROM name.
+		string romNameJP = gens_iconv(ROM_Filename, sizeof(ROM_Filename), "SHIFT-JIS", "");
+		if (!romNameJP.empty())
+		{
+			// The ROM name was converted successfully.
+			strncpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
+			ROM_Filename[sizeof(ROM_Filename)-1] = 0x00;
+		}
+	}
+#endif
 }
 
 // Temporary C wrapper functions.
@@ -905,7 +931,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 /**
  * getRomName(): Get the ROM name from the specified ROM.
  * @param rom ROM_t to check.
- * @param japan If true, use the US/Europe name; otherwise, use the Japan name.
+ * @param overseas If true, use the US/Europe name; otherwise, use the Japan name.
  */
 string ROM::getRomName(ROM_t *rom, bool overseas)
 {
