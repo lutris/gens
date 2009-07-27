@@ -155,7 +155,7 @@ void selcd_window_show(void)
 	// Create the dropdown for the CD-ROM drive speed selection.
 	cboDriveSpeed = gtk_combo_box_new_text();
 	char tmpSpeed[16];
-	for (int i = 0; i < ((sizeof(CD_DriveSpeed) / sizeof(CD_DriveSpeed[0])) - 1); i++)
+	for (unsigned int i = 0; i < ((sizeof(CD_DriveSpeed) / sizeof(CD_DriveSpeed[0])) - 1); i++)
 	{
 		if (CD_DriveSpeed[i] < 0)
 			break;
@@ -257,7 +257,7 @@ static void selcd_window_init(void)
 	
 	// CD-ROM drive speed.
 	int driveSpeed = 0;
-	for (int i = 0; i < ((sizeof(CD_DriveSpeed) / sizeof(CD_DriveSpeed[0])) - 1); i++)
+	for (unsigned int i = 0; i < ((sizeof(CD_DriveSpeed) / sizeof(CD_DriveSpeed[0])) - 1); i++)
 	{
 		if (CD_DriveSpeed[i] < 0)
 			break;
