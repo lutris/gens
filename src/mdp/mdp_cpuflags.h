@@ -28,6 +28,7 @@
 /* CPU flags (IA32/x86_64) */
 #if defined(__i386__) || defined(__amd64__)
 
+/*! BEGIN: MDP v1.0 CPU flags. !*/
 #define MDP_CPUFLAG_X86_MMX		((uint32_t)(1 << 0))
 #define MDP_CPUFLAG_X86_MMXEXT		((uint32_t)(1 << 1))	/* AMD only */
 #define MDP_CPUFLAG_X86_3DNOW		((uint32_t)(1 << 2))	/* AMD only */
@@ -39,6 +40,7 @@
 #define MDP_CPUFLAG_X86_SSE41		((uint32_t)(1 << 8))
 #define MDP_CPUFLAG_X86_SSE42		((uint32_t)(1 << 9))
 #define MDP_CPUFLAG_X86_SSE4A		((uint32_t)(1 << 10))
+/*! END: MDP v1.0 CPU flags. !*/
 
 #endif /* defined(__i386__) || defined(__amd64__) */
 

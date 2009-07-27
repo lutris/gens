@@ -28,20 +28,26 @@
 extern "C" {
 #endif
 
-/* MDP_REG_IC: Register IC IDs. */
+/** MDP_REG_IC: Register IC IDs. **/
 typedef enum _MDP_REG_IC
 {
+	/*! BEGIN: MDP v1.0 register IC IDs. !*/
 	MDP_REG_IC_NULL		= 0,
 	MDP_REG_IC_M68K		= 1,
 	MDP_REG_IC_VDP		= 2,
 	MDP_REG_IC_YM2612	= 3,
 	MDP_REG_IC_PSG		= 4,
 	MDP_REG_IC_Z80		= 5,
-#if 0 /* TODO: Figure out how to manage these. */
+	/*! END: MDP v1.0 register IC IDs. !*/
+	
+#if 0
+	/* TODO: These will be implemented in a future version of MDP. */
 	MDP_REG_IC_S68K		= 6,
 	MDP_REG_IC_MSH2		= 7,
 	MDP_REG_IC_SSH2		= 8,
 #endif
+	
+	MDP_REG_IC_MAX
 } MDP_REG_IC;
 
 

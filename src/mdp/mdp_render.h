@@ -33,6 +33,8 @@ extern "C" {
 
 /* Video mode flags. */
 
+/*! BEGIN: MDP v1.0 video mode flags. !*/
+
 #define MDP_RENDER_VMODE_CREATE(src, dst)	\
 	(((src) & 0x03) | (((dst) & 0x03) << 2))
 
@@ -46,10 +48,14 @@ extern "C" {
 /* Bits 2-3: Destination color mode. */
 #define MDP_RENDER_VMODE_GET_DST(x)	((x >> 2) & 0x03)
 
-/* Render information struct. */
+/*! END: MDP v1.0 video mode flags. !*/
+
+/** Render information struct. **/
 #pragma pack(1)
 typedef struct PACKED _mdp_render_info_t
 {
+	/*! BEGIN: MDP v1.0 render information struct. !*/
+	
 	void *destScreen;	/* Destination screen buffer. */
 	void *mdScreen;		/* Source screen buffer. */
 	
@@ -63,10 +69,13 @@ typedef struct PACKED _mdp_render_info_t
 	uint32_t vmodeFlags;	/* Video mode flags. */
 	
 	void *data;		/* Extra data set by the plugin. */
+	
+	/*! END: MDP v1.0 render information struct. !*/
 } mdp_render_info_t;
 #pragma pack()
 
-/* Render plugin flags. */
+/** Render plugin flags. **/
+/*! BEGIN: MDP v1.0 render plugin flags. !*/
 #define MDP_RENDER_FLAG_RGB_555to555	((uint32_t)(1 << 0))
 #define MDP_RENDER_FLAG_RGB_555to565	((uint32_t)(1 << 1))
 #define MDP_RENDER_FLAG_RGB_555to888	((uint32_t)(1 << 2))
@@ -76,13 +85,17 @@ typedef struct PACKED _mdp_render_info_t
 #define MDP_RENDER_FLAG_RGB_888to555	((uint32_t)(1 << 6))
 #define MDP_RENDER_FLAG_RGB_888to565	((uint32_t)(1 << 7))
 #define MDP_RENDER_FLAG_RGB_888to888	((uint32_t)(1 << 8))
+/*! END: MDP v1.0 render plugin flags. !*/
 
-// Render plugin definition.
+/* Render plugin function definition. */
 typedef int (MDP_FNCALL *mdp_render_fn)(const mdp_render_info_t *renderInfo);
 
+/** Render plugin definition struct. */
 #pragma pack(1)
 typedef struct PACKED _mdp_render_t
 {
+	/*! BEGIN: MDP v1.0 render plugin definition struct. !*/
+	
 	mdp_render_fn blit;	/* Blit function. */
 	const char* tag;	/* Render tag. */
 	
@@ -90,6 +103,8 @@ typedef struct PACKED _mdp_render_t
 	const uint32_t flags;	/* Render flags. */
 	
 	void *data;		/* Extra data. */
+	
+	/*! END: MDP v1.0 render plugin definition struct. !*/
 } mdp_render_t;
 #pragma pack()
 

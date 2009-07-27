@@ -25,20 +25,26 @@
 extern "C" {
 #endif
 
-/* MDP_MEM: Memory IDs. */
+/** MDP_MEM: Memory IDs. **/
 typedef enum _MDP_MEM
 {
+	/*! BEGIN: MDP v1.0 memory IDs. !*/
 	MDP_MEM_NULL		= 0,
 	MDP_MEM_MD_ROM		= 1,
 	MDP_MEM_MD_RAM		= 2,
 	MDP_MEM_MD_VRAM		= 3,
 	MDP_MEM_MD_CRAM		= 4,
-#if 0 /* TODO: Figure out how to manage these. */
+	/*! END: MDP v1.0 memory IDs. !*/
+	
+#if 0
+	/* TODO: These will be implemented in a future version of MDP. */
 	MDP_MEM_Z80_RAM		= 5,
 	MDP_MEM_MCD_PRG_RAM	= 6,
 	MDP_MEM_MCD_WORD_RAM	= 7,
 	MDP_MEM_32X_RAM		= 8
 #endif
+	
+	MDP_MEM_MAX
 } MDP_MEM;
 
 #ifdef __cplusplus

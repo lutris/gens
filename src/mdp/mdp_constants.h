@@ -25,9 +25,10 @@
 extern "C" {
 #endif
 
-/* System ID constants. */
+/* System IDs. */
 typedef enum _MDP_SYSTEM_ID
 {
+	/*! BEGIN: MDP v1.0 system IDs. !*/
 	MDP_SYSTEM_UNKNOWN = 0,
 	MDP_SYSTEM_MD      = 1,
 	MDP_SYSTEM_MCD     = 2,
@@ -36,7 +37,10 @@ typedef enum _MDP_SYSTEM_ID
 	MDP_SYSTEM_SMS     = 5,
 	MDP_SYSTEM_GG      = 6,
 	MDP_SYSTEM_SG1000  = 7,
-	MDP_SYSTEM_PICO    = 8
+	MDP_SYSTEM_PICO    = 8,
+	/*! END: MDP v1.0 system IDs. !*/
+	
+	MDP_SYSTEM_MAX
 } MDP_SYSTEM_ID;
 
 #ifdef __cplusplus

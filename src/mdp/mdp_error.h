@@ -33,7 +33,8 @@
  * High word: Error category.
  */
 
-/* General error codes. */
+/** General errors. **/
+/*! BEGIN: MDP v1.0 general errors. !*/
 #define MDP_ERR_GENERAL_CATEGORY		((uint32_t)(0x0000 << 16))
 #define	MDP_ERR_OK				((uint32_t)(0x0000 | MDP_ERR_GENERAL_CATEGORY))
 #define MDP_ERR_CANNOT_OPEN_DLL			((uint32_t)(0x0001 | MDP_ERR_GENERAL_CATEGORY))
@@ -53,16 +54,20 @@
 #define MDP_ERR_UNSUPPORTED_UI			((uint32_t)(0x0204 | MDP_ERR_GENERAL_CATEGORY))
 #define MDP_ERR_ROM_NOT_LOADED			((uint32_t)(0x0205 | MDP_ERR_GENERAL_CATEGORY))
 #define MDP_ERR_UNKNOWN				((uint32_t)(0xFFFF | MDP_ERR_GENERAL_CATEGORY))
+/*! END: MDP v1.0 general errors. !*/
 
-/* Renderer errors. */
+/** Renderer errors. **/
+/*! BEGIN: MDP v1.0 renderer errors. !*/
 #define MDP_ERR_RENDER_CATEGORY			((uint32_t)(0x0001 << 16))
 #define MDP_ERR_RENDER_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_RENDER_CATEGORY))
 #define MDP_ERR_RENDER_DUPLICATE_TAG		((uint32_t)(0x0001 | MDP_ERR_RENDER_CATEGORY))
 #define MDP_ERR_RENDER_INVALID_RENDERINFO	((uint32_t)(0x0002 | MDP_ERR_RENDER_CATEGORY))
 #define MDP_ERR_RENDER_UNSUPPORTED_FLAG		((uint32_t)(0x0003 | MDP_ERR_RENDER_CATEGORY))
 #define MDP_ERR_RENDER_UNSUPPORTED_VMODE	((uint32_t)(0x0004 | MDP_ERR_RENDER_CATEGORY))
+/*! END: MDP v1.0 renderer errors. !*/
 
-/* Memory errors. */
+/** Memory errors. **/
+/*! BEGIN: MDP v1.0 memory errors. !*/
 #define MDP_ERR_MEM_CATEGORY			((uint32_t)(0x0002 << 16))
 #define MDP_ERR_MEM_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_MEM_INVALID_MEMID		((uint32_t)(0x0001 | MDP_ERR_MEM_CATEGORY))
@@ -70,8 +75,10 @@
 #define MDP_ERR_MEM_OUT_OF_RANGE		((uint32_t)(0x0003 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_MEM_NOT_RESIZABLE		((uint32_t)(0x0004 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_MEM_UNALIGNED			((uint32_t)(0x0005 | MDP_ERR_MEM_CATEGORY))
+/*! END: MDP v1.0 memory errors. !*/
 
-/* Register errors. */
+/** Register errors. **/
+/*! BEGIN: MDP v1.0 register errors. !*/
 #define MDP_ERR_REG_CATEGORY			((uint32_t)(0x0003 << 16))
 #define MDP_ERR_REG_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_REG_INVALID_ICID		((uint32_t)(0x0001 | MDP_ERR_MEM_CATEGORY))
@@ -79,37 +86,49 @@
 #define MDP_ERR_REG_NOT_ALLOCATED		((uint32_t)(0x0003 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_REG_READ_ONLY			((uint32_t)(0x0004 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_REG_WRITE_ONLY			((uint32_t)(0x0005 | MDP_ERR_MEM_CATEGORY))
+/*! END: MDP v1.0 register errors. !*/
 
-/* Menu errors. */
+/** Menu errors. **/
+/*! BEGIN: MDP v1.0 menu errors. !*/
 #define MDP_ERR_MENU_CATEGORY			((uint32_t)(0x0003 << 16))
 #define MDP_ERR_MENU_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_MENU_CATEGORY))
 #define MDP_ERR_MENU_INVALID_MENUID		((uint32_t)(0x0001 | MDP_ERR_MENU_CATEGORY))
 #define MDP_ERR_MENU_TOO_MANY_ITEMS		((uint32_t)(0x0002 | MDP_ERR_MENU_CATEGORY))
+/*! END: MDP v1.0 menu errors. !*/
 
-/* Event errors. */
+/** Event errors. **/
+/*! BEGIN: MDP v1.0 event errors. !*/
 #define MDP_ERR_EVENT_CATEGORY			((uint32_t)(0x0004 << 16))
 #define MDP_ERR_EVENT_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_EVENT_CATEGORY))
 #define MDP_ERR_EVENT_INVALID_EVENTID		((uint32_t)(0x0001 | MDP_ERR_EVENT_CATEGORY))
 #define MDP_ERR_EVENT_NOT_REGISTERED		((uint32_t)(0x0002 | MDP_ERR_EVENT_CATEGORY))
 #define MDP_ERR_EVENT_ALREADY_REGISTERED	((uint32_t)(0x0003 | MDP_ERR_EVENT_CATEGORY))
+/*! END: MDP v1.0 event errors. !*/
 
-/* Window errors. */
+/** Window errors. **/
+/*! BEGIN: MDP v1.0 window errors. !*/
 #define MDP_ERR_WINDOW_CATEGORY			((uint32_t)(0x0005 << 16))
 #define MDP_ERR_WINDOW_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_WINDOW_CATEGORY))
 #define MDP_ERR_WINDOW_INVALID_WINDOW		((uint32_t)(0x0001 | MDP_ERR_WINDOW_CATEGORY))
 #define MDP_ERR_WINDOW_ALREADY_REGISTERED	((uint32_t)(0x0002 | MDP_ERR_WINDOW_CATEGORY))
+/*! END: MDP v1.0 window errors. !*/
 
-/* Emulator Control errors. */
+/** Emulator Control errors. **/
+/*! BEGIN: MDP v1.0 emulator control errors. !*/
 #define MDP_ERR_EMUCTRL_CATEGORY			((uint32_t)(0x0006 << 16))
 #define MDP_ERR_EMUCTRL_UNKNOWN				((uint32_t)(0x0000 | MDP_ERR_DIR_CATEGORY))
 #define MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED	((uint32_t)(0x0000 | MDP_ERR_DIR_CATEGORY))
+/*! END: MDP v1.0 emulator control errors. !*/
 
-/* Directory errors. */
+/** Directory errors. **/
+/*! BEGIN: MDP v1.0 directory errors. !*/
 #define MDP_ERR_DIR_CATEGORY			((uint32_t)(0x0007 << 16))
 #define MDP_ERR_DIR_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_DIR_CATEGORY))
 #define MDP_ERR_DIR_INVALID_DIRID		((uint32_t)(0x0001 | MDP_ERR_DIR_CATEGORY))
+/*! END: MDP v1.0 directory errors. !*/
 
-/* Compression errors. */
+/** Compression errors. **/
+/*! BEGIN: MDP v1.0 compression errors. !*/
 #define MDP_ERR_Z_CATEGORY			((uint32_t)(0x0008 << 16))
 #define MDP_ERR_Z_UNKNOWN			((uint32_t)(0x0008 << 16))
 #define MDP_ERR_Z_ARCHIVE_NOT_FOUND		((uint32_t)(0x0001 | MDP_ERR_Z_CATEGORY))
@@ -118,5 +137,6 @@
 #define MDP_ERR_Z_CANT_OPEN_ARCHIVE		((uint32_t)(0x0004 | MDP_ERR_Z_CATEGORY))
 #define MDP_ERR_Z_NO_FILES_IN_ARCHIVE		((uint32_t)(0x0005 | MDP_ERR_Z_CATEGORY))
 #define MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE	((uint32_t)(0x0006 | MDP_ERR_Z_CATEGORY))
+/*! END: MDP v1.0 compression errors. !*/
 
 #endif /* __MDP_ERROR_H */

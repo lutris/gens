@@ -36,23 +36,32 @@ extern "C" {
 /* MDP_VAL: Value IDs. */
 typedef enum _MDP_VAL
 {
+	/*! BEGIN: MDP v1.0 Value IDs. !*/
 	MDP_VAL_UI			= 0,
 	MDP_VAL_CPU_FLAGS		= 1,
-	MDP_VAL_VDP_LAYER_OPTIONS	= 2
+	MDP_VAL_VDP_LAYER_OPTIONS	= 2,
+	/*! END: MDP v1.0 Value IDs. !*/
+	
+	MDP_VAL_MAX
 } MDP_VAL;
 
 /* MDP_UI: UI identifiers. */
 typedef enum _MDP_UI
 {
+	/*! BEGIN: MDP v1.0 UI identifiers. !*/
 	MDP_UI_NONE		= 0,
 	MDP_UI_GTK2		= 1,
 	MDP_UI_QT4		= 2,
 	MDP_UI_WIN32		= 3,
 	MDP_UI_MACOSX_COCOA	= 4,
-	MDP_UI_BEOS		= 5
+	MDP_UI_BEOS		= 5,
+	/*! END: MDP v1.0 UI identifiers. !*/
+	
+	MDP_UI_MAX
 } MDP_UI;
 
-/* MDP_VDP_LAYER_OPTIONS: Layer options bits. */
+/** MDP_VDP_LAYER_OPTIONS: Layer options bits. **/
+/*! BEGIN: MDP v1.0 VDP layer options bits. !*/
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW		((uint32_t)(1 << 0))
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH		((uint32_t)(1 << 1))
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_SWAP		((uint32_t)(1 << 2))
@@ -72,33 +81,42 @@ typedef enum _MDP_UI
 	 MDP_VDP_LAYER_OPTIONS_SCROLLB_HIGH	| \
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_LOW	| \
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH)
+/*! END: MDP v1.0 VDP layer options bits. !*/
 
 /* MDP_MENU: Menu IDs. */
 typedef enum _MDP_MENU
 {
+	/*! BEGIN: MDP v1.0 menu IDs. !*/
 	MDP_MENU_DEFAULT	= 0,
 	MDP_MENU_PLUGINS	= 0,
 	MDP_MENU_VIDEO		= 1,
-	MDP_MENU_AUDIO		= 2
+	MDP_MENU_AUDIO		= 2,
+	/*! END: MDP v1.0 menu IDs. !*/
+	
+	MDP_MENU_MAX
 } MDP_MENU;
 
 /* Menu Handler function. */
 typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 
-/* MDP Emulator Control functions. */
+/** MDP_EMUCTRL: MDP Emulator Control functions. **/
 typedef enum _MDP_EMUCTRL
 {
+	/*! BEGIN: MDP v1.0 emulator control functions. !*/
 	MDP_EMUCTRL_UNKNOWN		= 0,
 	MDP_EMUCTRL_RESET_HARD		= 1,	/* Reset emulation. (Hard Reset) */
 	MDP_EMUCTRL_RESET_SOFT		= 2,	/* Reset emulation. (Soft Reset) */
-	MDP_EMUCTRL_RELOAD_INFO		= 3	/* Reload ROM information. */
+	MDP_EMUCTRL_RELOAD_INFO		= 3,	/* Reload ROM information. */
+	/*! END: MDP v1.0 emulator control functions. !*/
+	
+	MDP_EMUCTRL_MAX
 } MDP_EMUCTRL;
 
 /* Directory Handler functions. */
 typedef int (MDP_FNCALL *mdp_dir_get_fn)(int dir_id, char *out_buf, unsigned int size);
 typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, const char *buf);
 
-/* MDP Host Services struct. */
+/** MDP Host Services struct. **/
 typedef struct _mdp_host_t
 {
 	/**
@@ -107,7 +125,7 @@ typedef struct _mdp_host_t
 	const uint32_t interfaceVersion;
 	const uint32_t reserved;
 	
-	/*! BEGIN: MDP v1.0 functions. !*/
+	/*! BEGIN: MDP v1.0 host services functions. !*/
 	
 	/**
 	 * val_set(), val_get(): Set or get int values.
@@ -271,7 +289,7 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
 	int (MDP_FNCALL *z_close)(mdp_z_t *z_file);
 	
-	/*! END: MDP v1.0 functions. !*/
+	/*! END: MDP v1.0 host services functions. !*/
 } mdp_host_t;
 
 #ifdef __cplusplus

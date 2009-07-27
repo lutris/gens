@@ -33,6 +33,7 @@ extern "C" {
 /* MDP Event IDs */
 typedef enum _MDP_EVENT_ID
 {
+	/*! BEGIN: MDP v1.0 Event IDs. !*/
 	MDP_EVENT_UNKNOWN	= 0,
 	MDP_EVENT_LOAD_CONFIG	= 1,	/* event_info == NULL */
 	MDP_EVENT_SAVE_CONFIG	= 2,	/* event_info == NULL */
@@ -40,6 +41,7 @@ typedef enum _MDP_EVENT_ID
 	MDP_EVENT_CLOSE_ROM	= 4,	/* event_info == NULL */
 	MDP_EVENT_PRE_FRAME	= 5,	/* event_info == NULL */
 	MDP_EVENT_POST_FRAME	= 6,	/* event_info == mdp_event_post_frame_t */
+	/*! END: MDP v1.0 Event IDs. !*/
 	
 	MDP_EVENT_MAX			/* Maximum number of events. */
 } MDP_EVENT_ID;
@@ -54,6 +56,9 @@ typedef enum _MDP_EVENT_ID
  * @return MDP error code.
  */
 typedef int (MDP_FNCALL *mdp_event_handler_fn)(int event_id, void *event_info);
+
+
+/*! BEGIN: MDP v1.0 Event Information Structs. !*/
 
 
 /**
@@ -88,6 +93,9 @@ typedef struct PACKED _mdp_event_post_frame_t
 	uint32_t bpp;		/* Bits per pixel. */
 } mdp_event_post_frame_t;
 #pragma pack()
+
+
+/*! END: MDP v1.0 Event Information Structs. !*/
 
 
 #ifdef __cplusplus
