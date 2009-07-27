@@ -59,7 +59,7 @@ static mdp_func_t mdp_func =
 mdp_t mdp_render_2x =
 {
 	// Plugin version information.
-	.interfaceVersion = MDP_INTERFACE_VERSION,
+	.interfaceVersion = MDP_VERSION(1, 0, 0),
 	.pluginVersion = MDP_VERSION(1, 0, 0),
 	
 	// CPU flags.
