@@ -651,6 +651,9 @@ AM_CONDITIONAL([HAVE_STRDUP], [test x$has_strdup = xyes])
 AC_CHECK_FUNCS(strtok_r, has_strtok_r=yes, has_strtok_r=no)
 AM_CONDITIONAL([HAVE_STRTOK_R], [test x$has_strtok_r = xyes])
 
+AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
+AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
+
 # Check for iconv().
 # First, check for iconv() in the C library.
 ICONV_LIBS=""
