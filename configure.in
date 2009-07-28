@@ -40,6 +40,7 @@ case $host in
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
+		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
 		ldflags_win32="-static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
@@ -50,6 +51,7 @@ case $host in
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
+		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
 		cflags_win32="-mno-cygwin -mwin32 ${cflags_win32}";
 		ldflags_win32="-mno-cygwin -mwin32 -static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
@@ -62,6 +64,7 @@ case $host in
 		obj_format=macho;
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
+		AC_DEFINE(GENS_PLATFORM, "MacOS X", Platform ID)
 		nasm_debug="-g -F null";
 		yasm_debug="-g null";
 		cflags_debug="-ggdb"
@@ -72,6 +75,7 @@ case $host in
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
+		AC_DEFINE(GENS_PLATFORM, "Linux", Platform ID)
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
@@ -81,6 +85,7 @@ case $host in
 		os=haiku
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_HAIKU, 1, Haiku operating system)
+		AC_DEFINE(GENS_PLATFORM, "Haiku", Platform ID)
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb";
@@ -90,6 +95,7 @@ case $host in
 		os=unix;
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
+		AC_DEFINE(GENS_PLATFORM, "Unix", Platform ID)
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
