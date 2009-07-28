@@ -20,10 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "sighandler.h"
 
 // Message logging.
 #include "macros/log_msg.h"
+
+// Unused Parameter macro.
+#include "macros/unused.h"
 
 // Git version.
 #include "macros/git.h"
@@ -31,8 +38,6 @@
 // C includes.
 #include <stdlib.h>
 #include <signal.h>
-
-static void gens_sighandler(int signum);
 
 
 typedef struct _gens_signal_t
@@ -94,7 +99,16 @@ static const gens_signal_t gens_signals[] =
 #ifdef SIGSYS
 	{SIGSYS, "SIGSYS", "Bad system call"},
 #endif
+	{0, NULL, NULL}
 };
+
+
+#ifdef HAVE_SIGACTION
+static void gens_sighandler(int signum, siginfo_t *info, void *context);
+static const gens_signal_t *gens_get_siginfo(int signum, int si_code);
+#else
+static void gens_sighandler(int signum);
+#endif
 
 
 /**
@@ -104,9 +118,20 @@ void gens_sighandler_init(void)
 {
 	unsigned int i;
 	
+#ifdef HAVE_SIGACTION
+	struct sigaction sa;
+	sa.sa_sigaction = gens_sighandler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART | SA_SIGINFO;
+#endif
+	
 	for (i = 0; i < (sizeof(gens_signals) / sizeof(gens_signal_t)); i++)
 	{
+#ifdef HAVE_SIGACTION
+		sigaction(gens_signals[i].signum, &sa, NULL);
+#else
 		signal(gens_signals[i].signum, gens_sighandler);
+#endif
 	}
 }
 
@@ -127,10 +152,20 @@ void gens_sighandler_end(void)
 
 /**
  * gens_sighandler(): Signal handler.
- * @param signum Signal number.
+ * @param signum	[in] Signal number.
+ * @param info		[in] Signal information. (ONLY if sigaction() is available.)
+ * @param context	[in] Context. (ONLY if sigaction() is available.)
  */
+#ifdef HAVE_SIGACTION
+static void gens_sighandler(int signum, siginfo_t *info, void *context)
+#else
 static void gens_sighandler(int signum)
+#endif
 {
+#ifdef HAVE_SIGACTION
+	GENS_UNUSED_PARAMETER(context);
+#endif
+	
 	if (
 #ifdef SIGHUP
 	    signum == SIGHUP ||
@@ -146,22 +181,27 @@ static void gens_sighandler(int signum)
 		// SIGHUP, SIGUSR1, SIGUSR2. Ignore this signal.
 		const char *signame;
 		
+		switch (signum)
+		{
 #ifdef SIGHUP
-		if (signum == SIGHUP)
-			signame = "SIGHUP";
-		else
+			case SIGHUP:
+				signame = "SIGHUP";
+				break;
 #endif
 #ifdef SIGUSR1
-		if (signum == SIGUSR1)
-			signame = "SIGUSR1";
-		else
+			case SIGUSR1:
+				signame = "SIGUSR1";
+				break;
 #endif
 #ifdef SIGUSR2
-		if (signum == SIGUSR2)
-			signame = "SIGUSR2";
-		else
+			case SIGUSR2:
+				signame = "SIGUSR2";
+				break;
 #endif
-		signame = "UNKNOWN";
+			default:
+				signame = "UNKNOWN";
+				break;
+		}
 		
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
 			"Signal %d (%s) received; ignoring.", signum, signame);
@@ -188,14 +228,54 @@ static void gens_sighandler(int signum)
 		sigdesc = "Unknown signal";
 	}
 	
+#ifdef HAVE_SIGACTION
+	// Note: If context is NULL, then info is invalid.
+	// This may happen if SIGILL is sent to the program via kill/pkill/killall.
+	const gens_signal_t *siginfo = NULL;
+	if (info && context)
+		siginfo = gens_get_siginfo(signum, info->si_code);
+	
+	char siginfo_buf[256];
+	if (siginfo)
+	{
+		// Signal information specified.
+		snprintf(siginfo_buf, sizeof(siginfo_buf),
+				"%s: %s.\n",
+				siginfo->signame, siginfo->sigdesc);
+		siginfo_buf[sizeof(siginfo_buf)-1] = 0x00;
+	}
+	else
+	{
+		// No signal information specified.
+		siginfo_buf[0] = 0x00;
+	}
+#endif
+	
 	// This uses LOG_MSG_LEVEL_ERROR in order to suppress the message box.
-	LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-		"Signal %d (%s) received. Shutting down.", signum, signame);
+#ifdef HAVE_SIGACTION
+	if (siginfo)
+	{
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Signal %d (%s: %s) received. Shutting down.",
+			signum, signame, siginfo->signame);
+	}
+	else
+#endif
+	{
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Signal %d (%s) received. Shutting down.",
+			signum, signame);
+	}
 	
 	// Show a message box.
-	char buf[512];
-	snprintf(buf, sizeof(buf),
-			"Gens/GS has crashed with Signal %d.\n%s: %s.\n\n"
+	char msg_buf[1024];
+	snprintf(msg_buf, sizeof(msg_buf),
+			"Gens/GS has crashed with Signal %d.\n"
+			"%s: %s.\n"
+#ifdef HAVE_SIGACTION
+			"%s"
+#endif
+			"\n"
 			"Build Information:\n"
 			"- Platform: " GENS_PLATFORM "\n"
 			"- Version: " VERSION "\n"
@@ -206,10 +286,119 @@ static void gens_sighandler(int signum)
 			"Please report this error to GerbilSoft (gerbilsoft@verizon.net).\n"
 			"Be sure to include detailed instructions about what you were\n"
 			"doing when this error occurred.",
-			signum, signame, sigdesc);
-	buf[sizeof(buf)-1] = 0x00;
+			signum, signame, sigdesc, siginfo_buf);
+	msg_buf[sizeof(msg_buf)-1] = 0x00;
 	
-	log_msgbox(buf, "Gens/GS Error");
+	log_msgbox(msg_buf, "Gens/GS Error");
 	
 	exit(0);
 }
+
+
+#ifdef HAVE_SIGACTION
+/**
+ * gens_get_siginfo(): Get the signal information from a received signal.
+ * @param signum	[in] Signal number.
+ * @param si_code	[in] Signal information code.
+ * @return Pointer to gens_signal_t, or NULL if not found.
+ */
+static const gens_signal_t *gens_get_siginfo(int signum, int si_code)
+{
+	// Check if there's any information associated with the signal.
+	
+#ifdef SIGILL
+	// SIGILL information.
+	static const gens_signal_t siginfo_SIGILL[] =
+	{
+		{ILL_ILLOPC,	"ILL_ILLOPC",	"Illegal opcode"},
+		{ILL_ILLOPN,	"ILL_ILLOPN",	"Illegal operand"},
+		{ILL_ILLADR,	"ILL_ILLADR",	"Illegal addressing mode"},
+		{ILL_ILLTRP,	"ILL_ILLTRP",	"Illegal trap"},
+		{ILL_PRVOPC,	"ILL_PRVOPC",	"Privileged opcode"},
+		{ILL_PRVREG,	"ILL_PRVREG",	"Privileged register"},
+		{ILL_COPROC,	"ILL_COPROC",	"Coprocessor error"},
+		{ILL_BADSTK,	"ILL_BADSTK",	"Internal stack error"},
+		{0, NULL, NULL}
+	};
+#endif
+	
+#ifdef SIGFPE
+	// SIGFPE information.
+	static const gens_signal_t siginfo_SIGFPE[] =
+	{
+		{FPE_INTDIV,	"FPE_INTDIV",	"Integer divide by zero"},
+		{FPE_INTOVF,	"FPE_INTOVF",	"Integer overflow"},
+		{FPE_FLTDIV,	"FPE_FLTDIV",	"Floating-point divide by zero"},
+		{FPE_FLTOVF,	"FPE_FLTOVF",	"Floating-point overflow"},
+		{FPE_FLTUND,	"FPE_FLTUND",	"Floating-point underflow"},
+		{FPE_FLTRES,	"FPE_FLTRES",	"Floating-point inexact result"},
+		{FPE_FLTINV,	"FPE_FLTINV",	"Floating-point invalid operation"},
+		{FPE_FLTSUB,	"FPE_FLTSUB",	"Subscript out of range"},
+		{0, NULL, NULL}
+	};
+#endif
+	
+#ifdef SIGSEGV
+	// SIGSEGV information.
+	static const gens_signal_t siginfo_SIGSEGV[] =
+	{
+		{SEGV_MAPERR,	"SEGV_MAPERR",	"Address not mapped to object"},
+		{SEGV_ACCERR,	"SEGV_ACCERR",	"Invalid permissions for mapped object"},
+		{0, NULL, NULL}
+	};
+#endif
+	
+#ifdef SIGBUS
+	// SIGBUS information.
+	static const gens_signal_t siginfo_SIGBUS[] =
+	{
+		{BUS_ADRALN,	"BUS_ADRALN",	"Invalid address alignment"},
+		{BUS_ADRERR,	"BUS_ADRERR",	"Nonexistent physical address"},
+		{BUS_OBJERR,	"BUS_OBJERR",	"Object-specific hardware error"},
+		{0, NULL, NULL}
+	};
+#endif
+	
+	const gens_signal_t *siginfo;
+	
+	switch (signum)
+	{
+#ifdef SIGILL
+		case SIGILL:
+			siginfo = &siginfo_SIGILL[0];
+			break;
+#endif
+#ifdef SIGFPE
+		case SIGFPE:
+			siginfo = &siginfo_SIGFPE[0];
+			break;
+#endif
+#ifdef SIGSEGV
+		case SIGSEGV:
+			siginfo = &siginfo_SIGSEGV[0];
+			break;
+#endif
+#ifdef SIGBUS
+		case SIGBUS:
+			siginfo = &siginfo_SIGBUS[0];
+			break;
+#endif
+		default:
+			siginfo = NULL;
+			break;
+	}
+	
+	if (!siginfo)
+		return NULL;
+	
+	// Check for signal information.
+	for (; siginfo->signum != 0; siginfo++)
+	{
+		if (siginfo->signum == si_code)
+			return siginfo;
+	}
+	
+	// No signal information was found.
+	return NULL;
+}
+#endif
