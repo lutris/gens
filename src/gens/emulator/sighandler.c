@@ -25,6 +25,9 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// Git version.
+#include "macros/git.h"
+
 // C includes.
 #include <stdlib.h>
 #include <signal.h>
@@ -192,11 +195,18 @@ static void gens_sighandler(int signum)
 	// Show a message box.
 	char buf[512];
 	snprintf(buf, sizeof(buf),
-		 "Gens/GS has crashed with Signal %d.\n%s: %s.\n\n"
-		 "Please report this error to GerbilSoft (gerbilsoft@verizon.net).\n"
-		 "Be sure to include detailed instructions about what you were\n"
-		 "doing when this error occurred.",
-		 signum, signame, sigdesc);
+			"Gens/GS has crashed with Signal %d.\n%s: %s.\n\n"
+			"Build Information:\n"
+			"- Platform: " GENS_PLATFORM "\n"
+			"- Version: " VERSION "\n"
+#ifdef GENS_GIT_VERSION
+			"- " GENS_GIT_VERSION "\n"
+#endif
+			"\n"
+			"Please report this error to GerbilSoft (gerbilsoft@verizon.net).\n"
+			"Be sure to include detailed instructions about what you were\n"
+			"doing when this error occurred.",
+			signum, signame, sigdesc);
 	buf[sizeof(buf)-1] = 0x00;
 	
 	log_msgbox(buf, "Gens/GS Error");
