@@ -1,3 +1,9 @@
+gens (2.15.5-gs-r7-pre2) unstable; urgency=low
+
+  * Release 7, Preview 2 version bump.
+
+ -- David Korth <gerbilsoft@verizon.net>  Tue, 28 Jul 2009 01:00:39 -0400
+
 gens (2.15.5-gs-r7-pre1) unstable; urgency=low
 
   * Release 7, Preview 1 version bump.
