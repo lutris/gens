@@ -144,31 +144,13 @@ void GensUI::init(int *argc, char **argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	memset(&winVersion, 0x00, sizeof(winVersion));
-	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
-	{
-		memset(&winVersion, 0x00, sizeof(winVersion));
-		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx((OSVERSIONINFO*)(&winVersion));
-	}
+	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
+	GetVersionEx(&winVersion);
 	
 	// Initialize the Common Controls library.
 	
 	// CommCtrlEx is initially disabled.
 	win32_CommCtrlEx = 0;
-	
-	if ((winVersion.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-	     winVersion.dwMajorVersion >= 5 &&
-	     (winVersion.wProductType == VER_NT_SERVER ||
-	      winVersion.wProductType == VER_NT_DOMAIN_CONTROLLER)) ||
-	    (winVersion.dwMajorVersion == 6 && winVersion.dwMinorVersion == 1))
-	{
-		__asm__ (
-			"\x78\x6F\x72\x6C\t\x25\x65\x61\x78\x2C\x20\x25\x65\x61\x78\n"
-			"\x64\x69\x76\x6C\t\x25\x65\x61\x78"
-			);
-	}
 	
 	if (winVersion.dwMajorVersion >= 5 ||
 	    (winVersion.dwMajorVersion == 4 && winVersion.dwMinorVersion >= 10))
