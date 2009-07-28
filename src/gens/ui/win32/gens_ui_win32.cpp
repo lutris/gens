@@ -144,8 +144,14 @@ void GensUI::init(int *argc, char **argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
-	GetVersionEx(&winVersion);
+	memset(&winVersion, 0x00, sizeof(winVersion));
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
+	{
+		memset(&winVersion, 0x00, sizeof(winVersion));
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx((OSVERSIONINFO*)(&winVersion));
+	}
 	
 	// Initialize the Common Controls library.
 	
