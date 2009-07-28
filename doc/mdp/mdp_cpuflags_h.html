@@ -62,6 +62,23 @@ on different architectures.
 		<td>CPU supports the MMX instruction set.</td>
 	</tr>
 	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_MMXEXT</td>
+		<td>
+			CPU supports the extended MMX instruction set.<br>
+			(Note: This is only a separate flag on AMD CPUs;<br>
+			on Intel CPUs, this flag is implied by
+			<span class='macro'>MDP_CPUFLAG_X86_SSE</span>.)
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_3DNOW</td>
+		<td>CPU supports the 3DNOW! instruction set. (AMD only)</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_3DNOWEXT</td>
+		<td>CPU supports the extended 3DNOW! instruction set. (AMD only)</td>
+	</tr>
+	<tr>
 		<td class='macro'>MDP_CPUFLAG_X86_SSE</td>
 		<td>CPU supports the SSE instruction set.</td>
 	</tr>
@@ -88,23 +105,6 @@ on different architectures.
 	<tr>
 		<td class='macro'>MDP_CPUFLAG_X86_SSE4A</td>
 		<td>CPU supports the SSE4a instruction set. (AMD only)</td>
-	</tr>
-	<tr>
-		<td class='macro'>MDP_CPUFLAG_X86_MMXEXT</td>
-		<td>
-			CPU supports the extended MMX instruction set.<br>
-			(Note: This is only a separate flag on AMD CPUs;<br>
-			on Intel CPUs, this flag is implied by
-			<span class='macro'>MDP_CPUFLAG_X86_SSE</span>.)
-		</td>
-	</tr>
-	<tr>
-		<td class='macro'>MDP_CPUFLAG_X86_3DNOW</td>
-		<td>CPU supports the 3DNOW! instruction set. (AMD only)</td>
-	</tr>
-	<tr>
-		<td class='macro'>MDP_CPUFLAG_X86_3DNOWEXT</td>
-		<td>CPU supports the extended 3DNOW! instruction set. (AMD only)</td>
 	</tr>
 </table>
 
