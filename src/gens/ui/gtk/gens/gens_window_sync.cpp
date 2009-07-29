@@ -303,7 +303,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		// Custom resolution. Set the text.
 		char sCustomRes[32];
 		snprintf(sCustomRes, sizeof(sCustomRes), "Custom... (%dx%d)", Video.GL.width, Video.GL.height);
-		sCustomRes[sizeof(sCustomRes)] = 0x00;
+		sCustomRes[sizeof(sCustomRes)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuGLResCustom))), sCustomRes);
 	}
 	else
