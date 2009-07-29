@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-SUBDIRS = plugins/render/normal plugins/render/double
+SUBDIRS = plugins
 
 if GENS_X86_ASM
 gens_x86_asm_o =

@@ -710,6 +710,8 @@ src/starscream/Makefile
 src/mdZ80/Makefile
 src/libgsft/Makefile
 src/gens/Makefile
+src/gens/plugins/Makefile
+src/gens/plugins/render/Makefile
 src/gens/plugins/render/normal/Makefile
 src/gens/plugins/render/double/Makefile
 src/mdp/Makefile
