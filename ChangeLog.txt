@@ -105,7 +105,7 @@ Release 7 introduces the following new features:
 - Added initial support for the "Palette Select" bit in VDP register 0.
   If the "Palette Select" bit is cleared, only the LSBs of each color component
   in CRAM is used to determine the colors to display, resulting in a maximum of
-  8 colors onscreen. Not very useful, but more accurate to how the MD's VDP works.
+  8 colors onscreen. This isn't very useful, but is more accurate.
 
 - SRAM can now be disabled in the Options menu. This fixes Puggsy, which checks
   for the existance of SRAM and prevents the user from advancing past a certain
@@ -117,7 +117,7 @@ Release 7 introduces the following new features:
 - A new command line option, "--boot-cd", can be specified to tell Gens/GS to
   boot from an actual SegaCD CD-ROM on startup.
 
-- [Linux] Improved VSync support with the OpenGL backend. Both the MESA and SGI
+- [Unix] Improved VSync support with the OpenGL backend. Both the MESA and SGI
   swap control methods are now supported.
 
 - The video subsystem now supports fallbacks. For example, on the Linux
@@ -132,6 +132,11 @@ Release 7 introduces the following new features:
   prevent their BRAM files from being loaded properly. If you have any of
   these games, you will need to rename the BRAM files in order to get them
   to load correctly.
+
+- [Unix] If a game has a Shift-JIS encoded title in the Japanese title field
+  and the country code is set to Japan, the title will be converted to the
+  system's native locale, e.g. UTF-8. (Win32 support for this feature will
+  be added once Gens/GS fully supports Windows' Unicode implementation.)
 
 Release 7 fixes the following bugs:
 
@@ -150,12 +155,12 @@ Release 7 fixes the following bugs:
 - Two VDP DMA bugs have been fixed:
 
   - Zero-length DMA operations are now handled as 65,536-word operations.
-    This may break some badly-written hacks.
+    This may break some poorly-written hacks.
 
   - DMA operations now wrap on a 128k boundary. This bug was reported by TmEE.
 
 - The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
-  that produced "rain" on Gens, but not on Regen and the actual hardware.
+  that produced "rain" on Gens, but not on Regen or the actual hardware.
 
 Release 7 has the following low-level code changes:
 
