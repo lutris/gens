@@ -220,7 +220,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 {
 	if (reinitSDL)
 	{
-		// Enable double buffering.
+		// Set various OpenGL attributes.
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		
 		// Color depth values.
@@ -239,7 +239,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 		else //if (bppOut == 32)
 		{
 			// 32-bit color.
-			vdraw_sdl_gl_set_visual(32, 8, 8, 8, 0, GL_BGRA,
+			vdraw_sdl_gl_set_visual(24, 8, 8, 8, 0, GL_BGRA,
 						GL_UNSIGNED_BYTE);
 		}
 		
