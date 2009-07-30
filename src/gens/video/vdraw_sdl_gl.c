@@ -186,6 +186,30 @@ int vdraw_sdl_gl_init(void)
 
 
 /**
+ * vdraw_sdl_gl_set_visual(): Set OpenGL visual attributes.
+ * @param depth Color depth.
+ * @param r Red bits.
+ * @param g Green bits.
+ * @param b Blue bits.
+ * @param a Alpha bits.
+ * @param format Pixel format.
+ * @param type Data type.
+ */
+static inline void vdraw_sdl_gl_set_visual(unsigned int depth,
+					   unsigned int r, unsigned int g, unsigned int b, unsigned int a,
+					   GLenum format, GLenum type)
+{
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depth);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   r);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, g);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  b);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, a);
+	m_pixelFormat = format;
+	m_pixelType = type;
+}
+
+
+/**
  * vdraw_sdl_gl_init_opengl(): Initialize the OpenGL backend.
  * @param w Width.
  * @param h Height.
@@ -203,35 +227,20 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 		if (bppOut == 15)
 		{
 			// 15-bit color. (Mode 555)
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  5);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-			m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			m_pixelFormat = GL_BGRA;
+			vdraw_sdl_gl_set_visual(15, 5, 5, 5, 0, GL_BGRA,
+						GL_UNSIGNED_SHORT_1_5_5_5_REV);
 		}
 		else if (bppOut == 16)
 		{
 			// 16-bit color. (Mode 565)
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-			m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
-			m_pixelFormat = GL_RGB;
+			vdraw_sdl_gl_set_visual(16, 5, 6, 5, 0, GL_RGB,
+						GL_UNSIGNED_SHORT_5_6_5);
 		}
 		else //if (bppOut == 32)
 		{
 			// 32-bit color.
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-			m_pixelType = GL_UNSIGNED_BYTE;
-			m_pixelFormat = GL_BGRA;
+			vdraw_sdl_gl_set_visual(32, 8, 8, 8, 0, GL_BGRA,
+						GL_UNSIGNED_BYTE);
 		}
 		
 		vdraw_sdl_gl_screen = SDL_SetVideoMode(w, h, 0, VDRAW_SDL_GL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
@@ -239,9 +248,10 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 		{
 			// Error setting the SDL video mode.
 			const char *sErr = SDL_GetError();
-			SDL_QuitSubSystem(SDL_INIT_VIDEO);
 			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 				"SDL_SetVideoMode() failed: %s", sErr);
+			
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
 			return -1;
 		}
 	}
