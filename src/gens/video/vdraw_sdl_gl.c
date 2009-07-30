@@ -270,7 +270,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	textureSize = vdraw_sdl_gl_calc_texture_size(scale);
 	
 	// Calculate the rendering parameters.
-	m_HRender = (double)(rowLength) / (double)(textureSize*2);
+	m_HRender = (double)(rowLength) / (double)(textureSize * 2);
 	m_VRender = (double)(240 * scale) / (double)(textureSize);
 	
 	// Allocate the filter buffer.
@@ -481,10 +481,10 @@ static int vdraw_sdl_gl_flip(void)
 	imgHeight = (double)(texHeight) / (double)(textureSize);
 	
 	glTexCoord2d(0.0, 0.0);		// Upper-left corner of the texture.
-	glVertex2d(imgLeft,  imgTop);	// Upper-left vertex of the quad.
+	glVertex2d(imgLeft, imgTop);	// Upper-left vertex of the quad.
 	
 	glTexCoord2d(imgWidth, 0.0);	// Upper-right corner of the texture.
-	glVertex2d(imgRight,  imgTop);	// Upper-right vertex of the quad.
+	glVertex2d(imgRight, imgTop);	// Upper-right vertex of the quad.
 	
 	// 0.9375 = 240/256; 0.9375 = 480/512
 	glTexCoord2d(imgWidth, imgHeight);	// Lower-right corner of the texture.
