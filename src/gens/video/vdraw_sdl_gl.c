@@ -72,19 +72,17 @@ static int	vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 static SDL_Surface *vdraw_sdl_gl_screen;
 
 // OpenGL variables.
-GLuint textures[1] = {0};
-int rowLength = 0;
-int textureSize = 0;
-unsigned char *filterBuffer = NULL;
-int filterBufferSize = 0;
-unsigned int m_pixelFormat = 0;
-unsigned int m_pixelType = 0;
+static GLuint textures[1] = {0};
+static int rowLength = 0;
+static int textureSize = 0;
+static unsigned char *filterBuffer = NULL;
+static int filterBufferSize = 0;
+static unsigned int m_pixelFormat = 0;
+static unsigned int m_pixelType = 0;
 
 // Render parameters
-double m_HRender = 0.0, m_VRender = 0.0;
-
-// Stretch parameters
-double m_HStretch = 0.0, m_VStretch = 0.0;
+static double m_HRender = 0.0;
+static double m_VRender = 0.0;
 
 
 // VDraw Backend struct.
