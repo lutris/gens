@@ -3,7 +3,6 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-# Render plugins
 SUBDIRS = render misc
 
 noinst_HEADERS = \

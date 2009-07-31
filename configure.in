@@ -625,11 +625,6 @@ AM_CFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings} ${cflags_wi
 AM_CXXFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings} ${cflags_win32} ${cxxflags_visibility}"
 AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
-# Install MDP plugins in an MDP-specific directory.
-# TODO: Use separate libdir for other Gens libraries.
-# There currently aren't any, but there will be later on.
-libdir="$libdir/mdp"
-
 # Check for clock_gettime.
 AC_CHECK_LIB(rt, clock_gettime, has_librt=yes, has_librt=no)
 AM_CONDITIONAL([HAVE_LIBRT], [test x$has_librt = xyes])

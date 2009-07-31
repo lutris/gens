@@ -12,7 +12,8 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 .asm.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
-lib_LTLIBRARIES = mdp_render_interpolated_scanline_25.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_render_interpolated_scanline_25.la
 
 mdp_render_interpolated_scanline_25_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_interpolated_scanline_25_la_CXXFLAGS	= $(AM_CXXFLAGS)

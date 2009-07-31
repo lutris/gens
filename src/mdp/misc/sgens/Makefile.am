@@ -8,7 +8,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
-lib_LTLIBRARIES = mdp_misc_sgens.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_misc_sgens.la
 
 mdp_misc_sgens_la_CFLAGS	= $(AM_CFLAGS)
 mdp_misc_sgens_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version

@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-lib_LTLIBRARIES = mdp_render_scale2x.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_render_scale2x.la
 
 INCLUDES = -I@top_srcdir@/src/
 

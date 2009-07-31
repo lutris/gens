@@ -4,7 +4,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
-lib_LTLIBRARIES = mdp_render_blargg_ntsc.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_render_blargg_ntsc.la
 
 mdp_render_blargg_ntsc_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_blargg_ntsc_la_CXXFLAGS	= $(AM_CXXFLAGS)

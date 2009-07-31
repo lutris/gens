@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-lib_LTLIBRARIES = mdp_render_scanline_25.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_render_scanline_25.la
 
 INCLUDES = -I@top_srcdir@/src/
 mdp_render_scanline_25_la_CCASFLAGS	= $(INCLUDES)

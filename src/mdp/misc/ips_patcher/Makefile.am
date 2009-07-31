@@ -4,7 +4,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
-lib_LTLIBRARIES = mdp_misc_ips_patcher.la
+mdpdir = $(libdir)/mdp
+mdp_LTLIBRARIES = mdp_misc_ips_patcher.la
 
 mdp_misc_ips_patcher_la_CFLAGS		= $(AM_CFLAGS)
 mdp_misc_ips_patcher_la_CXXFLAGS	= $(AM_CXXFLAGS)
