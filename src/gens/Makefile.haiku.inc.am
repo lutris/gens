@@ -77,7 +77,7 @@ noinst_HEADERS += \
 		ui/haiku/about/about_window.hpp
 
 #if GENS_OPENGL
-noinst_HEADERS += \
+#noinst_HEADERS += \
 #		video/vdraw_haiku_gl.h \
 #		video/vdraw_gl.h \
 #		ui/haiku/opengl_resolution/glres_window.hpp
