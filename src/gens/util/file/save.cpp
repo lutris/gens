@@ -845,11 +845,11 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		VRam_Flag		= le32_to_cpu(md_save_v7.vram_flag);
 		
 		// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
-		memcpy(&CRam, &md_save_v7.cram, 256 * 2);
+		memcpy(&CRam, &md_save_v7.cram, sizeof(CRam));
 		
 		// Save RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 		// it's probably safer sync-wise to keep SRAM stuff in the savestate
-		memcpy(&SRAM, &md_save_v7.sram.sram, 64 * 1024);
+		memcpy(&SRAM, &md_save_v7.sram.sram, sizeof(SRAM));
 		SRAM_Start		= le32_to_cpu(md_save_v7.sram.sram_start);
 		SRAM_End		= le32_to_cpu(md_save_v7.sram.sram_end);
 		SRAM_ON			= le32_to_cpu(md_save_v7.sram.sram_on);
@@ -1214,11 +1214,11 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.vram_flag		= cpu_to_le32(VRam_Flag);
 	
 	// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
-	memcpy(&md_save_v7.cram, &CRam, 256 * 2);
+	memcpy(&md_save_v7.cram, &CRam, sizeof(CRam));
 	
 	// Save RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 	// it's probably safer sync-wise to keep SRAM stuff in the savestate
-	memcpy(&md_save_v7.sram.sram, &SRAM, 64 * 1024);
+	memcpy(&md_save_v7.sram.sram, &SRAM, sizeof(md_save_v7.sram.sram));
 	md_save_v7.sram.sram_start	= cpu_to_le32(SRAM_Start);
 	md_save_v7.sram.sram_end	= cpu_to_le32(SRAM_End);
 	md_save_v7.sram.sram_on		= cpu_to_le32(SRAM_ON);
