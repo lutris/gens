@@ -190,6 +190,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			
 			ROM::freeROM(Game); // Don't forget it !
 			SegaCD_Started = Init_SegaCD(NULL);
+			Options::setGameName();
 			Sync_Gens_Window();
 			break;
 #endif /* GENS_CDROM */

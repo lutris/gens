@@ -401,6 +401,7 @@ void input_sdl_event_key_down(int key)
 					gym_play_stop();
 				ROM::freeROM(Game);	// Don't forget it !
 				SegaCD_Started = Init_SegaCD(NULL);
+				Options::setGameName();
 			}
 			break;
 #endif /* GENS_CDROM */
