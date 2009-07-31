@@ -265,12 +265,12 @@ void M68K_Reset(int System_ID)
  */
 void S68K_Reset(void)
 {
-	memset(Ram_Prg,     0x00, 512 * 1024);
-	memset(Ram_Word_2M, 0x00, 256 * 1024);
-	memset(Ram_Word_1M, 0x00, 256 * 1024);
+	memset(Ram_Prg,     0x00, sizeof(Ram_Prg));
+	memset(Ram_Word_2M, 0x00, sizeof(Ram_Word_2M));
+	memset(Ram_Word_1M, 0x00, sizeof(Ram_Word_1M));
 	
-	memset(COMM.Command, 0x00, 8 * 5);
-	memset(COMM.Status,  0x00, 8 * 5);
+	memset(COMM.Command, 0x00, sizeof(COMM.Command));
+	memset(COMM.Status,  0x00, sizeof(COMM.Status));
 	
 	LED_Status = S68K_State = S68K_Mem_WP = S68K_Mem_PM = Ram_Word_State = 0;
 	COMM.Flag = Init_Timer_INT3 = Timer_INT3 = Int_Mask_S68K = 0;
