@@ -56,7 +56,7 @@ noinst_HEADERS += \
 
 #if GENS_CDROM
 #noinst_HEADERS += \
-#                segacd/cd_aspi.hpp \
+#		segacd/cd_aspi.hpp \
 #		segacd/aspi.h
 #endif
 
