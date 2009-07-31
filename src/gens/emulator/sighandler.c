@@ -291,7 +291,7 @@ static void gens_sighandler(int signum)
 	
 	log_msgbox(msg_buf, "Gens/GS Error");
 	
-	exit(0);
+	exit(EXIT_FAILURE);
 }
 
 
