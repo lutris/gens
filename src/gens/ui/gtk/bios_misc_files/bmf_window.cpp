@@ -100,7 +100,7 @@ void bmf_window_show(void)
 	
 	// Create all frames.
 	int tblRow = 0;
-	GtkWidget *tblBMF;
+	GtkWidget *tblBMF = NULL;
 	
 	for (int file = 0; bmf_entries[file].title != NULL; file++)
 	{
