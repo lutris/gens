@@ -121,25 +121,19 @@ gens_CFLAGS += \
 		-DGENS_MDP_DIR=\"@libdir/mdp@\" \
 		@SDL_CFLAGS@
 
-if GENS_UI_GTK
-gens_CFLAGS += @GTK_CFLAGS@
-endif
-
 gens_CXXFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
 		-DGENS_MDP_DIR=\"@libdir@/mdp\" \
 		@SDL_CFLAGS@
 
-if GENS_UI_GTK
-gens_CXXFLAGS += @GTK_CFLAGS@
-endif
-
-gens_LDADD += @SDL_LIBS@
+gens_LDADD	+= @SDL_LIBS@
 
 if GENS_UI_GTK
-gens_LDADD += @GTK_LIBS@
+gens_CFLAGS	+= @GTK_CFLAGS@
+gens_CXXFLAGS	+= @GTK_CFLAGS@
+gens_LDADD	+= @GTK_LIBS@
 endif
 
 if GENS_OPENGL
-gens_LDADD += @GL_LIBS@
+gens_LDADD	+= @GL_LIBS@
 endif
