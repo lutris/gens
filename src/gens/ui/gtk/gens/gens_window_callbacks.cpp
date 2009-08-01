@@ -221,6 +221,10 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
  */
 gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GensUI::wakeup();
 	return false;
 }
