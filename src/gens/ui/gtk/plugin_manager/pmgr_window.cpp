@@ -702,6 +702,9 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
  */
 static void pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	fraPluginDesc_width = allocation->width;
 }
 
