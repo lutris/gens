@@ -305,14 +305,17 @@ static void bmf_window_callback_response(GtkDialog *dialog, gint response_id, gp
  */
 static void bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	
 	const int file = GPOINTER_TO_INT(user_data);
 	
 	// Check that this is a valid file entry.
 	if (!bmf_entries[file].entry)
 		return;
 	
-	char tmp[64];
-	sprintf(tmp, "Select %s File", bmf_entries[file].title);
+	char tmp[128];
+	snprintf(tmp, sizeof(tmp), "Select %s File", bmf_entries[file].title);
+	tmp[sizeof(tmp)-1] = 0x00;
 	
 	// Request a new file.
 	string new_file = GensUI::openFile(tmp, gtk_entry_get_text(GTK_ENTRY(txtFile[file])),
