@@ -146,6 +146,7 @@ _Fast_Blur_32_x86_mmx:
 	popl	%esi
 	popl	%ebx
 	popl	%ecx
+	emms
 	ret
 
 SYMSIZE_FUNC(_Fast_Blur_32_x86_mmx)
