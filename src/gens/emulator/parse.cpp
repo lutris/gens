@@ -427,7 +427,8 @@ static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 	else
 	{
 		// Relative pathname.
-		getcwd(startup->filename, sizeof(startup->filename));
+		if (!getcwd(startup->filename, sizeof(startup->filename)))
+			return;
 		strcat(startup->filename, GENS_DIR_SEPARATOR_STR);
 		strcat(startup->filename, filename);
 	}
