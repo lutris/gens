@@ -138,35 +138,6 @@ string Savestate::SelectCDImage(const string& dir)
 }
 
 
-/*
-int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
-{
-	int i;
-	gchar* filename=NULL;
-	static FileSelData fd;
-	GtkWidget* widget;
-	GList* extensions=NULL;
-
-	widget = init_file_selector(&fd, Titre);
-	extensions = g_list_append(extensions,Ext);
-	file_selector_add_type(&fd,"", extensions);
-	gtk_widget_show(widget);
-	filename = fileselection_get_filename(fd.filesel);	
-
-	if (filename)
-		{
-		i = strlen(Dest) - 1;
-		while ((i > 0) && (Dest[i] != GENS_DIR_SEPARATOR_CHR)) i--;
-		if (!i) return 0;
-		Dest[++i] = 0;
-		g_free(filename);
-		return 1;
-	}
-	return 0;
-}
-*/
-
-
 /**
  * GetStateFile(): Open the current savestate file.
  * @return File handle for the current savestate file.
