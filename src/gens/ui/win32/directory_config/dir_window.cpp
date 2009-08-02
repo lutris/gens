@@ -84,6 +84,8 @@ static int	dir_window_height;
 
 // Widgets.
 static HWND	txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
+static HWND	btnOK, btnCancel, btnApply;
+#define IDC_DIR_DIRECTORY 0x1200
 
 // Plugin directory widgets.
 typedef struct _dir_plugin_t
@@ -229,28 +231,31 @@ static void dir_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      DIR_WINDOW_WIDTH-8-75-8-75, dir_window_height-8-24,
-				      75, 23,
-				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					DIR_WINDOW_WIDTH-8-75-8-75, dir_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     DIR_WINDOW_WIDTH-8-75, dir_window_height-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					DIR_WINDOW_WIDTH-8-75, dir_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 	
 	// Initialize the directory entries.
 	dir_window_init();
@@ -271,7 +276,7 @@ static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container, int y, 
 					   WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
 					   8+8+72+8, y,
 					   DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
-					   container, NULL, ghInstance, NULL);
+					   container, (HMENU)(IDC_DIR_DIRECTORY + id), ghInstance, NULL);
 	SetWindowFont(txtDirectory, fntMain, TRUE);
 	
 	// Create the "Change" button for the directory.
@@ -333,6 +338,9 @@ static void dir_window_init(void)
 			Edit_SetText((*iter).txt, dir_buf);
 		}
 	}
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 }
 
 /**
@@ -405,6 +413,9 @@ static void dir_window_save(void)
 		// Set the directory.
 		dir.set((*iter).id, dir_buf);
 	}
+	
+	// Disable the "Apply" button.
+	Button_Enable(btnApply, false);
 }
 
 
@@ -438,10 +449,20 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 					dir_window_save();
 					break;
 				default:
-					if ((LOWORD(wParam) & 0xFF00) == IDC_DIR_BTNCHANGE)
+					switch (LOWORD(wParam) & 0xFF00)
 					{
-						// Change a directory.
-						dir_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
+						case IDC_DIR_BTNCHANGE:
+							// Change a directory.
+							dir_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
+							break;
+						case IDC_DIR_DIRECTORY:
+							if (HIWORD(wParam) == EN_CHANGE)
+							{
+								// Directory textbox was changed.
+								// Enable the "Apply" button.
+								Button_Enable(btnApply, true);
+							}
+							break;
 					}
 					break;
 			}
@@ -499,4 +520,7 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	
 	// Set the new directory.
 	SetWindowText(txtDir, new_dir.c_str());
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, true);
 }
