@@ -76,6 +76,7 @@ static LRESULT CALLBACK selcd_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 // Widgets.
 static HWND	cboDeviceName;
 static HWND	btnOK, btnCancel, btnApply;
+#define IDC_SELCD_CBODEVICENAME 0x2000
 
 // Widget creation functions.
 static void	selcd_window_create_child_windows(HWND hWnd);
@@ -147,7 +148,7 @@ static void selcd_window_create_child_windows(HWND hWnd)
 	cboDeviceName = CreateWindow(WC_COMBOBOX, NULL,
 				     WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
 				     16+96-8, 8, SELCD_WINDOW_WIDTH-8-96-16+8, 23*5,
-				     hWnd, NULL, ghInstance, NULL);
+				     hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
 	SetWindowFont(cboDeviceName, fntMain, true);
 	
 	// Buttons
@@ -167,6 +168,9 @@ static void selcd_window_create_child_windows(HWND hWnd)
 				SELCD_WINDOW_WIDTH-8-75, btnTop, 75, 23,
 				hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, true);
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 	
 	// Initialize the CD-ROM device name dropdown.
 	selcd_window_init();
@@ -220,6 +224,9 @@ static void selcd_window_init(void)
 		// Invalid CD-ROM drive ID. Select the first drive.
 		ComboBox_SetCurSel(cboDeviceName, 0);
 	}
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 }
 
 
@@ -245,6 +252,8 @@ static int selcd_window_save(void)
 	if (tmpDrive == cdromDeviceID)
 	{
 		// Drive ID wasn't changed. Don't do anything.
+		// Disable the "Apply" button.
+		Button_Enable(btnApply, false);
 		return 0;
 	}
 	
@@ -292,6 +301,9 @@ static int selcd_window_save(void)
 		Sync_Gens_Window();
 	}
 	
+	// Disable the "Apply" button.
+	Button_Enable(btnApply, false);
+	
 	// Settings saved.
 	return 0;
 }
@@ -325,6 +337,14 @@ static LRESULT CALLBACK selcd_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 					break;
 				case IDAPPLY:
 					selcd_window_save();
+					break;
+				case IDC_SELCD_CBODEVICENAME:
+					if (HIWORD(wParam) == CBN_SELCHANGE)
+					{
+						// Device name dropdown box was changed.
+						// Enable the "Apply" button.
+						Button_Enable(btnApply, true);
+					}
 					break;
 				default:
 					// Unknown command identifier.
