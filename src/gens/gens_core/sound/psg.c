@@ -306,6 +306,11 @@ void PSG_Update(int **buffer, int length)
 						buffer[0][i] += cur_vol;
 						buffer[1][i] += cur_vol;
 					}
+					else
+					{
+						buffer[0][i] -= cur_vol;
+						buffer[0][i] -= cur_vol;
+					}
 				}
 					
 				PSG.Counter[j] = cur_cnt;
