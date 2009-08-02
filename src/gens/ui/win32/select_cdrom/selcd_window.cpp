@@ -116,7 +116,7 @@ void selcd_window_show(void)
 	}
 	
 	// Create the window.
-	selcd_window = CreateWindow(TEXT("selcd_window"), TEXT("Color Adjustment"),
+	selcd_window = CreateWindow(TEXT("selcd_window"), TEXT("Select CD-ROM Drive"),
 				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				 CW_USEDEFAULT, CW_USEDEFAULT,
 				 SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT,
