@@ -293,30 +293,44 @@ void PSG_Update(int **buffer, int length)
 	// Channels 0-2 (in reverse order)
 	for (j = 2; j >= 0; j--)
 	{
-		if ((cur_vol = PSG.Volume[j]))
+		// Get the volume for this channel.
+		cur_vol = PSG.Volume[j];
+		
+		if (cur_vol != 0)
 		{
-			if ((cur_step = PSG.CntStep[j]) < 0x10000)
+			// Current channel's volume is non-zero.
+			// Apply the appropriate square wave.
+			cur_step = PSG.CntStep[j];
+			if (cur_step < 0x10000)
 			{
+				// Current channel's tone is audible.
 				cur_cnt = PSG.Counter[j];
-					
+				
 				for (i = 0; i < length; i++)
 				{
-					if ((cur_cnt += cur_step) & 0x10000)
+					cur_cnt += cur_step;
+					
+					if (cur_cnt & 0x10000)
 					{
+						// Overflow. Apply +1 tone.
 						buffer[0][i] += cur_vol;
 						buffer[1][i] += cur_vol;
 					}
 					else
 					{
+						// Not overflow. Apply -1 tone.
 						buffer[0][i] -= cur_vol;
-						buffer[0][i] -= cur_vol;
+						buffer[1][i] -= cur_vol;
 					}
 				}
-					
+				
+				// Update the counter for this channel.
 				PSG.Counter[j] = cur_cnt;
 			}
 			else
 			{
+				// Current channel's tone is not audible.
+				// Always apply a +1 tone.
 				for (i = 0; i < length; i++)
 				{
 					buffer[0][i] += cur_vol;
@@ -326,6 +340,8 @@ void PSG_Update(int **buffer, int length)
 		}
 		else
 		{
+			// Current channel's volume is zero.
+			// Simply increase the channel's counter.
 			PSG.Counter[j] += PSG.CntStep[j] * length;
 		}
 	}
