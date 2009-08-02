@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - mdp_error.h: Error Codes</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp_error.h: Error Codes</h1>
+<h4 class='doc_set'>Mega Drive Plugins v1.0.0-draft</h4>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_error_h.html">mdp_error.h</a></span>
+</div>
+
+<p>
+It can happen that a function doesn't succeed for some reason. MDP provides a
+full set of error codes that can be used to determine if an error occurred,
+and to determine what error happened specifically.
+</p>
+
+<p>
+MDP uses POSIX notation for return values. That is, a negative return value
+from any function indicates an error code. For instance, if invalid parameters
+were passed to an MDP host services function, the function would return the
+value -<span class='macro'>MDP_ERR_INVALID_PARAMETERS</span>.
+</p>
+
+<p>
+Error codes are split up into various different categories. The high word
+of an error code indicates the category, and the low word indicates the
+actual error.
+</p>
+
+<table>
+	<tr><th colspan='3'>MDP General Errors (category == 0x0000)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_OK</td>
+		<td class='value'>0x00000000</td>
+		<td>No error occurred.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_CANNOT_OPEN_DLL</td>
+		<td class='value'>0x00000001</td>
+		<td>
+			The emulator could not open an MDP plugin.<br>
+			Possible reasons include that the plugin was compiled<br>
+			for a different architecture or operating system.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_NO_MDP_SYMBOL</td>
+		<td class='value'>0x00000002</td>
+		<td>No MDP symbol was found in the plugin.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_INCORRECT_MAJOR_VERSION</td>
+		<td class='value'>0x00000003</td>
+		<td>
+			The plugin's major MDP interface version number is<br>
+			different than the emulator's major MDP interface<br>
+			version number.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_DUPLICATE_UUID</td>
+		<td class='value'>0x00000004</td>
+		<td>
+			The plugin's UUID is the same as another plugin<br>
+			that was previously loaded.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_NEEDS_CPUFLAGS</td>
+		<td class='value'>0x00000005</td>
+		<td>
+			The plugin requires certain CPU features that are<br>
+			not present on the current system.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_INVALID_LICENSE</td>
+		<td class='value'>0x00000006</td>
+		<td>
+			The plugin's license is not compatible with the	emulator.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_FUNCTION_NOT_IMPLEMENTED</td>
+		<td class='value'>0x00000101</td>
+		<td>
+			A plugin called an MDP Host Services function marked as<br>
+			"No (NULL)" in
+			<a href="mdp_host_h.html"><span class='filename'>mdp_host.h</span></a>,
+			and the emulator does not<br>
+			implement it.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_INVALID_PARAMETERS</td>
+		<td class='value'>0x00000102</td>
+		<td>Invalid parameters were passed to a function.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_OUT_OF_MEMORY</td>
+		<td class='value'>0x00000103</td>
+		<td>The emulator ran out of memory.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_UNKNOWN_PTRID</td>
+		<td class='value'>0x00000201</td>
+		<td>Unused. This is a leftover from MDP v0.1.0.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_UNKNOWN_VALID</td>
+		<td class='value'>0x00000202</td>
+		<td>
+			An unknown MDP value was requested in<br>
+			<span class='struct'>mdp_host_t</span>-><span class='function'>val_get()</span>
+			or
+			<span class='struct'>mdp_host_t</span>-><span class='function'>val_set()</span>.<br>
+			See <span class='enum'><a href="mdp_host_h.html#MDP_VAL">MDP_VAL</a></span>
+			for a list of valid value IDs.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_VAL_READ_ONLY</td>
+		<td class='value'>0x00000203</td>
+		<td>
+			The plugin attempted to set an MDP value that is marked<br>
+			as read-only.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_UNSUPPORTED_UI</td>
+		<td class='value'>0x00000204</td>
+		<td>The plugin does not support the current UI subsystem.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_ROM_NOT_LOADED</td>
+		<td class='value'>0x00000205</td>
+		<td>
+			The plugin attempted to do something that requires a ROM<br>
+			to be loaded, but no ROM is loaded.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_UNKNOWN</td>
+		<td class='value'>0x0000FFFF</td>
+		<td>Unknown error. This should not happen!</td>
+	</tr>
+</table>
+
+</body>
+</html>
