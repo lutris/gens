@@ -336,6 +336,9 @@ void PSG_Update(int **buffer, int length)
 					buffer[0][i] += cur_vol;
 					buffer[1][i] += cur_vol;
 				}
+				
+				// Update the counter for this channel.
+				PSG.Counter[j] += PSG.CntStep[j] * length;
 			}
 		}
 		else
