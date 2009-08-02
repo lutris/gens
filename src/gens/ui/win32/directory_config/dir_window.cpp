@@ -487,7 +487,6 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 static void dir_window_callback_btnChange_clicked(int dir)
 {
 	char cur_dir[GENS_PATH_MAX];
-	char tmp[64];
 	string new_dir;
 	
 	HWND txtDir;
@@ -510,8 +509,13 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	Edit_GetText(txtDir, cur_dir, GENS_PATH_MAX);
 	cur_dir[GENS_PATH_MAX - 1] = 0x00;
 	
+	// Set the title of the window.
+	TCHAR tmp[128];
+	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
+		   TEXT("Select %s Directory"), dir_title);
+	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
+	
 	// Request a new directory.
-	sprintf(tmp, "Select %s Directory", dir_title);
 	new_dir = GensUI::selectDir(tmp, cur_dir, dir_window);
 	
 	// If "Cancel" was selected, don't do anything.
