@@ -72,6 +72,8 @@ static WNDCLASS bmf_wndclass;
 
 // Widgets.
 static HWND	txtFile[12];
+static HWND	btnOK, btnCancel, btnApply;
+#define IDC_BMF_TXTFILE 0x8000
 
 // Window procedure.
 static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -186,7 +188,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 						  grpBox_Left+8+56+8, grpBox_Top+entryTop,
 						  BMF_FRAME_WIDTH-(8+64+8+72+8), 20,
-						  hWnd, NULL, ghInstance, NULL);
+						  hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
 			SetWindowFont(txtFile[file], fntMain, true);
 			SendMessage(txtFile[file], EM_LIMITTEXT, GENS_PATH_MAX-1, 0);
 			
@@ -206,28 +208,31 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, true);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
-				      75, 23,
-				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, TRUE);
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	SetWindowFont(btnCancel, fntMain, true);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	SetWindowFont(btnApply, fntMain, true);
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 	
 	// Initialize the file textboxes.
 	bmf_window_init();
@@ -265,6 +270,9 @@ static void bmf_window_init(void)
 		// Set the entry text.
 		SetWindowText(txtFile[file], bmf_entries[file].entry);
 	}
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, false);
 }
 
 
@@ -283,6 +291,9 @@ static void bmf_window_save(void)
 		GetWindowText(txtFile[file], bmf_entries[file].entry, GENS_PATH_MAX);
 		bmf_entries[file].entry[GENS_PATH_MAX-1] = 0x00;
 	}
+	
+	// Disable the "Apply" button.
+	Button_Enable(btnApply, false);
 }
 
 
@@ -320,6 +331,14 @@ static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 					{
 						case IDC_BTN_CHANGE:
 							bmf_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
+							break;
+						case IDC_BMF_TXTFILE:
+							if (HIWORD(wParam) == EN_CHANGE)
+							{
+								// File textbox was changed.
+								// Enable the "Apply" button.
+								Button_Enable(btnApply, true);
+							}
 							break;
 						default:
 							// Unknown command identifier.
@@ -370,4 +389,7 @@ static void bmf_window_callback_btnChange_clicked(int file)
 	
 	// Set the new file.
 	SetWindowText(txtFile[file], new_file.c_str());
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, true);
 }
