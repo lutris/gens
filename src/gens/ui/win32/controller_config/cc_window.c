@@ -94,6 +94,7 @@ static WNDCLASS	cc_wndclass;
 // "Options" buttons.
 #define IDC_CC_BTNCHANGEALL	0x1801
 #define IDC_CC_BTNCLEARALL	0x1802
+#define IDC_CC_CHKRESTRICTINPUT	0x1803
 
 // Timer ID.
 #define IDT_CONFIGURE_BLINK	0x2000
@@ -116,6 +117,7 @@ static HWND	chkTeamplayer[2];
 static HWND	lblPlayer[8];
 static HWND	cboPadType[8];
 static HWND	optConfigure[8];
+static HWND	btnOK, btnCancel, btnApply;
 
 // Widgets: "Input Devices" frame.
 static HWND	lstInputDevices;
@@ -154,7 +156,7 @@ static void	cc_window_callback_btnChangeAll_clicked(void);
 static void	cc_window_callback_btnClearAll_clicked(void);
 
 // Configure a key.
-static void	cc_window_configure_key(int player, int button);
+static BOOL	cc_window_configure_key(int player, int button);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -231,28 +233,31 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
-				      75, 23,
-				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, FALSE);
 	
 	// Initialize the internal data variables.
 	cc_window_init();
@@ -496,7 +501,7 @@ static void cc_window_create_options_frame(HWND container)
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX | BS_MULTILINE,
 					fraOptions_left+8, fraOptions_top+16,
 					CC_FRAME_OPTIONS_WIDTH-16, 32,
-					container, NULL, ghInstance, NULL);
+					container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
 	SetWindowFont(chkRestrictInput, fntMain, TRUE);
 }
 
@@ -553,6 +558,9 @@ static void cc_window_init(void)
 	
 	// Restrict Input.
 	Button_SetCheck(chkRestrictInput, (Settings.restrict_input ? BST_CHECKED : BST_UNCHECKED));
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, FALSE);
 }
 
 
@@ -593,6 +601,9 @@ static void cc_window_save(void)
 	
 	// Rebuild the Teamplayer I/O table.
 	Make_IO_Table();
+	
+	// Disable the "Apply" button.
+	Button_Enable(btnApply, FALSE);
 }
 
 
@@ -712,6 +723,10 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 				case IDC_CC_BTNCLEARALL:
 					cc_window_callback_btnClearAll_clicked();
 					break;
+				case IDC_CC_CHKRESTRICTINPUT:
+					// Enable the "Apply" button.
+					Button_Enable(btnApply, TRUE);
+					break;
 				default:
 					switch (LOWORD(wParam) & 0xFF00)
 					{
@@ -727,7 +742,11 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 							break;
 						case IDC_CC_BTNCHANGE:
 							cc_window_is_configuring = TRUE;
-							cc_window_configure_key(cc_cur_player, LOWORD(wParam) & 0xFF);
+							if (cc_window_configure_key(cc_cur_player, LOWORD(wParam) & 0xFF))
+							{
+								// Key changed. Enable the "Apply" button.
+								Button_Enable(btnApply, TRUE);
+							}
 							cc_window_is_configuring = FALSE;
 							break;
 						default:
@@ -768,6 +787,9 @@ static void cc_window_callback_teamplayer_toggled(int port)
 	if (port < 0 || port > 1)
 		return;
 	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, TRUE);
+	
 	BOOL active = (Button_GetCheck(chkTeamplayer[port]) == BST_CHECKED);
 	int startPort = (port == 0 ? 2 : 5);
 	
@@ -803,6 +825,9 @@ static void cc_window_callback_padtype_changed(int player)
 	if (player < 0 || player > 8)
 		return;
 	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, TRUE);
+	
 	// Check if this player is currently being configured.
 	if (Button_GetCheck(optConfigure[player]) != BST_CHECKED)
 	{
@@ -827,20 +852,21 @@ static void cc_window_callback_padtype_changed(int player)
  * cc_window_configure_key(): Configure a key.
  * @param player Player to configure.
  * @param button Button ID.
+ * @return TRUE if the button was changed; FALSE if it wasn't.
  */
-static void cc_window_configure_key(int player, int button)
+static BOOL cc_window_configure_key(int player, int button)
 {
 	if (!cc_window_is_configuring)
-		return;
+		return FALSE;
 	
 	if (button < 0 || button >= 12)
-		return;
+		return FALSE;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
 	if (ComboBox_GetCurSel(cboPadType[player]) == 0)
 	{
 		if (button >= 8)
-			return;
+			return FALSE;
 	}
 	
 	// Set the current button that is being configured.
@@ -853,7 +879,13 @@ static void cc_window_configure_key(int player, int button)
 	SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
 	
 	// Get a key value.
-	cc_key_config[player].data[button] = input_get_key();
+	BOOL key_changed = FALSE;
+	uint16_t new_key = input_get_key();
+	if (cc_key_config[player].data[button] != new_key)
+	{
+		key_changed = TRUE;
+		cc_key_config[player].data[button] = new_key;
+	}
 	
 	// Set the text of the label with the key name.
 	cc_window_display_key_name(lblCurConfig[button], cc_key_config[player].data[button]);
@@ -872,6 +904,8 @@ static void cc_window_configure_key(int player, int button)
 	while (PeekMessage(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
 	while (PeekMessage(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
 	while (PeekMessage(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
+	
+	return key_changed;
 }
 
 
@@ -924,6 +958,8 @@ static void cc_window_callback_btnChangeAll_clicked(void)
 	// Set the "Configuring" flag.
 	cc_window_is_configuring = TRUE;
 	
+	BOOL key_changed = FALSE;
+	
 	int i;
 	MSG msg;
 	for (i = 0; i < btnCount; i++)
@@ -946,13 +982,21 @@ static void cc_window_callback_btnChangeAll_clicked(void)
 			Sleep(250);
 		}
 		
-		cc_window_configure_key(cc_cur_player, i);
+		BOOL rval = cc_window_configure_key(cc_cur_player, i);
+		if (rval)
+			key_changed = TRUE;
 		
 		if (!cc_window)
 		{
 			// Window has closed.
 			break;
 		}
+	}
+	
+	// Enable the "Apply" button.
+	if (key_changed)
+	{
+		Button_Enable(btnApply, TRUE);
 	}
 	
 	// Unset the "Configuring" flag.
@@ -973,4 +1017,7 @@ static void cc_window_callback_btnClearAll_clicked(void)
 	
 	// Show the cleared configuration.
 	cc_window_show_configuration(cc_cur_player);
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, TRUE);
 }
