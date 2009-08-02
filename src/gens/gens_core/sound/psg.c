@@ -137,6 +137,11 @@ void PSG_Write(int data)
 			// Volume
 			PSG_Special_Update();
 			PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
+			if (PSG.Current_Channel != 3)
+			{
+				// Tone channel. Cut the volume in half.
+				PSG.Volume[PSG.Current_Channel] >>= 1;
+			}
 			
 			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
 				"channel %d    volume = %.8X",
