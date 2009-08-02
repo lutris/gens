@@ -51,6 +51,7 @@
 #include "gens/gens_window_sync.hpp"
 #include "ui/gens_ui.hpp"
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
 
 // SegaCD
 #include "emulator/g_mcd.hpp"
@@ -287,6 +288,7 @@ static int selcd_window_save(void)
 	{
 		// Restart SegaCD emulation.
 		SegaCD_Started = Init_SegaCD(NULL);
+		Options::setGameName();
 		Sync_Gens_Window();
 	}
 	

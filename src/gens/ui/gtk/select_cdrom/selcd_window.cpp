@@ -44,6 +44,7 @@
 #include "segacd/cd_aspi.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
+#include "emulator/options.hpp"
 
 // mingw doesn't provide S_ISLNK.
 #ifndef S_ISLNK
@@ -342,6 +343,7 @@ static int selcd_window_save(void)
 	{
 		// Restart SegaCD enmulation.
 		SegaCD_Started = Init_SegaCD(NULL);
+		Options::setGameName();
 		Sync_Gens_Window();
 	}
 	
