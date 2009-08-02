@@ -102,6 +102,7 @@ static LRESULT CALLBACK ccode_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 
 // Widgets.
 static HWND	lstCountryCodes;
+static HWND	btnOK, btnCancel, btnApply;
 
 // Widget creation functions.
 static void	ccode_window_create_child_windows(HWND hWnd);
@@ -212,28 +213,31 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	static const int btnLeft = (CCODE_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  btnLeft, ccode_window_height-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					btnLeft, ccode_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      btnLeft+8+75, ccode_window_height-8-24,
-				      75, 23,
-				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					btnLeft+8+75, ccode_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     btnLeft+8+75+8+75, ccode_window_height-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					btnLeft+8+75+8+75, ccode_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, FALSE);
 	
 	// Initialize the internal data variables.
 	ccode_window_init();
@@ -409,6 +413,9 @@ static void ccode_window_init(void)
 		ListBox_InsertString(lstCountryCodes, i, ccodes[Country_Order[i]]);
 		ListBox_SetItemData(lstCountryCodes, i, Country_Order[i]);
 	}
+	
+	// Disable the "Apply" button initially.
+	Button_Enable(btnApply, FALSE);
 }
 
 
@@ -426,6 +433,9 @@ static void ccode_window_save(void)
 	
 	// Validate the country code order.
 	Check_Country_Order();
+	
+	// Disable the "Apply" button.
+	Button_Enable(btnApply, FALSE);
 }
 
 
@@ -526,6 +536,9 @@ static void ccode_window_callback_btnUp_clicked(void)
 	
 	// Set the current selection.
 	ListBox_SetCurSel(lstCountryCodes, curIndex - 1);
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, TRUE);
 }
 
 
@@ -559,4 +572,7 @@ static void ccode_window_callback_btnDown_clicked(void)
 	
 	// Set the current selection.
 	ListBox_SetCurSel(lstCountryCodes, curIndex + 1);
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, TRUE);
 }
