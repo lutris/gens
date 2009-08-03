@@ -156,7 +156,7 @@ int Init_SegaCD(const char* iso_name)
 	ROM::updateCDROMName(SegaCD_Header, Game_Mode);
 	
 	// Update the window title with the game name.
-	Options::setGameName();
+	Options::setGameName(1);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -248,7 +248,7 @@ int Reload_SegaCD(const char* iso_name)
 	ROM::updateCDROMName(SegaCD_Header, Game_Mode);
 	
 	// Update the window title with the game name.
-	Options::setGameName();
+	Options::setGameName(1);
 	
 	// Load the new BRAM.
 	Savestate::LoadBRAM();
@@ -297,7 +297,7 @@ void Reset_SegaCD(void)
 	ROM::updateCDROMName(SegaCD_Header, Game_Mode);
 	
 	// Update the window title with the game name.
-	Options::setGameName();
+	Options::setGameName(1);
 	
 	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data[0x72] = 0xFF;
