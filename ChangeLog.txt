@@ -162,6 +162,11 @@ Release 7 fixes the following bugs:
 - The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
   that produced "rain" on Gens, but not on Regen or the actual hardware.
 
+- Several buffer overflow bugs that caused crashes in the release build
+  on some Linux platforms have been fixed. This includes a long-standing
+  bug in the SegaCD code, plus a new bug in the partially-rewritten
+  savestate loading code.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
