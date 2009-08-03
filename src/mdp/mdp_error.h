@@ -115,7 +115,8 @@
 /*! BEGIN: MDP v1.0 emulator control errors. !*/
 #define MDP_ERR_EMUCTRL_CATEGORY			((int)(0x0007 << 16))
 #define MDP_ERR_EMUCTRL_UNKNOWN				((int)(0x0000 | MDP_ERR_DIR_CATEGORY))
-#define MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED	((int)(0x0000 | MDP_ERR_DIR_CATEGORY))
+#define MDP_ERR_EMUCTRL_INVALID_FUNCTION		((int)(0x0001 | MDP_ERR_DIR_CATEGORY))
+#define MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED	((int)(0x0002 | MDP_ERR_DIR_CATEGORY))
 /*! END: MDP v1.0 emulator control errors. !*/
 
 /** Directory errors. **/
