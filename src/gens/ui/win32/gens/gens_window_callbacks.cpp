@@ -401,10 +401,13 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			}
 			break;
 		}
+		
+#ifdef GENS_CDROM
 		case IDCMD_CHANGE_CD:
 			if (SegaCD_Started)
 				Change_CD();
 			break;
+#endif
 		
 		case IDCMD_VDRAW_BACKEND:
 		{

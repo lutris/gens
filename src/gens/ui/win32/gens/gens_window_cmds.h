@@ -23,6 +23,10 @@
 #ifndef GENS_WIN32_GENS_WINDOW_CMDS_H
 #define GENS_WIN32_GENS_WINDOW_CMDS_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,7 +47,9 @@ extern "C" {
 #define IDCMD_FPS			0x700C
 #define IDCMD_RENDERMODE_DEC		0x700D
 #define IDCMD_RENDERMODE_INC		0x700E
+#ifdef GENS_CDROM
 #define IDCMD_CHANGE_CD			0x700F
+#endif
 #define IDCMD_STRETCH_MODE		0x7010
 #define IDCMD_VDRAW_BACKEND		0x7011
 #define IDCMD_CONGRATULATIONS		0x7012
