@@ -88,7 +88,7 @@
 
 /** Menu errors. **/
 /*! BEGIN: MDP v1.0 menu errors. !*/
-#define MDP_ERR_MENU_CATEGORY			((int)(0x0003 << 16))
+#define MDP_ERR_MENU_CATEGORY			((int)(0x0004 << 16))
 #define MDP_ERR_MENU_UNKNOWN			((int)(0x0000 | MDP_ERR_MENU_CATEGORY))
 #define MDP_ERR_MENU_INVALID_MENUID		((int)(0x0001 | MDP_ERR_MENU_CATEGORY))
 #define MDP_ERR_MENU_TOO_MANY_ITEMS		((int)(0x0002 | MDP_ERR_MENU_CATEGORY))
@@ -96,7 +96,7 @@
 
 /** Event errors. **/
 /*! BEGIN: MDP v1.0 event errors. !*/
-#define MDP_ERR_EVENT_CATEGORY			((int)(0x0004 << 16))
+#define MDP_ERR_EVENT_CATEGORY			((int)(0x0005 << 16))
 #define MDP_ERR_EVENT_UNKNOWN			((int)(0x0000 | MDP_ERR_EVENT_CATEGORY))
 #define MDP_ERR_EVENT_INVALID_EVENTID		((int)(0x0001 | MDP_ERR_EVENT_CATEGORY))
 #define MDP_ERR_EVENT_NOT_REGISTERED		((int)(0x0002 | MDP_ERR_EVENT_CATEGORY))
@@ -105,7 +105,7 @@
 
 /** Window errors. **/
 /*! BEGIN: MDP v1.0 window errors. !*/
-#define MDP_ERR_WINDOW_CATEGORY			((int)(0x0005 << 16))
+#define MDP_ERR_WINDOW_CATEGORY			((int)(0x0006 << 16))
 #define MDP_ERR_WINDOW_UNKNOWN			((int)(0x0000 | MDP_ERR_WINDOW_CATEGORY))
 #define MDP_ERR_WINDOW_INVALID_WINDOW		((int)(0x0001 | MDP_ERR_WINDOW_CATEGORY))
 #define MDP_ERR_WINDOW_ALREADY_REGISTERED	((int)(0x0002 | MDP_ERR_WINDOW_CATEGORY))
@@ -113,22 +113,22 @@
 
 /** Emulator Control errors. **/
 /*! BEGIN: MDP v1.0 emulator control errors. !*/
-#define MDP_ERR_EMUCTRL_CATEGORY			((int)(0x0006 << 16))
+#define MDP_ERR_EMUCTRL_CATEGORY			((int)(0x0007 << 16))
 #define MDP_ERR_EMUCTRL_UNKNOWN				((int)(0x0000 | MDP_ERR_DIR_CATEGORY))
 #define MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED	((int)(0x0000 | MDP_ERR_DIR_CATEGORY))
 /*! END: MDP v1.0 emulator control errors. !*/
 
 /** Directory errors. **/
 /*! BEGIN: MDP v1.0 directory errors. !*/
-#define MDP_ERR_DIR_CATEGORY			((int)(0x0007 << 16))
+#define MDP_ERR_DIR_CATEGORY			((int)(0x0008 << 16))
 #define MDP_ERR_DIR_UNKNOWN			((int)(0x0000 | MDP_ERR_DIR_CATEGORY))
 #define MDP_ERR_DIR_INVALID_DIRID		((int)(0x0001 | MDP_ERR_DIR_CATEGORY))
 /*! END: MDP v1.0 directory errors. !*/
 
 /** Compression errors. **/
 /*! BEGIN: MDP v1.0 compression errors. !*/
-#define MDP_ERR_Z_CATEGORY			((int)(0x0008 << 16))
-#define MDP_ERR_Z_UNKNOWN			((int)(0x0008 << 16))
+#define MDP_ERR_Z_CATEGORY			((int)(0x0009 << 16))
+#define MDP_ERR_Z_UNKNOWN			((int)(0x0000 | MDP_ERR_Z_CATEGORY))
 #define MDP_ERR_Z_ARCHIVE_NOT_FOUND		((int)(0x0001 | MDP_ERR_Z_CATEGORY))
 #define MDP_ERR_Z_EXE_NOT_FOUND			((int)(0x0002 | MDP_ERR_Z_CATEGORY))
 #define MDP_ERR_Z_ARCHIVE_NOT_SUPPORTED		((int)(0x0003 | MDP_ERR_Z_CATEGORY))
