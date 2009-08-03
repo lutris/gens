@@ -275,7 +275,9 @@ void GensUI::update(void)
 		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
 		    (genopt_window && IsDialogMessage(genopt_window, &msg)) ||
 		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
+#ifdef GENS_CDROM
 		    (selcd_window && IsDialogMessage(selcd_window, &msg)) ||
+#endif
 		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)) ||
 		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)))
