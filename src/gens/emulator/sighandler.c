@@ -394,7 +394,11 @@ static void gens_sighandler(int signum)
 			"Please report this error to GerbilSoft (gerbilsoft@verizon.net).\n"
 			"Be sure to include detailed instructions about what you were\n"
 			"doing when this error occurred.",
-			signum, signame, sigdesc, siginfo_buf);
+			signum, signame, sigdesc
+#ifdef HAVE_SIGACTION
+			, siginfo_buf
+#endif
+			);
 	msg_buf[sizeof(msg_buf)-1] = 0x00;
 	
 	log_msgbox(msg_buf, "Gens/GS Error");
