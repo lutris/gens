@@ -161,5 +161,306 @@ actual error.
 	</tr>
 </table>
 
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Renderer Errors (category == 0x0001)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_RENDER_DUPLICATE_TAG</td>
+		<td class='value'>0x00010001</td>
+		<td>
+			The plugin attempted to register a renderer with a tag that<br>
+			belongs to a renderer that was previously registered.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_RENDER_INVALID_RENDERINFO</td>
+		<td class='value'>0x00010002</td>
+		<td>
+			One of two possible meanings:<br>
+			<ul>
+				<li>A plugin attempted to register a renderer with no tag.</li>
+				<li>A renderer's blit function received a NULL<br>render information struct.</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_RENDER_UNSUPPORTED_FLAG</td>
+		<td class='value'>0x00010003</td>
+		<td>
+			One of two possible meanings:<br>
+			<ul>
+				<li>A renderer has a feature flag that isn't supported<br>by the emulator.</li>
+				<li>The emulator uses a feature flag that isn't supported<br>by the renderer.</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_RENDER_UNSUPPORTED_VMODE</td>
+		<td class='value'>0x00010004</td>
+		<td>
+			The emulator is attempting to use a video mode that isn't<br>
+			supported by the renderer.
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Memory Errors (category == 0x0002)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MEM_INVALID_MEMID</td>
+		<td class='value'>0x00020001</td>
+		<td>An invalid memory ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MEM_NOT_ALLOCATED</td>
+		<td class='value'>0x00020002</td>
+		<td>
+			An attempt was made to access a memory area that hasn't<br>
+			been allocated by the emulator, e.g. attempting to read<br>
+			32X memory when a standard Mega Drive game is running.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MEM_OUT_OF_RANGE</td>
+		<td class='value'>0x00020003</td>
+		<td>
+			The specified address and length exceeds the range of<br>
+			the specified memory ID.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MEM_NOT_RESIZABLE</td>
+		<td class='value'>0x00020004</td>
+		<td>
+			An attempt was made to resize a memory area that is<br>
+			marked as non-resizable, e.g. Mega Drive main RAM.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MEM_UNALIGNED</td>
+		<td class='value'>0x00020005</td>
+		<td>
+			An attempt was made to read or write 16-bit or 32-bit<br>
+			data from or to an unaligned (odd) address.
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Register Errors (category == 0x0003)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_REG_INVALID_ICID</td>
+		<td class='value'>0x00030001</td>
+		<td>An invalid chip ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_REG_INVALID_REGID</td>
+		<td class='value'>0x00030002</td>
+		<td>An invalid register ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_REG_NOT_ALLOCATED</td>
+		<td class='value'>0x00030003</td>
+		<td>
+			The specified chip's registers have not been allocated<br>
+			by the emulator. For example, this may happen if you try<br>
+			to access the SegaCD's 68000's registers while running<br>
+			a standard Mega Drive game.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_REG_READ_ONLY</td>
+		<td class='value'>0x00030004</td>
+		<td>An attempt was made to write to a read-only register.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_REG_WRITE_ONLY</td>
+		<td class='value'>0x00030005</td>
+		<td>An attempt was made to read from a write-only register.</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Menu Errors (category == 0x0004)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MENU_INVALID_MENUID</td>
+		<td class='value'>0x00040001</td>
+		<td>An invalid menu ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_MENU_TOO_MANY_ITEMS</td>
+		<td class='value'>0x00040002</td>
+		<td>
+			The MDP menu system is full. No more menu items<br>
+			can be registered.
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Event Errors (category == 0x0005)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_EVENT_INVALID_EVENTID</td>
+		<td class='value'>0x00050001</td>
+		<td>An invalid event ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_EVENT_NOT_REGISTERED</td>
+		<td class='value'>0x00050002</td>
+		<td>
+			An attempt was made to unregister an event that<br>
+			the plugin didn't register in the first place.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_EVENT_NOT_REGISTERED</td>
+		<td class='value'>0x00050002</td>
+		<td>
+			An attempt was made to register an event that<br>
+			the plugin already registered.
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Window Errors (category == 0x0006)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_WINDOW_INVALID_WINDOW</td>
+		<td class='value'>0x00060001</td>
+		<td>The specified window is not known to the emulator.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_WINDOW_ALREADY_REGISTERED</td>
+		<td class='value'>0x00060002</td>
+		<td>
+			An attempt was made to register a window that has<br>
+			already been registered.
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Emulator Control Errors (category == 0x0007)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_WINDOW_INVALID_FUNCTION</td>
+		<td class='value'>0x00070001</td>
+		<td>An invalid function ID was specified.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_WINDOW_FUNCTION_NOT_IMPLEMENTED</td>
+		<td class='value'>0x00070002</td>
+		<td>The specified function is not implemented<br>in the emulator.</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Directory Errors (category == 0x0008)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_DIR_INVALID_DIRID</td>
+		<td class='value'>0x00080001</td>
+		<td>An invalid directory ID was specified.</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table>
+	<tr><th colspan='3'>MDP Compression Errors (category == 0x0009)</th></tr>
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_ARCHIVE_NOT_FOUND</td>
+		<td class='value'>0x00090001</td>
+		<td>The specified archive was not found.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_EXE_NOT_FOUND</td>
+		<td class='value'>0x00090002</td>
+		<td>
+			An external program is required in order to open<br>
+			the specified archive, but the external program<br>
+			was not found.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_ARCHIVE_NOT_SUPPORTED</td>
+		<td class='value'>0x00090003</td>
+		<td>The specified archive is not supported by the emulator.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_CANT_OPEN_ARCHIVE</td>
+		<td class='value'>0x00090004</td>
+		<td>The archive could not be opened.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_NO_FILES_IN_ARCHIVE</td>
+		<td class='value'>0x00090005</td>
+		<td>No files were found in the specified archive.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE</td>
+		<td class='value'>0x00090006</td>
+		<td>The requested file was not found in the archive.</td>
+	</tr>
+</table>
+
 </body>
 </html>
