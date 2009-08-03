@@ -280,9 +280,9 @@ int Config::save(const string& filename)
 	// Various settings.
 	cfg.writeBool("Options", "Fast Blur", Options::fastBlur());
 	cfg.writeBool("Options", "FPS", vdraw_get_fps_enabled());
-	cfg.writeInt("Options", "FPS Style", vdraw_get_fps_style());
+	cfg.writeInt("Options", "FPS Style", vdraw_get_fps_style(), true, 2);
 	cfg.writeBool("Options", "Message", vdraw_get_msg_enabled());
-	cfg.writeInt("Options", "Message Style", vdraw_get_msg_style());
+	cfg.writeInt("Options", "Message Style", vdraw_get_msg_style(), true, 2);
 	cfg.writeInt("Options", "LED", Show_LED & 1);
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
@@ -639,9 +639,9 @@ int Config::load(const string& filename, void* gameActive)
 	// Various settings.
 	Options::setFastBlur(cfg.getBool("Options", "Fast Blur", false));
 	vdraw_set_fps_enabled(cfg.getBool("Options", "FPS", false));
-	vdraw_set_fps_style(cfg.getInt("Options", "FPS Style", 0));
+	vdraw_set_fps_style(cfg.getInt("Options", "FPS Style", 0x10));
 	vdraw_set_msg_enabled(cfg.getBool("Options", "Message", true));
-	vdraw_set_msg_style(cfg.getInt("Options", "Message Style", 0));
+	vdraw_set_msg_style(cfg.getInt("Options", "Message Style", 0x10));
 	Show_LED = cfg.getInt("Options", "LED", 1);
 	Auto_Fix_CS = cfg.getInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = cfg.getInt("Options", "Auto Pause", 0);
