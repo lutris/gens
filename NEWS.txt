@@ -105,7 +105,7 @@ Release 7 introduces the following new features:
 - Added initial support for the "Palette Select" bit in VDP register 0.
   If the "Palette Select" bit is cleared, only the LSBs of each color component
   in CRAM is used to determine the colors to display, resulting in a maximum of
-  8 colors onscreen. This isn't very useful, but is more accurate.
+  8 colors onscreen. This isn't very useful, but it's more accurate.
 
 - SRAM can now be disabled in the Options menu. This fixes Puggsy, which checks
   for the existance of SRAM and prevents the user from advancing past a certain
