@@ -1,4 +1,4 @@
-Gens/GS r7_pre2 (Gens/GS)
+Gens/GS r7_pre3 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,7 +14,7 @@ http://www.sonicretro.org
 
 1. What is Gens/GS?
 
-Gens/GS r7_pre2 is David Korth's fork of Gens, initially based on
+Gens/GS r7_pre3 is David Korth's fork of Gens, initially based on
 Gens for Linux v2.15.5. The number after the "r" indicates the
 Gens/GS release. Releases are usually made after a significant new
 feature has been added, with minor releases if a major bug is found.
@@ -23,7 +23,7 @@ feature has been added, with minor releases if a major bug is found.
 
 1a. PREVIEW RELEASE
 
-Gens/GS r7_pre2 is a preview release. Although the new MDP plugin
+Gens/GS r7_pre3 is a preview release. Although the new MDP plugin
 system is now considered to be "stable", parts of Gens/GS may still
 be buggy. This release is intended to help find last-minute bugs
 before the final r7 release.

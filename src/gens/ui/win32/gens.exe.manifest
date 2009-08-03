@@ -3,11 +3,11 @@
 	<assemblyIdentity
 		type="win32"
 		name="Gens.GS"
-		version="6.9.0.2"
+		version="6.9.0.3"
 		processorArchitecture="x86"
 	/>
 	
-	<description>Gens/GS r7_pre2+</description>
+	<description>Gens/GS r7_pre3</description>
 	
 	<!-- Common Controls 6. Needed for visual styles on XP and later. -->
 	<dependency>
