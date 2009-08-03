@@ -67,9 +67,8 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 		
 		case MDP_EMUCTRL_UNKNOWN:
 		default:
-			// Unknown function.
-			// TODO: Add EMUCTRL-specific error codes.
-			return -MDP_ERR_EMUCTRL_UNKNOWN;
+			// Invalid function.
+			return -MDP_ERR_EMUCTRL_INVALID_FUNCTION;
 	}
 	
 	return MDP_ERR_OK;
