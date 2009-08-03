@@ -116,7 +116,7 @@ class Options
 		** TODO: Move these somewhere else. **/
 		
 		static void systemReset(void);
-		static void setGameName(void);
+		static void setGameName(int system = -1);
 };
 
 #endif /* __cplusplus */

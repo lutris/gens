@@ -1194,14 +1194,15 @@ void Options::systemReset(void)
 
 /**
  * setGameName(): Sets the title of the window to the system name and the game name.
+ * @param system Force system: 0 == MD; 1 == MCD; 2 == 32X
  */
-void Options::setGameName(void)
+void Options::setGameName(int system)
 {
 	string systemName;
 	string gameName;
 	string emptyGameName;
 	
-	if (Genesis_Started)
+	if (Genesis_Started || system == 0)
 	{
 		if ((CPU_Mode == 1) || (Game_Mode == 0))
 			systemName = "Mega Drive";
@@ -1209,7 +1210,7 @@ void Options::setGameName(void)
 			systemName = "Genesis";
 		gameName = ROM::getRomName(Game, Game_Mode);
 	}
-	else if (_32X_Started)
+	else if (_32X_Started || system == 2)
 	{
 		if (CPU_Mode == 1)
 			systemName = "32X (PAL)";
@@ -1217,7 +1218,7 @@ void Options::setGameName(void)
 			systemName = "32X (NTSC)";
 		gameName = ROM::getRomName(Game, Game_Mode);
 	}
-	else if (SegaCD_Started)
+	else if (SegaCD_Started || system == 1)
 	{
 		if ((CPU_Mode == 1) || (Game_Mode == 0))
 			systemName = "MegaCD";
