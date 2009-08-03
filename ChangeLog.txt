@@ -196,6 +196,9 @@ Release 7 has the following low-level code changes:
   run Gens/GS on an original Intel Pentium or older, you will have to
   compile your own Gens/GS binary.
 
+- [Unix] On systems that support sigaction(), the signal handler dialog will
+  now show extended signal information for some signals, e.g. SIGFPE.
+
 ================================================================
 
 What's new in Gens/GS v2.15.5/GS-m6?
