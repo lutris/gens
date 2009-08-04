@@ -41,8 +41,8 @@ using std::stringstream;
  */
 static inline void setWindowTitle_withAppVersion(const string& title)
 {
-#ifdef VERSION
-	GensUI::setWindowTitle(GENS_APPNAME " " VERSION " - " + title);
+#ifdef GENS_GS_VERSION
+	GensUI::setWindowTitle(GENS_APPNAME " " GENS_GS_VERSION " - " + title);
 #else
 	GensUI::setWindowTitle(GENS_APPNAME " - " + title);
 #endif

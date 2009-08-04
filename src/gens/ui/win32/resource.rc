@@ -92,15 +92,15 @@ END
 APP_MANIFEST		RT_MANIFEST	"gens.exe.manifest"
 
 #ifdef GENS_GIT_VERSION
-#define Win32_RC_FileVersion VERSION "\r\n" GENS_GIT_VERSION "\0"
+#define Win32_RC_FileVersion GENS_GS_VERSION "\r\n" GENS_GIT_VERSION "\0"
 #else /* !GENS_GIT_VERSION */
-#define Win32_RC_FileVersion VERSION "\0"
+#define Win32_RC_FileVersion GENS_GS_VERSION "\0"
 #endif /* GENS_GIT_VERSION */
 
 // Application Version
 VS_VERSION_INFO VERSIONINFO
-	FILEVERSION 6,9,0,3
-	PRODUCTVERSION 6,9,0,3
+	FILEVERSION GENS_VERSION_WIN32
+	PRODUCTVERSION GENS_VERSION_WIN32
 	FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 	FILEFLAGS 0x1L
@@ -117,7 +117,7 @@ BEGIN
 		BEGIN
 			//VALUE "Comments", "\0"
 			//VALUE "CompanyName", "\0"
-			VALUE "FileDescription", "Gens/GS " VERSION
+			VALUE "FileDescription", "Gens/GS " GENS_GS_VERSION
 			VALUE "FileVersion", Win32_RC_FileVersion
 			VALUE "InternalName", "Gens/GS\0"
 			//VALUE "LegalCopyright", "\0"
@@ -125,7 +125,7 @@ BEGIN
 			//VALUE "OriginalFilename", "\0"
 			//VALUE "PrivateBuild", "\0"
 			VALUE "ProductName", "Gens/GS\0"
-			VALUE "ProductVersion", VERSION
+			VALUE "ProductVersion", Win32_RC_FileVersion
 			//VALUE "SpecialBuild", "\0"
 		END
 	END

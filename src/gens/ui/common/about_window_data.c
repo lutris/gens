@@ -39,8 +39,8 @@
 
 const char* const about_window_title =
 			"Gens/GS"
-			#ifdef VERSION
-				"\nVersion " VERSION
+			#ifdef GENS_GS_VERSION
+				"\nVersion " GENS_GS_VERSION
 			#endif
 			#ifdef GENS_GIT_VERSION
 				"\n" GENS_GIT_VERSION
