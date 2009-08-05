@@ -113,7 +113,8 @@ static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
 template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
 static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 				  int in_row_width, int in_width, int height,
-				  pixel *rgb_out, int out_pitch)
+				  pixel *rgb_out, int out_pitch,
+				  unsigned int effects, pixel lowPixelMask, pixel darkenMask)
 {
 	const int chunk_count = in_width / md_ntsc_in_chunk - 1;
 	
@@ -184,8 +185,41 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		/* Write the pixels to the display. */
 		memcpy(rgb_out, dbl_buf, dbl_buf_size);
 		rgb_out += outPitchDiff;
-		memcpy(rgb_out, dbl_buf, dbl_buf_size);
-		rgb_out += outPitchDiff;
+		
+		if (!(effects & (MDP_MD_NTSC_EFFECT_SCANLINE | MDP_MD_NTSC_EFFECT_INTERP)))
+		{
+			// Scanlines and interpolation are disabled.
+			// Do a simple double-scan.
+			memcpy(rgb_out, dbl_buf, dbl_buf_size);
+			rgb_out += outPitchDiff;
+		}
+		else
+		{
+			if (effects & MDP_MD_NTSC_EFFECT_INTERP)
+			{
+				// Interpolation is enabled.
+				// TODO
+				rgb_out += outPitchDiff;
+			}
+			else
+			{
+				// Interpolation is disabled. Add a scanline effect.
+				const pixel *in = dbl_buf;
+				pixel *out = rgb_out;
+				
+				// Write the scanline.
+				for (unsigned int x = (in_width * 2); x != 0; x--)
+				{
+					const pixel prev = *in++;
+					
+					// Darken by 12%.
+					*out++ = prev - (prev >> 3 & darkenMask);
+				}
+				
+				// Next line.
+				rgb_out += outPitchDiff;
+			}
+		}
 		
 		// Next row.
 		input += in_row_width;
@@ -361,6 +395,14 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
 	
+	unsigned int effects = 0;
+	if (mdp_md_ntsc_scanline)
+		effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
+	if (mdp_md_ntsc_interp)
+		effects |= MDP_MD_NTSC_EFFECT_INTERP;
+	if (mdp_md_ntsc_use_cxa2025as)
+		effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
+	
 	switch (MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
 	{
 		case MDP_RENDER_VMODE_RGB_565:
@@ -371,7 +413,8 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->srcPitch / 2,
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
-					 render_info->destPitch);
+					 render_info->destPitch,
+					 effects, 0x0821, 0x18E3);
 #if 0
 			T_double_scan_image<uint16_t, 0x0821, 0x18E3>
 					((uint16_t*)render_info->destScreen,
@@ -390,7 +433,8 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->srcPitch / 2,
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
-					 render_info->destPitch);
+					 render_info->destPitch,
+					 effects, 0x0421, 0x0C63);
 #if 0
 			T_double_scan_image<uint16_t, 0x0421, 0x0C63>
 					((uint16_t*)render_info->destScreen,
@@ -409,7 +453,8 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->srcPitch / 2,
 					 render_info->width, render_info->height,
 					 (uint32_t*)render_info->destScreen,
-					 render_info->destPitch);
+					 render_info->destPitch,
+					 effects, (uint32_t)0x010101, (uint32_t)0x0F0F0F);
 #if 0
 			T_double_scan_image<uint32_t, (uint32_t)0x010101, (uint32_t)0x0F0F0F>
 					((uint32_t*)render_info->destScreen,
