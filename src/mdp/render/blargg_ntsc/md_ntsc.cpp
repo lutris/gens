@@ -107,6 +107,44 @@ static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
 }
 
 
+template<typename pixel>
+static inline void T_interpolate_line(const pixel *prev_line_in, const pixel *next_line_in,
+				      pixel *out_line,
+				      int line_width, unsigned int effects,
+				      pixel lowPixelMask, pixel darkenMask)
+{
+	// Current doubled line: 3
+	// Output line: 1
+	// Previous real line: 0
+	// Next real line: 2
+	
+	memset(out_line, 0xFF, line_width);
+	for (unsigned int x = line_width; x != 0; x--)
+	{
+		const pixel prev = *prev_line_in++;
+		const pixel next = (next_line_in ? *next_line_in++ : 0);
+		
+		// Mix RGB without losing low bits.
+		const uint32_t mixed = (prev + next) + ((prev ^ next) & lowPixelMask);
+		
+		if (effects & MDP_MD_NTSC_EFFECT_SCANLINE)
+		{
+			// Scanlines are enabled.
+			// Darken the pixel by 12%.
+			*out_line = (mixed >> 1) - (mixed >> 4 & darkenMask);
+		}
+		else
+		{
+			// Scanlines are disabled.
+			// Don't darken the pixel at all.
+			*out_line = (mixed >> 1);
+		}
+		
+		out_line++;
+	}
+}
+
+
 /**
  * T_md_ntsc_blit(): Templated NTSC blit function.
  */
@@ -136,6 +174,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		dbl_buf[1] = (pixel*)malloc(dbl_buf_size);
 	}
 	
+	unsigned int line = 0;
 	while (height--)
 	{
 		// Switch the double-scan buffers.
@@ -204,7 +243,22 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 			if (effects & MDP_MD_NTSC_EFFECT_INTERP)
 			{
 				// Interpolation is enabled.
-				// TODO
+				if (line != 0)
+				{
+					// Past line 0. Interpolate the current line and the previous line.
+					
+					// Current doubled line: 3
+					// Output line: 1
+					// Previous real line: 0
+					// Next real line: 2
+					
+					T_interpolate_line<pixel>(
+							dbl_buf[!dbl_buf_write],
+							dbl_buf[dbl_buf_write],
+							(rgb_out - (outPitchDiff * 2)),
+							(in_width * 2), effects,
+							lowPixelMask, darkenMask);
+				}
 				rgb_out += outPitchDiff;
 			}
 			else
@@ -229,6 +283,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		
 		// Next row.
 		input += in_row_width;
+		line++;
 	}
 }
 
