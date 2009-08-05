@@ -25,6 +25,9 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// C includes.
+#include <stdlib.h>
+
 // MiniZip.
 #include "minizip/unzip.h"
 
@@ -33,6 +36,9 @@
 
 // MDP includes.
 #include "mdp/mdp_error.h"
+
+// gsft_strdup().
+#include "libgsft/gsft_strdup.h"
 
 
 // Zip decompressor functions.
@@ -104,7 +110,7 @@ static int decompressor_zip_get_file_info(FILE *zF, const char* filename, mdp_z_
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		z_entry_cur->filename = gens_strdup(ROMFileName);
+		z_entry_cur->filename = gsft_strdup(ROMFileName);
 		z_entry_cur->filesize = zinfo.uncompressed_size;
 		z_entry_cur->next = NULL;
 		

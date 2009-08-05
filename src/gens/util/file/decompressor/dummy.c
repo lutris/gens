@@ -32,6 +32,12 @@
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+// gsft_strdup()
+#include "libgsft/gsft_strdup.h"
+
+// C includes.
+#include <stdlib.h>
+
 
 // Dummy decompressor functions.
 static int decompressor_dummy_detect_format(FILE *zF);
@@ -89,7 +95,7 @@ static int decompressor_dummy_get_file_info(FILE *zF, const char* filename, mdp_
 	
 	// Set the elements of the list.
 	z_entry->filesize = filesize;
-	z_entry->filename = (filename ? gens_strdup(filename) : NULL);
+	z_entry->filename = (filename ? gsft_strdup(filename) : NULL);
 	z_entry->next = NULL;
 	
 	// Return the list.

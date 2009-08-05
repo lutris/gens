@@ -240,7 +240,6 @@ noinst_HEADERS = \
 		macros/malloc_align.h \
 		macros/math_m.h \
 		macros/unused.h \
-		macros/compat_m.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \

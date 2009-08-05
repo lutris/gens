@@ -31,6 +31,9 @@
 	#include <zlib.h>
 #endif
 
+/* C includes. */
+#include <stdlib.h>
+
 /* File Decompressors. */
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/dummy.h"
@@ -43,8 +46,8 @@
 #endif
 #include "util/file/decompressor/md_rar_t.h"
 
-/* gens_strdup() */
-#include "macros/compat_m.h"
+/* gsft_strdup() */
+#include "libgsft/gsft_strdup.h"
 
 /* Array of decompressors. */
 static const decompressor_t* const decompressors[] =
@@ -149,7 +152,7 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 	
 	/* Fill the data in the mdp_z_t struct. */
 	z->files	= z_entry_head;
-	z->filename	= gens_strdup(filename);
+	z->filename	= gsft_strdup(filename);
 	z->f		= f;
 	z->data		= (void*)(cmp);		/* Data parameter contains decompressor function pointers. */
 	

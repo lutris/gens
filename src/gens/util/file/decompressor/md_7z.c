@@ -24,6 +24,9 @@
 
 #include "ui/gens_ui.hpp"
 
+// C includes.
+#include <stdlib.h>
+
 // 7z includes.
 #include "lzma/7zCrc.h"
 #include "lzma/7zFile.h"
@@ -38,6 +41,9 @@
 
 // MDP includes.
 #include "mdp/mdp_error.h"
+
+// gsft_strdup().
+#include "libgsft/gsft_strdup.h"
 
 
 // 7z decompressor functions.
@@ -139,7 +145,7 @@ static int decompressor_7z_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		z_entry_cur->filename = (f->Name ? gens_strdup(f->Name) : NULL);
+		z_entry_cur->filename = (f->Name ? gsft_strdup(f->Name) : NULL);
 		z_entry_cur->filesize = f->Size;
 		z_entry_cur->next = NULL;
 		

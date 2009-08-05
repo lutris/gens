@@ -31,9 +31,6 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
-// gens_strdup()
-#include "macros/compat_m.h"
-
 // MDP decompression structs.
 #include "mdp/mdp_z.h"
 

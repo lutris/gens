@@ -41,6 +41,7 @@
 
 // C includes.
 #include <unistd.h>
+#include <stdlib.h>
 
 // C++ includes.
 #include <sstream>
@@ -52,6 +53,9 @@ using std::stringstream;
 
 // MDP includes.
 #include "mdp/mdp_error.h"
+
+// gsft_strdup()
+#include "libgsft/gsft_strdup.h"
 
 
 /**
@@ -197,7 +201,7 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		z_entry_cur->filename = gens_strdup(tmp_filename.c_str());
+		z_entry_cur->filename = gsft_strdup(tmp_filename.c_str());
 		z_entry_cur->filesize = tmp_filesize;
 		z_entry_cur->next = NULL;
 		

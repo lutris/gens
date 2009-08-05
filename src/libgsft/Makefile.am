@@ -17,6 +17,11 @@ noinst_HEADERS = \
 		gsft_fncall.h \
 		gsft_hashtable.hpp
 
+if !HAVE_STRDUP
+libgsft_la_SOURCES	+= gsft_strdup.c
+noinst_HEADERS		+= gsft_strdup.h
+endif
+
 # Win32-specific headers.
 if GENS_OS_WIN32
 noinst_HEADERS += \
