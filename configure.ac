@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.5])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT(gens, 2.16.9.93, gerbilsoft@verizon.net)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
@@ -15,6 +15,9 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE(gens, 2.16.6.93, gerbilsoft@verizon.net)
 AC_DEFINE(GENS_VERSION_WIN32, [2,16,6,93], Gens Win32 Version Number)
 AC_DEFINE(GENS_GS_VERSION, "r7_pre3+", Gens/GS Version Number)
+
+# Disable the Fortran check.
+m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 
 # Checks for programs.
 AM_PROG_AS
@@ -114,7 +117,7 @@ case $host in
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
-	x*)
+	*)
 		AC_MSG_ERROR([Unsupported system architecture: $host]);
 		;;
 esac
@@ -290,8 +293,8 @@ elif test x$with_nasm = xnasm; then
 	elif test x$enable_nasm_opt = xno; then
 		enable_nasm_opt=1;
 	fi
-
-# Set the NASM path to NASM.
+	
+	# Set the NASM path to NASM.
 	NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug} -I\$(top_srcdir)/src/ -w-orphan-labels"
 fi
 
@@ -470,6 +473,7 @@ fi # GENS_PNG
 AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
 
+
 ###
 # LZMA / 7z. (internal only)
 ###
@@ -480,6 +484,7 @@ if test x$with_7z = xyes; then
 fi # GENS_LZMA
 
 AM_CONDITIONAL([GENS_LZMA], [test x$with_7z = xyes])
+
 
 ###
 # gcc -fvisibility-inlines-hidden option
@@ -515,6 +520,7 @@ else
 		cxxflags_visibility=""
 	fi
 fi
+
 
 ###
 # C++ map type
@@ -574,6 +580,7 @@ fi
 
 # Reset test language to C.
 AC_LANG(C)
+
 
 ###
 # Miscellaneous
@@ -636,7 +643,21 @@ fi
 # TODO: Check for getopt_long() and implement a fallback getopt() parser.
 #AC_CHECK_LIB(c, getopt)
 
-AC_FUNC_ALLOCA
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_MODE_T
+AC_C_RESTRICT
+AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 # Check for various functions.
 AC_CHECK_FUNCS(strdup, has_strdup=yes, has_strdup=no)
@@ -647,6 +668,17 @@ AM_CONDITIONAL([HAVE_STRTOK_R], [test x$has_strtok_r = xyes])
 
 AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
+
+# Checks for header files.
+AC_PATH_X
+AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
+
+# Checks for library functions.
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS([getcwd gettimeofday memmove memset mkdir pow rint])
+AC_CHECK_FUNCS([setenv sqrt strcasecmp strchr strerror strncasecmp])
+AC_CHECK_FUNCS([strpbrk strrchr strspn strstr strtol strtoul])
 
 # Check for iconv().
 # First, check for iconv() in the C library.
@@ -688,89 +720,50 @@ AC_SUBST(AM_LDFLAGS)
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(libdir)
 
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lgdi32':
-AC_CHECK_LIB([gdi32], [main])
-# FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lpng':
-AC_CHECK_LIB([png], [main])
-# FIXME: Replace `main' with a function in `-lz':
-AC_CHECK_LIB([z], [main])
-
-# Checks for header files.
-AC_PATH_X
-AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_INLINE
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_INT8_T
-AC_TYPE_MODE_T
-AC_C_RESTRICT
-AC_TYPE_SIZE_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
-AC_TYPE_UINT8_T
-AC_CHECK_TYPES([ptrdiff_t])
-
-# Checks for library functions.
-AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
-AC_FUNC_MALLOC
-AC_CHECK_FUNCS([clock_gettime getcwd gettimeofday memmove memset mkdir pow rint setenv sqrt strcasecmp strchr strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul])
-
-AC_CONFIG_FILES([Makefile
-                 images/Makefile
-                 src/Makefile
-                 src/extlib/Makefile
-                 src/extlib/libpng/Makefile
-                 src/extlib/lzma/Makefile
-                 src/extlib/minizip/Makefile
-                 src/extlib/mp3_dec/Makefile
-                 src/extlib/zlib/Makefile
-                 src/gens/Makefile
-                 src/gens/plugins/Makefile
-                 src/gens/plugins/render/Makefile
-                 src/gens/plugins/render/double/Makefile
-                 src/gens/plugins/render/normal/Makefile
-                 src/libgsft/Makefile
-                 src/libpng/Makefile
-                 src/lzma/Makefile
-                 src/mdZ80/Makefile
-                 src/mdp/Makefile
-                 src/mdp/misc/Makefile
-                 src/mdp/misc/game_genie/Makefile
-                 src/mdp/misc/ips_patcher/Makefile
-                 src/mdp/misc/sgens/Makefile
-                 src/mdp/misc/vdp_layer_options/Makefile
-                 src/mdp/render/2xsai/Makefile
-                 src/mdp/render/Makefile
-                 src/mdp/render/blargg_ntsc/Makefile
-                 src/mdp/render/epx/Makefile
-                 src/mdp/render/epx_plus/Makefile
-                 src/mdp/render/hq2x/Makefile
-                 src/mdp/render/hq3x/Makefile
-                 src/mdp/render/hq4x/Makefile
-                 src/mdp/render/interpolated/Makefile
-                 src/mdp/render/interpolated_scanline/Makefile
-                 src/mdp/render/interpolated_scanline_25/Makefile
-                 src/mdp/render/interpolated_scanline_50/Makefile
-                 src/mdp/render/scale2x/Makefile
-                 src/mdp/render/scale3x/Makefile
-                 src/mdp/render/scale4x/Makefile
-                 src/mdp/render/scanline/Makefile
-                 src/mdp/render/scanline_25/Makefile
-                 src/mdp/render/scanline_50/Makefile
-                 src/mdp/render/super_2xsai/Makefile
-                 src/mdp/render/super_eagle/Makefile
-                 src/minizip/Makefile
-                 src/mp3_dec/Makefile
-                 src/starscream/Makefile
-                 src/zlib/Makefile
-                 xdg/Makefile])
+AC_CONFIG_FILES([
+	Makefile
+	images/Makefile
+	xdg/Makefile
+	src/Makefile
+	src/extlib/Makefile
+	src/extlib/libpng/Makefile
+	src/extlib/lzma/Makefile
+	src/extlib/minizip/Makefile
+	src/extlib/mp3_dec/Makefile
+	src/extlib/zlib/Makefile
+	src/starscream/Makefile
+	src/mdZ80/Makefile
+	src/libgsft/Makefile
+	src/gens/Makefile
+	src/gens/plugins/Makefile
+	src/gens/plugins/render/Makefile
+	src/gens/plugins/render/double/Makefile
+	src/gens/plugins/render/normal/Makefile
+	src/mdp/Makefile
+	src/mdp/misc/Makefile
+	src/mdp/misc/game_genie/Makefile
+	src/mdp/misc/ips_patcher/Makefile
+	src/mdp/misc/sgens/Makefile
+	src/mdp/misc/vdp_layer_options/Makefile
+	src/mdp/render/2xsai/Makefile
+	src/mdp/render/Makefile
+	src/mdp/render/blargg_ntsc/Makefile
+	src/mdp/render/epx/Makefile
+	src/mdp/render/epx_plus/Makefile
+	src/mdp/render/hq2x/Makefile
+	src/mdp/render/hq3x/Makefile
+	src/mdp/render/hq4x/Makefile
+	src/mdp/render/interpolated/Makefile
+	src/mdp/render/interpolated_scanline/Makefile
+	src/mdp/render/interpolated_scanline_25/Makefile
+	src/mdp/render/interpolated_scanline_50/Makefile
+	src/mdp/render/scale2x/Makefile
+	src/mdp/render/scale3x/Makefile
+	src/mdp/render/scale4x/Makefile
+	src/mdp/render/scanline/Makefile
+	src/mdp/render/scanline_25/Makefile
+	src/mdp/render/scanline_50/Makefile
+	src/mdp/render/super_2xsai/Makefile
+	src/mdp/render/super_eagle/Makefile
+	])
 AC_OUTPUT
