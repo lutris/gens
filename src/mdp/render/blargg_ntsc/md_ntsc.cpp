@@ -159,15 +159,15 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	/* Calculate the output pitch difference for one scanline. */
 	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
-	/* Double-scan buffer. */
+	/* Double-scan line buffers. */
 	static unsigned int prev_dbl_buf_size = 0;
 	const unsigned int dbl_buf_size = (in_width * sizeof(pixel) * 2);
 	pixel *dbl_buf[2] = {NULL, NULL};
-	int dbl_buf_write = 0;	// Current double-scan buffer to write to.
+	int dbl_buf_write = 0;	// Current double-scan line buffer to write to.
 	
 	if (prev_dbl_buf_size != dbl_buf_size)
 	{
-		// Reallocate the double-scan buffers.
+		// Reallocate the double-scan line buffers.
 		free(dbl_buf[0]);
 		free(dbl_buf[1]);
 		dbl_buf[0] = (pixel*)malloc(dbl_buf_size);
@@ -177,7 +177,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	unsigned int line = 0;
 	while (height--)
 	{
-		// Switch the double-scan buffers.
+		// Switch the double-scan line buffers.
 		dbl_buf_write = !dbl_buf_write;
 		
 		uint16_t const* line_in = input;
