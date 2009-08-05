@@ -386,7 +386,7 @@ static void gens_sighandler(int signum)
 			"\n"
 			"Build Information:\n"
 			"- Platform: " GENS_PLATFORM "\n"
-			"- Version: " VERSION "\n"
+			"- Version: " PACKAGE_VERSION " (" GENS_GS_VERSION ")\n"
 #ifdef GENS_GIT_VERSION
 			"- " GENS_GIT_VERSION "\n"
 #endif
