@@ -1,34 +1,34 @@
-AC_INIT(configure.in)
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.5)
-AC_CONFIG_HEADER(config.h)
+AC_PREREQ([2.5])
+AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADERS([config.h])
+
+# Automake build features.
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AC_CONFIG_SRCDIR([configure.in])
 
-# Initialize automake and set version numbers.
-AM_INIT_AUTOMAKE(gens, 2.16.6.93)
+# Initialize automake and set version numbers and bug report address.
+AM_INIT_AUTOMAKE(gens, 2.16.6.93, gerbilsoft@verizon.net)
 AC_DEFINE(GENS_VERSION_WIN32, [2,16,6,93], Gens Win32 Version Number)
 AC_DEFINE(GENS_GS_VERSION, "r7_pre3+", Gens/GS Version Number)
 
-AC_CONFIG_MACRO_DIR([m4])
-m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
-
-# libtool
-AC_LIBTOOL_DLOPEN
-AC_ENABLE_SHARED
-AC_DISABLE_STATIC
-
-# Set up libtool.
-AC_PROG_LIBTOOL
-
+# Checks for programs.
+AM_PROG_AS
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
 AM_PROG_CC_C_O
-AC_PROG_CXX
-AM_PROG_AS
-AC_ISC_POSIX
-AC_HEADER_STDC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_MKDIR_P
+AC_PROG_LIBTOOL
 
 # Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
 if test "$CFLAGS" = "-g -O2"; then
@@ -114,7 +114,7 @@ case $host in
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
-	*)
+	x*)
 		AC_MSG_ERROR([Unsupported system architecture: $host]);
 		;;
 esac
@@ -137,7 +137,6 @@ AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 if test x$os != xwin32; then
 	AC_PROG_CC_C99
 fi
-
 # Debugging symbols and warnings.
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
@@ -275,7 +274,7 @@ if test x$with_nasm = xyasm; then
 		AC_MSG_ERROR([*** yasm not found!])
 	fi
 	
-	# Set the NASM path to YASM.
+# Set the NASM path to YASM.
 	NASM="${YASM} ${nasm_obj_format} ${yasm_debug} -I\$(top_srcdir)/src/ -w"
 elif test x$with_nasm = xnasm; then
 	# nasm specified as nasm-compatible assembler.
@@ -291,8 +290,8 @@ elif test x$with_nasm = xnasm; then
 	elif test x$enable_nasm_opt = xno; then
 		enable_nasm_opt=1;
 	fi
-	
-	# Set the NASM path to NASM.
+
+# Set the NASM path to NASM.
 	NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug} -I\$(top_srcdir)/src/ -w-orphan-labels"
 fi
 
@@ -376,7 +375,6 @@ if test x$with_opengl = xyes; then
 fi
 AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 
-
 ###
 # zlib
 ###
@@ -423,7 +421,6 @@ fi # GENS_ZLIB_INTERNAL
 fi # GENS_ZLIB
 AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
 AM_CONDITIONAL([GENS_ZLIB_INTERNAL], [test x$with_internal_zlib = xyes])
-
 
 ###
 # libpng
@@ -473,7 +470,6 @@ fi # GENS_PNG
 AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
 
-
 ###
 # LZMA / 7z. (internal only)
 ###
@@ -484,7 +480,6 @@ if test x$with_7z = xyes; then
 fi # GENS_LZMA
 
 AM_CONDITIONAL([GENS_LZMA], [test x$with_7z = xyes])
-
 
 ###
 # gcc -fvisibility-inlines-hidden option
@@ -520,7 +515,6 @@ else
 		cxxflags_visibility=""
 	fi
 fi
-
 
 ###
 # C++ map type
@@ -580,7 +574,6 @@ fi
 
 # Reset test language to C.
 AC_LANG(C)
-
 
 ###
 # Miscellaneous
@@ -674,7 +667,6 @@ fi
 AM_CONDITIONAL([HAVE_ICONV], [test x$has_iconv = xyes])
 AC_SUBST(ICONV_LIBS)
 
-
 # Autoconf substitutions.
 
 AC_SUBST(SDL_CFLAGS)
@@ -696,51 +688,89 @@ AC_SUBST(AM_LDFLAGS)
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(libdir)
 
-AC_CONFIG_FILES([
-Makefile
-images/Makefile
-xdg/Makefile
-src/Makefile
-src/extlib/Makefile
-src/extlib/zlib/Makefile
-src/extlib/minizip/Makefile
-src/extlib/libpng/Makefile
-src/extlib/mp3_dec/Makefile
-src/extlib/lzma/Makefile
-src/starscream/Makefile
-src/mdZ80/Makefile
-src/libgsft/Makefile
-src/gens/Makefile
-src/gens/plugins/Makefile
-src/gens/plugins/render/Makefile
-src/gens/plugins/render/normal/Makefile
-src/gens/plugins/render/double/Makefile
-src/mdp/Makefile
-src/mdp/render/Makefile
-src/mdp/render/scanline/Makefile
-src/mdp/render/scanline_25/Makefile
-src/mdp/render/scanline_50/Makefile
-src/mdp/render/interpolated/Makefile
-src/mdp/render/interpolated_scanline/Makefile
-src/mdp/render/interpolated_scanline_25/Makefile
-src/mdp/render/interpolated_scanline_50/Makefile
-src/mdp/render/scale2x/Makefile
-src/mdp/render/scale3x/Makefile
-src/mdp/render/scale4x/Makefile
-src/mdp/render/hq2x/Makefile
-src/mdp/render/hq3x/Makefile
-src/mdp/render/hq4x/Makefile
-src/mdp/render/2xsai/Makefile
-src/mdp/render/epx/Makefile
-src/mdp/render/epx_plus/Makefile
-src/mdp/render/super_eagle/Makefile
-src/mdp/render/super_2xsai/Makefile
-src/mdp/render/blargg_ntsc/Makefile
-src/mdp/misc/Makefile
-src/mdp/misc/game_genie/Makefile
-src/mdp/misc/vdp_layer_options/Makefile
-src/mdp/misc/sgens/Makefile
-src/mdp/misc/ips_patcher/Makefile
-])
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lgdi32':
+AC_CHECK_LIB([gdi32], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace `main' with a function in `-lpng':
+AC_CHECK_LIB([png], [main])
+# FIXME: Replace `main' with a function in `-lz':
+AC_CHECK_LIB([z], [main])
 
+# Checks for header files.
+AC_PATH_X
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_MODE_T
+AC_C_RESTRICT
+AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
+
+# Checks for library functions.
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([clock_gettime getcwd gettimeofday memmove memset mkdir pow rint setenv sqrt strcasecmp strchr strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul])
+
+AC_CONFIG_FILES([Makefile
+                 images/Makefile
+                 src/Makefile
+                 src/extlib/Makefile
+                 src/extlib/libpng/Makefile
+                 src/extlib/lzma/Makefile
+                 src/extlib/minizip/Makefile
+                 src/extlib/mp3_dec/Makefile
+                 src/extlib/zlib/Makefile
+                 src/gens/Makefile
+                 src/gens/plugins/Makefile
+                 src/gens/plugins/render/Makefile
+                 src/gens/plugins/render/double/Makefile
+                 src/gens/plugins/render/normal/Makefile
+                 src/libgsft/Makefile
+                 src/libpng/Makefile
+                 src/lzma/Makefile
+                 src/mdZ80/Makefile
+                 src/mdp/Makefile
+                 src/mdp/misc/Makefile
+                 src/mdp/misc/game_genie/Makefile
+                 src/mdp/misc/ips_patcher/Makefile
+                 src/mdp/misc/sgens/Makefile
+                 src/mdp/misc/vdp_layer_options/Makefile
+                 src/mdp/render/2xsai/Makefile
+                 src/mdp/render/Makefile
+                 src/mdp/render/blargg_ntsc/Makefile
+                 src/mdp/render/epx/Makefile
+                 src/mdp/render/epx_plus/Makefile
+                 src/mdp/render/hq2x/Makefile
+                 src/mdp/render/hq3x/Makefile
+                 src/mdp/render/hq4x/Makefile
+                 src/mdp/render/interpolated/Makefile
+                 src/mdp/render/interpolated_scanline/Makefile
+                 src/mdp/render/interpolated_scanline_25/Makefile
+                 src/mdp/render/interpolated_scanline_50/Makefile
+                 src/mdp/render/scale2x/Makefile
+                 src/mdp/render/scale3x/Makefile
+                 src/mdp/render/scale4x/Makefile
+                 src/mdp/render/scanline/Makefile
+                 src/mdp/render/scanline_25/Makefile
+                 src/mdp/render/scanline_50/Makefile
+                 src/mdp/render/super_2xsai/Makefile
+                 src/mdp/render/super_eagle/Makefile
+                 src/minizip/Makefile
+                 src/mp3_dec/Makefile
+                 src/starscream/Makefile
+                 src/zlib/Makefile
+                 xdg/Makefile])
 AC_OUTPUT
