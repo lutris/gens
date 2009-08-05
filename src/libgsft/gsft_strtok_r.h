@@ -32,7 +32,7 @@
 #ifdef HAVE_STRTOK_R
 
 /* strtok_r() is defined. */
-#define gg_strtok_r(str, delim, saveptr) strtok_r(str, delim, saveptr)
+#define gsft_strtok_r(str, delim, saveptr) strtok_r(str, delim, saveptr)
 
 #else /* !HAVE_STRTOK_R */
 
