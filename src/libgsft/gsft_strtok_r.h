@@ -1,5 +1,6 @@
 /******************************************************************************
- * MDP: Game Genie. (strtok_r() replacement)                                  *
+ * libgsft: Common functions.                                                 *
+ * gsft_strtok_r.c: strtok_r() implementation for older systems.              *
  *                                                                            *
  * MDP implementation Copyright (c) 2008-2009 by David Korth                  *
  *                                                                            *
@@ -21,42 +22,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.              *
  ******************************************************************************/
 
-#include "gg_strtok_r.h"
+#ifndef __GSFT_STRTOK_R_H
+#define __GSFT_STRTOK_R_H
 
-// MDP includes.
-#include "mdp/mdp_fncall.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-// C includes.
-#include <string.h>
+#ifdef HAVE_STRTOK_R
 
-char* MDP_FNCALL gg_strtok_r(char *str, const char *delim, char **save_ptr)
-{
-	char *token;
-	
-	if (str == NULL)
-		str = *save_ptr;
-	
-	/* Scan leading delimiters. */
-	str += strspn(str, delim);
-	if (*str == '\0')
-	{
-		*save_ptr = str;
-		return NULL;
-	}
-	
-	/* Find the end of the token. */
-	token = str;
-	str = strpbrk(token, delim);
-	if (str == NULL)
-	{
-		/* This token finishes the string.  */
-		*save_ptr = strchr(token, '\0');
-	}
-	else
-	{
-		/* Terminate the token and make *SAVE_PTR point past it.  */
-		*str = '\0';
-		*save_ptr = str + 1;
-	}
-	return token;
+/* strtok_r() is defined. */
+#define gg_strtok_r(str, delim, saveptr) strtok_r(str, delim, saveptr)
+
+#else /* !HAVE_STRTOK_R */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+char* gsft_strtok_r(char *str, const char *delim, char **save_ptr);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* HAVE_STRTOK_R */
+
+#endif /* __GSFT_STRTOK_R_H */

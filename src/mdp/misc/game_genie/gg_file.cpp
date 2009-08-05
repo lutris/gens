@@ -39,8 +39,8 @@
 #include <list>
 using std::list;
 
-// gg_strtok_r() wrapper.
-#include "gg_strtok_r.h"
+// gsft_strtok_r().
+#include "libgsft/gsft_strtok_r.h"
 
 // MDP includes.
 #include "mdp/mdp_stdint.h"
@@ -140,10 +140,10 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = gg_strtok_r(in_line, ":", &r_ptr);	// CPU
-		tokens[1] = gg_strtok_r(NULL,    ":", &r_ptr);	// Address
-		tokens[2] = gg_strtok_r(NULL,    ":", &r_ptr);	// Data
-		tokens[3] = gg_strtok_r(NULL,    "",  &r_ptr);	// Name (optional)
+		tokens[0] = gsft_strtok_r(in_line, ":", &r_ptr);	// CPU
+		tokens[1] = gsft_strtok_r(NULL,    ":", &r_ptr);	// Address
+		tokens[2] = gsft_strtok_r(NULL,    ":", &r_ptr);	// Data
+		tokens[3] = gsft_strtok_r(NULL,    "",  &r_ptr);	// Name (optional)
 		
 		// Make sure CPU, Address, and Data are not null.
 		if (!tokens[0] || !tokens[1] || !tokens[2])
@@ -287,8 +287,8 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = gg_strtok_r(in_line, "\t", &r_ptr);	// Code
-		tokens[1] = gg_strtok_r(NULL,    "",   &r_ptr);	// Name (optional)
+		tokens[0] = gsft_strtok_r(in_line, "\t", &r_ptr);	// Code
+		tokens[1] = gsft_strtok_r(NULL,    "",   &r_ptr);	// Name (optional)
 		
 		// Make sure at least a code was specified.
 		if (!tokens[0])

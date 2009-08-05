@@ -30,12 +30,7 @@ noinst_HEADERS = \
 		gg_window.hpp \
 		gg_code.h \
 		gg_file.hpp \
-		gg_engine.cpp \
-		gg_strtok_r.h
-
-if !HAVE_STRTOK_R
-mdp_misc_game_genie_la_SOURCES	+= gg_strtok_r.c
-endif
+		gg_engine.cpp
 
 if GENS_UI_GTK
 mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.cpp
