@@ -291,101 +291,6 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 }
 
 
-#if 0
-/**
- * T_double_scan_image(): Templated double-scan image function.
- */
-template<typename pixel, pixel lowPixelMask, pixel darkenMask>
-static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
-				       int out_pitch, bool scanline, bool interp)
-{
-	// Calculate the output pitch difference for one scanline.
-	const int outPitchDiff = (out_pitch / sizeof(pixel));
-	
-	// Fill in the scanlines.
-	if (!scanline && !interp)
-	{
-		// Scanlines and interpolation are disabled.
-		// Do a simple double-scan.
-		while (height--)
-		{
-			memcpy(rgb_out + outPitchDiff, rgb_out, in_width * sizeof(pixel) * 2);
-			rgb_out += (outPitchDiff * 2);
-		}
-	}
-	else
-	{
-		// Scanlines and/or interpolation are enabled.
-		if (interp)
-		{
-			// Interpolation is enabled.
-			for (unsigned int y = height; y != 0; y--)
-			{
-				const pixel *in = rgb_out;
-				pixel *out = rgb_out + outPitchDiff;
-				
-				for (unsigned int x = in_width*2; x != 0; x--)
-				{
-					const pixel prev = *in;
-					
-					// Get the current pixel and the pixel on the next scanline.
-					const pixel next = (x > 1 && y > 1) ? *(in + (outPitchDiff * 2)) : 0;
-					
-					// Mix RGB without losing low bits.
-					const uint32_t mixed = (prev + next) + ((prev ^ next) & lowPixelMask);
-					
-					if (scanline)
-					{
-						// Darken the pixel by 12%.
-						*out = (mixed >> 1) - (mixed >> 4 & darkenMask);
-					}
-					else
-					{
-						// Don't darken the pixel at all.
-						*out = (mixed >> 1);
-					}
-					
-					// Next set of pixels.
-					in++;
-					out++;
-				}
-				
-				// Next line.
-				rgb_out += (outPitchDiff * 2);
-			}
-		}
-		else
-		{
-			// Interpolation is disabled.
-			for (unsigned int y = height; y != 0; y--)
-			{
-				const pixel *in = rgb_out;
-				pixel *out = rgb_out + outPitchDiff;
-				
-				for (unsigned int x = in_width*2; x != 0; x--)
-				{
-					const pixel prev = *in;
-					
-					// Mix RGB without losing low bits.
-					//const uint32_t mixed = (prev + prev) + ((prev ^ prev) & lowPixelMask);
-					
-					// Darken by 12%.
-					*out = prev - (prev >> 3 & darkenMask);
-					
-					// Next set of pixels.
-					in++;
-					out++;
-				}
-				
-				// Next line.
-				rgb_out += (outPitchDiff * 2);
-			}
-		}
-	}
-}
-#endif
-
-
 /* MDP Renderer Function */
 
 #include <stdlib.h>
@@ -479,14 +384,6 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch,
 					 effects, 0x0821, 0x18E3);
-#if 0
-			T_double_scan_image<uint16_t, 0x0821, 0x18E3>
-					((uint16_t*)render_info->destScreen,
-					 render_info->width, render_info->height,
-					 render_info->destPitch,
-					 mdp_md_ntsc_scanline,
-					 mdp_md_ntsc_interp);
-#endif
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_555:
@@ -499,14 +396,6 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch,
 					 effects, 0x0421, 0x0C63);
-#if 0
-			T_double_scan_image<uint16_t, 0x0421, 0x0C63>
-					((uint16_t*)render_info->destScreen,
-					 render_info->width, render_info->height,
-					 render_info->destPitch,
-					 mdp_md_ntsc_scanline,
-					 mdp_md_ntsc_interp);
-#endif
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_888:
@@ -519,14 +408,6 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 (uint32_t*)render_info->destScreen,
 					 render_info->destPitch,
 					 effects, (uint32_t)0x010101, (uint32_t)0x0F0F0F);
-#if 0
-			T_double_scan_image<uint32_t, (uint32_t)0x010101, (uint32_t)0x0F0F0F>
-					((uint32_t*)render_info->destScreen,
-					 render_info->width, render_info->height,
-					 render_info->destPitch,
-					 mdp_md_ntsc_scanline,
-					 mdp_md_ntsc_interp);
-#endif
 			break;
 		
 		default:
