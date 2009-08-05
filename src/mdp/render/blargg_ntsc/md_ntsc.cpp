@@ -174,6 +174,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 }
 
 
+#if 0
 /**
  * T_double_scan_image(): Templated double-scan image function.
  */
@@ -265,6 +266,8 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 		}
 	}
 }
+#endif
+
 
 /* MDP Renderer Function */
 
@@ -350,12 +353,14 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch);
+#if 0
 			T_double_scan_image<uint16_t, 0x0821, 0x18E3>
 					((uint16_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch,
 					 mdp_md_ntsc_scanline,
 					 mdp_md_ntsc_interp);
+#endif
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_555:
@@ -367,12 +372,14 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch);
+#if 0
 			T_double_scan_image<uint16_t, 0x0421, 0x0C63>
 					((uint16_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch,
 					 mdp_md_ntsc_scanline,
 					 mdp_md_ntsc_interp);
+#endif
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_888:
@@ -384,12 +391,14 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint32_t*)render_info->destScreen,
 					 render_info->destPitch);
+#if 0
 			T_double_scan_image<uint32_t, (uint32_t)0x010101, (uint32_t)0x0F0F0F>
 					((uint32_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch,
 					 mdp_md_ntsc_scanline,
 					 mdp_md_ntsc_interp);
+#endif
 			break;
 		
 		default:
