@@ -34,6 +34,7 @@ md_ntsc_setup_t const md_ntsc_rgb        = {{{0, 0, 0, 0,.2,  0,.7, -1, -1,-1}},
 #include "md_ntsc_impl.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 /* 2 input pixels -> 4 composite samples */
 const pixel_info_t md_ntsc_pixels[alignment_count] =
@@ -119,12 +120,24 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	/* Calculate the output pitch difference for one scanline. */
 	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
+	/* Double-scan buffer. */
+	static unsigned int prev_dbl_buf_size = 0;
+	const unsigned int dbl_buf_size = (in_width * sizeof(pixel) * 2);
+	pixel *dbl_buf = NULL;
+	
+	if (prev_dbl_buf_size != dbl_buf_size)
+	{
+		// Reallocate the double-scan buffer.
+		free(dbl_buf);
+		dbl_buf = (pixel*)malloc(dbl_buf_size);
+	}
+	
 	while (height--)
 	{
 		uint16_t const* line_in = input;
 		MD_NTSC_BEGIN_ROW(ntsc, md_ntsc_black,
 				  line_in[0], line_in[1], line_in[2]);
-		pixel *restrict line_out = rgb_out;
+		pixel *restrict line_out = dbl_buf;
 		int n;
 		line_in += 3;
 		
@@ -168,8 +181,14 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		MD_NTSC_RGB_OUT(6, line_out[6]);
 		MD_NTSC_RGB_OUT(7, line_out[7]);
 		
+		/* Write the pixels to the display. */
+		memcpy(rgb_out, dbl_buf, dbl_buf_size);
+		rgb_out += outPitchDiff;
+		memcpy(rgb_out, dbl_buf, dbl_buf_size);
+		rgb_out += outPitchDiff;
+		
+		// Next row.
 		input += in_row_width;
-		rgb_out += (outPitchDiff * 2);
 	}
 }
 
