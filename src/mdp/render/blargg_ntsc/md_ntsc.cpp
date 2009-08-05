@@ -124,21 +124,27 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	/* Double-scan buffer. */
 	static unsigned int prev_dbl_buf_size = 0;
 	const unsigned int dbl_buf_size = (in_width * sizeof(pixel) * 2);
-	pixel *dbl_buf = NULL;
+	pixel *dbl_buf[2] = {NULL, NULL};
+	int dbl_buf_write = 0;	// Current double-scan buffer to write to.
 	
 	if (prev_dbl_buf_size != dbl_buf_size)
 	{
-		// Reallocate the double-scan buffer.
-		free(dbl_buf);
-		dbl_buf = (pixel*)malloc(dbl_buf_size);
+		// Reallocate the double-scan buffers.
+		free(dbl_buf[0]);
+		free(dbl_buf[1]);
+		dbl_buf[0] = (pixel*)malloc(dbl_buf_size);
+		dbl_buf[1] = (pixel*)malloc(dbl_buf_size);
 	}
 	
 	while (height--)
 	{
+		// Switch the double-scan buffers.
+		dbl_buf_write = !dbl_buf_write;
+		
 		uint16_t const* line_in = input;
 		MD_NTSC_BEGIN_ROW(ntsc, md_ntsc_black,
 				  line_in[0], line_in[1], line_in[2]);
-		pixel *restrict line_out = dbl_buf;
+		pixel *restrict line_out = dbl_buf[dbl_buf_write];
 		int n;
 		line_in += 3;
 		
@@ -183,14 +189,14 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		MD_NTSC_RGB_OUT(7, line_out[7]);
 		
 		/* Write the pixels to the display. */
-		memcpy(rgb_out, dbl_buf, dbl_buf_size);
+		memcpy(rgb_out, dbl_buf[dbl_buf_write], dbl_buf_size);
 		rgb_out += outPitchDiff;
 		
 		if (!(effects & (MDP_MD_NTSC_EFFECT_SCANLINE | MDP_MD_NTSC_EFFECT_INTERP)))
 		{
 			// Scanlines and interpolation are disabled.
 			// Do a simple double-scan.
-			memcpy(rgb_out, dbl_buf, dbl_buf_size);
+			memcpy(rgb_out, dbl_buf[dbl_buf_write], dbl_buf_size);
 			rgb_out += outPitchDiff;
 		}
 		else
@@ -204,7 +210,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 			else
 			{
 				// Interpolation is disabled. Add a scanline effect.
-				const pixel *in = dbl_buf;
+				const pixel *in = dbl_buf[dbl_buf_write];
 				pixel *out = rgb_out;
 				
 				// Write the scanline.
