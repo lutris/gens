@@ -145,6 +145,11 @@ static inline void T_interpolate_line(const pixel *prev_line_in, const pixel *ne
 }
 
 
+// Double-scan line buffers.
+// NOTE: Statically allocating these makes the NTSC renderer non-reentrant!
+static unsigned int prev_dbl_buf_size = 0;
+static void *dbl_buf[2] = {NULL, NULL};
+
 /**
  * T_md_ntsc_blit(): Templated NTSC blit function.
  */
@@ -160,9 +165,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
 	/* Double-scan line buffers. */
-	static unsigned int prev_dbl_buf_size = 0;
 	const unsigned int dbl_buf_size = (in_width * sizeof(pixel) * 2);
-	pixel *dbl_buf[2] = {NULL, NULL};
 	int dbl_buf_write = 0;	// Current double-scan line buffer to write to.
 	
 	if (prev_dbl_buf_size != dbl_buf_size)
@@ -170,8 +173,8 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		// Reallocate the double-scan line buffers.
 		free(dbl_buf[0]);
 		free(dbl_buf[1]);
-		dbl_buf[0] = (pixel*)malloc(dbl_buf_size);
-		dbl_buf[1] = (pixel*)malloc(dbl_buf_size);
+		dbl_buf[0] = malloc(dbl_buf_size);
+		dbl_buf[1] = malloc(dbl_buf_size);
 	}
 	
 	unsigned int line = 0;
@@ -183,7 +186,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		uint16_t const* line_in = input;
 		MD_NTSC_BEGIN_ROW(ntsc, md_ntsc_black,
 				  line_in[0], line_in[1], line_in[2]);
-		pixel *restrict line_out = dbl_buf[dbl_buf_write];
+		pixel *restrict line_out = (pixel*)dbl_buf[dbl_buf_write];
 		int n;
 		line_in += 3;
 		
@@ -253,8 +256,8 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 					// Next real line: 2
 					
 					T_interpolate_line<pixel>(
-							dbl_buf[!dbl_buf_write],
-							dbl_buf[dbl_buf_write],
+							(pixel*)dbl_buf[!dbl_buf_write],
+							(pixel*)dbl_buf[dbl_buf_write],
 							(rgb_out - (outPitchDiff * 2)),
 							(in_width * 2), effects,
 							lowPixelMask, darkenMask);
@@ -264,7 +267,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 			else
 			{
 				// Interpolation is disabled. Add a scanline effect.
-				const pixel *in = dbl_buf[dbl_buf_write];
+				const pixel *in = (pixel*)dbl_buf[dbl_buf_write];
 				pixel *out = rgb_out;
 				
 				// Write the scanline.
