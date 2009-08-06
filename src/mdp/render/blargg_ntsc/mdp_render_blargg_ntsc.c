@@ -206,27 +206,43 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			
 			// Scanlines.
 			ntsc_host_srv->config_get(&mdp, "_Scanlines", "1", buf, sizeof(buf));
-			errno = 0;
-			val = strtol(buf, NULL, 0);
-			if (errno != 0)
+			if (buf[0])
+			{
+				errno = 0;
+				val = strtol(buf, NULL, 0);
+				if (errno != 0)
+					val = 1;
+			}
+			else
 				val = 1;
+			
 			if (val)
 				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
 			
 			// Interpolation.
 			ntsc_host_srv->config_get(&mdp, "_Interpolation", "1", buf, sizeof(buf));
-			errno = 0;
-			val = strtol(buf, NULL, 0);
-			if (errno != 0)
+			if (buf[0])
+			{
+				errno = 0;
+				val = strtol(buf, NULL, 0);
+				if (errno != 0)
+					val = 1;
+			}
+			else
 				val = 1;
 			if (val)
 				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_INTERP;
 			
 			// Sony CXA2025AS US decoder matrix.
 			ntsc_host_srv->config_get(&mdp, "_Sony_CXA2025AS_US", "0", buf, sizeof(buf));
-			errno = 0;
-			val = strtol(buf, NULL, 0);
-			if (errno != 0)
+			if (buf[0])
+			{
+				errno = 0;
+				val = strtol(buf, NULL, 0);
+				if (errno != 0)
+					val = 0;
+			}
+			else
 				val = 0;
 			if (val)
 				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
