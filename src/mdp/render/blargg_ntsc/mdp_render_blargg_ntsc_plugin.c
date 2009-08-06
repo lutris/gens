@@ -30,7 +30,7 @@ static mdp_desc_t mdp_desc =
 	.name = "Blargg's NTSC Filter",
 	.author_mdp = "David Korth",
 	.author_orig = "Shay Green",
-	.description = "Blargg's NTSC Filter for the Sega Genesis.",
+	.description = "Blargg's NTSC Filter for the Sega Mega Drive.",
 	.website = "http://www.fly.net/~ant/libs/ntsc.html",
 	.license = MDP_LICENSE_LGPL_21,
 	

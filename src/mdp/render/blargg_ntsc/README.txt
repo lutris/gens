@@ -1,4 +1,4 @@
-Blargg's NTSC Filter for Sega Mega Drive.
+Blargg's NTSC Filter for the Sega Mega Drive.
 Packaged for the MDP Plugin Interface v1.0.0.
 
 Copyright (c) 2006 by Shay Green.
