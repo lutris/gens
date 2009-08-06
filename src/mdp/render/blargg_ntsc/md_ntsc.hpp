@@ -153,9 +153,7 @@ DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 #define MDP_MD_NTSC_EFFECT_SCANLINE	0x01
 #define MDP_MD_NTSC_EFFECT_INTERP	0x02
 #define MDP_MD_NTSC_EFFECT_CXA2025AS	0x04
-DLL_LOCAL extern int mdp_md_ntsc_scanline;
-DLL_LOCAL extern int mdp_md_ntsc_interp;
-DLL_LOCAL extern int mdp_md_ntsc_use_cxa2025as;
+DLL_LOCAL extern unsigned int mdp_md_ntsc_effects;
 
 #ifdef __cplusplus
 }

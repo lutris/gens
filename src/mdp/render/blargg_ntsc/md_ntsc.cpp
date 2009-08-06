@@ -303,13 +303,11 @@ static md_ntsc_t *mdp_md_ntsc = NULL;
 // NTSC setup struct.
 md_ntsc_setup_t mdp_md_ntsc_setup;
 
-// Scanline / Interpolation options.
-int mdp_md_ntsc_scanline = 1;
-int mdp_md_ntsc_interp = 1;
-
 /* Sony CXA2025AS US decoder matrix. */
 static const float sony_cxa2025as_us_matrix[6] = {1.630, 0.317, -0.378, -0.466, -1.089, 1.677};
-int mdp_md_ntsc_use_cxa2025as = 0;
+
+/* Effects. (Scanlines, Interpolation, CXA2025AS) */
+unsigned int mdp_md_ntsc_effects = 0;
 
 int MDP_FNCALL mdp_md_ntsc_init(void)
 {
@@ -320,8 +318,8 @@ int MDP_FNCALL mdp_md_ntsc_init(void)
 	mdp_md_ntsc_setup = md_ntsc_composite;
 	
 	// Set the decoder matrix.
-	mdp_md_ntsc_setup.decoder_matrix = (mdp_md_ntsc_use_cxa2025as
-					    ? (const float*)&sony_cxa2025as_us_matrix
+	mdp_md_ntsc_setup.decoder_matrix = ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_CXA2025AS)
+					    ? &sony_cxa2025as_us_matrix[0]
 					    : NULL);
 	
 	// Initialize mdp_md_ntsc.
@@ -344,8 +342,8 @@ int MDP_FNCALL mdp_md_ntsc_end(void)
 void MDP_FNCALL mdp_md_ntsc_reinit_setup(void)
 {
 	// Set the decoder matrix.
-	mdp_md_ntsc_setup.decoder_matrix = (mdp_md_ntsc_use_cxa2025as
-					    ? (const float*)&sony_cxa2025as_us_matrix
+	mdp_md_ntsc_setup.decoder_matrix = ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_CXA2025AS)
+					    ? &sony_cxa2025as_us_matrix[0]
 					    : NULL);
 	
 	// Reinitialize mdp_md_ntsc.
@@ -364,14 +362,6 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
 	
-	unsigned int effects = 0;
-	if (mdp_md_ntsc_scanline)
-		effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
-	if (mdp_md_ntsc_interp)
-		effects |= MDP_MD_NTSC_EFFECT_INTERP;
-	if (mdp_md_ntsc_use_cxa2025as)
-		effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
-	
 	switch (MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
 	{
 		case MDP_RENDER_VMODE_RGB_565:
@@ -383,7 +373,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch,
-					 effects, 0x0821, 0x18E3);
+					 mdp_md_ntsc_effects, 0x0821, 0x18E3);
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_555:
@@ -395,7 +385,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch,
-					 effects, 0x0421, 0x0C63);
+					 mdp_md_ntsc_effects, 0x0421, 0x0C63);
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_888:
@@ -407,7 +397,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(const mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint32_t*)render_info->destScreen,
 					 render_info->destPitch,
-					 effects, (uint32_t)0x010101, (uint32_t)0x0F0F0F);
+					 mdp_md_ntsc_effects, (uint32_t)0x010101, (uint32_t)0x0F0F0F);
 			break;
 		
 		default:

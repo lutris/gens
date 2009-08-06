@@ -201,14 +201,17 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 				}
 			}
 			
+			// Effects.
+			mdp_md_ntsc_effects = 0;
+			
 			// Scanlines.
 			ntsc_host_srv->config_get(&mdp, "_Scanlines", "1", buf, sizeof(buf));
 			errno = 0;
 			val = strtol(buf, NULL, 0);
 			if (errno != 0)
 				val = 1;
-			
-			mdp_md_ntsc_scanline = !!val;
+			if (val)
+				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
 			
 			// Interpolation.
 			ntsc_host_srv->config_get(&mdp, "_Interpolation", "1", buf, sizeof(buf));
@@ -216,8 +219,8 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			val = strtol(buf, NULL, 0);
 			if (errno != 0)
 				val = 1;
-			
-			mdp_md_ntsc_interp = !!val;
+			if (val)
+				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_INTERP;
 			
 			// Sony CXA2025AS US decoder matrix.
 			ntsc_host_srv->config_get(&mdp, "_Sony_CXA2025AS_US", "0", buf, sizeof(buf));
@@ -225,8 +228,8 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			val = strtol(buf, NULL, 0);
 			if (errno != 0)
 				val = 0;
-			
-			mdp_md_ntsc_use_cxa2025as = !!val;
+			if (val)
+				mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
 			
 			// Reinitialize the NTSC settings.
 			mdp_md_ntsc_reinit_setup();
@@ -272,15 +275,15 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			
 			// Scanlines.
 			buf[1] = 0x00;
-			buf[0] = (mdp_md_ntsc_scanline ? '1' : '0');
+			buf[0] = ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_SCANLINE) ? '1' : '0');
 			ntsc_host_srv->config_set(&mdp, "_Scanlines", buf);
 			
 			// Interpolation.
-			buf[0] = (mdp_md_ntsc_interp ? '1' : '0');
+			buf[0] = ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_INTERP) ? '1' : '0');
 			ntsc_host_srv->config_set(&mdp, "_Interpolation", buf);
 			
 			// Sony CXA2025AS US decoder matrix.
-			buf[0] = (mdp_md_ntsc_use_cxa2025as ? '1' : '0');
+			buf[0] = ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_CXA2025AS) ? '1' : '0');
 			ntsc_host_srv->config_set(&mdp, "_Sony_CXA2025AS_US", buf);
 			
 			break;

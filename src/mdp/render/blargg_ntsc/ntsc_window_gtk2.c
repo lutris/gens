@@ -344,9 +344,9 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 	}
 	
 	// Scanlines / Interpolation / CXA2025AS
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), mdp_md_ntsc_scanline);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkCXA2025AS), mdp_md_ntsc_use_cxa2025as);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), (mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_SCANLINE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), (mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_INTERP));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkCXA2025AS), (mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_CXA2025AS));
 	
 	// Load all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
@@ -443,7 +443,10 @@ static void ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutt
 	if (!ntsc_window_do_callbacks)
 		return;
 	
-	mdp_md_ntsc_scanline = gtk_toggle_button_get_active(togglebutton);
+	if (gtk_toggle_button_get_active(togglebutton))
+		mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
+	else
+		mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_SCANLINE;
 }
 
 
@@ -459,7 +462,10 @@ static void ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton
 	if (!ntsc_window_do_callbacks)
 		return;
 	
-	mdp_md_ntsc_interp = gtk_toggle_button_get_active(togglebutton);
+	if (gtk_toggle_button_get_active(togglebutton))
+		mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_INTERP;
+	else
+		mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_INTERP;
 }
 
 
@@ -475,7 +481,10 @@ static void ntsc_window_callback_chkCXA2025AS_toggled(GtkToggleButton *togglebut
 	if (!ntsc_window_do_callbacks)
 		return;
 	
-	mdp_md_ntsc_use_cxa2025as = gtk_toggle_button_get_active(togglebutton);
+	if (gtk_toggle_button_get_active(togglebutton))
+		mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
+	else
+		mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_CXA2025AS;
 	
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();
