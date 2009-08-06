@@ -251,7 +251,6 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			mdp_md_ntsc_reinit_setup();
 			ntsc_window_load_settings();
 			
-			// TODO
 			break;
 		
 		case MDP_EVENT_SAVE_CONFIG:
