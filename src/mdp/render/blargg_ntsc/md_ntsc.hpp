@@ -150,9 +150,9 @@ DLL_LOCAL void MDP_FNCALL mdp_md_ntsc_reinit_setup(void);
 DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 
 /* Scanline / Interpolation options. */
-#define MDP_MD_NTSC_EFFECT_SCANLINE	0x01
-#define MDP_MD_NTSC_EFFECT_INTERP	0x02
-#define MDP_MD_NTSC_EFFECT_CXA2025AS	0x04
+#define MDP_MD_NTSC_EFFECT_SCANLINE	(1 << 0)
+#define MDP_MD_NTSC_EFFECT_INTERP	(1 << 1)
+#define MDP_MD_NTSC_EFFECT_CXA2025AS	(1 << 2)
 DLL_LOCAL extern unsigned int mdp_md_ntsc_effects;
 
 #ifdef __cplusplus
