@@ -214,7 +214,15 @@ int INI::getInt(const string& section, const string& key, const int def)
 	}
 	
 	// Found the key.
-	return strtol((*sectKeyIter).second.c_str(), NULL, 0);
+	const string& val = (*sectKeyIter).second;
+	if (val.empty())
+	{
+		// Value is empty. Use the default value.
+		return def;
+	}
+	
+	// Value is not empty. Return it.
+	return strtol(val.c_str(), NULL, 0);
 }
 
 
