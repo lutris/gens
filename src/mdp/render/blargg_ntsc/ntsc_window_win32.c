@@ -297,15 +297,24 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 					break;
 				
 				case IDC_NTSC_SCANLINE:
-					mdp_md_ntsc_scanline = (Button_GetCheck(chkScanline) == BST_CHECKED);
+					if (Button_GetCheck(chkScanline) == BST_CHECKED)
+						mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_SCANLINE;
+					else
+						mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_SCANLINE;
 					break;
 				
 				case IDC_NTSC_INTERP:
-					mdp_md_ntsc_interp = (Button_GetCheck(chkInterp) == BST_CHECKED);
+					if (Button_GetCheck(chkInterp) == BST_CHECKED)
+						mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_INTERP;
+					else
+						mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_INTERP;
 					break;
 				
 				case IDC_NTSC_CXA2025AS:
-					mdp_md_ntsc_use_cxa2025as = (Button_GetCheck(chkCXA2025AS) == BST_CHECKED);
+					if (Button_GetCheck(chkCXA2025AS) == BST_CHECKED)
+						mdp_md_ntsc_effects |= MDP_MD_NTSC_EFFECT_CXA2025AS;
+					else
+						mdp_md_ntsc_effects &= ~MDP_MD_NTSC_EFFECT_CXA2025AS;
 					mdp_md_ntsc_reinit_setup(); // Changing the decoder matrix requires reinitializing the filter.
 					break;
 				
@@ -399,9 +408,9 @@ void MDP_FNCALL ntsc_window_load_settings(void)
 	}
 	
 	// Scanlines / Interpolation / CXA2025AS
-	Button_SetCheck(chkScanline, (mdp_md_ntsc_scanline ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkInterp, (mdp_md_ntsc_interp ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkCXA2025AS, (mdp_md_ntsc_use_cxa2025as ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkScanline, ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_SCANLINE) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkInterp, ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_INTERP) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkCXA2025AS, ((mdp_md_ntsc_effects & MDP_MD_NTSC_EFFECT_CXA2025AS) ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Load all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
