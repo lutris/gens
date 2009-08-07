@@ -136,3 +136,13 @@ void GensUI_wakeup(void)
 {
 	GensUI::wakeup();
 }
+
+
+/**
+ * GensUI_setWindowVisibility: Set window visibility.
+ * Wrapper function for C code.
+ */
+void GensUI_setWindowVisibility(const int visibility)
+{
+	GensUI::setWindowVisibility(visibility);
+}

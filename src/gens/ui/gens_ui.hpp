@@ -55,6 +55,12 @@ void GensUI_update(void);
  */
 void GensUI_wakeup(void);
 
+/**
+ * GensUI_setWindowVisibility: Set window visibility.
+ * Wrapper function for C code.
+ */
+void GensUI_setWindowVisibility(const int visibility);
+
 #ifdef __cplusplus
 }
 #endif

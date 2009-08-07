@@ -568,6 +568,13 @@ void vdraw_set_fullscreen(const BOOL new_fullscreen)
 	}
 	
 	vdraw_prop_fullscreen = new_fullscreen;
+	if (!is_gens_running())
+	{
+		// Gens isn't running yet.
+		// This is probably because Gens has just started up, and is
+		// loading the config file or parsing a command-line argument.
+		return;
+	}
 	
 	// Reset the renderer.
 	vdraw_reset_renderer(FALSE);
@@ -575,11 +582,11 @@ void vdraw_set_fullscreen(const BOOL new_fullscreen)
 	// Reinitialize the Gens window, if necessary.
 	if (vdraw_cur_backend)
 		vdraw_cur_backend->reinit_gens_window();
-	#if !defined(GENS_OS_WIN32)
-		// Refresh the video subsystem, if Gens is running.
-		if (is_gens_running())
-			vdraw_refresh_video();
-	#endif
+#if !defined(GENS_OS_WIN32)
+	// Refresh the video subsystem, if Gens is running.
+	if (is_gens_running())
+		vdraw_refresh_video();
+#endif
 }
 
 

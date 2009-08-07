@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-	// Initialize the backend.
+	// Initialize the video backend.
 	if ((int)vdraw_cur_backend_id < 0)
 	{
 		// No backend saved in the configuration file. Use the default.
@@ -192,7 +192,8 @@ int main(int argc, char *argv[])
 	Sync_Gens_Window();
 	
 	// Show the Gens window.
-	gtk_widget_show(gens_window);
+	if (!vdraw_get_fullscreen())
+		gtk_widget_show(gens_window);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();

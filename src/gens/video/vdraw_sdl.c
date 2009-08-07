@@ -386,6 +386,10 @@ static void vdraw_sdl_update_renderer(void)
  */
 static int vdraw_sdl_reinit_gens_window(void)
 {
+	// Hide the Gens window if fullscreen.
+	// Show the Gens window if windowed.
+	GensUI_setWindowVisibility(!vdraw_get_fullscreen());
+	
 	// TODO: Make the Gens window non-resizable.
 	return 0;
 }
