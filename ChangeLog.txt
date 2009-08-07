@@ -172,6 +172,10 @@ Release 7 fixes the following bugs:
   created after SDL was set to fullscreen, which caused SDL to revert to
   windowed mode, resulting in all sorts of screwiness.
 
+- [Win32] The "Screen Shot" menu item was being checked/unchecked instead
+  of enabled/disabled in the menu synchronization function. This bug was
+  reported by AamirM in #retro.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
