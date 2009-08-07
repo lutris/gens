@@ -2,19 +2,21 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.5])
-AC_INIT(gens, 2.16.9.93, gerbilsoft@verizon.net)
+AC_INIT(gens, 2.16.6.93, gerbilsoft@verizon.net)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
+
+# Gens/GS version numbers.
+AC_DEFINE(GENS_VERSION_WIN32, [2,16,6,93], Gens Win32 Version Number)
+AC_DEFINE(GENS_GS_VERSION, "r7_pre3+", Gens/GS Version Number)
 
 # Automake build features.
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-# Initialize automake and set version numbers and bug report address.
-AM_INIT_AUTOMAKE(gens, 2.16.6.93, gerbilsoft@verizon.net)
-AC_DEFINE(GENS_VERSION_WIN32, [2,16,6,93], Gens Win32 Version Number)
-AC_DEFINE(GENS_GS_VERSION, "r7_pre3+", Gens/GS Version Number)
+# Initialize automake.
+AM_INIT_AUTOMAKE([1.10])
 
 # Disable the Fortran check.
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
