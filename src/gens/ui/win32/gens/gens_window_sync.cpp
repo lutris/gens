@@ -268,8 +268,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 			   MF_BYCOMMAND);
 	
 	// Screen Shot
-	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
-		      MF_BYCOMMAND | ((Game != NULL) ? MF_CHECKED : MF_UNCHECKED));
+	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
+		      MF_BYCOMMAND | ((Game != NULL) ? MF_ENABLED : MF_GRAYED));
 }
 
 
