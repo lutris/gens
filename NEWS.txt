@@ -167,6 +167,11 @@ Release 7 fixes the following bugs:
   bug in the SegaCD code, plus a new bug in the partially-rewritten
   savestate loading code.
 
+- [Unix] Starting Gens/GS with the "--fs" option or "Full Screen=1" in the
+  configuration file works properly. Previously, the GTK+ UI would be
+  created after SDL was set to fullscreen, which caused SDL to revert to
+  windowed mode, resulting in all sorts of screwiness.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
