@@ -288,6 +288,17 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		input += in_row_width;
 		line++;
 	}
+	
+	if (effects & MDP_MD_NTSC_EFFECT_INTERP)
+	{
+		// Make sure the last line is drawn correctly.
+		T_interpolate_line<pixel>(
+				(pixel*)dbl_buf[!dbl_buf_write],
+				NULL,
+				(rgb_out - outPitchDiff),
+				(in_width * 2), effects,
+				lowPixelMask, darkenMask);
+	}
 }
 
 
