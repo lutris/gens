@@ -26,6 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MDP Version History
 
+v1.1.1: Minor bugfix release.
+
+- The reimplementation of the double-scan algorithm in v1.1.0 missed
+  the last scanline when interpolating, leading to a blank line that
+  never gets updated. This fixes it so the last line is redrawn
+  correctly.
+
 v1.1.0: Bugfix release.
 
 - Reimplemented the double-scan algorithm inside of the main blitter.
