@@ -85,6 +85,7 @@ extern "C" {
 static inline LPCTSTR mdp_dlerror(void)
 {
 	LPTSTR lpBuf;
+	int len, i;
 	
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -95,6 +96,17 @@ static inline LPCTSTR mdp_dlerror(void)
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR)&lpBuf,
 		0, NULL);
+	
+	// Eliminate any newlines or carriage returns at the end of the message.
+	len = _tcslen(lpBuf);
+	for (i = len - 1; i >= 0; i--)
+	{
+		if (lpBuf[i] == '\r' || lpBuf[i] == '\n')
+		{
+			lpBuf[i] = 0x00;
+			break;
+		}
+	}
 	
 	return lpBuf;
 }
