@@ -96,7 +96,7 @@ extern const char input_player_names[8][4];
 // Joystick maximums.
 #define INPUT_JOYSTICK_MAX_AXES		128
 #define INPUT_JOYSTICK_MAX_BUTTONS	256
-#define INPUT_JOYSTICK_MAX_POXHATS	64
+#define INPUT_JOYSTICK_MAX_POVHATS	64
 
 // Joystick input types.
 typedef enum
