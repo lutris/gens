@@ -313,13 +313,32 @@ uint16_t input_sdl_get_key(void)
 			}
 			
 			// Check POV hats.
-			// TODO: Figure out how to properly represent "CENTER" internally.
-#if 0
+			// NOTE: UNTESTED - Linux doesn't support POV hats.
 			for (i = 0; i < INPUT_JOYSTICK_MAX_POVHATS; i++)
 			{
-				if (prev_joy->povhats[i] == 
+				if (prev_joy->povhats[i] == SDL_HAT_CENTERED &&
+				    cur_joy->povhats[i] != SDL_HAT_CENTERED)
+				{
+					// POV hat moved.
+					int povHatDirection;
+					
+					if (cur_joy->povhats[i] & SDL_HAT_UP)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_UP;
+					else if (cur_joy->povhats[i] & SDL_HAT_RIGHT)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_RIGHT;
+					else if (cur_joy->povhats[i] & SDL_HAT_DOWN)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_DOWN;
+					else if (cur_joy->povhats[i] & SDL_HAT_LEFT)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_LEFT;
+					else
+						break;
+					
+					return INPUT_GETKEY_POVHAT_DIRECTION(
+							sdl_event.jhat.which,
+							sdl_event.jhat.hat,
+							povHatDirection);
+				}
 			}
-#endif
 		}
 		
 		// Check if a GDK key press occurred.
