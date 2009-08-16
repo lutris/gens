@@ -16,6 +16,12 @@ INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/
 mdp_test_SOURCES = main.c plugin_check.c
 noinst_HEADERS = main.h plugin_check.h
 
+# UNIX-like systems require libdl for dlopen().
 if !GENS_OS_WIN32
 mdp_test_LDADD = -ldl
+endif
+
+# Win32 subsystem selection.
+if GENS_OS_WIN32
+mdp_test_LDFLAGS += -Wl,-subsystem,console
 endif
