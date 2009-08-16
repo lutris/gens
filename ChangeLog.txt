@@ -176,6 +176,11 @@ Release 7 fixes the following bugs:
   of enabled/disabled in the menu synchronization function. This bug was
   reported by AamirM in #retro.
 
+- [SDL] Controller configuration now checks the current state of the
+  controllers before polling for new keys. This makes it easier to
+  configure controllers that have analog triggers whose default state
+  is negative-axis.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
