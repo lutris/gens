@@ -63,6 +63,6 @@ typedef struct
 #define INPUT_SDL_JOYSTICK_CHECK_BUTTON(joystate, joystick, key)	\
 	((joystate[joystick].buttons[key & 0xFF]) & 0x01)
 #define INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(joystate, joystick, key, direction)	\
-	(joystate[joystick].povhats[(key >> 2) & 0x3F] == (direction))
+	(joystate[joystick].povhats[(key >> 2) & 0x3F] & (direction))
 
 #endif /* GENS_INPUT_SDL_JOYSTATE_H */
