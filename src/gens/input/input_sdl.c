@@ -73,7 +73,7 @@ static SDL_Joystick *input_sdl_joys[INPUT_SDL_MAX_JOYSTICKS];	// SDL joystick st
 static uint8_t input_sdl_keys[INPUT_SDL_MAX_KEYS];
 
 // Joystick state.
-static input_joy_state_t input_sdl_joy_state[INPUT_SDL_MAX_JOYSTICKS];
+static input_sdl_joystate_t input_sdl_joystate[INPUT_SDL_MAX_JOYSTICKS];
 
 // Default keymap.
 static const input_keymap_t input_sdl_keymap_default[8] =
@@ -134,7 +134,7 @@ int input_sdl_init(void)
 {
 	// Initialize the keys and joystick state arrays.
 	memset(input_sdl_keys, 0x00, sizeof(input_sdl_keys));
-	memset(input_sdl_joy_state, 0x00, sizeof(input_sdl_joy_state));
+	memset(input_sdl_joystate, 0x00, sizeof(input_sdl_joystate));
 	
 	// Install the GTK+ key snooper.
 	gtk_key_snooper_install(input_sdl_gdk_keysnoop, NULL);
@@ -276,61 +276,59 @@ uint16_t input_sdl_get_key(void)
 	// Update the UI.
 	GensUI_update();
 	
-	while (TRUE)
+	// Save the current SDL joystick state.
+	input_sdl_joystate_t prev_joystate[INPUT_SDL_MAX_JOYSTICKS];
+	memcpy(prev_joystate, input_sdl_joystate, sizeof(prev_joystate));
+	
+	// Poll for keypresses.
+	while (!input_sdl_update())
 	{
-		while (SDL_PollEvent(&sdl_event))
+		// Check if any joystick states have changed.
+		int js;
+		for (js = 0; js < input_sdl_num_joysticks; js++)
 		{
-			switch (sdl_event.type)
+			int i;
+			input_sdl_joystate_t *cur_joy = &input_sdl_joystate[js];
+			input_sdl_joystate_t *prev_joy = &prev_joystate[js];
+			
+			// Check buttons.
+			for (i = 0; i < INPUT_JOYSTICK_MAX_BUTTONS; i++)
 			{
-				case SDL_JOYAXISMOTION:
-					if (/*sdl_event.jaxis.axis < 0 ||*/ sdl_event.jaxis.axis >= 128)
-						break;
-					
-					if (sdl_event.jaxis.value < -10000)
-					{
-						return INPUT_GETKEY_AXIS(sdl_event.jaxis.which,
-									 sdl_event.jaxis.axis,
-									 INPUT_JOYSTICK_AXIS_NEGATIVE);
-					}
-					else if (sdl_event.jaxis.value > 10000)
-					{
-						return INPUT_GETKEY_AXIS(sdl_event.jaxis.which,
-									 sdl_event.jaxis.axis,
-									 INPUT_JOYSTICK_AXIS_POSITIVE);
-					}
-					break;
-				
-				case SDL_JOYBUTTONUP:
-					return INPUT_GETKEY_BUTTON(sdl_event.jbutton.which,
-								   sdl_event.jbutton.button);
-					break;
-				
-				case SDL_JOYHATMOTION:
+				if (!prev_joy->buttons[i] && cur_joy->buttons[i])
 				{
-					uint8_t povHatDirection;
-					if (sdl_event.jhat.value & SDL_HAT_UP)
-						povHatDirection = INPUT_JOYSTICK_POVHAT_UP;
-					else if (sdl_event.jhat.value & SDL_HAT_RIGHT)
-						povHatDirection = INPUT_JOYSTICK_POVHAT_RIGHT;
-					else if (sdl_event.jhat.value & SDL_HAT_DOWN)
-						povHatDirection = INPUT_JOYSTICK_POVHAT_DOWN;
-					else if (sdl_event.jhat.value & SDL_HAT_LEFT)
-						povHatDirection = INPUT_JOYSTICK_POVHAT_LEFT;
-					else
-						break;
-					
-					return INPUT_GETKEY_POVHAT_DIRECTION(sdl_event.jhat.which,
-									     sdl_event.jhat.hat,
-									     povHatDirection);
-					break;
+					// Button pressed.
+					return INPUT_GETKEY_BUTTON(js, i);
 				}
 			}
+			
+			// Check axes.
+			for (i = 0; i < INPUT_JOYSTICK_MAX_AXES; i++)
+			{
+				if (prev_joy->axes[i] == INPUT_SDL_JOYSTATE_AXIS_CENTER &&
+				    cur_joy->axes[i] != INPUT_SDL_JOYSTATE_AXIS_CENTER)
+				{
+					// Axis moved.
+					return INPUT_GETKEY_AXIS(js, i, cur_joy->axes[i]);
+				}
+			}
+			
+			// Check POV hats.
+			// TODO: Figure out how to properly represent "CENTER" internally.
+#if 0
+			for (i = 0; i < INPUT_JOYSTICK_MAX_POVHATS; i++)
+			{
+				if (prev_joy->povhats[i] == 
+			}
+#endif
 		}
 		
 		// Check if a GDK key press occurred.
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
 			return input_sdl_gdk_to_gens_keyval(event->key.keyval);
+		
+		// Save the current SDL joystick state.
+		memcpy(prev_joystate, input_sdl_joystate, sizeof(prev_joystate));
 		
 		// Sleep for 1 ms.
 		usleep(1000);
@@ -360,7 +358,7 @@ static int input_sdl_update(void)
 		{
 			case SDL_QUIT:
 				close_gens();
-				return 0;
+				return -1;
 			
 			/* TODO: SDL_VIDEORESIZE should work in GL mode.
 			case SDL_VIDEORESIZE:
@@ -388,19 +386,19 @@ static int input_sdl_update(void)
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joy_state,
+				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joystate,
 							      event.jbutton.which,
 							      event.jbutton.button, TRUE);
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joy_state,
+				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joystate,
 							      event.jbutton.which,
 							      event.jbutton.button, FALSE);
 				break;
 			
 			case SDL_JOYHATMOTION:
-				INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(input_sdl_joy_state,
+				INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(input_sdl_joystate,
 									event.jhat.which,
 									event.jhat.hat,
 									event.jhat.value);
@@ -429,19 +427,19 @@ static inline void input_sdl_check_joystick_axis(SDL_Event *event)
 	
 	if (event->jaxis.value < -10000)
 	{
-		INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(input_sdl_joy_state,
+		INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(input_sdl_joystate,
 						     event->jaxis.which,
 						     event->jaxis.axis);
 	}
 	else if (event->jaxis.value > 10000)
 	{
-		INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(input_sdl_joy_state,
+		INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(input_sdl_joystate,
 						     event->jaxis.which,
 						     event->jaxis.axis);
 	}
 	else
 	{
-		INPUT_SDL_JOYSTICK_SET_AXIS_CENTER(input_sdl_joy_state,
+		INPUT_SDL_JOYSTICK_SET_AXIS_CENTER(input_sdl_joystate,
 						   event->jaxis.which,
 						   event->jaxis.axis);
 	}
@@ -477,13 +475,13 @@ BOOL input_sdl_check_key_pressed(uint16_t key)
 	{
 		case INPUT_JOYSTICK_TYPE_AXIS:
 			// Joystick axis.
-			if (INPUT_SDL_JOYSTICK_CHECK_AXIS(input_sdl_joy_state, joyNum, key))
+			if (INPUT_SDL_JOYSTICK_CHECK_AXIS(input_sdl_joystate, joyNum, key))
 				return TRUE;
 			break;
 		
 		case INPUT_JOYSTICK_TYPE_BUTTON:
 			// Joystick button.
-			if (INPUT_SDL_JOYSTICK_CHECK_BUTTON(input_sdl_joy_state, joyNum, key))
+			if (INPUT_SDL_JOYSTICK_CHECK_BUTTON(input_sdl_joystate, joyNum, key))
 				return TRUE;
 			break;
 		
@@ -493,7 +491,7 @@ BOOL input_sdl_check_key_pressed(uint16_t key)
 			static const uint8_t povKeyToBit[4] = {SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT};
 			uint8_t povBit = povKeyToBit[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)];
 			
-			if (INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(input_sdl_joy_state, joyNum, key, povBit))
+			if (INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(input_sdl_joystate, joyNum, key, povBit))
 				return TRUE;
 			break;
 		}

@@ -33,7 +33,7 @@ typedef struct
 	// Reserved for future use.
 	// Also, this aligns input_joy_state_t to 512 bytes.
 	uint8_t reserved[64];
-} input_joy_state_t;
+} input_sdl_joystate_t;
 
 // Axis values.
 #define INPUT_SDL_JOYSTATE_AXIS_CENTER		0
