@@ -3,7 +3,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-SUBDIRS = render misc
+SUBDIRS = mdp_test render misc
 
 noinst_HEADERS = \
 		mdp.h \

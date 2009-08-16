@@ -742,6 +742,7 @@ AC_CONFIG_FILES([
 	src/gens/plugins/render/double/Makefile
 	src/gens/plugins/render/normal/Makefile
 	src/mdp/Makefile
+	src/mdp/mdp_test/Makefile
 	src/mdp/misc/Makefile
 	src/mdp/misc/game_genie/Makefile
 	src/mdp/misc/ips_patcher/Makefile
