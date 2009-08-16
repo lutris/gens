@@ -181,6 +181,9 @@ Release 7 fixes the following bugs:
   configure controllers that have analog triggers whose default state
   is negative-axis.
 
+- [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
+  was reported (and fixed) by superG on the Ubuntu Forums.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
