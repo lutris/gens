@@ -91,5 +91,6 @@ int main(int argc, char *argv[])
 		putchar('\n');
 	}
 	
-	printf("%d/%d plugin%s tested successfully.\n", success_count, argc-1, (argc == 2 ? "" : "s"));
+	printf("%d/%d plugin%s tested successfully.\n",
+	       success_count, argc-1, (success_count == 1 ? "" : "s"));
 }
