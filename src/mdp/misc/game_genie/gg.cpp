@@ -82,6 +82,9 @@ list<gg_code_t> gg_code_list;
  */
 int MDP_FNCALL gg_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	gg_host_srv = host_srv;
 	

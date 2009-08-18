@@ -53,6 +53,9 @@ static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf);
  */
 int MDP_FNCALL ips_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	ips_host_srv = host_srv;
 	

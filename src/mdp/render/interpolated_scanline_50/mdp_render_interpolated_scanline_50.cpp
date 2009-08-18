@@ -49,6 +49,9 @@ static const mdp_host_t *mdp_render_interpolated_scanline_50_host_srv = NULL;
  */
 int MDP_FNCALL mdp_render_interpolated_scanline_50_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	mdp_render_interpolated_scanline_50_host_srv = host_srv;
 	

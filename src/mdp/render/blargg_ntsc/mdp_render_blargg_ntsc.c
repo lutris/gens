@@ -52,6 +52,9 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info);
  */
 int MDP_FNCALL mdp_render_blargg_ntsc_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	ntsc_host_srv = host_srv;
 	

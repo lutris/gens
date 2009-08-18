@@ -49,6 +49,9 @@ static int MDP_FNCALL vlopt_menu_handler(int menu_item_id);
  */
 int MDP_FNCALL vlopt_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	vlopt_host_srv = host_srv;
 	

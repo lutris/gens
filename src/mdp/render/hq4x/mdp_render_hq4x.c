@@ -62,6 +62,9 @@ uint32_t *mdp_render_hq4x_RGB16toYUV = NULL;
  */
 int MDP_FNCALL mdp_render_hq4x_init(const mdp_host_t *host_srv)
 {
+	if (!host_srv)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	// Save the MDP Host Services pointer.
 	mdp_render_hq4x_host_srv = host_srv;
 	
