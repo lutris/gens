@@ -163,6 +163,22 @@ static int validate_plugin_info(const mdp_t *plugin)
 		TEST_WARN("Plugin description field is NULL.");
 	}
 	
+	// UUID.
+	const unsigned char *uuid = plugin->uuid;
+	TEST_INFO_ARGS("UUID: %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+		       uuid[0], uuid[1], uuid[2], uuid[3],
+		       uuid[4], uuid[5],
+		       uuid[6], uuid[7],
+		       uuid[8], uuid[9],
+		       uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
+	
+	// CPU flags.
+	// TODO: Print the symbolic representations of the CPU flags.
+	// TODO: Don't allow testing of plugins that require CPU flags not found on this system.
+	TEST_INFO("CPU flags:");
+	TEST_INFO_ARGS("\tSupported == 0x%08X", plugin->cpuFlagsSupported);
+	TEST_INFO_ARGS("\tRequired  == 0x%08X", plugin->cpuFlagsRequired);
+	
 	TEST_PASS();
 	return MDP_ERR_OK;
 }
