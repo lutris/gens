@@ -118,9 +118,6 @@ static int validate_plugin_info(const mdp_t *plugin)
 	
 	// Check for a plugin description field.
 	mdp_desc_t *desc = plugin->desc;
-	mdp_desc_t my_desc;
-	memset(&my_desc, 0x00, sizeof(my_desc));
-	desc = &my_desc;
 	if (desc)
 	{
 		TEST_INFO("Plugin Description:");
