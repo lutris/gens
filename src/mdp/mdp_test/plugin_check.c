@@ -42,32 +42,34 @@ int plugin_check(const char *filename)
 	printf("Testing plugin '%s'...\n", filename);
 	
 	// Attempt to open the specified plugin.
+	TEST_START("mdp_dlopen()");
 	void *DLL = mdp_dlopen(filename);
 	if (!DLL)
 	{
 		// An error occurred while trying to open the plugin.
 		const char *err = mdp_dlerror();
-		TEST_FAIL("mdp_dlopen", err);
+		TEST_FAIL(err);
 		mdp_dlerror_str_free(err);
 		
 		rval = -MDP_ERR_CANNOT_OPEN_DLL;
 		goto Finish;
 	}
-	TEST_PASS("mdp_dlopen");
+	TEST_PASS();
 	
 	// Get the MDP symbol.
+	TEST_START("mdp_dlsym()");
 	void *mdp = mdp_dlsym(DLL, "mdp");
 	if (!mdp)
 	{
 		// Could not get the MDP symbol.
 		const char *err = mdp_dlerror();
-		TEST_FAIL("mdp_dlsym", err);
+		TEST_FAIL(err);
 		mdp_dlerror_str_free(err);
 		
 		rval = -MDP_ERR_NO_MDP_SYMBOL;
 		goto Finish;
 	}
-	TEST_PASS("mdp_dlsym");
+	TEST_PASS();
 	
 Finish:
 	if (DLL)

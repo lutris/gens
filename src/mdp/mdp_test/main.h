@@ -53,13 +53,13 @@
 
 // Test fail/pass macros.
 #include <stdio.h>
-#define TEST_FAIL(func, err) \
-	fprintf(stderr, COLOR_FAIL "FAILED: %s() - %s" COLOR_OFF "\n", func, err);
-#define TEST_FAIL_MDP(func, err) \
-	fprintf(stderr, COLOR_FAIL "FAILED: %s() - MDP error code 0x%08X" COLOR_OFF "\n", func, -err);
-#define TEST_PASS(func) \
-	fprintf(stderr, COLOR_PASS "PASSED: %s()" COLOR_OFF "\n", func);
-#define TEST_PASS_SUB(func, subfunc) \
-	fprintf(stderr, COLOR_PASS "PASSED: %s() - %s" COLOR_OFF "\n", func, err);
+#define TEST_START(test) \
+	printf("%s: ", test);
+#define TEST_FAIL(err) \
+	printf(COLOR_FAIL "\tFAILED: %s" COLOR_OFF "\n", err);
+#define TEST_FAIL_MDP(err) \
+	printf(COLOR_FAIL "\tFAILED: MDP error code 0x%08X" COLOR_OFF "\n", -err);
+#define TEST_PASS() \
+	printf(COLOR_PASS "\tPASSED" COLOR_OFF "\n");
 
 #endif /* __MDP_TEST_MAIN_H */
