@@ -47,19 +47,32 @@
 #define COLOR_OFF
 #else
 #define COLOR_FAIL "\x1B[01;31m"
+#define COLOR_WARN "\x1B[01;33m"
 #define COLOR_PASS "\x1B[01;32m"
+#define COLOR_INFO "\x1B[01;35m"
 #define COLOR_OFF "\x1B[00m"
 #endif
 
 // Test fail/pass macros.
 #include <stdio.h>
 #define TEST_START(test) \
-	printf("%s: ", test);
+	printf("%s: ", test)
 #define TEST_FAIL(err) \
-	printf(COLOR_FAIL "\tFAILED: %s" COLOR_OFF "\n", err);
-#define TEST_FAIL_MDP(err) \
-	printf(COLOR_FAIL "\tFAILED: MDP error code 0x%08X" COLOR_OFF "\n", -err);
+	printf("\t" COLOR_FAIL "FAILED: %s" COLOR_OFF "\n", err)
+#define TEST_FAIL_ARGS(err, ...) \
+	printf("\t" COLOR_FAIL "FAILED: " err COLOR_OFF "\n", ##__VA_ARGS__)
+#define TEST_FAIL_MDP(mdp_err) \
+	printf("\t" COLOR_FAIL "FAILED: MDP error code 0x%08X" COLOR_OFF "\n", -mdp_err)
+#define TEST_WARN(warn) \
+	printf("\t" COLOR_WARN "WARNING: %s\n", warn)
+#define TEST_WARN_ARGS(warn, ...) \
+	printf("\t" COLOR_WARN "WARNING: " warn "\n", ##__VA_ARGS__)
 #define TEST_PASS() \
-	printf(COLOR_PASS "\tPASSED" COLOR_OFF "\n");
+	printf("\t" COLOR_PASS "PASSED" COLOR_OFF "\n")
+
+#define TEST_INFO(info) \
+	printf("\t" COLOR_INFO "%s" COLOR_OFF "\n", info)
+#define TEST_INFO_ARGS(info, ...) \
+	printf("\t" COLOR_INFO info COLOR_OFF "\n", ##__VA_ARGS__)
 
 #endif /* __MDP_TEST_MAIN_H */
