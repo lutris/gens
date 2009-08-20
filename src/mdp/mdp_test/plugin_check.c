@@ -21,6 +21,7 @@
 
 #include "plugin_check.h"
 #include "main.h"
+#include "host_srv.h"
 
 // C includes.
 #include <stdio.h>
@@ -207,7 +208,7 @@ static int initialize_plugin(const mdp_t *plugin)
 	
 	// Attempt to initialize the plugin.
 	// TODO: Implement MDP Host Services.
-	int rval = func->init(NULL);
+	int rval = func->init(&host_srv);
 	if (rval != 0)
 	{
 		// Error in plugin initialization.
