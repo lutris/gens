@@ -43,7 +43,9 @@
 // ANSI color escape codes.
 #ifdef _WIN32
 #define COLOR_FAIL
+#define COLOR_WARN
 #define COLOR_PASS
+#define COLOR_INFO
 #define COLOR_OFF
 #else
 #define COLOR_FAIL "\x1B[01;31m"
