@@ -81,6 +81,24 @@ New Features:
   these games, you will need to rename the BRAM files in order to get them
   to load correctly.
 
+--------------------------------
+
+Bug Fixes:
+
+* [Win32] The "Screen Shot" menu item was being checked/unchecked instead
+  of enabled/disabled in the menu synchronization function. This bug was
+  reported by AamirM in #retro.
+
+* [SDL] Controller configuration now checks the current state of the
+  controllers before polling for new keys. This makes it easier to
+  configure controllers that have analog triggers whose default state
+  is negative-axis.
+
+* [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
+  was reported (and fixed) by superG on the Ubuntu Forums.
+
+--------------------------------
+
 Miscellaneous:
 
 * MDP v1.0.0 has been marked as "stable", and will not have any further
