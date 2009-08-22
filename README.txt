@@ -68,7 +68,9 @@ Linux: [runtime requirements]
 Linux: [build requirements]
 - gcc 2.95
   - gcc 4.x recommended [there may be some unknown 2.95/3.x compatibility issues]
-- nasm 0.98.38
+- nasm 2.05.1
+- autoconf-2.63
+- automake-1.10
 
 Windows: [runtime requirements]
 - Windows 9x, Me, 2000 or later.
@@ -80,8 +82,10 @@ Windows: [build requirements]
 - MinGW and mSYS
 - MinGW Runtime 3.14, 3.15.1, or later
   - MinGW Runtime 3.15 has a bug that causes command-line parsing to crash.
-- Windows platform SDK (or headers from the Wine project)
-- nasm 0.98.38
+- DirectX headers (specifically, ddraw.h, dinput.h, and dsound.h)
+- nasm 2.05.1
+- autoconf-2.63
+- automake-1.10
 
 ================================================================
 
