@@ -88,9 +88,6 @@ GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, GG_CODE_CPU cpu)
 			return GGCE_UNRECOGNIZED;
 	}
 	
-	// Valid patch code.
-	printf("Address: 0x%08X; Data: 0x%08X\n", address, data);
-	
 	// Check that the address is valid for the specified CPU.
 	if (cpu == CPU_M68K || cpu == CPU_S68K)
 	{
