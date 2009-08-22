@@ -582,35 +582,37 @@ static int gg_window_add_code_from_textboxes(void)
 	{
 		// Error parsing the code.
 		char err_msg_full[1024];
-		char err_msg[1024];
+		const char *err_msg;
 		
 		switch (gcp_rval)
 		{
 			case GGCE_UNRECOGNIZED:
-				strcpy(err_msg, "The code could not be parsed correctly.");
+				err_msg = "The code could not be parsed correctly.";
 				break;
 			case GGCE_ADDRESS_RANGE:
 				// TODO: Show range depending on the selected CPU.
-				strcpy(err_msg, "The address for this code is out of range for the specified CPU.\n"
-						"Valid range for MC68000 CPUs: 0x000000 - 0xFFFFFF");
+				err_msg = "The address for this code is out of range for the specified CPU.\n"
+					  "Valid range for MC68000 CPUs: 0x000000 - 0xFFFFFF";
 				break;
 			case GGCE_ADDRESS_ALIGNMENT:
 				// TODO: Show range and alignment info based on CPU and datasize.
-				strcpy(err_msg, "The address is not aligned properly for the specified data.\n"
-						"For MC68000, 16-bit data must be stored at even addresses.");
+				err_msg = "The address is not aligned properly for the specified data.\n"
+					  "For MC68000, 16-bit data must be stored at even addresses.";
 				break;
 			case GGCE_DATA_TOO_LARGE:
-				strcpy(err_msg, "The data value is too large. Usually, this means that you"
-						"entered too many characters.");
+				err_msg = "The data value is too large. Usually, this means that you\n"
+					  "entered too many characters.";
 				break;
 			default:
 				// Other error.
-				sprintf(err_msg, "Unknown error code %d.", gcp_rval);
+				err_msg = "Unknown error code.";
 				break;
 		}
 		
-		sprintf(err_msg_full, "The specified code, \"%s\", could not be added due to an error:\n\n%s",
-				      code_txt, err_msg);
+		snprintf(err_msg_full, sizeof(err_msg_full),
+			 "The specified code, \"%s\", could not be added due to an error:\n\n%s",
+			 code_txt, err_msg);
+		err_msg_full[sizeof(err_msg_full)-1] = 0x00;
 		
 		// Show an error message.
 		GtkWidget *msgbox = gtk_message_dialog_new(
