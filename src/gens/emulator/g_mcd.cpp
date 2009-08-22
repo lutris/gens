@@ -2,6 +2,10 @@
  * Gens: Sega CD (Mega CD) initialization and main loop code.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // C includes.
 #include <stdint.h>
 #include <string.h>
@@ -32,6 +36,7 @@
 #include "gens_core/sound/pcm.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/cd_file.h"
+#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -159,10 +164,11 @@ int Init_SegaCD(const char* iso_name)
 	Options::setGameName(1);
 	
 	Flag_Clr_Scr = 1;
-	Debug = Paused = Frame_Number = 0;
+	Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	BRAM_Ex_State &= 0x100;
 	Controller_1_COM = Controller_2_COM = 0;
+	STOP_DEBUGGING();
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(1);

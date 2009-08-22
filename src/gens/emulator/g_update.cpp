@@ -31,6 +31,7 @@
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "ui/gens_ui.hpp"
+#include "debugger/debugger.hpp"
 
 #ifndef GENS_OS_WIN32
 #include "port/timer.h"
@@ -97,9 +98,7 @@ int Update_Emulation(void)
 #endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
-#ifdef GENS_DEBUGGER
-			if (!Debug)
-#endif /* GENS_DEBUGGER */
+			if (!IS_DEBUGGING())
 				vdraw_flip();
 		}
 	}
@@ -123,9 +122,7 @@ int Update_Emulation(void)
 			// Audio buffer is empty.
 			input_update_controllers();
 			Update_Frame();
-#ifdef GENS_DEBUGGER
-			if (!Debug)
-#endif /* GENS_DEBUGGER */
+			if (!IS_DEBUGGING())
 				vdraw_flip();
 		}
 		else
@@ -153,9 +150,7 @@ int Update_Emulation(void)
 			{
 				input_update_controllers();
 				Update_Frame();
-#ifdef GENS_DEBUGGER
-				if (!Debug)
-#endif /* GENS_DEBUGGER */
+				if (IS_DEBUGGING())
 					vdraw_flip();
 			}
 			else
@@ -197,9 +192,7 @@ int Update_Emulation_One(void)
 	input_update_controllers();
 	Update_Frame();
 	
-#ifdef GENS_DEBUGGER
-	if (!Debug)
-#endif /* GENS_DEBUGGER */
+	if (IS_DEBUGGING())
 		vdraw_flip();
 	
 	return 1;

@@ -23,7 +23,6 @@
 #include "macros/math_m.h"
 #include "audio/audio.h"
 
-int Debug;
 int Frame_Skip;
 int Frame_Number;
 

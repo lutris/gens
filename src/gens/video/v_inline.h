@@ -23,9 +23,14 @@
 #ifndef GENS_V_INLINE_H
 #define GENS_V_INLINE_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/rom.hpp"
+#include "debugger/debugger.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,11 +39,33 @@ extern "C" {
 // Inline functions for determining MD resolution settings.
 static inline int isFullXRes(void)
 {
-	return ((VDP_Reg.Set4 & 0x1) || Debug || !Game /*|| !FrameCount*/);
+	int rval = 0;
+	if ((VDP_Reg.Set4 & 0x1) || !Game)
+		rval = 1;
+#ifdef GENS_DEBUGGER
+	if (debug_mode != DEBUG_NONE)
+		rval = 1;
+#endif
+#if 0
+	if (!FrameCount)
+		rval = 1;
+#endif
+	return rval;
 }
 static inline int isFullYRes(void)
 {
-	return ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/);
+	int rval = 0;
+	if ((VDP_Reg.Set2 & 0x8) || !Game)
+		rval = 1;
+#ifdef GENS_DEBUGGER
+	if (debug_mode != DEBUG_NONE)
+		rval = 1;
+#endif
+#if 0
+	if (!FrameCount)
+	rval = 1;
+#endif
+	return rval;
 }
 
 #ifdef __cplusplus

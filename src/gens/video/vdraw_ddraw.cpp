@@ -31,6 +31,7 @@
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
+#include "debugger/debugger.hpp"
 
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
@@ -120,7 +121,7 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
 			  w, h, vdraw_msg_text, &vdraw_msg_style, true);
 	}
-	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
+	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
@@ -1096,7 +1097,7 @@ static void vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RE
 	if (stretch == STRETCH_FULL)
 		return;
 	
-	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
+	if (!Video.borderColorEmulation || (Game == NULL) || IS_DEBUGGING())
 	{
 		// Border color emulation is disabled.
 		// Use a black border.

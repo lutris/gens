@@ -50,6 +50,7 @@ using std::deque;
 #include "emulator/g_mcd.hpp"
 #include "emulator/g_32x.hpp"
 #include "emulator/options.hpp"
+#include "debugger/debugger.hpp"
 
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "segacd/cd_sys.hpp"
@@ -874,10 +875,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
-#ifdef GENS_DEBUGGER
 	// Stop the debugger.
-	Debug = 0;
-#endif
+	STOP_DEBUGGING();
 	
 	if (SegaCD_Started)
 		Savestate::SaveBRAM();

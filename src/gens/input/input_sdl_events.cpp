@@ -496,7 +496,7 @@ void input_sdl_event_key_down(int key)
 	
 #ifdef GENS_DEBUGGER
 	// If debugging, pass the key to the debug handler.
-	if (Debug != DEBUG_NONE)
+	if (IS_DEBUGGING())
 		Debug_Event(key, mod);
 #endif /* GENS_DEBUGGER */
 }

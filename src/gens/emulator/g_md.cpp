@@ -2,6 +2,10 @@
  * Gens: Genesis (Mega Drive) initialization and main loop code.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string.h>
 
 #include "gens.hpp"
@@ -19,6 +23,7 @@
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
+#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -248,9 +253,10 @@ int Init_Genesis(ROM_t* MD_ROM)
 	audio_clear_sound_buffer();
 	
 	Flag_Clr_Scr = 1;
-	Debug = Paused = Frame_Number = 0;
+	Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	Controller_1_COM = Controller_2_COM = 0;
+	STOP_DEBUGGING();
 	
 	if (!Kaillera_Client_Running)
 		Init_Genesis_SRAM(MD_ROM);

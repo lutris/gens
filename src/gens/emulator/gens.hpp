@@ -43,7 +43,6 @@
 extern "C" {
 #endif
 
-extern int Debug;
 extern int Frame_Skip;
 extern int Frame_Number;
 

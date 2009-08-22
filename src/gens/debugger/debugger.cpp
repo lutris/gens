@@ -50,6 +50,11 @@ static int Current_PC;
 
 static char Dbg_Out_Str[GENS_PATH_MAX];
 
+// Debug mode settings.
+DEBUG_MODE debug_mode = DEBUG_NONE;
+int debug_show_vdp = 0;
+
+
 // Macro used to print a constant string.
 // Print_Text() doesn't directly support string constants, and since it's
 // written in assembly language, it's too cumbersome to fix.
@@ -70,9 +75,9 @@ void Debug_Event(int key, int mod)
 	int i, steps;
 	SH2_CONTEXT *sh;
 	// Determine the appropriate SH2 context.
-	if (Debug == DEBUG_MAIN_SH2 || Debug == DEBUG_32X_VDP)
+	if (debug_mode == DEBUG_MAIN_SH2 || debug_mode == DEBUG_32X_VDP)
 		sh = &M_SH2;
-	else if (Debug == DEBUG_SUB_SH2)
+	else if (debug_mode == DEBUG_SUB_SH2)
 		sh = &S_SH2;
 	else
 		sh = NULL;
@@ -112,26 +117,26 @@ void Debug_Event(int key, int mod)
 			
 			for (i = 0; i < steps; i++)
 			{
-				if ((Debug == DEBUG_MAIN_68000) || (Debug == DEBUG_GENESIS_VDP))
+				if ((debug_mode == DEBUG_MAIN_68000) || (debug_mode == DEBUG_GENESIS_VDP))
 				{
 					main68k_tripOdometer();
 					main68k_exec(1);
 				}
-				else if (Debug == DEBUG_Z80)
+				else if (debug_mode == DEBUG_Z80)
 				{
 					mdZ80_clear_odo(&M_Z80);
 					z80_Exec(&M_Z80, 1);
 				}
-				else if (Debug == DEBUG_SUB_68000_REG ||
-					 Debug == DEBUG_SUB_68000_CDC ||
-					 Debug == DEBUG_WORD_RAM_PATTERN)
+				else if (debug_mode == DEBUG_SUB_68000_REG ||
+					 debug_mode == DEBUG_SUB_68000_CDC ||
+					 debug_mode == DEBUG_WORD_RAM_PATTERN)
 				{
 					sub68k_tripOdometer();
 					sub68k_exec(1);
 				}
-				else if (Debug == DEBUG_MAIN_SH2 ||
-					 Debug == DEBUG_SUB_SH2 ||
-					 Debug == DEBUG_32X_VDP)
+				else if (debug_mode == DEBUG_MAIN_SH2 ||
+					 debug_mode == DEBUG_SUB_SH2 ||
+					 debug_mode == DEBUG_32X_VDP)
 				{
 					SH2_Clear_Odo(sh);
 					SH2_Exec(sh, 1);
@@ -165,23 +170,23 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_h:
-			if (Debug == DEBUG_MAIN_68000)
+			if (debug_mode == DEBUG_MAIN_68000)
 			{
 				main68k_interrupt(4, -1);
 			}
-			else if (Debug == DEBUG_Z80)
+			else if (debug_mode == DEBUG_Z80)
 			{
 				mdZ80_interrupt(&M_Z80, 0xFF);
 			}
-			else if (Debug == DEBUG_SUB_68000_REG ||
-				 Debug == DEBUG_SUB_68000_CDC ||
-				 Debug == DEBUG_WORD_RAM_PATTERN)
+			else if (debug_mode == DEBUG_SUB_68000_REG ||
+				 debug_mode == DEBUG_SUB_68000_CDC ||
+				 debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
 				sub68k_interrupt(5, -1);
 			}
-			else if (Debug == DEBUG_MAIN_SH2 ||
-				 Debug == DEBUG_SUB_SH2 ||
-				 Debug == DEBUG_32X_VDP)
+			else if (debug_mode == DEBUG_MAIN_SH2 ||
+				 debug_mode == DEBUG_SUB_SH2 ||
+				 debug_mode == DEBUG_32X_VDP)
 			{
 				SH2_Interrupt(sh, 8);
 			}
@@ -189,23 +194,23 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_j:
-			if (Debug == DEBUG_MAIN_68000)
+			if (debug_mode == DEBUG_MAIN_68000)
 			{
 				main68k_interrupt(6, -1);
 			}
-			else if (Debug == DEBUG_Z80)
+			else if (debug_mode == DEBUG_Z80)
 			{
 				mdZ80_interrupt(&M_Z80, 0xFF);
 			}
-			else if (Debug == DEBUG_SUB_68000_REG ||
-				 Debug == DEBUG_SUB_68000_CDC ||
-				 Debug == DEBUG_WORD_RAM_PATTERN)
+			else if (debug_mode == DEBUG_SUB_68000_REG ||
+				 debug_mode == DEBUG_SUB_68000_CDC ||
+				 debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
 				sub68k_interrupt(4, -1);
 			}
-			else if (Debug == DEBUG_MAIN_SH2 ||
-				 Debug == DEBUG_SUB_SH2 ||
-				 Debug == DEBUG_32X_VDP)
+			else if (debug_mode == DEBUG_MAIN_SH2 ||
+				 debug_mode == DEBUG_SUB_SH2 ||
+				 debug_mode == DEBUG_32X_VDP)
 			{
 				SH2_Interrupt(sh, 12);
 			}
@@ -225,11 +230,11 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_x:
-			Debug ^= 0x0100;
+			debug_show_vdp = !debug_show_vdp;
 			break;
 		
 		case GENS_KEY_c:
-			if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+			if (debug_mode == DEBUG_SUB_68000_REG || debug_mode == DEBUG_SUB_68000_CDC)
 				SCD.Cur_LBA++;
 			VDP_Status ^= 0x8;
 			break;
@@ -240,20 +245,20 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_n:
-			if (Debug == DEBUG_MAIN_SH2 || Debug == DEBUG_SUB_SH2)
+			if (debug_mode == DEBUG_MAIN_SH2 || debug_mode == DEBUG_SUB_SH2)
 			{
 				sh->PC += 2;
 				sh->Status &= 0xFFFFFFF0;
 			}
-			else if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+			else if (debug_mode == DEBUG_SUB_68000_REG || debug_mode == DEBUG_SUB_68000_CDC)
 			{
 				sub68k_context.pc += 2;
 			}
-			else if (Debug == DEBUG_MAIN_68000)
+			else if (debug_mode == DEBUG_MAIN_68000)
 			{
 				main68k_context.pc += 2;
 			}
-			else if (Debug == DEBUG_Z80)
+			else if (debug_mode == DEBUG_Z80)
 			{
 				mdZ80_set_PC(&M_Z80, mdZ80_get_PC(&M_Z80) + 1);
 			}
@@ -261,30 +266,33 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_w:
-			if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+			if (debug_mode == DEBUG_SUB_68000_REG || debug_mode == DEBUG_SUB_68000_CDC)
 				Check_CD_Command();
 			
 			break;
 		
 		case GENS_KEY_SPACE:
-			if (Debug)
+			if (debug_mode)
 			{
-				Debug++;
+				int tmp_debug = (int)debug_mode;
+				tmp_debug++;
 				
 				if (SegaCD_Started)
 				{
-					if (Debug > 6)
-						Debug = 1;
+					if (tmp_debug > 6)
+						tmp_debug = 1;
 				}
 				else if (_32X_Started)
 				{
-					if ((Debug > 3) && (Debug < 7))
-						Debug = 7;
-					if (Debug > 9)
-						Debug = 1;
+					if ((tmp_debug > 3) && (tmp_debug < 7))
+						tmp_debug = 7;
+					if (tmp_debug > 9)
+						tmp_debug = 1;
 				}
-				else if (Debug > 3)
-					Debug = 1;
+				else if (tmp_debug > 3)
+					tmp_debug = 1;
+				
+				debug_mode = (DEBUG_MODE)tmp_debug;
 			}
 			
 			break;
@@ -327,16 +335,16 @@ void Debug_Event(int key, int mod)
 		
 		case GENS_KEY_NUM_PLUS:
 			// Scroll down in pattern debugging.
-			if (Debug == DEBUG_MAIN_68000 ||
-			    Debug == DEBUG_Z80 ||
-			    Debug == DEBUG_GENESIS_VDP)
+			if (debug_mode == DEBUG_MAIN_68000 ||
+			    debug_mode == DEBUG_Z80 ||
+			    debug_mode == DEBUG_GENESIS_VDP)
 			{
 				if (pattern_adr < 0xDA00)
 					pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
 				if (pattern_adr >= 0xDA00) // Make sure it doesn't go out of bounds.
 					pattern_adr = 0xDA00 - 0x200;
 			}
-			else if (Debug == DEBUG_WORD_RAM_PATTERN)
+			else if (debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
 				if (cd_pattern_adr < 0x3D000)
 					cd_pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
@@ -348,16 +356,16 @@ void Debug_Event(int key, int mod)
 		
 		case GENS_KEY_NUM_MINUS:
 			// Scroll up in pattern debugging.
-			if (Debug == DEBUG_MAIN_68000 ||
-			    Debug == DEBUG_Z80 ||
-			    Debug == DEBUG_GENESIS_VDP)
+			if (debug_mode == DEBUG_MAIN_68000 ||
+			    debug_mode == DEBUG_Z80 ||
+			    debug_mode == DEBUG_GENESIS_VDP)
 			{
 				if (pattern_adr > 0)
 					pattern_adr = (pattern_adr - 0x200) & 0xFFFF;
 				if (pattern_adr < 0) // Make sure it doesn't go out of bounds.
 					pattern_adr = 0;
 			}
-			else if (Debug == DEBUG_WORD_RAM_PATTERN)
+			else if (debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
 				if (cd_pattern_adr > 0)
 					cd_pattern_adr = cd_pattern_adr - 0x800;
@@ -378,9 +386,9 @@ unsigned short Next_Word(void)
 {
 	unsigned short val = 0;
 	
-	if (Debug == DEBUG_MAIN_68000)
+	if (debug_mode == DEBUG_MAIN_68000)
 		val = M68K_RW(Current_PC);
-	else if (Debug >= DEBUG_Z80)
+	else if (debug_mode >= DEBUG_Z80)
 		val = S68K_RW(Current_PC);
 	
 	Current_PC += 2;
@@ -396,13 +404,13 @@ unsigned int Next_Long(void)
 {
 	unsigned int val = 0;
 	
-	if (Debug == DEBUG_MAIN_68000)
+	if (debug_mode == DEBUG_MAIN_68000)
 	{
 		val = M68K_RW(Current_PC);
 		val <<= 16;
 		val |= M68K_RW(Current_PC + 2);
 	}
-	else if (Debug >= DEBUG_Z80)
+	else if (debug_mode >= DEBUG_Z80)
 	{
 		val = S68K_RW(Current_PC);
 		val <<= 16;
@@ -1054,7 +1062,7 @@ void Update_Debug_Screen(void)
 	else
 		memset(MD_Screen, 0x00, sizeof(MD_Screen));
 	
-	if (Debug & 0x100)
+	if (debug_show_vdp)
 	{
 		if (_32X_Started)
 			Do_32X_VDP_Only();
@@ -1063,7 +1071,7 @@ void Update_Debug_Screen(void)
 	}
 	else
 	{
-		switch (Debug)
+		switch (debug_mode)
 		{
 			default:
 			case DEBUG_MAIN_68000:

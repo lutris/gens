@@ -215,7 +215,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 #ifdef GENS_DEBUGGER
 		case WM_KEYDOWN:
-			if (Debug)
+			if (IS_DEBUGGING())
 			{
 				// Get modifiers.
 				int mod = 0;
@@ -276,7 +276,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 				close_gens();
 			
 #ifdef GENS_DEBUGGER
-			if (Debug)
+			if (IS_DEBUGGING())
 			{
 				Options::setDebugMode(DEBUG_NONE);
 				Paused = 0;

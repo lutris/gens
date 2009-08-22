@@ -54,6 +54,7 @@ using std::deque;
 #include "emulator/options.hpp"
 #include "segacd/cd_sys.hpp"
 #include "util/file/rom.hpp"
+#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -529,7 +530,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(GtkWidget *container)
 				gtk_widget_hide(mnuDebugItem);
 			
 			// Make sure the check state for this debug item is correct.
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDebugItem), (Debug == i));
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDebugItem), ((int)debug_mode == i));
 		}
 		
 		// Separators

@@ -479,7 +479,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 			InsertMenu(mnuDebug, i + (i / 3), MF_BYPOSITION | MF_STRING,
 				   IDM_CPU_DEBUG_MC68000 + i, gws_debug_items[i]);
 			
-			if (Debug == (i + 1))
+			if ((int)debug_mode == (i + 1))
 				CheckMenuItem(mnuDebug, IDM_CPU_DEBUG_MC68000 + i, MF_BYCOMMAND | MF_CHECKED);
 		}
 	}

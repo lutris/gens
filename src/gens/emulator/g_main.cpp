@@ -56,13 +56,10 @@
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
+#include "debugger/debugger.hpp"
 
 // INI handling.
 #include "port/ini.hpp"
-
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
@@ -166,9 +163,7 @@ int Init_Settings(void)
 	SegaCD_Started = 0;
 	_32X_Started = 0;
 	CPU_Mode = 0;
-	
-	// This is needed even if the built-in debugger isn't compiled in.
-	Debug = 0;
+	STOP_DEBUGGING();
 	
 	// Get the default save path.
 	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
@@ -409,7 +404,7 @@ void GensMainLoop(void)
 		input_update();
 		
 #ifdef GENS_DEBUGGER
-		if (Debug)
+		if (IS_DEBUGGING())
 		{
 			// DEBUG
 			Update_Debug_Screen();

@@ -26,6 +26,7 @@
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 #include "gens_core/sound/pwm.h"
+#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -122,9 +123,10 @@ int Init_32X(ROM_t* MD_ROM)
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_SSH2;
 	
 	Flag_Clr_Scr = 1;
-	Debug = Paused = Frame_Number = 0;
+	Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	Controller_1_COM = Controller_2_COM = 0;
+	STOP_DEBUGGING();
 	
 	if (!Kaillera_Client_Running)
 		Init_Genesis_SRAM(MD_ROM);

@@ -315,10 +315,10 @@ static void ca_window_save(void)
 		{
 			// TODO: Just update CRAM. Don't update the frame.
 			Update_Emulation_One();
-			#ifdef GENS_DEBUGGER
-				if (Debug)
-					Update_Debug_Screen();
-			#endif
+#ifdef GENS_DEBUGGER
+			if (IS_DEBUGGING())
+				Update_Debug_Screen();
+#endif
 		}
 	}
 }

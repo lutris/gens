@@ -181,7 +181,7 @@ void Options::setFrameSkip(const int newFrameSkip)
  */
 DEBUG_MODE Options::debugMode(void)
 {
-	return (DEBUG_MODE)Debug;
+	return debug_mode;
 }
 
 /**
@@ -196,10 +196,10 @@ void Options::setDebugMode(const DEBUG_MODE newDebugMode)
 	Flag_Clr_Scr = 1;
 	audio_clear_sound_buffer();
 	
-	if ((int)newDebugMode == Debug)
-		Debug = 0;
+	if (newDebugMode == debug_mode)
+		debug_mode = DEBUG_NONE;
 	else
-		Debug = (int)newDebugMode;
+		debug_mode = newDebugMode;
 }
 #endif /* GENS_DEBUGGER */
 

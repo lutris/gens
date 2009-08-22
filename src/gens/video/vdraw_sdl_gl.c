@@ -28,6 +28,8 @@
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
+#include "ui/gens_ui.hpp"
+#include "debugger/debugger.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -415,7 +417,7 @@ static int vdraw_sdl_gl_flip(void)
 		draw_text(filterBuffer, rowLength, texWidth, texHeight,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
-	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
+	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(filterBuffer, rowLength, texWidth, texHeight,
@@ -515,7 +517,7 @@ static void vdraw_sdl_gl_draw_border(void)
 	}
 	else
 	{
-		if ((Game == NULL) || (Debug > 0))
+		if ((Game == NULL) || IS_DEBUGGING())
 		{
 			// Either no system is active or the debugger is enabled.
 			// Make sure the border color is black.
