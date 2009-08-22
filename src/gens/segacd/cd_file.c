@@ -127,7 +127,8 @@ int Load_ISO(char* buf, const char* iso_name)
 	
 	Cur_LBA = Tracks[0].Length;	// Size in sectors
 	
-	strcpy(tmp_name, iso_name);
+	strncpy(tmp_name, iso_name, sizeof(tmp_name));
+	tmp_name[sizeof(tmp_name)-1] = 0x00;
 	
 	for (num_track = 2, i = 0; i < 100; i++)
 	{

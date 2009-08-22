@@ -377,7 +377,8 @@ static void _usage()
 #define TEST_OPTION_STRING(option, strbuf)		\
 if (!strcmp(long_options[option_index].name, option))	\
 {							\
-	strcpy(strbuf, optarg);				\
+	strncpy(strbuf, optarg, sizeof(strbuf));	\
+	strbuf[sizeof(strbuf)-1] = 0x00;		\
 	continue;					\
 }
 
