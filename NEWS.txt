@@ -43,6 +43,10 @@ Bug Fixes:
   created after SDL was set to fullscreen, which caused SDL to revert to
   windowed mode, resulting in all sorts of screwiness.
 
+* Blargg's NTSC Filter, MDP Version 1.1.1. This fixes two major bugs:
+  - v1.1.0: Don't read from VRAM for line-doubling, since this is slow on Windows.
+  - v1.1.1: Draw the last scanline correctly when interpolation is enabled.
+
 ================================================================
 
 Changes from r7_pre2 to r7_pre3 [PREVIEW RELEASE]:
