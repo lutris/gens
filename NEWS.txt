@@ -59,6 +59,12 @@ Bug Fixes:
 * [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
   was reported (and fixed) by superG on the Ubuntu Forums.
 
+--------------------------------
+
+Miscellaneous:
+
+* automake-1.10 is now required to build Gens/GS.
+
 ================================================================
 
 Changes from r7_pre2 to r7_pre3 [PREVIEW RELEASE]:
