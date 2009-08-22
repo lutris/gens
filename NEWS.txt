@@ -47,6 +47,18 @@ Bug Fixes:
   - v1.1.0: Don't read from VRAM for line-doubling, since this is slow on Windows.
   - v1.1.1: Draw the last scanline correctly when interpolation is enabled.
 
+* [Win32] The "Screen Shot" menu item was being checked/unchecked instead
+  of enabled/disabled in the menu synchronization function. This bug was
+  reported by AamirM in #retro.
+
+* [SDL] Controller configuration now checks the current state of the
+  controllers before polling for new keys. This makes it easier to
+  configure controllers that have analog triggers whose default state
+  is negative-axis.
+
+* [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
+  was reported (and fixed) by superG on the Ubuntu Forums.
+
 ================================================================
 
 Changes from r7_pre2 to r7_pre3 [PREVIEW RELEASE]:
@@ -84,22 +96,6 @@ New Features:
   prevent their BRAM files from being loaded properly. If you have any of
   these games, you will need to rename the BRAM files in order to get them
   to load correctly.
-
---------------------------------
-
-Bug Fixes:
-
-* [Win32] The "Screen Shot" menu item was being checked/unchecked instead
-  of enabled/disabled in the menu synchronization function. This bug was
-  reported by AamirM in #retro.
-
-* [SDL] Controller configuration now checks the current state of the
-  controllers before polling for new keys. This makes it easier to
-  configure controllers that have analog triggers whose default state
-  is negative-axis.
-
-* [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
-  was reported (and fixed) by superG on the Ubuntu Forums.
 
 --------------------------------
 
