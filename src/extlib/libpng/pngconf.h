@@ -1,7 +1,7 @@
 
 /* pngconf.h - machine configurable file for libpng
  *
- * libpng version 1.2.38 - July 16, 2009
+ * libpng version 1.2.39 - August 13, 2009
  * Copyright (c) 1998-2009 Glenn Randers-Pehrson
  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
@@ -335,8 +335,8 @@
        /* If you encounter a compiler error here, see the explanation
         * near the end of INSTALL.
         */
-#warning   __pngconf.h__ in libpng already includes setjmp.h;
-#warning   __dont__ include it again.;
+           __pngconf.h__ in libpng already includes setjmp.h;
+           __dont__ include it again.;
 #      endif
 #    endif /* __linux__ */
 #  endif /* PNG_SKIP_SETJMP_CHECK */
