@@ -400,7 +400,9 @@ void audio_dsound_wp_seg_wait(void)
 {
 	while (WP == audio_dsound_get_current_seg())
 	{
-		Sleep(1);
+		// NOTE: This while loop MUST be empty.
+		// Adding a Sleep() causes Gens/GS to lag
+		// horribly on some systems.
 	}
 }
 
