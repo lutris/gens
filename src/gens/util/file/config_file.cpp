@@ -584,7 +584,7 @@ int Config::load(const string& filename, void* gameActive)
 	if (is_gens_running())
 		Recalculate_Palettes();
 	
-	Options::setStretch(cfg.getInt("Graphics", "Stretch", 0));
+	Options::setStretch(cfg.getInt("Graphics", "Stretch", STRETCH_H));
 #ifdef GENS_OS_WIN32
 	Options::setSwRender(cfg.getBool("Graphics", "Software Blit", false));
 #endif /* GENS_OS_WIN32 */
