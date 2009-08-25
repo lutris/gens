@@ -34,6 +34,7 @@
 
 static int validate_plugin_info(const mdp_t *plugin);
 static int initialize_plugin(const mdp_t *plugin);
+static int shutdown_plugin(const mdp_t *plugin);
 
 
 /**
@@ -83,6 +84,11 @@ int plugin_check(const char *filename)
 	
 	// Initialize the plugin.
 	rval = initialize_plugin(mdp);
+	if (rval != 0)
+		goto Finish;
+	
+	// Shut down the plugin.
+	rval = shutdown_plugin(mdp);
 	if (rval != 0)
 		goto Finish;
 	
@@ -190,6 +196,7 @@ static int validate_plugin_info(const mdp_t *plugin)
 static int initialize_plugin(const mdp_t *plugin)
 {
 	TEST_START("Initializing plugin");
+	puts("");
 	
 	// Get the mdp_func_t pointer.
 	mdp_func_t *func = plugin->func;
@@ -207,7 +214,6 @@ static int initialize_plugin(const mdp_t *plugin)
 	}
 	
 	// Attempt to initialize the plugin.
-	// TODO: Implement MDP Host Services.
 	int rval = func->init(&host_srv);
 	if (rval != 0)
 	{
@@ -217,6 +223,48 @@ static int initialize_plugin(const mdp_t *plugin)
 	else
 	{
 		// Plugin initialized successfully.
+		TEST_PASS();
+	}
+	
+	return rval;
+}
+
+
+/**
+ * shutdown_plugin(): Shut down the plugin.
+ * @param mdp Plugin information struct.
+ * @return MDP error code.
+ */
+static int shutdown_plugin(const mdp_t *plugin)
+{
+	TEST_START("Shutting down plugin");
+	puts("");
+	
+	// Get the mdp_func_t pointer.
+	mdp_func_t *func = plugin->func;
+	if (!func)
+	{
+		TEST_FAIL("mdp->func is NULL.");
+		return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	}
+	
+	// Check that mdp->func->end isn't NULL.
+	if (!func->end)
+	{
+		TEST_FAIL("mdp->func->end is NULL.");
+		return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	}
+	
+	// Attempt to shut down the plugin.
+	int rval = func->end();
+	if (rval != 0)
+	{
+		// Error in plugin shutdown.
+		TEST_FAIL_MDP(rval);
+	}
+	else
+	{
+		// Plugin shut down successfully.
 		TEST_PASS();
 	}
 	
