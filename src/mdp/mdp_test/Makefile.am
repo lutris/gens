@@ -16,12 +16,14 @@ INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/
 mdp_test_SOURCES = \
 	main.c \
 	plugin_check.c \
-	host_srv.c
+	host_srv.c \
+	render.cpp
 
 noinst_HEADERS = \
 	main.h \
 	plugin_check.h \
-	host_srv.h
+	host_srv.h \
+	render.hpp
 
 # UNIX-like systems require libdl for dlopen().
 if !GENS_OS_WIN32

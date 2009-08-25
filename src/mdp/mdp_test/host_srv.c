@@ -22,9 +22,12 @@
 #include "host_srv.h"
 #include "main.h"
 
+#include "render.hpp"
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+#define MDP_HOST_FN(name) mdp_host_##name
 #define MDP_HOST_STUB_FN(name) mdp_host_stub_##name
 #define MDP_HOST_STUB_DECL(name) \
 static int mdp_host_stub_##name(void) \
@@ -39,9 +42,6 @@ MDP_HOST_STUB_DECL(val_set);
 MDP_HOST_STUB_DECL(val_get);
 	
 MDP_HOST_STUB_DECL(osd_printf);
-	
-MDP_HOST_STUB_DECL(renderer_register);
-MDP_HOST_STUB_DECL(renderer_unregister);
 	
 MDP_HOST_STUB_DECL(mem_read_8);
 MDP_HOST_STUB_DECL(mem_read_16);
@@ -107,8 +107,8 @@ mdp_host_t host_srv =
 	
 	.osd_printf		= MDP_HOST_STUB_FN(osd_printf),
 	
-	.renderer_register	= MDP_HOST_STUB_FN(renderer_register),
-	.renderer_unregister	= MDP_HOST_STUB_FN(renderer_unregister),
+	.renderer_register	= MDP_HOST_FN(renderer_register),
+	.renderer_unregister	= MDP_HOST_FN(renderer_unregister),
 	
 	.mem_read_8		= MDP_HOST_STUB_FN(mem_read_8),
 	.mem_read_16		= MDP_HOST_STUB_FN(mem_read_16),
