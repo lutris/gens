@@ -32,6 +32,8 @@ extern "C" {
 int mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer);
 int mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer);
 
+int renderer_clear(void);
+
 #ifdef __cplusplus
 }
 #endif

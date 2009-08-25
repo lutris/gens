@@ -126,10 +126,42 @@ int mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer)
 	else
 	{
 		// TODO: Make this 64-bit safe.
-		TEST_WARN_ARGS("host_srv->%s(): Renderer '0x%08X' not registered.",
+		TEST_WARN_ARGS("host_srv->%s(): Renderer 0x%08X not registered.",
 			       __func__, (intptr_t)renderer);
 	}
 	
 	// TODO: Dedicated error code for this.
 	return -MDP_ERR_INVALID_PARAMETERS;
+}
+
+
+/**
+ * renderer_clear(): Clear the renderer plugin list.
+ * @return 0 if no plugins were in the list; non-zero if plugins were in the list.
+ */
+int renderer_clear(void)
+{
+	if (lstPlugins.empty())
+		return 0;
+	
+	// Plugin list isn't empty.
+	const int plsize = lstPlugins.size();
+	
+	for (iterPlugin_t iter = lstPlugins.begin();
+	     iter != lstPlugins.end(); iter++)
+	{
+		const char *tag = (*iter)->tag;
+		if (tag)
+		{
+			TEST_FAIL_ARGS("Renderer '%s' was not unregistered at shutdown.", tag);
+		}
+		else
+		{
+			// TODO: Make this 64-bit safe.
+			TEST_FAIL_ARGS("Renderer 0x%08X was not unregistered at shutdown.", (intptr_t)(*iter));
+		}
+	}
+	
+	lstPlugins.clear();
+	return plsize;
 }

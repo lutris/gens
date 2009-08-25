@@ -21,7 +21,9 @@
 
 #include "plugin_check.h"
 #include "main.h"
+
 #include "host_srv.h"
+#include "render.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -262,10 +264,22 @@ static int shutdown_plugin(const mdp_t *plugin)
 		// Error in plugin shutdown.
 		TEST_FAIL_MDP(rval);
 	}
-	else
+	
+	// Clear the renderer plugin list.
+	const int plsize = renderer_clear();
+	if (rval == 0)
 	{
-		// Plugin shut down successfully.
-		TEST_PASS();
+		if (plsize == 0)
+		{
+			// Plugin shut down successfully.
+			TEST_PASS();
+		}
+		else
+		{
+			// Indicate an error.
+			// TODO: Add a specific error code.
+			rval = -MDP_ERR_RENDER_UNKNOWN;
+		}
 	}
 	
 	return rval;
