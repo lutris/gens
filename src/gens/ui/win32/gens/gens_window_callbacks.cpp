@@ -55,9 +55,8 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
-// Plugin Manager and Render Manager.
+// Plugin Manager.
 #include "plugins/pluginmgr.hpp"
-#include "plugins/rendermgr.hpp"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -380,27 +379,12 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_RENDERMODE_DEC:
-		{
-			list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-			if (rendMode != RenderMgr::begin())
-			{
-				rendMode--;
-				vdraw_set_renderer(rendMode);
-				Sync_Gens_Window_GraphicsMenu();
-			}
+			Options::rendererPrev();
 			break;
-		}
+		
 		case IDCMD_RENDERMODE_INC:
-		{
-			list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-			rendMode++;
-			if (rendMode != RenderMgr::end())
-			{
-				vdraw_set_renderer(rendMode);
-				Sync_Gens_Window_GraphicsMenu();
-			}
+			Options::rendererNext();
 			break;
-		}
 		
 #ifdef GENS_CDROM
 		case IDCMD_CHANGE_CD:

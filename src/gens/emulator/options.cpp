@@ -75,6 +75,9 @@ using std::list;
 // WAV dumping.
 #include "util/sound/wave.h"
 
+// Render Manager.
+#include "plugins/rendermgr.hpp"
+
 
 /**
  * spriteLimit(): Get the current sprite limit setting.
@@ -1162,6 +1165,36 @@ void Options::setSwRender(const bool newSwRender)
 		vdraw_text_write("Enable hardware blit for Full-Screen", 1000);
 }
 #endif /* GENS_OS_WIN32 */
+
+
+/**
+ * rendererNext(): Select the next renderer.
+ */
+void Options::rendererNext(void)
+{
+	list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	rendMode++;
+	if (rendMode != RenderMgr::end())
+	{
+		vdraw_set_renderer(rendMode);
+		Sync_Gens_Window_GraphicsMenu();
+	}
+}
+
+
+/**
+ * rendererPrev(): Select the previous renderer.
+ */
+void Options::rendererPrev(void)
+{
+	list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	if (rendMode != RenderMgr::begin())
+	{
+		rendMode--;
+		vdraw_set_renderer(rendMode);
+		Sync_Gens_Window_GraphicsMenu();
+	}
+}
 
 
 /**

@@ -112,6 +112,10 @@ class Options
 		static void setOpenGL_Resolution(int w, int h);
 #endif /* GENS_OPENGL */
 		
+		/** Renderer selection. **/
+		static void rendererNext(void);
+		static void rendererPrev(void);
+		
 		/** Functions not related to options. **
 		** TODO: Move these somewhere else. **/
 		

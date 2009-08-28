@@ -50,9 +50,8 @@
 #include "gens/gens_window_sync.hpp"
 #include "gens_ui.hpp"
 
-// Plugin Manager and Render Manager.
+// Plugin Manager.
 #include "plugins/pluginmgr.hpp"
-#include "plugins/rendermgr.hpp"
 
 // Video, Audio, Input.
 #include "video/vdraw.h"
@@ -324,13 +323,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-				if (rendMode != RenderMgr::begin())
-				{
-					rendMode--;
-					vdraw_set_renderer(rendMode);
-					Sync_Gens_Window_GraphicsMenu();
-				}
+				Options::rendererPrev();
 			}
 			break;
 		
@@ -342,13 +335,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-				rendMode++;
-				if (rendMode != RenderMgr::end())
-				{
-					vdraw_set_renderer(rendMode);
-					Sync_Gens_Window_GraphicsMenu();
-				}
+				Options::rendererNext();
 			}
 			break;
 		
