@@ -70,7 +70,7 @@
 // Audio Handler.
 #include "audio/audio.h"
 
-// Render Manager;
+// Render Manager.
 #include "plugins/rendermgr.hpp"
 
 
