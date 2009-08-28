@@ -70,6 +70,9 @@
 // Audio Handler.
 #include "audio/audio.h"
 
+// Render Manager;
+#include "plugins/rendermgr.hpp"
+
 
 // X and Y resolutions.
 static int Res_X;
@@ -242,6 +245,17 @@ int vdraw_ddraw_init(void)
 			vdraw_ddraw_free_all(false);
 			LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
 				"lpDD->SetDisplayMode() failed: 0x%08X", rval);
+			
+			// If render mode is set to Normal, try using Double instead.
+			if (rendMode_FS == RenderMgr::begin() && rendMode_FS != RenderMgr::end())
+			{
+				LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+					"Renderer is set to Normal; attempting to use Double instead.");
+				rendMode_FS++;
+				vdraw_set_renderer(rendMode_FS);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			
 			return -4;
 		}
 	}
