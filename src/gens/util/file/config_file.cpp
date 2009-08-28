@@ -503,7 +503,7 @@ int Config::load(const string& filename, void* gameActive)
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	
 	// Renderer: Full Screen.
-	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
+	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "Double");
 	rendMode_FS = RenderMgr::getIterFromTag(renderTag);
 	if (rendMode_FS == RenderMgr::end())
 	{
@@ -512,7 +512,7 @@ int Config::load(const string& filename, void* gameActive)
 	}
 	
 	// Renderer: Windowed.
-	renderTag = cfg.getString("Graphics", "Render Windowed", "");
+	renderTag = cfg.getString("Graphics", "Render Windowed", "Double");
 	rendMode_W = RenderMgr::getIterFromTag(renderTag);
 	if (rendMode_W == RenderMgr::end())
 	{
