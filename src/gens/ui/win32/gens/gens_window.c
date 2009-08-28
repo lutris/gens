@@ -43,6 +43,9 @@
 #include <shellapi.h>
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 
 // Window.
 HWND gens_window = NULL;
@@ -122,4 +125,69 @@ void gens_window_create_menubar(void)
 		SetMenu(gens_window, NULL);
 	else
 		SetMenu(gens_window, MainMenu);
+}
+
+
+/**
+ * gens_window_reinit(): Reinitialize the Gens window.
+ */
+void gens_window_reinit(void)
+{
+	// Determine the window size using the scaling factor.
+	if (vdraw_scale <= 0)
+		return;
+	const int w = 320 * vdraw_scale;
+	const int h = 240 * vdraw_scale;
+	
+	if (vdraw_get_fullscreen())
+	{
+		// Fullscreen. Hide the mouse cursor and the window borders.
+		while (ShowCursor(TRUE) < 1) { }
+		while (ShowCursor(FALSE) >= 0) { }
+		
+		// Hide the window borders.
+		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		curStyle &= ~(WS_POPUPWINDOW | WS_OVERLAPPEDWINDOW);
+		SetWindowLongPtr(gens_window, GWL_STYLE, curStyle);
+		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+	}
+	else
+	{
+		// Windowed. Show the mouse cursor and the window borders.
+		while (ShowCursor(FALSE) >= 0) { }
+		while (ShowCursor(TRUE) < 1) { }
+		
+		// Adjust the window style.
+		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		if (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_WINRESIZE)
+		{
+			// Backend supports resizable windows.
+			curStyle &= ~WS_POPUPWINDOW;
+			curStyle |= WS_OVERLAPPEDWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS;
+		}
+		else
+		{
+			// Backend does not support resizable windows.
+			curStyle &= ~WS_OVERLAPPEDWINDOW;
+			curStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS;
+		}
+		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
+		
+		// Reposition the window.
+		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+	}
+	
+	// Rebuild the menu bar.
+	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
+	gens_window_create_menubar();
+	
+	if (!vdraw_get_fullscreen())
+	{
+		// Resize the window after the menu bar is rebuilt.
+		gsft_win32_set_actual_window_size(gens_window, w, h);
+	}
+	
+	// Synchronize menus.
+	Sync_Gens_Window();
 }

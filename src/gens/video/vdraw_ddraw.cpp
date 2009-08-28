@@ -49,9 +49,6 @@
 #include <windows.h>
 #include <ddraw.h>
 
-// libgsft includes.
-#include "libgsft/gsft_win32.h"
-
 // Gens window.
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
@@ -1221,46 +1218,8 @@ int vdraw_ddraw_reinit_gens_window(void)
 	// Stop DirectDraw.
 	vdraw_ddraw_end();
 	
-	// Rebuild the menu bar.
-	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
-	gens_window_create_menubar();
-	
-	mdp_render_t *rendMode = get_mdp_render_t();
-	const int scale = rendMode->scale;
-	
-	// Determine the window size using the scaling factor.
-	if (scale <= 0)
-		return -1;
-	const int w = 320 * scale;
-	const int h = 240 * scale;
-	
-	if (vdraw_get_fullscreen())
-	{
-		while (ShowCursor(true) < 1) { }
-		while (ShowCursor(false) >= 0) { }
-		
-		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(NULL));
-		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
-	}
-	else
-	{
-		while (ShowCursor(false) >= 0) { }
-		while (ShowCursor(true) < 1) { }
-		
-		// Make the window resizable.
-		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
-		curStyle &= ~WS_POPUPWINDOW;
-		curStyle |= WS_OVERLAPPEDWINDOW;
-		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
-		
-		// Reposition the window.
-		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
-			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-		gsft_win32_set_actual_window_size(gens_window, w, h);
-	}
-	
-	// Synchronize menus.
-	Sync_Gens_Window();
+	// Reinitialize the Gens window.
+	gens_window_reinit();
 	
 	// Reinitialize DirectDraw.
 	return vdraw_ddraw_init();

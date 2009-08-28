@@ -39,6 +39,7 @@ extern HWND gens_window;
 void gens_window_init_hWnd(void);
 void gens_window_create(void);
 void gens_window_create_menubar(void);
+void gens_window_reinit(void);
 
 #ifdef __cplusplus
 }
