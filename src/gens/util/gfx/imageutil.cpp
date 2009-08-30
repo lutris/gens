@@ -39,7 +39,7 @@
 #include "gens_core/vdp/vdp_rend.h"
 
 // Byteswapping macros.
-#include "gens_core/misc/byteswap_m.h"
+#include "libgsft/gsft_byteswap.h"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -331,7 +331,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	// Write the PNG information to the file.
 	png_write_info(png_ptr, info_ptr);
 	
-#ifdef GENS_LIL_ENDIAN
+#ifdef GSFT_LIL_ENDIAN
 	// PNG stores data in big-endian format.
 	// On little-endian systems, byteswapping needs to be enabled.
 	// TODO: Check if this really isn't needed on big-endian systems.

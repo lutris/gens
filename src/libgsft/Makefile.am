@@ -11,11 +11,12 @@ libgsft_la_LDFLAGS	= $(AM_LDFLAGS) -static
 # TODO: Make gsft_win32.c conditional on GENS_OS_WIN32.
 
 libgsft_la_SOURCES = \
-		gsft_win32.c
+		gsft_byteswap.c
 
 noinst_HEADERS = \
 		gsft_fncall.h \
-		gsft_hashtable.hpp
+		gsft_hashtable.hpp \
+		gsft_byteswap.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
@@ -29,6 +30,8 @@ endif
 
 # Win32-specific headers.
 if GENS_OS_WIN32
+libgsft_la_SOURCES += \
+		gsft_win32.c
 noinst_HEADERS += \
 		gsft_win32.h
 endif

@@ -145,6 +145,7 @@ void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, cons
 		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
+
 /**
  * gsft_win32_get_message_font(): Get the message font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
@@ -157,6 +158,7 @@ HFONT GSFT_FNCALL gsft_win32_get_message_font(void)
 	
 	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
 }
+
 
 /**
  * gsft_win32_get_title_font(): Get the title font.

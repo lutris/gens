@@ -48,7 +48,7 @@
 #include "input/input_update.h"
 
 // Byteswapping functions.
-#include "gens_core/misc/byteswap_m.h"
+#include "libgsft/gsft_byteswap.h"
 
 clock_t Last_Time = 0;
 clock_t New_Time = 0;
@@ -165,9 +165,9 @@ int Update_Emulation(void)
 	{
 		if (ice >= 3)
 			ice = 1;
-#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 		if (Ram_68k[0xFFB0] == 7)
-#else // GENS_BYTEORDER == GENS_BIG_ENDIAN
+#else // GSFT_BYTEORDER == GSFT_BIG_ENDIAN
 		if (Ram_68k[0xFFB1] == 7)
 #endif
 		{

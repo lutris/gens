@@ -32,9 +32,9 @@
 #include <string.h>
 
 /* Byteswapping macros. */
-#include "gens_core/misc/byteswap_m.h"
+#include "libgsft/gsft_byteswap.h"
 
-#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 
 /* Little-endian memory macros. */
 #define MEM_RW_8_BE(ptr, address)	(((uint8_t*)(ptr))[(address) ^ 1])
@@ -313,7 +313,7 @@ int MDP_FNCALL mdp_host_mem_write_32(mdp_t *plugin, int memID, uint32_t address,
 
 static inline void mdp_host_mem_read_block_8_be(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
-	#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+	#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 		if (address & 1)
 		{
 			/* Starts on an odd byte. */
@@ -345,7 +345,7 @@ static inline void mdp_host_mem_read_block_8_be(uint8_t *ptr, uint32_t address, 
 
 static inline void mdp_host_mem_read_block_8_le(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
-	#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+	#if GSFT_BYTEORDER == GSFT_BIG_ENDIAN
 		if (address & 1)
 		{
 			/* Starts on an odd byte. */
@@ -497,7 +497,7 @@ int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t 
 
 static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
-	#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+	#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 		if (address & 1)
 		{
 			/* Starts on an odd byte. */
@@ -529,7 +529,7 @@ static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint32_t address,
 
 static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
-	#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+	#if GSFT_BYTEORDER == GSFT_BIG_ENDIAN
 		if (address & 1)
 		{
 			/* Starts on an odd byte. */

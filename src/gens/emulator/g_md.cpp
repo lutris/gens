@@ -29,7 +29,7 @@
 #include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
-#include "gens_core/misc/byteswap_m.h"
+#include "libgsft/gsft_byteswap.h"
 
 #include "gens_ui.hpp"
 

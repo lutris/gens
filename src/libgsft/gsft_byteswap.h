@@ -1,36 +1,43 @@
-/**
- * GENS: Byteswapping functions.
- * These functions were ported from x86 assembler to C,
- * since they don't really need assembly optimizations.
- */
+/***************************************************************************
+ * libgsft: Common Functions.                                              *
+ * gsft_byteswap.h: Byteswapping functions.                                *
+ *                                                                         *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
-
-#ifndef GENS_BYTESWAP_H
-#define GENS_BYTESWAP_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __GSFT_BYTESWAP_H
+#define __GSFT_BYTESWAP_H
 
 #include <stdint.h>
 
 // Endianness defines ported from libsdl.
-#define GENS_LIL_ENDIAN 1234
-#define GENS_BIG_ENDIAN 4321
-#ifndef GENS_BYTEORDER
+#define GSFT_LIL_ENDIAN 1234
+#define GSFT_BIG_ENDIAN 4321
+#ifndef GSFT_BYTEORDER
 #if defined(__hppa__) || \
     defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
     (defined(__MIPS__) && defined(__MIPSEB__)) || \
     defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
     defined(__SPARC__)
-#define GENS_BYTEORDER GENS_BIG_ENDIAN
+#define GSFT_BYTEORDER GSFT_BIG_ENDIAN
 #else
-#define GENS_BYTEORDER GENS_LIL_ENDIAN
+#define GSFT_BYTEORDER GSFT_LIL_ENDIAN
 #endif
 #endif
-
-// 16-bit byteswap function.
-void __byte_swap_16_array(void *ptr, int n);
 
 // TODO: Optimize out ?e??_to_cpu_from_ptr on appropriate architectures.
 #define be16_to_cpu_from_ptr(ptr) \
@@ -58,18 +65,14 @@ void __byte_swap_16_array(void *ptr, int n);
 	(ptr)[2] = (((val) >> 8) & 0xFF);  \
 	(ptr)[3] = ((val) & 0xFF);
 
-static inline uint16_t __swab16(uint16_t x)
-{
-	 return x << 8 | x >> 8;
-}
-static inline uint32_t __swab32(uint32_t x)
-{
-	return x << 24 | x >> 24 |
-		(x & (uint32_t)0x0000FF00UL) << 8 |
-		(x & (uint32_t)0x00FF0000UL) >> 8;
-}
+#define __swab16(x) (((x) << 8) | ((x) >> 8))
 
-#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+#define __swab32(x) \
+	(((x) << 24) | ((x) >> 24) | \
+		((x & 0x0000FF00UL) << 8) | \
+		((x & 0x00FF0000UL) >> 8))
+
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 	#define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define le16_to_cpu_array(ptr, n)
 	#define cpu_to_be16_array(ptr, n) __byte_swap_16_array((ptr), (n));
@@ -84,7 +87,7 @@ static inline uint32_t __swab32(uint32_t x)
 	#define cpu_to_be32(x) __swab32(x)
 	#define cpu_to_le16(x) (x)
 	#define cpu_to_le32(x) (x)
-#else /* GENS_BYTEORDER == GENS_BIG_ENDIAN */
+#else /* GSFT_BYTEORDER == GSFT_BIG_ENDIAN */
 	#define be16_to_cpu_array(ptr, n)
 	#define le16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define cpu_to_be16_array(ptr, n)
@@ -102,7 +105,14 @@ static inline uint32_t __swab32(uint32_t x)
 #endif
 
 #ifdef __cplusplus
+extern "C" {
+#endif
+
+// 16-bit byteswap function.
+void __byte_swap_16_array(void *ptr, int n);
+
+#ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_BYTESWAP_H */
+#endif /* __GSFT_BYTESWAP_H */
