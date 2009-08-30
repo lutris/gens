@@ -25,6 +25,7 @@
 #endif
 
 #include "imageutil.hpp"
+#include "bmp.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -113,7 +114,7 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
 		}
 	}
 }
-
+#include <stdio.h>
 /**
  * writeBMP(): Write a BMP image.
  * @param fImg File handle to save the image to.
@@ -132,7 +133,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	
 	// Calculate the size of the bitmap image.
 	int bmpSize = (w * h * 3);
-	uint8_t *bmpData = new uint8_t[bmpSize + 54];
+	uint8_t *bmpData = new uint8_t[bmpSize];
 	if (!bmpData)
 	{
 		// Could not allocate enough memory.
@@ -142,26 +143,30 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	}
 	
 	// Build the bitmap image.
+	bmp_header_t bmp_header;
 	
-	// Bitmap header.
-	bmpData[0] = 'B';
-	bmpData[1] = 'M';
+	printf("bmp_header size: %d\n", sizeof(bmp_header));
 	
-	cpu_to_le32_ucptr(&bmpData[2], bmpSize); // Size of the bitmap.
-	cpu_to_le16_ucptr(&bmpData[6], 0); // Reserved.
-	cpu_to_le16_ucptr(&bmpData[8], 0); // Reserved.
-	cpu_to_le32_ucptr(&bmpData[10], 54); // Bitmap is located 54 bytes from the start of the file.
-	cpu_to_le32_ucptr(&bmpData[14], 40); // Size of the bitmap header, in bytes. (lol win32)
-	cpu_to_le32_ucptr(&bmpData[18], w); // Width (pixels)
-	cpu_to_le32_ucptr(&bmpData[22], h); // Height (pixels)
-	cpu_to_le16_ucptr(&bmpData[26], 1); // Number of planes. (always 1)
-	cpu_to_le16_ucptr(&bmpData[28], 24); // bpp (24-bit is the most common.)
-	cpu_to_le32_ucptr(&bmpData[30], 0); // Compression. (0 == no compression)
-	cpu_to_le32_ucptr(&bmpData[34], bmpSize); // Size of the bitmap data, in bytes.
-	cpu_to_le32_ucptr(&bmpData[38], 0x0EC4); // Pixels per meter, X
-	cpu_to_le32_ucptr(&bmpData[39], 0x0EC4); // Pixels per meter, Y
-	cpu_to_le32_ucptr(&bmpData[46], 0); // Colors used (0 on non-paletted bitmaps)
-	cpu_to_le32_ucptr(&bmpData[50], 0); // "Important" colors (0 on non-paletted bitmaps)
+	// Magic Number.
+	bmp_header.magic_number[0] = 'B';
+	bmp_header.magic_number[1] = 'M';
+	
+	// Bitmap header data.
+	bmp_header.size			= cpu_to_le32(bmpSize + sizeof(bmp_header));
+	bmp_header.reserved1		= cpu_to_le16(0);
+	bmp_header.reserved2		= cpu_to_le16(0);
+	bmp_header.bmp_start		= cpu_to_le32(sizeof(bmp_header));
+	bmp_header.bmp_header_size	= cpu_to_le32(40);
+	bmp_header.width		= cpu_to_le32(w);
+	bmp_header.height		= cpu_to_le32(h);
+	bmp_header.planes		= cpu_to_le16(1);
+	bmp_header.bpp			= cpu_to_le16(24);
+	bmp_header.compression		= cpu_to_le32(0);
+	bmp_header.bmp_size		= cpu_to_le32(bmpSize);
+	bmp_header.ppm_x		= cpu_to_le32(0x0EC4);
+	bmp_header.ppm_y		= cpu_to_le32(0x0EC4);
+	bmp_header.colors_used		= cpu_to_le32(0);
+	bmp_header.important_colors	= cpu_to_le32(0);
 	
 	// TODO: Verify endianness requirements.
 	
@@ -171,7 +176,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 		T_writeBMP_rows<uint16_t,
 				MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
 				SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15>
-			       (static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch);
+			       (static_cast<const uint16_t*>(screen), bmpData, w, h, pitch);
 	}
 	else if (bpp == 16)
 	{
@@ -179,7 +184,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 		T_writeBMP_rows<uint16_t,
 				MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
 				SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16>
-			       (static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch);
+			       (static_cast<const uint16_t*>(screen), bmpData, w, h, pitch);
 	}
 	else //if (bpp == 32)
 	{
@@ -188,10 +193,11 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 		T_writeBMP_rows<uint32_t,
 				MASK_RED_32, MASK_GREEN_32, MASK_BLUE_32,
 				SHIFT_RED_32, SHIFT_GREEN_32, SHIFT_BLUE_32>
-			       (static_cast<const uint32_t*>(screen), &bmpData[54], w, h, pitch);
+			       (static_cast<const uint32_t*>(screen), bmpData, w, h, pitch);
 	}
 	
-	fwrite(bmpData, 1, bmpSize + 54, fImg);
+	fwrite(&bmp_header, 1, sizeof(bmp_header), fImg);
+	fwrite(bmpData, 1, bmpSize, fImg);
 	delete[] bmpData;
 	
 	return 1;
