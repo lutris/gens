@@ -109,7 +109,7 @@ extern "C" {
 #endif
 
 // 16-bit byteswap function.
-void __byte_swap_16_array(void *ptr, int n);
+void __byte_swap_16_array(void *ptr, unsigned int n);
 
 #ifdef __cplusplus
 }

@@ -26,17 +26,15 @@
  * @param ptr Pointer to bytes.
  * @param n Number of bytes to swap.
  */
-void __byte_swap_16_array(void *ptr, int n)
+void __byte_swap_16_array(void *ptr, unsigned int n)
 {
-	int i;
+	unsigned char *cptr = (unsigned char*)ptr;
 	unsigned char x;
-	unsigned char *cptr;
-	cptr = (unsigned char*)ptr;
 	
-	for (i = 0; i < n; i += 2)
+	for (; n != 0; n--, cptr += 2)
 	{
-		x = cptr[i];
-		cptr[i] = cptr[i + 1];
-		cptr[i + 1] = x;
+		x = *cptr;
+		*cptr = *(cptr + 1);
+		*(cptr + 1) = x;
 	}
 }
