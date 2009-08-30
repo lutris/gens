@@ -114,7 +114,7 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
 		}
 	}
 }
-#include <stdio.h>
+
 /**
  * writeBMP(): Write a BMP image.
  * @param fImg File handle to save the image to.
@@ -123,13 +123,13 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
  * @param pitch Pitch of the image. (measured in pixels)
  * @param screen Pointer to screen buffer.
  * @param bpp Bits per pixel.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 			const void *screen, const int bpp)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
-		return 0;
+		return 1;
 	
 	// Calculate the size of the bitmap image.
 	int bmpSize = (w * h * 3);
@@ -139,13 +139,11 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 		// Could not allocate enough memory.
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Could not allocate enough memory for the bitmap data.");
-		return 0;
+		return 2;
 	}
 	
 	// Build the bitmap image.
 	bmp_header_t bmp_header;
-	
-	printf("bmp_header size: %d\n", sizeof(bmp_header));
 	
 	// Magic Number.
 	bmp_header.magic_number[0] = 'B';
@@ -200,7 +198,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	fwrite(bmpData, 1, bmpSize, fImg);
 	delete[] bmpData;
 	
-	return 1;
+	return 0;
 }
 
 
@@ -220,7 +218,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
  * @param width Width of the image.
  * @param height Height of the image.
  * @param pitch Pitch of the image. (measured in pixels)
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 template<typename pixel,
 	 const pixel maskR, const pixel maskG, const pixel maskB,
@@ -236,7 +234,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Could not allocate enough memory for the PNG row buffer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		return 0;
+		return 1;
 	}
 	
 	// Write the rows.
@@ -261,7 +259,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 	// Free the row buffer.
 	delete[] rowBuffer;
 	
-	return 1;
+	return 0;
 }
 
 /**
@@ -273,13 +271,13 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
  * @param screen Pointer to screen buffer.
  * @param bpp Bits per pixel.
  * @param alpha Alpha channel specification. (32-bit color only.)
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 			const void *screen, const int bpp, const AlphaChannel alpha)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
-		return 0;
+		return 1;
 	
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -290,7 +288,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	{
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG pointer.");
-		return 0;
+		return 2;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
@@ -298,7 +296,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG info pointer.");
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-		return 0;
+		return 3;
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
@@ -306,7 +304,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG setjmp pointer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		return 0;
+		return 4;
 	}
 	
 	// Initialize libpng I/O.
@@ -354,8 +352,8 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 					  SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15>
 					 (static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch);
 		
-		if (!rval)
-			return 0;
+		if (rval != 0)
+			return 5;
 	}
 	else if (bpp == 16)
 	{
@@ -365,8 +363,8 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 					  SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16>
 					 (static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch);
 		
-		if (!rval)
-			return 0;
+		if (rval != 0)
+			return 6;
 	}
 	else // if (bpp == 32)
 	{
@@ -409,7 +407,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	png_write_end(png_ptr, info_ptr);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 	
-	return 1;
+	return 0;
 }
 #endif /* GENS_PNG */
 
@@ -427,7 +425,7 @@ int ImageUtil::write(const char* filename, const ImageFormat format,
 	{
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error opening %s.", filename);
-		return 0;
+		return 2;
 	}
 	
 	int rval;
@@ -449,13 +447,13 @@ int ImageUtil::write(const char* filename, const ImageFormat format,
 
 /**
  * screenShot(): Convenience function to take a screenshot of the game.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int ImageUtil::screenShot(void)
 {
 	// If no game is running, don't do anything.
 	if (!Game)
-		return 0;
+		return 1;
 	
 	// Variables used:
 	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
@@ -470,8 +468,10 @@ int ImageUtil::screenShot(void)
 	char filename[GENS_PATH_MAX];
 #ifdef GENS_PNG
 	const char* ext = "png";
+	const ImageFormat fmt = IMAGEFORMAT_PNG;
 #else /* !GENS_PNG */
 	const char* ext = "bmp";
+	const ImageFormat fmt = IMAGEFORMAT_BMP;
 #endif /* GENS_PNG */
 	
 	do
@@ -481,33 +481,16 @@ int ImageUtil::screenShot(void)
 		filename[sizeof(filename)-1] = 0x00;
 	} while (File::Exists(filename));
 	
-	// Attempt to open the file.
-	FILE *img = fopen(filename, "wb");
-	if (!img)
-	{
-		// Error opening the file.
-		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
-			"Error opening %s.", filename);
-		return 0;
-	}
-	
-	// Save the image.
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
 		screen = (void*)(&MD_Screen[8]);
 	else //if (bppMD == 32)
 		screen = (void*)(&MD_Screen32[8]);
 	
-#ifdef GENS_PNG
-	int rval = writePNG(img, w, h, 336, screen, bppMD);
-#else /* !GENS_PNG */
-	int rval = writeBMP(img, w, h, 336, screen, bppMD);
-#endif /* GENS_PNG */
+	// Attempt to save the screenshot.
+	int rval = write(filename, fmt, w, h, 336, screen, bppMD);
 	
-	// Close the file.
-	fclose(img);
-	
-	if (rval == 1)
+	if (!rval)
 		vdraw_text_printf(1500, "Screen shot %d saved", num);
 	
 	return rval;
