@@ -412,9 +412,9 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 #endif /* GENS_PNG */
 
 
-int ImageUtil::write(const char* filename, const ImageFormat format,
-		     const int w, const int h, const int pitch,
-		     const void *screen, const int bpp, const AlphaChannel alpha)
+int ImageUtil::writeImage(const char* filename, const ImageFormat format,
+			  const int w, const int h, const int pitch,
+			  const void *screen, const int bpp, const AlphaChannel alpha)
 {
 	if (!filename)
 		return 1;
@@ -488,7 +488,7 @@ int ImageUtil::screenShot(void)
 		screen = (void*)(&MD_Screen32[8]);
 	
 	// Attempt to save the screenshot.
-	int rval = write(filename, fmt, w, h, 336, screen, bppMD);
+	int rval = writeImage(filename, fmt, w, h, 336, screen, bppMD);
 	
 	if (!rval)
 		vdraw_text_printf(1500, "Screen shot %d saved", num);
