@@ -487,7 +487,6 @@ int Config::load(const string& filename, void* gameActive)
 	Window_Pos.y = cfg.getInt("General", "Window Y", 0);
 	Intro_Style = cfg.getInt("General", "Intro Style", 0);
 	vdraw_set_intro_effect_color(cfg.getInt("General", "Free Mode Color", 7));
-	Sleep_Time = cfg.getInt("General", "Allow Idle", 0) & 1;
 	
 	// Video adjustments.
 	Contrast_Level = cfg.getInt("Graphics", "Contrast", 100);

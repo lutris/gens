@@ -53,7 +53,6 @@
 clock_t Last_Time = 0;
 clock_t New_Time = 0;
 clock_t Used_Time = 0;
-int Sleep_Time;
 
 
 /**
@@ -127,6 +126,8 @@ int Update_Emulation(void)
 		}
 		else
 		{
+			// Sound is not enabled.
+			
 			if (CPU_Mode)
 				current_div = 20;
 			else
@@ -150,15 +151,10 @@ int Update_Emulation(void)
 			{
 				input_update_controllers();
 				Update_Frame();
-				if (IS_DEBUGGING())
+				if (!IS_DEBUGGING())
 					vdraw_flip(1);
 			}
-			else
-			{
-				GensUI::sleep(Sleep_Time);
-			}
-		} //If sound is not enabled
-		
+		}
 	}
 	
 	if (ice >= 1)
