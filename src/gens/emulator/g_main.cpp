@@ -408,7 +408,7 @@ void GensMainLoop(void)
 		{
 			// DEBUG
 			Update_Debug_Screen();
-			vdraw_flip();
+			vdraw_flip(1);
 			GensUI::sleep(100);
 		}
 		else
@@ -444,7 +444,7 @@ void GensMainLoop(void)
 					veffect_pause_tint();
 				}
 				
-				vdraw_flip();
+				vdraw_flip(1);
 				GensUI::sleep(250);
 			}
 		}
@@ -453,7 +453,7 @@ void GensMainLoop(void)
 			// No game is currently running.
 			
 			// Update the screen.
-			vdraw_flip();
+			vdraw_flip(1);
 			
 			// Determine how much sleep time to add, based on intro style.
 			// TODO: Move this to v_draw.cpp?

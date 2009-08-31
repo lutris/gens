@@ -99,7 +99,7 @@ int Update_Emulation(void)
 			Frame_Number = 0;
 			Update_Frame();
 			if (!IS_DEBUGGING())
-				vdraw_flip();
+				vdraw_flip(1);
 		}
 	}
 	else
@@ -123,7 +123,7 @@ int Update_Emulation(void)
 			input_update_controllers();
 			Update_Frame();
 			if (!IS_DEBUGGING())
-				vdraw_flip();
+				vdraw_flip(1);
 		}
 		else
 		{
@@ -151,7 +151,7 @@ int Update_Emulation(void)
 				input_update_controllers();
 				Update_Frame();
 				if (IS_DEBUGGING())
-					vdraw_flip();
+					vdraw_flip(1);
 			}
 			else
 			{
@@ -193,7 +193,7 @@ int Update_Emulation_One(void)
 	Update_Frame();
 	
 	if (IS_DEBUGGING())
-		vdraw_flip();
+		vdraw_flip(1);
 	
 	return 1;
 }

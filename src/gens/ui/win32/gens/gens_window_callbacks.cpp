@@ -184,7 +184,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 				if (vdraw_restore_primary)
 					vdraw_restore_primary();
-				vdraw_flip();
+				vdraw_flip(0);
 			}
 			
 			EndPaint(hWnd, &ps);

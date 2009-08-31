@@ -311,12 +311,13 @@ int vdraw_backend_end(void)
 
 /**
  * vdraw_flip(): Flip the screen buffer.
+ * @param md_screen_updated Non-zero if the MD screen has been updated.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_flip(void)
+int vdraw_flip(int md_screen_updated)
 {
 	// Check if any effects need to be applied.
-	// TODO: Make constnats for Intro_Style.
+	// TODO: Make constants for Intro_Style.
 	if (Game != NULL)
 	{
 		// Don't do any intro effects if a game is loaded.
@@ -342,80 +343,86 @@ int vdraw_flip(void)
 		Clear_Screen_MD();
 	}
 	
-	if (vdraw_msg_visible)
+	if (md_screen_updated)
 	{
-		vdraw_msg_timer_update();
-	}
-	else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
-	{
-		if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
+		// MD screen is updated.
+		// Update the FPS counter and onscreen effects.
+		
+		if (vdraw_msg_visible)
 		{
-			if (++vdraw_fps_view >= 16)
+			vdraw_msg_timer_update();
+		}
+		else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
+		{
+			if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
+			{
+				if (++vdraw_fps_view >= 16)
+				{
+					#ifdef GENS_OS_WIN32
+						QueryPerformanceCounter((LARGE_INTEGER*)vdraw_fps_new_time);
+					#else
+						QueryPerformanceCounter((long long*)vdraw_fps_new_time);
+					#endif
+					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
+					{
+						vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
+								(float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
+						vdraw_text_printf(0, "%.1f", vdraw_fps_value);
+					}
+					else
+					{
+						// IT'S OVER 9000 FPS!!!111!11!1
+						vdraw_text_write(">9000", 0);
+					}
+					
+					vdraw_fps_old_time = vdraw_fps_new_time[0];
+					vdraw_fps_view = 0;
+				}
+			}
+			else if (vdraw_fps_freq_cpu[0] == 1)	// accurate timer not supported
+			{
+				if (++vdraw_fps_view >= 10)
+				{
+					vdraw_fps_new_time[0] = GetTickCount();
+					
+					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
+						vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
+					else
+						vdraw_fps_frames[vdraw_fps_index] = 2000;
+					
+					vdraw_fps_index++;
+					vdraw_fps_index &= 7;
+					vdraw_fps_value = 0.0f;
+					
+					unsigned char i;
+					for (i = 0; i < 8; i++)
+						vdraw_fps_value += vdraw_fps_frames[i];
+					
+					vdraw_fps_value /= 8.0f;
+					vdraw_fps_old_time = vdraw_fps_new_time[0];
+					vdraw_fps_view = 0;
+				}
+				vdraw_text_printf(0, "%.1f", vdraw_fps_value);
+			}
+			else
 			{
 				#ifdef GENS_OS_WIN32
-					QueryPerformanceCounter((LARGE_INTEGER*)vdraw_fps_new_time);
+					QueryPerformanceFrequency((LARGE_INTEGER*)vdraw_fps_freq_cpu);
 				#else
-					QueryPerformanceCounter((long long*)vdraw_fps_new_time);
+					QueryPerformanceFrequency((long long*)vdraw_fps_freq_cpu);
 				#endif
-				if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
-				{
-					vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
-							  (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
-					vdraw_text_printf(0, "%.1f", vdraw_fps_value);
-				}
-				else
-				{
-					// IT'S OVER 9000 FPS!!!111!11!1
-					vdraw_text_write(">9000", 0);
-				}
+				if (vdraw_fps_freq_cpu[0] == 0)
+					vdraw_fps_freq_cpu[0] = 1;
 				
-				vdraw_fps_old_time = vdraw_fps_new_time[0];
-				vdraw_fps_view = 0;
+				// Clear the message text.
+				vdraw_msg_text[0] = 0x00;
 			}
 		}
-		else if (vdraw_fps_freq_cpu[0] == 1)	// accurate timer not supported
-		{
-			if (++vdraw_fps_view >= 10)
-			{
-				vdraw_fps_new_time[0] = GetTickCount();
-				
-				if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
-					vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
-				else
-					vdraw_fps_frames[vdraw_fps_index] = 2000;
-				
-				vdraw_fps_index++;
-				vdraw_fps_index &= 7;
-				vdraw_fps_value = 0.0f;
-				
-				unsigned char i;
-				for (i = 0; i < 8; i++)
-					vdraw_fps_value += vdraw_fps_frames[i];
-				
-				vdraw_fps_value /= 8.0f;
-				vdraw_fps_old_time = vdraw_fps_new_time[0];
-				vdraw_fps_view = 0;
-			}
-			vdraw_text_printf(0, "%.1f", vdraw_fps_value);
-		}
-		else
-		{
-			#ifdef GENS_OS_WIN32
-				QueryPerformanceFrequency((LARGE_INTEGER*)vdraw_fps_freq_cpu);
-			#else
-				QueryPerformanceFrequency((long long*)vdraw_fps_freq_cpu);
-			#endif
-			if (vdraw_fps_freq_cpu[0] == 0)
-				vdraw_fps_freq_cpu[0] = 1;
-			
-			// Clear the message text.
-			vdraw_msg_text[0] = 0x00;
-		}
+		
+		// Blur the screen if requested.
+		if (vdraw_prop_fast_blur)
+			Fast_Blur();
 	}
-	
-	// Blur the screen if requested.
-	if (vdraw_prop_fast_blur)
-		Fast_Blur();
 	
 	// Check if the display width changed.
 	vdraw_border_h_old = vdraw_border_h;
