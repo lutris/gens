@@ -323,29 +323,27 @@ int vdraw_flip(int md_screen_updated)
 		
 		// Check if any effects need to be applied.
 		// TODO: Make constants for Intro_Style.
-		if (Game != NULL)
+		if (Game == NULL)
 		{
-			// Don't do any intro effects if a game is loaded.
-		}
-		else if (Intro_Style == 1)
-		{
-			// Gens logo effect. (TODO: This is broken!)
-			Update_Gens_Logo();
-		}
-		else if (Intro_Style == 2)
-		{
-			// "Strange" effect. (TODO: This is broken!)
-			Update_Crazy_Effect(vdraw_prop_intro_effect_color);
-		}
-		else if (Intro_Style == 3)
-		{
-			// Genesis BIOS. (TODO: This is broken!)
-			Do_Genesis_Frame();
-		}
-		else
-		{
-			// Blank screen.
-			Clear_Screen_MD();
+			// Intro effects.
+			switch (Intro_Style)
+			{
+				case 1:
+					// Gens logo effect. (TODO: This is broken!)
+					Update_Gens_Logo();
+					break;
+				case 2:
+					// "Strange" effect. (TODO: This is broken!)
+					Update_Crazy_Effect(vdraw_prop_intro_effect_color);
+					break;
+				case 3:
+					// Genesis BIOS. (TODO: This is broken!)
+					Do_Genesis_Frame();
+					break;
+				default:
+					// Blank screen.
+					Clear_Screen_MD();
+			}
 		}
 		
 		if (vdraw_msg_visible)
