@@ -784,6 +784,11 @@ unsigned int ROM::loadROM(const string& filename,
 	// TODO: Should the compressed filename be included here?
 	updateROMName(filename.c_str());
 	Rom_Size = sel_file->filesize;
+	if (Rom_Size < sizeof(Rom_Data) && (Rom_Size & 1))
+	{
+		// Odd ROM length. Increment the size and NULL the last byte.
+		Rom_Data[Rom_Size++] = 0x00;
+	}
 	
 	// Set the compressed ROM filename.
 	if (z_list && z_list->next)
