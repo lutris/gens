@@ -31,7 +31,10 @@ void __byte_swap_16_array(void *ptr, unsigned int n)
 	unsigned char *cptr = (unsigned char*)ptr;
 	unsigned char x;
 	
-	for (; n != 0; n--, cptr += 2)
+	// Don't allow uneven lengths.
+	n &= ~1;
+	
+	for (; n != 0; n -= 2, cptr += 2)
 	{
 		x = *cptr;
 		*cptr = *(cptr + 1);
