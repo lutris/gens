@@ -46,10 +46,6 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 
-#ifndef MIN
-#define MIN(a, b) (((a) < (b)) ? a : b)
-#endif
-
 
 /**
  * T_Update_Gens_Logo(): Update the Gens logo.
@@ -103,24 +99,25 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 
 /**
  * Update_Gens_Logo(): Update the Gens logo.
- * @return 1 on success.
+ * @return 0 on success; non-zero on error.
  */
 int Update_Gens_Logo(void)
 {
-	// TODO: 32-bit support.
-	// TODO: Only allocate one at a time.
-	static uint16_t logo_data16[65536];
-	static uint32_t logo_data32[65536];
+	static void *logo_data = NULL;
 	static int lastBpp = 0;
 	
 	if (lastBpp != bppMD)
 	{
 		// Load the Gens logo.
+		free(logo_data);
+		logo_data = NULL;
 		
 		// TODO: Don't use SDL for image loading.
 		// TODO: Fix this for Win32.
 #ifndef GENS_OS_WIN32
 		SDL_Surface *logo_load = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
+		if (!logo_load)
+			return 1;
 		
 		// Make sure the logo has the correct color depth.
 		static SDL_PixelFormat fmt15 =
@@ -174,15 +171,19 @@ int Update_Gens_Logo(void)
 		{
 			if (logo_load)
 				SDL_FreeSurface(logo_load);
-			return 0;
+			return 2;
+		}
+		
+		int logo_size = (logo_use->pitch * logo_use->h);
+		logo_data = malloc(logo_size);
+		if (!logo_data)
+		{
+			SDL_FreeSurface(logo_use);
+			return 3;
 		}
 		
 		SDL_LockSurface(logo_use);
-		int logo_size = (logo_use->pitch * logo_use->h);
-		if (bppMD != 32)
-			memcpy(logo_data16, logo_use->pixels, MIN(logo_size, sizeof(logo_data16)));
-		else
-			memcpy(logo_data32, logo_use->pixels, MIN(logo_size, sizeof(logo_data32)));
+		memcpy(logo_data, logo_use->pixels, logo_size);
 		SDL_UnlockSurface(logo_use);
 		
 		// Free the logo.
@@ -190,23 +191,26 @@ int Update_Gens_Logo(void)
 		
 		lastBpp = bppMD;
 #else
+		// TODO: Get the image dimensions from the bitmap.
+		int logo_size = (260 * 180) * (bppMD == 15 ? 2 : bppMD / 8);
+		logo_data = malloc(logo_size);
+		if (!logo_data)
+			return 4;
+		
 		// TODO: LoadBitmap() uses the desktop color depth,
 		// which may not be the same as bppMD.
 		HBITMAP hbmpLogo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
-		if (bppMD != 32)
-			GetBitmapBits(hbmpLogo, sizeof(logo_data16), logo_data16);
-		else
-			GetBitmapBits(hbmpLogo, sizeof(logo_data32), logo_data32);
+		GetBitmapBits(hbmpLogo, logo_size, logo_data);
 		lastBpp = bppMD;
 #endif
 	}
 	
 	if (bppMD != 32)
-		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen, logo_data16);
+		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen, (uint16_t*)logo_data);
 	else
-		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen32, logo_data32);
+		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen32, (uint32_t*)logo_data);
 	
-	return 1;
+	return 0;
 }
 
 
