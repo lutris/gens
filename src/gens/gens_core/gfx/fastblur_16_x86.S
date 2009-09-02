@@ -31,7 +31,7 @@
 
 #define MD_SCREEN_SIZE	(336*240)
 #define MASK_DIV2_15	$0x3DEF
-#define MASK_DIV2_16	$0x7BEF
+#define MASK_DIV2_16	$0x7BCF
 
 /* External symbol redefines for ELF. */
 #if defined(__ELF__)
@@ -50,7 +50,7 @@
 	
 	/* 64-bit masks used for the MMX fast blur function. */
 	MASK_DIV2_15_MMX:	.long	0x3DEF3DEF, 0x3DEF3DEF
-	MASK_DIV2_16_MMX:	.long	0x7BEF7BEF, 0x7BEF7BEF
+	MASK_DIV2_16_MMX:	.long	0x7BCF7BCF, 0x7BCF7BCF
 	
 	SYMTYPE(MASK_DIV2_15_MMX,@object)
 	SYMTYPE(MASK_DIV2_16_MMX,@object)
