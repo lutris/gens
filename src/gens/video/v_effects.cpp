@@ -51,17 +51,79 @@
 
 
 /**
+ * T_Update_Gens_Logo(): Update the Gens logo.
+ */
+template<typename pixel, int trans_min, int trans_max>
+static inline int T_Update_Gens_Logo(pixel *screen, const pixel *logo)
+{
+	// The Gens logo is 260x180.
+	// Thus, in 16-bit color, it's 93,600 bytes,
+	// and in 32-bit color, it's 187,200 bytes.
+	
+	static float renv = 0, /*ang = 0,*/ zoom_x = 0, zoom_y = 0, pas = 0.05f;
+	int i, j, m, n;
+	pixel c;
+	
+	// Zoom factor.
+	renv += pas;
+	zoom_x = sin(renv);
+	if (zoom_x == 0.0)
+		zoom_x = 0.0000001;
+	zoom_x = (1 / zoom_x) * 1;
+	zoom_y = 1;
+	
+	// TODO: 224 lines instead of 240?
+	if (VDP_Reg.Set4 & 0x1)
+	{
+		// H40 mode. (320x224)
+		for (j = 0; j < 240; j++)
+		{
+			for (i = 0; i < 320; i++)
+			{
+				m = (float)(i - 160) * zoom_x;
+				n = (float)(j - 120) * zoom_y;
+				
+				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
+				{
+					c = logo[m + 130 + (n + 90) * 260];
+					if ((c > trans_max) || (c < trans_min))
+						screen[TAB336[j] + i + 8] = c;
+				}
+			}
+		}
+	}
+	else
+	{
+		// H32 mode. (256x224)
+		for (j = 0; j < 240; j++)
+		{
+			for (i = 0; i < 256; i++)
+			{
+				m = (float)(i - 128) * zoom_x;
+				n = (float)(j - 120) * zoom_y;
+				
+				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
+				{
+					c = logo[m + 130 + (n + 90) * 260];
+					if ((c > trans_max) || (c < trans_min))
+						screen[TAB336[j] + i + 8] = c;
+				}
+			}
+		}
+	}
+	
+	// Blur the image.
+	Fast_Blur();
+}
+
+
+/**
  * Update_Gens_Logo(): Update the Gens logo.
  * @return 1 on success.
  */
 int Update_Gens_Logo(void)
 {
 	// TODO: 32-bit support.
-	
-	int i, j, m, n;
-	static float renv = 0, /*ang = 0,*/ zoom_x = 0, zoom_y = 0, pas;
-	unsigned short c;
-	
 	// TODO: Only allocate one at a time.
 	static uint16_t logo_data16[65536];
 	static uint32_t logo_data32[65536];
@@ -77,8 +139,6 @@ int Update_Gens_Logo(void)
 		SDL_Surface *logo_load = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
 		
 		// Make sure the logo has the correct color depth.
-		// SDL_LoadBMP() loads in 32-bit color by default.
-		
 		static SDL_PixelFormat fmt15 =
 		{
 			NULL, 15, 2,
@@ -93,6 +153,14 @@ int Update_Gens_Logo(void)
 			3, 2, 3, 0,			// Loss compared to 32-bit.
 			11, 5, 0, 0,			// Shift.
 			0xF800, 0x07E0, 0x001F, 0,	// Mask.
+			0, 0
+		};
+		static SDL_PixelFormat fmt32 =
+		{
+			NULL, 32, 4,
+			0, 0, 0, 0,				// Loss compared to 32-bit.
+			16, 8, 0, 0,				// Shift.
+			0xFF0000, 0x00FF00, 0x0000FF, 0,	// Mask.
 			0, 0
 		};
 		
@@ -112,7 +180,8 @@ int Update_Gens_Logo(void)
 				break;
 			
 			case 32:
-				logo_use = logo_load;
+				logo_use = SDL_ConvertSurface(logo_load, &fmt32, SDL_SWSURFACE);
+				SDL_FreeSurface(logo_load);
 				logo_load = NULL;
 				break;
 		}
@@ -135,63 +204,20 @@ int Update_Gens_Logo(void)
 		// Free the logo.
 		SDL_FreeSurface(logo_use);
 		
-		pas = 0.05;
 		lastBpp = bppMD;
 #else
 		HBITMAP Logo;
 
 		Logo = LoadBitmap(ghInstance,  MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
 		GetBitmapBits(Logo, sizeof(logo_data16), logo_data16);
-		pas = 0.05f;
 		lastBpp = bppMD;
 #endif
 	}
 	
-	renv += pas;
-	zoom_x = sin(renv);
-	if (zoom_x == 0.0)
-		zoom_x = 0.0000001;
-	zoom_x = (1 / zoom_x) * 1;
-	zoom_y = 1;
-	
-	if (VDP_Reg.Set4 & 0x1)
-	{
-		for(j = 0; j < 240; j++)
-		{
-			for(i = 0; i < 320; i++)
-			{
-				m = (float)(i - 160) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-				
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = logo_data16[m + 130 + (n + 90) * 260];
-					if ((c > 31) || (c < 5))
-						MD_Screen[TAB336[j] + i + 8] = c;
-				}
-			}
-		}
-	}
+	if (bppMD != 32)
+		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen, logo_data16);
 	else
-	{
-		for(j = 0; j < 240; j++)
-		{
-			for(i = 0; i < 256; i++)
-			{
-				m = (float)(i - 128) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-				
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = logo_data16[m + 130 + (n + 90) * 260];
-					if ((c > 31) || (c < 5)) MD_Screen[TAB336[j] + i + 8] = c;
-				}
-			}
-		}
-	}
-	
-	Fast_Blur();
-	//draw->Flip();
+		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen32, logo_data32);
 	
 	return 1;
 }
