@@ -33,6 +33,10 @@
 #include <SDL/SDL.h>
 #endif
 
+#ifdef GENS_OS_WIN32
+#include "ui/win32/resource.h"
+#endif
+
 #include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/gfx/fastblur.hpp"
@@ -40,6 +44,10 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? a : b)
+#endif
 
 
 /**
@@ -51,25 +59,91 @@ int Update_Gens_Logo(void)
 	// TODO: 32-bit support.
 	
 	int i, j, m, n;
-	static short tab[64000], Init = 0;
 	static float renv = 0, /*ang = 0,*/ zoom_x = 0, zoom_y = 0, pas;
 	unsigned short c;
 	
-	if (!Init)
+	// TODO: Only allocate one at a time.
+	static uint16_t logo_data16[65536];
+	static uint32_t logo_data32[65536];
+	int lastBpp = 0;
+	
+	if (lastBpp != bppMD)
 	{
+		// Load the Gens logo.
+		
 		// TODO: Don't use SDL for image loading.
 		// TODO: Fix this for Win32.
-#ifdef GENS_OS_UNIX
-		SDL_Surface* Logo;
+#ifndef GENS_OS_WIN32
+		SDL_Surface *logo_load = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
 		
-		Logo = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
+		// Make sure the logo has the correct color depth.
+		// SDL_LoadBMP() loads in 32-bit color by default.
 		
-		SDL_LockSurface(Logo);
-		memcpy(tab, Logo->pixels, 64000);
-		SDL_UnlockSurface(Logo);
+		static SDL_PixelFormat fmt15 =
+		{
+			NULL, 15, 2,
+			3, 3, 3, 0,			// Loss compared to 32-bit.
+			10, 5, 0, 0,			// Shift.
+			0x7C00, 0x03E0, 0x001F, 0,	// Mask.
+			0, 0
+		};
+		static SDL_PixelFormat fmt16 =
+		{
+			NULL, 16, 2,
+			3, 2, 3, 0,			// Loss compared to 32-bit.
+			11, 5, 0, 0,			// Shift.
+			0xF800, 0x07E0, 0x001F, 0,	// Mask.
+			0, 0
+		};
+		
+		SDL_Surface *logo_use = NULL;
+		switch (bppMD)
+		{
+			case 15:
+				logo_use = SDL_ConvertSurface(logo_load, &fmt15, SDL_SWSURFACE);
+				SDL_FreeSurface(logo_load);
+				logo_load = NULL;
+				break;
+			
+			case 16:
+				logo_use = SDL_ConvertSurface(logo_load, &fmt16, SDL_SWSURFACE);
+				SDL_FreeSurface(logo_load);
+				logo_load = NULL;
+				break;
+			
+			case 32:
+				logo_use = logo_load;
+				logo_load = NULL;
+				break;
+		}
+		
+		if (!logo_use)
+		{
+			if (logo_load)
+				SDL_FreeSurface(logo_load);
+			return 0;
+		}
+		
+		SDL_LockSurface(logo_use);
+		int logo_size = (logo_use->pitch * logo_use->h);
+		if (bppMD != 32)
+			memcpy(logo_data16, logo_use->pixels, MIN(logo_size, sizeof(logo_data16)));
+		else
+			memcpy(logo_data32, logo_use->pixels, MIN(logo_size, sizeof(logo_data32)));
+		SDL_UnlockSurface(logo_use);
+		
+		// Free the logo.
+		SDL_FreeSurface(logo_use);
 		
 		pas = 0.05;
-		Init = 1;
+		lastBpp = bppMD;
+#else
+		HBITMAP Logo;
+
+		Logo = LoadBitmap(ghInstance,  MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
+		GetBitmapBits(Logo, sizeof(logo_data16), logo_data16);
+		pas = 0.05f;
+		lastBpp = bppMD;
 #endif
 	}
 	
@@ -91,7 +165,7 @@ int Update_Gens_Logo(void)
 				
 				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
 				{
-					c = tab[m + 130 + (n + 90) * 260];
+					c = logo_data16[m + 130 + (n + 90) * 260];
 					if ((c > 31) || (c < 5))
 						MD_Screen[TAB336[j] + i + 8] = c;
 				}
@@ -109,7 +183,7 @@ int Update_Gens_Logo(void)
 				
 				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
 				{
-					c = tab[m + 130 + (n + 90) * 260];
+					c = logo_data16[m + 130 + (n + 90) * 260];
 					if ((c > 31) || (c < 5)) MD_Screen[TAB336[j] + i + 8] = c;
 				}
 			}
