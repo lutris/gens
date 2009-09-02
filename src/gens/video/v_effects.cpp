@@ -192,8 +192,11 @@ int Update_Gens_Logo(void)
 #else
 		HBITMAP Logo;
 
-		Logo = LoadBitmap(ghInstance,  MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
-		GetBitmapBits(Logo, sizeof(logo_data16), logo_data16);
+		Logo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
+		if (bppMD != 32)
+			GetBitmapBits(Logo, sizeof(logo_data16), logo_data16);
+		else
+			GetBitmapBits(Logo, sizeof(logo_data32), logo_data32);
 		lastBpp = bppMD;
 #endif
 	}
