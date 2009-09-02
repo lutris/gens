@@ -111,7 +111,7 @@ int Update_Gens_Logo(void)
 	// TODO: Only allocate one at a time.
 	static uint16_t logo_data16[65536];
 	static uint32_t logo_data32[65536];
-	int lastBpp = 0;
+	static int lastBpp = 0;
 	
 	if (lastBpp != bppMD)
 	{
