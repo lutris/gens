@@ -333,7 +333,7 @@ int vdraw_flip(int md_screen_updated)
 					Update_Gens_Logo();
 					break;
 				case 2:
-					// "Strange" effect. (TODO: This is broken!)
+					// "Strange" effect.
 					Update_Crazy_Effect(vdraw_prop_intro_effect_color);
 					break;
 				case 3:
