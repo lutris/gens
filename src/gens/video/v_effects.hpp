@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 int Update_Gens_Logo(void);
-int Update_Crazy_Effect(unsigned char introEffectColor);
+void Update_Crazy_Effect(int introEffectColor);
 
 void veffect_pause_tint(void);
 

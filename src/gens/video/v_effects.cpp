@@ -125,93 +125,95 @@ int Update_Gens_Logo(void)
 
 /**
  * Update_Crazy_Effect(): Update the "Crazy" Effect.
- * @return 1 on success.
+ * @param introEffectColor Intro effect color.
  */
-int Update_Crazy_Effect(unsigned char introEffectColor)
+void Update_Crazy_Effect(int introEffectColor)
 {
-	int i, j, offset;
-	int r = 0, v = 0, b = 0, prev_l, prev_p;
+	int r = 0, g = 0, b = 0;
 	int RB, G;
 	
-	for(offset = 336 * 240, j = 0; j < 240; j++)
+	uint16_t *pix = &MD_Screen[336*240 - 1];
+	uint16_t *prev_l = pix - 336;
+	uint16_t *prev_p = pix - 1;
+	
+	for (unsigned int i = 336*240; i != 0; i--)
 	{
-		for(i = 0; i < 336; i++, offset--)
+		uint16_t pl, pp;
+		pl = (prev_l >= MD_Screen ? *prev_l : 0);
+		pp = (prev_p >= MD_Screen ? *prev_p : 0);
+		
+		if (bppMD == 15)
 		{
-			prev_l = MD_Screen[offset - 336];
-			prev_p = MD_Screen[offset - 1];
+			RB = ((pl & 0x7C1F) + (pp & 0x7C1F)) >> 1;
+			G = ((pl & 0x03E0) + (pp & 0x03E0)) >> 1;
 			
-			if (bppMD == 15)
+			if (introEffectColor & 0x4)
 			{
-				RB = ((prev_l & 0x7C1F) + (prev_p & 0x7C1F)) >> 1;
-				G = ((prev_l & 0x03E0) + (prev_p & 0x03E0)) >> 1;
-				
-				if (introEffectColor & 0x4)
-				{
-					r = RB & 0x7C00;
-					if ((rand() & 0x7FFF) > 0x2C00) r += 0x0400;
-					else r -= 0x0400;
-					if (r > 0x7C00) r = 0x7C00;
-					else if (r < 0x0400) r = 0;
-				}
-				
-				if (introEffectColor & 0x2)
-				{
-					v = G & 0x03E0;
-					if ((rand() & 0x7FFF) > 0x2C00) v += 0x0020;
-					else v -= 0x0020;
-					if (v > 0x03E0) v = 0x03E0;
-					else if (v < 0x0020) v = 0;
-				}
-				
-				if (introEffectColor & 0x1)
-				{
-					b = RB & 0x001F;
-					if ((rand() & 0x7FFF) > 0x2C00) b++;
-					else b--;
-					if (b > 0x1F) b = 0x1F;
-					else if (b < 0) b = 0;
-				}
-			}
-			else
-			{
-				RB = ((prev_l & 0xF81F) + (prev_p & 0xF81F)) >> 1;
-				G = ((prev_l & 0x07C0) + (prev_p & 0x07C0)) >> 1;
-				
-				if (introEffectColor & 0x4)
-				{
-					r = RB & 0xF800;
-					if ((rand() & 0x7FFF) > 0x2C00) r += 0x0800;
-					else r -= 0x0800;
-					if (r > 0xF800) r = 0xF800;
-					else if (r < 0x0800) r = 0;
-				}
-				
-				if (introEffectColor & 0x2)
-				{
-					v = G & 0x07C0;
-					if ((rand() & 0x7FFF) > 0x2C00) v += 0x0040;
-					else v -= 0x0040;
-					if (v > 0x07C0) v = 0x07C0;
-					else if (v < 0x0040) v = 0;
-				}
-				
-				if (introEffectColor & 0x1)
-				{
-					b = RB & 0x001F;
-					if ((rand() & 0x7FFF) > 0x2C00) b++;
-					else b--;
-					if (b > 0x1F) b = 0x1F;
-					else if (b < 0) b = 0;
-				}
+				r = RB & 0x7C00;
+				if ((rand() & 0x7FFF) > 0x2C00) r += 0x0400;
+				else r -= 0x0400;
+				if (r > 0x7C00) r = 0x7C00;
+				else if (r < 0x0400) r = 0;
 			}
 			
-			MD_Screen[offset] = r + v + b;
+			if (introEffectColor & 0x2)
+			{
+				g = G & 0x03E0;
+				if ((rand() & 0x7FFF) > 0x2C00) g += 0x0020;
+				else g -= 0x0020;
+				if (g > 0x03E0) g = 0x03E0;
+				else if (g < 0x0020) g = 0;
+			}
+			
+			if (introEffectColor & 0x1)
+			{
+				b = RB & 0x001F;
+				if ((rand() & 0x7FFF) > 0x2C00) b++;
+				else b--;
+				if (b > 0x1F) b = 0x1F;
+				else if (b < 0) b = 0;
+			}
 		}
+		else
+		{
+			RB = ((pl & 0xF81F) + (pp & 0xF81F)) >> 1;
+			G = ((pl & 0x07C0) + (pp & 0x07C0)) >> 1;
+			
+			if (introEffectColor & 0x4)
+			{
+				r = RB & 0xF800;
+				if ((rand() & 0x7FFF) > 0x2C00) r += 0x0800;
+				else r -= 0x0800;
+				if (r > 0xF800) r = 0xF800;
+				else if (r < 0x0800) r = 0;
+			}
+			
+			if (introEffectColor & 0x2)
+			{
+				g = G & 0x07C0;
+				if ((rand() & 0x7FFF) > 0x2C00) g += 0x0040;
+				else g -= 0x0040;
+				if (g > 0x07C0) g = 0x07C0;
+				else if (g < 0x0040) g = 0;
+			}
+			
+			if (introEffectColor & 0x1)
+			{
+				b = RB & 0x001F;
+				if ((rand() & 0x7FFF) > 0x2C00) b++;
+				else b--;
+				if (b > 0x1F) b = 0x1F;
+				else if (b < 0) b = 0;
+			}
+		}
+		
+		*pix = r | g | b;
+		
+		// Next pixels.
+		prev_l--;
+		prev_p--;
+		pix--;
 	}
-	
-	//draw->Flip();
-	
-	return 1;
 }
 
 
