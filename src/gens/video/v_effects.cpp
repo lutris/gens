@@ -38,6 +38,7 @@
 #endif
 
 #include "v_effects.hpp"
+#include "v_inline.h"
 #include "gens_core/misc/misc.h"
 #include "gens_core/gfx/fastblur.hpp"
 
@@ -60,6 +61,8 @@ static inline int T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	// Thus, in 16-bit color, it's 93,600 bytes,
 	// and in 32-bit color, it's 187,200 bytes.
 	
+	// TODO: Figure out why there's extra blurring in 32-bit color.
+	
 	static float renv = 0, /*ang = 0,*/ zoom_x = 0, zoom_y = 0, pas = 0.05f;
 	int i, j, m, n;
 	pixel c;
@@ -72,42 +75,23 @@ static inline int T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	zoom_x = (1 / zoom_x) * 1;
 	zoom_y = 1;
 	
-	// TODO: 224 lines instead of 240?
-	if (VDP_Reg.Set4 & 0x1)
+	const int w = (isFullXRes() ? 320 : 256);
+	const int w_div2 = (w / 2);
+	const int h = VDP_Num_Vis_Lines;
+	const int h_div2 = (h / 2);
+	
+	for (j = h; j != 0; j--)
 	{
-		// H40 mode. (320x224)
-		for (j = 0; j < 240; j++)
+		for (i = w; i != 0; i--)
 		{
-			for (i = 0; i < 320; i++)
+			m = (float)(i - w_div2) * zoom_x;
+			n = (float)(j - h_div2) * zoom_y;
+			
+			if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
 			{
-				m = (float)(i - 160) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-				
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = logo[m + 130 + (n + 90) * 260];
-					if ((c > trans_max) || (c < trans_min))
-						screen[TAB336[j] + i + 8] = c;
-				}
-			}
-		}
-	}
-	else
-	{
-		// H32 mode. (256x224)
-		for (j = 0; j < 240; j++)
-		{
-			for (i = 0; i < 256; i++)
-			{
-				m = (float)(i - 128) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-				
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = logo[m + 130 + (n + 90) * 260];
-					if ((c > trans_max) || (c < trans_min))
-						screen[TAB336[j] + i + 8] = c;
-				}
+				c = logo[m + 130 + (n + 90) * 260];
+				if ((c > trans_max) || (c < trans_min))
+					screen[TAB336[j] + i + 8] = c;
 			}
 		}
 	}
