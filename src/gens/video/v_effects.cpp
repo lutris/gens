@@ -55,7 +55,7 @@
  * T_Update_Gens_Logo(): Update the Gens logo.
  */
 template<typename pixel, int trans_min, int trans_max>
-static inline int T_Update_Gens_Logo(pixel *screen, const pixel *logo)
+static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 {
 	// The Gens logo is 260x180.
 	// Thus, in 16-bit color, it's 93,600 bytes,
@@ -190,13 +190,13 @@ int Update_Gens_Logo(void)
 		
 		lastBpp = bppMD;
 #else
-		HBITMAP Logo;
-
-		Logo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
+		// TODO: LoadBitmap() uses the desktop color depth,
+		// which may not be the same as bppMD.
+		HBITMAP hbmpLogo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
 		if (bppMD != 32)
-			GetBitmapBits(Logo, sizeof(logo_data16), logo_data16);
+			GetBitmapBits(hbmpLogo, sizeof(logo_data16), logo_data16);
 		else
-			GetBitmapBits(Logo, sizeof(logo_data32), logo_data32);
+			GetBitmapBits(hbmpLogo, sizeof(logo_data32), logo_data32);
 		lastBpp = bppMD;
 #endif
 	}
