@@ -148,7 +148,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x4)
 				{
 					r = RB & 0x7C00;
-					if (rand() > 0x2C00) r += 0x0400;
+					if ((rand() & 0x7FFF) > 0x2C00) r += 0x0400;
 					else r -= 0x0400;
 					if (r > 0x7C00) r = 0x7C00;
 					else if (r < 0x0400) r = 0;
@@ -157,7 +157,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x2)
 				{
 					v = G & 0x03E0;
-					if (rand() > 0x2C00) v += 0x0020;
+					if ((rand() & 0x7FFF) > 0x2C00) v += 0x0020;
 					else v -= 0x0020;
 					if (v > 0x03E0) v = 0x03E0;
 					else if (v < 0x0020) v = 0;
@@ -166,7 +166,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x1)
 				{
 					b = RB & 0x001F;
-					if (rand() > 0x2C00) b++;
+					if ((rand() & 0x7FFF) > 0x2C00) b++;
 					else b--;
 					if (b > 0x1F) b = 0x1F;
 					else if (b < 0) b = 0;
@@ -180,7 +180,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x4)
 				{
 					r = RB & 0xF800;
-					if (rand() > 0x2C00) r += 0x0800;
+					if ((rand() & 0x7FFF) > 0x2C00) r += 0x0800;
 					else r -= 0x0800;
 					if (r > 0xF800) r = 0xF800;
 					else if (r < 0x0800) r = 0;
@@ -189,7 +189,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x2)
 				{
 					v = G & 0x07C0;
-					if (rand() > 0x2C00) v += 0x0040;
+					if ((rand() & 0x7FFF) > 0x2C00) v += 0x0040;
 					else v -= 0x0040;
 					if (v > 0x07C0) v = 0x07C0;
 					else if (v < 0x0040) v = 0;
@@ -198,7 +198,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 				if (introEffectColor & 0x1)
 				{
 					b = RB & 0x001F;
-					if (rand() > 0x2C00) b++;
+					if ((rand() & 0x7FFF) > 0x2C00) b++;
 					else b--;
 					if (b > 0x1F) b = 0x1F;
 					else if (b < 0) b = 0;
