@@ -124,6 +124,104 @@ int Update_Gens_Logo(void)
 
 
 /**
+ * T_Update_Crazy_Effect(): Update the "Crazy" Effect.
+ * @param introEffectColor Intro effect color.
+ */
+template<typename pixel, pixel Rmask, pixel Gmask, pixel Bmask,
+		  pixel Radd, pixel Gadd, pixel Badd>
+static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
+{
+	const pixel RBmask = (Rmask | Bmask);
+	int r = 0, g = 0, b = 0;
+	pixel RB, G;
+	
+	pixel *pix = &screen[336*240 - 1];
+	pixel *prev_l = pix - 336;
+	pixel *prev_p = pix - 1;
+	
+	for (unsigned int i = 336*240; i != 0; i--)
+	{
+		pixel pl, pp;
+		pl = (prev_l >= screen ? *prev_l : 0);
+		pp = (prev_p >= screen ? *prev_p : 0);
+		
+		RB = ((pl & RBmask) + (pp & RBmask)) >> 1;
+		G = ((pl & Gmask) + (pp & Gmask)) >> 1;
+		
+		if (introEffectColor & 0x4)
+		{
+			// Red channel.
+			r = RB & Rmask;
+			r += (((rand() & 0x7FFF) > 0x2C00) ? Radd : -Radd);
+			
+			if (r > (int)Rmask)
+				r = Rmask;
+			else if (r < (int)Radd)
+				r = 0;
+		}
+		
+		if (introEffectColor & 0x2)
+		{
+			// Green channel.
+			g = G & Gmask;
+			g += (((rand() & 0x7FFF) > 0x2C00) ? Gadd : -Gadd);
+			
+			if (g > (int)Gmask)
+				g = Gmask;
+			else if (g < (int)Gadd)
+				g = 0;
+		}
+		
+		if (introEffectColor & 0x1)
+		{
+			// Blue channel.
+			b = RB & Bmask;
+			b += (((rand() & 0x7FFF) > 0x2C00) ? Badd : -Badd);
+			
+			if (b > (int)Bmask)
+				b = Bmask;
+			else if (b < (int)Badd)
+				b = 0;
+		}
+		
+		*pix = r | g | b;
+		
+		// Next pixels.
+		prev_l--;
+		prev_p--;
+		pix--;
+	}
+}
+
+
+/**
+ * Update_Crazy_Effect(): Update the "Crazy" Effect.
+ * @param introEffectColor Intro effect color.
+ */
+void Update_Crazy_Effect(int introEffectColor)
+{
+	switch (bppMD)
+	{
+		case 15:
+			T_Update_Crazy_Effect<uint16_t, 0x7C00, 0x03E0, 0x001F,
+					      0x0400, 0x0020, 0x0001>(introEffectColor, MD_Screen);
+			break;
+		
+		case 16:
+			T_Update_Crazy_Effect<uint16_t, 0xF800, 0x07C0, 0x001F,
+					      0x0800, 0x0040, 0x0001>(introEffectColor, MD_Screen);
+			break;
+		
+		case 32:
+			T_Update_Crazy_Effect<uint32_t, (uint32_t)0xF80000, (uint32_t)0x00F800, (uint32_t)0x0000F8,
+					      (uint32_t)0x080000, (uint32_t)0x000800, (uint32_t)0x000008>(introEffectColor, MD_Screen32);
+			break;
+	}
+}
+
+
+#if 0
+/**
  * Update_Crazy_Effect(): Update the "Crazy" Effect.
  * @param introEffectColor Intro effect color.
  */
@@ -215,6 +313,7 @@ void Update_Crazy_Effect(int introEffectColor)
 		pix--;
 	}
 }
+#endif
 
 
 /**
