@@ -28,13 +28,14 @@
 #include "macros/log_msg.h"
 
 // C includes.
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "g_main.hpp"
 #include "gens.hpp"
@@ -137,6 +138,17 @@ static int Gens_Running = 0;
  */
 int Init_Settings(void)
 {
+	// Initialize the random number generator.
+#ifdef HAVE_LIBRT
+	struct timespec now = {0, 0};
+	clock_gettime(CLOCK_REALTIME, &now);
+	srand(now.tv_nsec != 0 ? now.tv_nsec : now.tv_sec);
+#else
+	struct timeval now = {0, 0};
+	gettimeofday(&now, NULL);
+	srand(now.tv_usec != 0 ? now.tv_usec : now.tv_sec);
+#endif
+	
 	// Initialize video settings.
 	Video.borderColorEmulation = 1;
 	Video.pauseTint = 1;
