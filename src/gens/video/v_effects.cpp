@@ -66,9 +66,9 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	// Zoom factor.
 	renv += pas;
 	zoom_x = sin(renv);
-	if (zoom_x == 0.0)
-		zoom_x = 0.0000001;
-	zoom_x = (1 / zoom_x) * 1;
+	if (zoom_x == 0.0f)
+		zoom_x = 0.0000001f;
+	zoom_x = (1.0f / zoom_x);
 	zoom_y = 1;
 	
 	const int w = (isFullXRes() ? 320 : 256);
@@ -80,8 +80,8 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	{
 		for (i = w; i != 0; i--)
 		{
-			m = (float)(i - w_div2) * zoom_x;
-			n = (float)(j - h_div2) * zoom_y;
+			m = (int)((float)(i - w_div2) * zoom_x);
+			n = (int)((float)(j - h_div2) * zoom_y);
 			
 			if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
 			{
