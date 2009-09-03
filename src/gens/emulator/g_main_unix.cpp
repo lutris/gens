@@ -132,6 +132,9 @@ int main(int argc, char *argv[])
 	// TODO: Make this unnecessary.
 	init_timer();
 	
+	// Initialize the PRNG.
+	Init_PRNG();
+	
 	// Initialize the UI.
 	GensUI::init(&argc, &argv);
 	

@@ -136,6 +136,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	gens_sighandler_init();
 #endif
 	
+	// Initialize the PRNG.
+	Init_PRNG();
+	
 	// Initialize fonts.
 	fonts_init();
 	

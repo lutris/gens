@@ -175,6 +175,7 @@ int IsAsyncAllowed(void);
 // Initialization functions.
 int Init(void);
 int Init_Settings(void);
+void Init_PRNG(void);
 
 extern int ice;
 

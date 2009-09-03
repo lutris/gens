@@ -133,12 +133,10 @@ static int Gens_Running = 0;
 
 
 /**
- * Init_Settings(): Initialize the Settings struct.
- * @return 0 on success; non-zero on error.
+ * Init_PRNG(): Initialize the Pseudo-Random Number Generator.
  */
-int Init_Settings(void)
+void Init_PRNG(void)
 {
-	// Initialize the random number generator.
 #ifdef HAVE_LIBRT
 	struct timespec now = {0, 0};
 	clock_gettime(CLOCK_REALTIME, &now);
@@ -148,7 +146,15 @@ int Init_Settings(void)
 	gettimeofday(&now, NULL);
 	srand(now.tv_usec != 0 ? now.tv_usec : now.tv_sec);
 #endif
-	
+}
+
+
+/**
+ * Init_Settings(): Initialize the Settings struct.
+ * @return 0 on success; non-zero on error.
+ */
+int Init_Settings(void)
+{
 	// Initialize video settings.
 	Video.borderColorEmulation = 1;
 	Video.pauseTint = 1;
