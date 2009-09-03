@@ -339,33 +339,30 @@ static void T_veffect_pause_tint(void)
 	
 	pixel *pos = mdScreen;
 	
-	for (unsigned int y = 240; y != 0; y--)
+	for (unsigned int i = (336*240); i != 0; i--)
 	{
-		for (unsigned int x = 336; x != 0; x--)
-		{
-			// Get the color components.
-			r = (uint8_t)((*pos & RMask) >> RShift);
-			g = (uint8_t)((*pos & GMask) >> GShift);
-			b = (uint8_t)((*pos & BMask) >> BShift);
-			
-			// Add the components together.
-			sum = r + g + b;
-			sum /= 3;
-			nr = ng = nb = (uint8_t)sum;
-			
-			// L-shift the blue component to tint the image.
-			nb <<= 1;
-			if (nb > 0x1F)
-				nb = 0x1F;
-			
-			// Mask off the LSB.
-			nr &= 0x1E;
-			ng &= 0x1E;
-			nb &= 0x1E;
-			
-			// Put the new pixel.
-			*pos++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
-		}
+		// Get the color components.
+		r = (uint8_t)((*pos & RMask) >> RShift);
+		g = (uint8_t)((*pos & GMask) >> GShift);
+		b = (uint8_t)((*pos & BMask) >> BShift);
+		
+		// Add the components together.
+		sum = r + g + b;
+		sum /= 3;
+		nr = ng = nb = (uint8_t)sum;
+		
+		// L-shift the blue component to tint the image.
+		nb <<= 1;
+		if (nb > 0x1F)
+			nb = 0x1F;
+		
+		// Mask off the LSB.
+		nr &= 0x1E;
+		ng &= 0x1E;
+		nb &= 0x1E;
+		
+		// Put the new pixel.
+		*pos++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
 	}
 }
 
