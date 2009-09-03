@@ -91,7 +91,8 @@ static GtkWidget	*chkOSD_DoubleSized[2];
 static GtkWidget	*chkOSD_Transparency[2];
 static GtkWidget	*optOSD_Color[2][4];
 
-// Widgets: Intro Effect Color.
+// Widgets: Intro Effect.
+static GtkWidget	*cboIntroEffect;
 static GtkWidget	*optIntroEffectColor[8];
 
 // Widgets: Miscellaneous settings.
@@ -444,19 +445,40 @@ static void genopt_window_create_misc_settings_frame(GtkWidget *container)
 	g_signal_connect(GTK_OBJECT(chkMisc_PauseTint), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
-	// VBox for intro effect color
-	GtkWidget *vboxIntroEffectColor = gtk_vbox_new(false, 0);
-	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffectColor), 8);
-	gtk_widget_show(vboxIntroEffectColor);
-	gtk_container_add(GTK_CONTAINER(vboxMisc), vboxIntroEffectColor);
+	// VBox for intro effect.
+	GtkWidget *vboxIntroEffect = gtk_vbox_new(false, 4);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffect), 8);
+	gtk_widget_show(vboxIntroEffect);
+	gtk_container_add(GTK_CONTAINER(vboxMisc), vboxIntroEffect);
+	
+	// Label for intro effect.
+	GtkWidget *lblIntroEffect = gtk_label_new("Intro Effect:");
+	gtk_widget_show(lblIntroEffect);
+	gtk_box_pack_start(GTK_BOX(vboxIntroEffect), lblIntroEffect, false, false, 0);
+	
+	// Dropdown for intro effect.
+	cboIntroEffect = gtk_combo_box_new_text();
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboIntroEffect), "None");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboIntroEffect), "Gens Logo Effect");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboIntroEffect), "\"Crazy\" Effect");
+	//gtk_combo_box_append_text(GTK_COMBO_BOX(cboIntroEffect), "Genesis TMSS"); // TODO: Broken.
+	gtk_widget_show(cboIntroEffect);
+	gtk_box_pack_start(GTK_BOX(vboxIntroEffect), cboIntroEffect, false, false, 0);
+	g_signal_connect((gpointer)(cboIntroEffect), "changed",
+			  G_CALLBACK(genopt_window_callback_widget_changed), NULL);
+	
+	// Spacing.
+	GtkWidget *spacer = gtk_alignment_new(0, 0, 0, 0);
+	gtk_widget_show(spacer);
+	gtk_box_pack_start(GTK_BOX(vboxIntroEffect), spacer, false, false, 2);
 	
 	// Label for intro effect color
 	GtkWidget *lblIntroEffectColor = gtk_label_new("Intro Effect Color:");
 	gtk_widget_show(lblIntroEffectColor);
-	gtk_box_pack_start(GTK_BOX(vboxIntroEffectColor), lblIntroEffectColor, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(vboxIntroEffect), lblIntroEffectColor, false, false, 0);
 	
 	// Color Radio Buttons for intro effect color
-	genopt_window_create_color_radio_buttons(vboxIntroEffectColor, NULL, genopt_colors_IntroEffect, 0);
+	genopt_window_create_color_radio_buttons(vboxIntroEffect, NULL, genopt_colors_IntroEffect, 0);
 }
 
 
@@ -505,7 +527,10 @@ static void genopt_window_init(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1]), (curMsgStyle & 0x08));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][(curMsgStyle & 0x06) >> 1]), true);
 	
-	// Intro effect color
+	// Intro effect.
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboIntroEffect), Intro_Style);
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboIntroEffect)) == -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(cboIntroEffect), 0);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[vdraw_get_intro_effect_color()]), true);
 	
 	// Disable the "Apply" button initially.
@@ -538,7 +563,7 @@ static void genopt_window_save(void)
 	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0])) ? 0x08 : 0x00);
 	
 	// FPS counter color
-	for (unsigned char i = 0; i < 4; i++)
+	for (unsigned int i = 0; i < 4; i++)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][i])))
 		{
@@ -558,7 +583,7 @@ static void genopt_window_save(void)
 	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1])) ? 0x08 : 0x00);
 	
 	// Message color
-	for (unsigned char i = 0; i < 4; i++)
+	for (unsigned int i = 0; i < 4; i++)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][i])))
 		{
@@ -570,8 +595,12 @@ static void genopt_window_save(void)
 	
 	vdraw_set_msg_style(curMsgStyle);
 	
-	// Intro effect color
-	for (unsigned char i = 0; i < 8; i++)
+	// Intro effect.
+	Intro_Style = gtk_combo_box_get_active(GTK_COMBO_BOX(cboIntroEffect));
+	if (Intro_Style < 0)
+		Intro_Style = 0;
+	
+	for (unsigned int i = 0; i < 8; i++)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[i])))
 		{
