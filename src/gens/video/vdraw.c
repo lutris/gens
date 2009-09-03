@@ -329,7 +329,7 @@ int vdraw_flip(int md_screen_updated)
 			switch (Intro_Style)
 			{
 				case 1:
-					// Gens logo effect. (TODO: This is broken!)
+					// Gens Logo effect.
 					Update_Gens_Logo();
 					break;
 				case 2:

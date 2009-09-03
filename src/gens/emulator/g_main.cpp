@@ -478,16 +478,17 @@ void GensMainLoop(void)
 			if (audio_get_gym_playing())
 			{
 				// PLAY GYM
+				// TODO: Does this even do anything?
 				gym_play();
 			}
 			else if (Intro_Style == 1)
 			{
-				// Gens logo effect. (TODO: This is broken!)
+				// Gens Logo effect.
 				GensUI::sleep(5);
 			}
 			else if (Intro_Style == 2)
 			{
-				// "Strange" effect. (TODO: This is broken!)
+				// "Strange" effect.
 				GensUI::sleep(10);
 			}
 			else if (Intro_Style == 3)
