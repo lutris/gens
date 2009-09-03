@@ -331,7 +331,9 @@ void Update_Crazy_Effect(int introEffectColor)
  * @param rInfo Rendering information.
  * @param scale Scaling value.
  */
-template<typename pixel, pixel *mdScreen, pixel RMask, pixel GMask, pixel BMask, uint8_t RShift, uint8_t GShift, uint8_t BShift>
+template<typename pixel, pixel *mdScreen,
+	 pixel RMask, pixel GMask, pixel BMask,
+	 unsigned int RShift, unsigned int GShift, unsigned int BShift>
 static void T_veffect_pause_tint(void)
 {
 	uint8_t r, g, b, nr, ng, nb;
@@ -383,13 +385,13 @@ void veffect_pause_tint(void)
 		case 16:
 			// 16-bit color.
 			T_veffect_pause_tint<uint16_t, MD_Screen,
-					     (uint16_t)0xF800, (uint16_t)0x07C0, (uint32_t)0x001F,
+					     (uint16_t)0xF800, (uint16_t)0x07C0, (uint16_t)0x001F,
 					     11, 6, 0>();
 			break;
 		case 15:
 			// 15-bit color.
 			T_veffect_pause_tint<uint16_t, MD_Screen,
-					     (uint16_t)0x7C00, (uint16_t)0x03E0, (uint32_t)0x001F,
+					     (uint16_t)0x7C00, (uint16_t)0x03E0, (uint16_t)0x001F,
 					     10, 5, 0>();
 	}
 	
