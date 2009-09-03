@@ -222,6 +222,14 @@ template<typename pixel, pixel Rmask, pixel Gmask, pixel Bmask,
 		  pixel Radd, pixel Gadd, pixel Badd>
 static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
 {
+	if (introEffectColor == 0)
+	{
+		// Intro effect color is black.
+		// Simply clear the screen.
+		memset(screen, 0x00, 336*240*sizeof(pixel));
+		return;
+	}
+	
 	const pixel RBmask = (Rmask | Bmask);
 	int r = 0, g = 0, b = 0;
 	pixel RB, G;
