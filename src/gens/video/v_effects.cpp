@@ -226,14 +226,11 @@ static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
 	int r = 0, g = 0, b = 0;
 	pixel RB, G;
 	
-	pixel *pix = &screen[(336 * VDP_Num_Vis_Lines) - 8 - 1];
+	pixel *pix = &screen[336*240 - 1];
 	pixel *prev_l = pix - 336;
 	pixel *prev_p = pix - 1;
-	const int w = (isFullXRes() ? 320 : 256);
-	const int w_diff = (336 - w);
-	int px_num = w;
 	
-	for (unsigned int i = (w * VDP_Num_Vis_Lines); i != 0; i--)
+	for (unsigned int i = 336*240; i != 0; i--)
 	{
 		pixel pl, pp;
 		pl = (prev_l >= screen ? *prev_l : 0);
@@ -284,19 +281,6 @@ static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
 		prev_l--;
 		prev_p--;
 		pix--;
-		
-		px_num--;
-		if (px_num == 1)
-		{
-			prev_p -= w_diff;
-		}
-		else if (px_num == 0)
-		{
-			// Skip the non-visible area of the MD screen.
-			prev_l -= w_diff;
-			pix -= w_diff;
-			px_num = w;
-		}
 	}
 }
 
