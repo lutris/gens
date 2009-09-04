@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) Main Window - Callback Functions.                          *
+ * Gens: (Haiku) Main Window - Callback Functions.                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
