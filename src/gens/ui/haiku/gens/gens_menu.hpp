@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) Zip File Selection Dialog.                                *
+ * Gens: (Haiku) Main Window. (Menu Handling Code)                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,23 +21,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zipsel_dialog.h"
-#include "gens/gens_window.h"
+#ifndef GENS_HAIKU_MENU_HPP
+#define GENS_HAIKU_MENU_HPP
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
+#include "ui/common/gens/gens_menu.h"
+#include <InterfaceKit.h>
 
-#include "macros/unused.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+extern int gens_menu_do_callbacks;
 
-/**
- * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
- */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
-{
-	return z_list;
+#ifdef __cplusplus
 }
+#endif
 
+#ifdef __cplusplus
+
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "libgsft/gsft_hashtable.hpp"
+#include <utility>
+typedef GSFT_HASHTABLE<uint16_t, BMenuItem *> gensMenuMap_t;
+typedef std::pair<uint16_t, BMenuItem *> gensMenuMapItem_t;
+
+extern gensMenuMap_t gens_menu_map;
+
+#endif /* __cplusplus */
+
+#endif /* GENS_HAIKU_MENU_HPP */

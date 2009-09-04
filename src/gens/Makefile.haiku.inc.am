@@ -23,7 +23,10 @@ gens_SOURCES += \
 # UI sources.
 gens_SOURCES += \
 		ui/haiku/gens_ui_haiku.cpp \
+		ui/haiku/gens/gens_window.cpp \
+		ui/haiku/gens/gens_window_callbacks.cpp \
 		ui/haiku/gens/gens_window_sync.cpp \
+		ui/haiku/gens/gens_menu.cpp \
 		ui/haiku/controller_config/cc_window.cpp \
 		ui/haiku/bios_misc_files/bmf_window.cpp \
 		ui/haiku/directory_config/dir_window.cpp \

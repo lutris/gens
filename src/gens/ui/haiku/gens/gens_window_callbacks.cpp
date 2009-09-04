@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (Haiku) Zip File Selection Dialog.                                *
+ * Gens: (GTK+) Main Window - Callback Functions.                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008 by David Korth                                       *
  * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -21,23 +21,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zipsel_dialog.h"
-#include "gens/gens_window.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
+#include "emulator/g_main.hpp"
+#include "gens_window_callbacks.hpp"
+#include "gens_window_sync.hpp"
 
+#include "util/file/rom.hpp"
+
+#include "ui/gens_ui.hpp"
+
+// Unued Parameter macro.
 #include "macros/unused.h"
 
+// File management functions.
+#include "util/file/file.hpp"
 
-/**
- * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
- */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
-{
-	return z_list;
-}
+// Audio Handler.
+#include "audio/audio.h"
+
+// C++ includes
+#include <string>
+using std::string;
 

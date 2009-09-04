@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) Zip File Selection Dialog.                                *
+ * Gens: (Haiku) Main Window.                                              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,23 +21,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zipsel_dialog.h"
-#include "gens/gens_window.h"
+#include "gens_window.h"
+#include "gens_window_callbacks.hpp"
+#include "gens_window_sync.hpp"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
+#include "emulator/g_main.hpp"
 
-#include "macros/unused.h"
+// Menus.
+#include "gens_menu.hpp"
+#include "ui/common/gens/gens_menu.h"
 
+// Message logging.
+#include "macros/log_msg.h"
 
 /**
- * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
+ * gens_window_create(): Create the Gens window.
  */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
+void gens_window_create(void)
 {
-	return z_list;
 }
 

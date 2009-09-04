@@ -114,7 +114,7 @@ int Update_Gens_Logo(void)
 		
 		// TODO: Don't use SDL for image loading.
 		// TODO: Fix this for Win32.
-#ifndef GENS_OS_WIN32
+#ifdef GENS_OS_UNIX
 		SDL_Surface *logo_load = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
 		if (!logo_load)
 			return 1;
@@ -190,7 +190,7 @@ int Update_Gens_Logo(void)
 		SDL_FreeSurface(logo_use);
 		
 		lastBpp = bppMD;
-#else
+#elif defined(GENS_OS_WIN32)
 		// TODO: Get the image dimensions from the bitmap.
 		int logo_size = (260 * 180) * (bppMD == 15 ? 2 : bppMD / 8);
 		logo_data = malloc(logo_size);

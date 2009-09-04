@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Parse command line arguments.
-	parse_args(argc, argv);
+	Gens_StartupInfo_t *startup = parse_args(argc, argv);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
@@ -165,7 +165,8 @@ int main(int argc, char *argv[])
 	}
 	
 	// Check the startup mode.
-	check_startup_mode(&StartupInfo);
+	check_startup_mode(startup);
+	free(startup);
 	
 	// Update the UI.
 	GensUI::update();
@@ -177,7 +178,6 @@ int main(int argc, char *argv[])
 	Sync_Gens_Window();
 	
 	// Show the Gens window.
-	//gtk_widget_show(gens_window);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();

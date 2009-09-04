@@ -1,10 +1,9 @@
 /***************************************************************************
- * Gens: (Haiku) Zip File Selection Dialog.                                *
+ * Gens: (GTK+) Main Window. (Menu Handling Code)                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
- * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,23 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zipsel_dialog.h"
-#include "gens/gens_window.h"
+#include "gens_menu.hpp"
+#include "ui/common/gens/gens_menu_callbacks.hpp"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+// Message logging.
+#include "macros/log_msg.h"
+
+// C includes.
+#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
-#include "macros/unused.h"
+// C++ includes.
+#include <string>
+using std::string;
 
+// Set to 0 to temporarily disable menu callbacks.
+int gens_menu_do_callbacks = 1;
 
-/**
- * zipsel_dialog_get_file(): Get a file using the Zip Select dialog.
- */
-mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
-{
-	return z_list;
-}
+// Hash table containing all the menu items.
+// Key is the menu ID.
+gensMenuMap_t gens_menu_map;
 
