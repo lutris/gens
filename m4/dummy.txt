@@ -1,0 +1,1 @@
+This is a dummy file to ensure that git creates the m4/ directory.
