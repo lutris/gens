@@ -225,10 +225,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	audio_clear_sound_buffer();
 	
 	// Save the configuration file.
-	char save_path[GENS_PATH_MAX];
-	get_default_save_path(save_path, sizeof(save_path));
-	strcat(save_path, "gens.cfg");
-	Config::save(save_path);
+#ifndef PACKAGE
+#error PACKAGE not defined!
+#endif
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE + ".cfg";
+	Config::save(cfg_filename);
 	
 	End_All();
 	ChangeDisplaySettings(NULL, 0);

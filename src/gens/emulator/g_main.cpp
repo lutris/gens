@@ -187,12 +187,8 @@ int Init_Settings(void)
 	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
 	
 	// Create default language filename.
-	strncpy(PathNames.Language_Path, PathNames.Gens_Path, GENS_PATH_MAX);
+	strncpy(PathNames.Language_Path, PathNames.Gens_Path, sizeof(PathNames.Language_Path));
 	strcat(PathNames.Language_Path, "language.dat");
-	
-	// Create default configuration filename.
-	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
-	strcat(Str_Tmp, "gens.cfg");
 	
 	// Get the CPU flags.
 	getCPUFlags();
@@ -212,7 +208,11 @@ int Init_Settings(void)
 	rendMode_W = RenderMgr::begin();
 	
 	// Load the default configuration.
-	Config::load(Str_Tmp, NULL);
+#ifndef PACKAGE
+#error PACKAGE not defined!
+#endif
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE + ".cfg";
+	Config::load(cfg_filename, NULL);
 	
 	// Success.
 	return 0;
