@@ -823,20 +823,33 @@ unsigned int ROM::loadROM(const string& filename,
  */
 unsigned short ROM::calcChecksum(void)
 {
-	unsigned short checksum = 0;
-	unsigned int i;
+	uint16_t checksum = 0;
 	
 	// A game needs to be loaded in order for this function to work...
 	if (!Game)
 		return 0;
 	
 	// Checksum starts at 0x200, past the vector table and ROM header.
-	for (i = 0x200; i < Rom_Size; i += 2)
+	uint8_t *Rom_Ptr = &Rom_Data[0x200];
+	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
-		// Remember, since the MC68000 is little-endian, we can't
-		// just cast Rom_Data[i] to an unsigned short directly.
-		checksum += (unsigned short)(Rom_Data[i + 0]) +
-			    (unsigned short)(Rom_Data[i + 1] << 8);
+		// ROM is byteswapped. (little-endian)
+		for (unsigned int i = (Rom_Size - 0x200); i != 0; i--)
+		{
+			checksum += (uint16_t)(*Rom_Ptr) |
+				    ((uint16_t)(*(Rom_Ptr + 1)) << 8);
+			Rom_Ptr += 2;
+		}
+	}
+	else
+	{
+		// ROM is not byteswapped. (big-endian)
+		for (unsigned int i = (Rom_Size - 0x200); i != 0; i--)
+		{
+			checksum += ((uint16_t)(*Rom_Ptr) << 8) |
+				    (uint16_t)(*(Rom_Ptr + 1));
+			Rom_Ptr += 2;
+		}
 	}
 	
 	return checksum;
@@ -848,26 +861,41 @@ unsigned short ROM::calcChecksum(void)
  */
 void ROM::fixChecksum(void)
 {
-	unsigned short checks;
-	
-	if (!Game)
+	if (!Game || !Rom_Size)
 		return;
 	
 	// Get the checksum.
-	checks = calcChecksum();
+	uint16_t checksum = calcChecksum();
 	
-	if (Rom_Size)
+	// MC68000 checksum.
+	// MC68000 is big-endian.
+	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
-		// MC68000 checksum.
-		// MC68000 is big-endian.
-		Rom_Data[0x18E] = checks & 0xFF;
-		Rom_Data[0x18F] = checks >> 8;
-		
-		// SH2 checksum.
-		// SH2 is little-endian.
-		// TODO: Only do this if the 32X is active.
-		_32X_Rom[0x18E] = checks >> 8;;
-		_32X_Rom[0x18F] = checks & 0xFF;
+		// ROM is byteswapped. (little-endian)
+		Rom_Data[0x18E] = (checksum & 0xFF);
+		Rom_Data[0x18F] = (checksum >> 8);
+	}
+	else
+	{
+		// ROM is not byteswapped. (big-endian)
+		Rom_Data[0x18E] = (checksum >> 8);
+		Rom_Data[0x18F] = (checksum & 0xFF);
+	}
+	
+	// SH2 checksum.
+	// SH2 is little-endian.
+	// TODO: Only do this if the 32X is active.
+	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_32X_ROM)
+	{
+		// ROM is byteswapped. (big-endian)
+		_32X_Rom[0x18E] = (checksum >> 8);
+		_32X_Rom[0x18F] = (checksum & 0xFF);
+	}
+	else
+	{
+		// ROM is not byteswapped. (little-endian)
+		_32X_Rom[0x18E] = (checksum & 0xFF);
+		_32X_Rom[0x18F] = (checksum >> 8);
 	}
 }
 
