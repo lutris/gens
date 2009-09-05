@@ -335,6 +335,7 @@ static void dir_window_save(void)
 			// Internal directory.
 			char *entry = dir_window_entries[vectDirs[dir].id].entry;
 			
+			// Get the entry text.
 			strncpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
 				GENS_PATH_MAX);
 			
