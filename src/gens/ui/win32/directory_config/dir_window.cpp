@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Directory Configuration Window.                            *
+ * Gens: (Win32) Directory Configuration Window.                           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -83,20 +83,21 @@ static WNDCLASS dir_wndclass;
 static int	dir_window_height;
 
 // Widgets.
-static HWND	txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
 static HWND	btnOK, btnCancel, btnApply;
 #define IDC_DIR_DIRECTORY 0x1200
 
-// Plugin directory widgets.
+// Directory widgets.
 typedef struct _dir_plugin_t
 {
 	HWND	txt;
-	int	id;	// 0x00 - 0x7F: internal; 0x80 - 0xFF: plugins
-} dir_plugin_t;
-static vector<dir_plugin_t> vectPluginDirs;
+	string	title;
+	bool	is_plugin;
+	int	id;
+} dir_widget_t;
+static vector<dir_widget_t> vectDirs;
 
 // Command value bases.
-#define IDC_DIR_BTNCHANGE	0x1100
+#define IDC_DIR_BTNCHANGE	0x8000
 
 // Window procedure.
 static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -170,15 +171,25 @@ static void dir_window_create_child_windows(HWND hWnd)
 					    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(fraInternalDirs, fntMain, TRUE);
 	
+	// Initialize the directory widget vector.
+	vectDirs.clear();
+	vectDirs.reserve(DIR_WINDOW_ENTRIES_COUNT + PluginMgr::lstDirectories.size());
+	
 	// Create all internal directory entry widgets.
 	int curTop = 8+20-24;
+	dir_widget_t dir_widget;
+	dir_widget.is_plugin = false;
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		curTop += 24;
 		
-		txtInternalDir[dir] = dir_window_create_dir_widgets(
-						dir_window_entries[dir].title,
-						hWnd, curTop, dir);
+		dir_widget.id = dir;
+		dir_widget.title = string(dir_window_entries[dir].title);
+		
+		dir_widget.txt = dir_window_create_dir_widgets(
+					dir_window_entries[dir].title,
+					hWnd, curTop, vectDirs.size());
+		vectDirs.push_back(dir_widget);
 	}
 	
 	// If any plugin directories exist, create the plugin directory entry frame.
@@ -194,24 +205,22 @@ static void dir_window_create_child_windows(HWND hWnd)
 		SetWindowFont(fraPluginDirs, fntMain, TRUE);
 		
 		// Create all plugin directory entry widgets.
-		vectPluginDirs.clear();
-		vectPluginDirs.reserve(PluginMgr::lstDirectories.size());
-		dir_plugin_t dir_plugin;
 		int dir = 0x10;
 		curTop += 8+16+8;
+		dir_widget.is_plugin = true;
 		
 		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
 		{
-			if (dir >= 0x100)
-				break;
-			
 			curTop += 24;
 			
-			dir_plugin.txt = dir_window_create_dir_widgets((*iter).name.c_str(), hWnd, curTop, dir);
-			dir_plugin.id = (*iter).id;
+			dir_widget.id = (*iter).id;
+			dir_widget.title = (*iter).name;
 			
-			vectPluginDirs.push_back(dir_plugin);
+			dir_widget.txt = dir_window_create_dir_widgets(
+						(*iter).name.c_str(),
+						hWnd, curTop, vectDirs.size());			
+			vectDirs.push_back(dir_widget);
 		}
 	}
 	
@@ -276,7 +285,7 @@ static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container, int y, 
 					   WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
 					   8+8+72+8, y,
 					   DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
-					   container, (HMENU)(IDC_DIR_DIRECTORY + id), ghInstance, NULL);
+					   container, (HMENU)(IDC_DIR_DIRECTORY), ghInstance, NULL);
 	SetWindowFont(txtDirectory, fntMain, TRUE);
 	
 	// Create the "Change" button for the directory.
@@ -311,31 +320,34 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
-	// Internal directories.
-	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
-	{
-		Edit_SetText(txtInternalDir[dir], dir_window_entries[dir].entry);
-	}
-	
-	// Plugin directories.
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (vector<dir_plugin_t>::iterator iter = vectPluginDirs.begin();
-	     iter != vectPluginDirs.end(); iter++)
+	// Internal directories.
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
-		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
-		if (dirIter == PluginMgr::tblDirectories.end())
-			continue;
-		
-		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdpDir_t& dir = *lstDirIter;
-		
-		// Get the directory.
-		if (dir.get((*iter).id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+		if (!vectDirs[dir].is_plugin)
 		{
-			// Directory retrieved.
-			// TODO: If the path is relative to the Gens directory, shorten it.
-			Edit_SetText((*iter).txt, dir_buf);
+			// Internal directory.
+			Edit_SetText(vectDirs[dir].txt,
+				     dir_window_entries[vectDirs[dir].id].entry);
+		}
+		else
+		{
+			// Plugin directory.
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
+			if (dirIter == PluginMgr::tblDirectories.end())
+				continue;
+			
+			list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+			const mdpDir_t& mdpDir = *lstDirIter;
+			
+			// Get the directory.
+			if (mdpDir.get(vectDirs[dir].id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+			{
+				// Directory retrieved.
+				// TODO: If the path is relative to the Gens directory, shorten it.
+				Edit_SetText(vectDirs[dir].txt, dir_buf);
+			}
 		}
 	}
 	
@@ -349,69 +361,66 @@ static void dir_window_init(void)
 static void dir_window_save(void)
 {
 	size_t len;
-	
-	// Internal directories.
-	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
-	{
-		// Get the entry text.
-		Edit_GetText(txtInternalDir[dir], dir_window_entries[dir].entry, GENS_PATH_MAX);
-		
-		// Make sure the entry is null-terminated.
-		dir_window_entries[dir].entry[GENS_PATH_MAX - 1] = 0x00;
-		
-		// Make sure the end of the directory has a slash.
-		// TODO: Do this in functions that use pathnames.
-		len = strlen(dir_window_entries[dir].entry);
-		if (len > 0 && dir_window_entries[dir].entry[len - 1] != GENS_DIR_SEPARATOR_CHR)
-		{
-			// String needs to be less than 1 minus the max path length
-			// in order to be able to append the directory separator.
-			if (len < (GENS_PATH_MAX - 1))
-			{
-				dir_window_entries[dir].entry[len] = GENS_DIR_SEPARATOR_CHR;
-				dir_window_entries[dir].entry[len + 1] = 0x00;
-			}
-		}
-	}
-	
-	// Plugin directories.
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (vector<dir_plugin_t>::iterator iter = vectPluginDirs.begin();
-	     iter != vectPluginDirs.end(); iter++)
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
-		// Get the entry text.
-		Edit_GetText((*iter).txt, dir_buf, sizeof(dir_buf));
-		
-		// Make sure the entry is null-terminated.
-		dir_buf[GENS_PATH_MAX - 1] = 0x00;
-		
-		// Make sure the end of the directory has a slash.
-		// TODO: Do this in functions that use pathnames.
-		len = strlen(dir_buf);
-		if (len > 0 && dir_buf[len - 1] != GENS_DIR_SEPARATOR_CHR)
+		if (!vectDirs[dir].is_plugin)
 		{
-			// String needs to be less than 1 minus the max path length
-			// in order to be able to append the directory separator.
-			if (len < (GENS_PATH_MAX - 1))
+			// Internal directory.
+			char *entry = dir_window_entries[vectDirs[dir].id].entry;
+			
+			// Get the entry text.
+			Edit_GetText(vectDirs[dir].txt, entry, GENS_PATH_MAX);
+			
+			// Make sure the end of the directory has a slash.
+			// TODO: Do this in functions that use pathnames.
+			len = strlen(entry);
+			if (len > 0 && entry[len-1] != GENS_DIR_SEPARATOR_CHR)
 			{
-				dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
-				dir_buf[len + 1] = 0x00;
+				// String needs to be less than 1 minus the max path length
+				// in order to be able to append the directory separator.
+				if (len < (GENS_PATH_MAX-1))
+				{
+					entry[len] = GENS_DIR_SEPARATOR_CHR;
+					entry[len+1] = 0x00;
+				}
 			}
 		}
-		
-		// TODO: If the path is relative to the Gens directory, expand it.
-		
-		// Set the directory entry in the plugin.
-		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
-		if (dirIter == PluginMgr::tblDirectories.end())
-			continue;
-		
-		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdpDir_t& dir = *lstDirIter;
-		
-		// Set the directory.
-		dir.set((*iter).id, dir_buf);
+		else
+		{
+			// Plugin directory.
+			
+			// Get the entry text.
+			Edit_GetText(vectDirs[dir].txt, dir_buf, sizeof(dir_buf));
+			
+			// Make sure the entry is null-terminated.
+			dir_buf[sizeof(dir_buf)-1] = 0x00;
+			
+			// Make sure the end of the directory has a slash.
+			// TODO: Do this in functions that use pathnames.
+			len = strlen(dir_buf);
+			if (len > 0 && dir_buf[len-1] != GENS_DIR_SEPARATOR_CHR)
+			{
+				// String needs to be less than 1 minus the max path length
+				// in order to be able to append the directory separator.
+				if (len < (GENS_PATH_MAX-1))
+				{
+					dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
+					dir_buf[len+1] = 0x00;
+				}
+			}
+			
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
+			if (dirIter == PluginMgr::tblDirectories.end())
+				continue;
+			
+			list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+			const mdpDir_t& mdpDir = *lstDirIter;
+			
+			// Set the directory.
+			mdpDir.set(vectDirs[dir].id, dir_buf);
+		}
 	}
 	
 	// Disable the "Apply" button.
@@ -453,7 +462,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 					{
 						case IDC_DIR_BTNCHANGE:
 							// Change a directory.
-							dir_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
+							dir_window_callback_btnChange_clicked(LOWORD(wParam) & 0x7FFF);
 							break;
 						case IDC_DIR_DIRECTORY:
 							if (HIWORD(wParam) == EN_CHANGE)
@@ -489,31 +498,19 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	char cur_dir[GENS_PATH_MAX];
 	string new_dir;
 	
-	HWND txtDir;
-	LPCTSTR dir_title;
+	if (dir < 0 || dir >= vectDirs.size())
+		return;
 	
-	if (dir >= 0x10)
-	{
-		// Plugin directory.
-		txtDir = vectPluginDirs[dir - 0x10].txt;
-		dir_title = TEXT("TODO"); // TODO
-	}
-	else
-	{
-		// Internal directory.
-		txtDir = txtInternalDir[dir];
-		dir_title = dir_window_entries[dir].title;
-	}
+	dir_widget_t *dir_widget = &vectDirs[dir];
 	
 	// Get the currently entered directory.
-	Edit_GetText(txtDir, cur_dir, GENS_PATH_MAX);
-	cur_dir[GENS_PATH_MAX - 1] = 0x00;
+	Edit_GetText(dir_widget->txt, cur_dir, sizeof(cur_dir));
+	cur_dir[sizeof(cur_dir)-1] = 0x00;
 	
 	// Set the title of the window.
-	TCHAR tmp[128];
-	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-		   TEXT("Select %s Directory"), dir_title);
-	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
+	char tmp[128];
+	snprintf(tmp, sizeof(tmp), "Select %s Directory", dir_widget->title.c_str());
+	tmp[sizeof(tmp)-1] = 0x00;
 	
 	// Request a new directory.
 	new_dir = GensUI::selectDir(tmp, cur_dir, dir_window);
@@ -522,8 +519,12 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	if (new_dir.empty())
 		return;
 	
+	// Make sure the end of the directory has a slash.
+	if (new_dir.at(new_dir.length() - 1) != GENS_DIR_SEPARATOR_CHR)
+		new_dir += GENS_DIR_SEPARATOR_CHR;
+	
 	// Set the new directory.
-	SetWindowText(txtDir, new_dir.c_str());
+	SetWindowText(dir_widget->txt, new_dir.c_str());
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, true);
