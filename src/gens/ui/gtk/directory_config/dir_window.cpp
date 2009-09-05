@@ -457,7 +457,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 {
 	GENS_UNUSED_PARAMETER(button);
 	
-	if (GPOINTER_TO_INT(user_data) >= vectDirs.size())
+	if (GPOINTER_TO_INT(user_data) < 0 || GPOINTER_TO_INT(user_data) >= vectDirs.size())
 		return;
 	
 	dir_widget_t *dir_widget = &vectDirs[GPOINTER_TO_INT(user_data)];
