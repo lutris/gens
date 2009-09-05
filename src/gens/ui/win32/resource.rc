@@ -120,14 +120,14 @@ BEGIN
 			//VALUE "Comments", "\0"
 			//VALUE "CompanyName", "\0"
 			VALUE "FileDescription", "Gens/GS " GENS_GS_VERSION
-			VALUE "FileVersion", Win32_RC_FileVersion
+			VALUE "FileVersion", "Gens/GS " Win32_RC_FileVersion
 			VALUE "InternalName", "Gens/GS\0"
 			//VALUE "LegalCopyright", "\0"
 			//VALUE "LegalTrademarks", "\0"
 			//VALUE "OriginalFilename", "\0"
 			//VALUE "PrivateBuild", "\0"
 			VALUE "ProductName", "Gens/GS\0"
-			VALUE "ProductVersion", Win32_RC_FileVersion
+			VALUE "ProductVersion", "Gens/GS " Win32_RC_FileVersion
 			//VALUE "SpecialBuild", "\0"
 		END
 	END
