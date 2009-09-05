@@ -87,7 +87,7 @@ static HWND	btnOK, btnCancel, btnApply;
 #define IDC_DIR_DIRECTORY 0x1200
 
 // Directory widgets.
-typedef struct _dir_plugin_t
+typedef struct _dir_widget_t
 {
 	HWND	txt;
 	string	title;
