@@ -144,9 +144,9 @@ void dir_window_show(void)
 	
 	// Create all internal directory entry widgets.
 	dir_widget_t dir_widget;
+	dir_widget.is_plugin = false;
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		dir_widget.is_plugin = false;
 		dir_widget.id = dir;
 		dir_widget.title = string(dir_window_entries[dir].title);
 		
@@ -175,11 +175,11 @@ void dir_window_show(void)
 		
 		// Create all plugin directory entry widgets.
 		unsigned int dir = 0;
+		dir_widget.is_plugin = true;
 		
 		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
 		{
-			dir_widget.is_plugin = true;
 			dir_widget.id = (*iter).id;
 			dir_widget.title = (*iter).name;
 			
