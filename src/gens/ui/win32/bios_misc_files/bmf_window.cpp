@@ -68,7 +68,7 @@ static WNDCLASS bmf_wndclass;
 #define BMF_WINDOW_WIDTH  392
 #define BMF_WINDOW_HEIGHT 360
 
-#define BMF_FRAME_WIDTH (BMF_WINDOW_WIDTH - 16)
+#define BMF_FRAME_WIDTH (BMF_WINDOW_WIDTH-16)
 
 // Widgets.
 static HWND	txtFile[12];
