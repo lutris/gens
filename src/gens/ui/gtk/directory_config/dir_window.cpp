@@ -467,7 +467,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	title[sizeof(title)-1] = 0x00;
 	
 	// Request a new directory.
-	string new_dir = GensUI::selectDir(title, gtk_entry_get_text(GTK_ENTRY(dir_widget->txt)));
+	string new_dir = GensUI::selectDir(title, gtk_entry_get_text(GTK_ENTRY(dir_widget->txt)), dir_window);
 	
 	// If "Cancel" was selected, don't do anything.
 	if (new_dir.empty())
