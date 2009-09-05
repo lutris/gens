@@ -71,7 +71,7 @@ typedef struct _dir_plugin_t
 	bool		is_plugin;
 	int		id;
 } dir_widget_t;
-static vector<dir_widget_t> vecDirs;
+static vector<dir_widget_t> vectDirs;
 
 // Widget creation functions.
 static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row, int dir_id);
@@ -139,8 +139,8 @@ void dir_window_show(void)
 	gtk_container_add(GTK_CONTAINER(fraInternalDirs), tblInternalDirs);
 	
 	// Initialize the directory widget vector.
-	vecDirs.clear();
-	vecDirs.reserve(DIR_WINDOW_ENTRIES_COUNT + PluginMgr::lstDirectories.size());
+	vectDirs.clear();
+	vectDirs.reserve(DIR_WINDOW_ENTRIES_COUNT + PluginMgr::lstDirectories.size());
 	
 	// Create all internal directory entry widgets.
 	dir_widget_t dir_widget;
@@ -152,8 +152,8 @@ void dir_window_show(void)
 		
 		dir_widget.txt = dir_window_create_dir_widgets(
 					dir_window_entries[dir].title,
-					tblInternalDirs, dir, vecDirs.size());
-		vecDirs.push_back(dir_widget);
+					tblInternalDirs, dir, vectDirs.size());
+		vectDirs.push_back(dir_widget);
 	}
 	
 	// If any plugin directories exist, create the plugin directory entry frame.
@@ -187,8 +187,8 @@ void dir_window_show(void)
 			
 			dir_widget.txt = dir_window_create_dir_widgets(
 						(*iter).name.c_str(),
-						tblPluginDirs, dir, vecDirs.size());
-			vecDirs.push_back(dir_widget);
+						tblPluginDirs, dir, vectDirs.size());
+			vectDirs.push_back(dir_widget);
 		}
 	}
 	
@@ -274,7 +274,7 @@ void dir_window_close(void)
 		return;
 	
 	// Clear the directory widget vector.
-	vecDirs.clear();
+	vectDirs.clear();
 	
 	// Destroy the window.
 	gtk_widget_destroy(dir_window);
@@ -289,18 +289,18 @@ static void dir_window_init(void)
 {
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (unsigned int dir = 0; dir < vecDirs.size(); dir++)
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
-		if (!vecDirs[dir].is_plugin)
+		if (!vectDirs[dir].is_plugin)
 		{
 			// Internal directory.
-			gtk_entry_set_text(GTK_ENTRY(vecDirs[dir].txt),
-					   dir_window_entries[vecDirs[dir].id].entry);
+			gtk_entry_set_text(GTK_ENTRY(vectDirs[dir].txt),
+					   dir_window_entries[vectDirs[dir].id].entry);
 		}
 		else
 		{
 			// Plugin directory.
-			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vecDirs[dir].id);
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
 			if (dirIter == PluginMgr::tblDirectories.end())
 				continue;
 			
@@ -308,10 +308,10 @@ static void dir_window_init(void)
 			const mdpDir_t& mdpDir = *lstDirIter;
 			
 			// Get the directory.
-			if (mdpDir.get(vecDirs[dir].id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+			if (mdpDir.get(vectDirs[dir].id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
 			{
 				// Directory retrieved.
-				gtk_entry_set_text(GTK_ENTRY(vecDirs[dir].txt), dir_buf);
+				gtk_entry_set_text(GTK_ENTRY(vectDirs[dir].txt), dir_buf);
 			}
 		}
 	}
@@ -328,14 +328,14 @@ static void dir_window_save(void)
 	size_t len;
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (unsigned int dir = 0; dir < vecDirs.size(); dir++)
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
-		if (!vecDirs[dir].is_plugin)
+		if (!vectDirs[dir].is_plugin)
 		{
 			// Internal directory.
-			char *entry = dir_window_entries[vecDirs[dir].id].entry;
+			char *entry = dir_window_entries[vectDirs[dir].id].entry;
 			
-			strncpy(entry, gtk_entry_get_text(GTK_ENTRY(vecDirs[dir].txt)),
+			strncpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
 				GENS_PATH_MAX);
 			
 			// Make sure the entry is null-terminated.
@@ -360,7 +360,7 @@ static void dir_window_save(void)
 			// Plugin directory.
 			
 			// Get the entry text.
-			strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vecDirs[dir].txt)), sizeof(dir_buf));
+			strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)), sizeof(dir_buf));
 			
 			// Make sure the entry is null-terminated.
 			dir_buf[sizeof(dir_buf)-1] = 0x00;
@@ -379,7 +379,7 @@ static void dir_window_save(void)
 				}
 			}
 			
-			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vecDirs[dir].id);
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
 			if (dirIter == PluginMgr::tblDirectories.end())
 				continue;
 			
@@ -387,7 +387,7 @@ static void dir_window_save(void)
 			const mdpDir_t& mdpDir = *lstDirIter;
 			
 			// Set the directory.
-			mdpDir.set(vecDirs[dir].id, dir_buf);
+			mdpDir.set(vectDirs[dir].id, dir_buf);
 		}
 	}
 	
@@ -456,10 +456,10 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 {
 	GENS_UNUSED_PARAMETER(button);
 	
-	if (GPOINTER_TO_INT(user_data) >= vecDirs.size())
+	if (GPOINTER_TO_INT(user_data) >= vectDirs.size())
 		return;
 	
-	dir_widget_t *dir_widget = &vecDirs[GPOINTER_TO_INT(user_data)];
+	dir_widget_t *dir_widget = &vectDirs[GPOINTER_TO_INT(user_data)];
 	
 	char title[128];
 	snprintf(title, sizeof(title), "Select %s Directory", dir_widget->title.c_str());
