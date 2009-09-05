@@ -67,13 +67,14 @@ static GtkWidget	*btnCancel, *btnApply, *btnSave;
 typedef struct _dir_plugin_t
 {
 	GtkWidget	*txt;
+	string		title;
 	bool		is_plugin;
 	int		id;
 } dir_widget_t;
 static vector<dir_widget_t> vecDirs;
 
 // Widget creation functions.
-static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row);
+static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row, int dir_id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -147,7 +148,9 @@ void dir_window_show(void)
 	{
 		dir_widget.is_plugin = false;
 		dir_widget.id = dir;
-		dir_widget.txt = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir);
+		dir_widget.title = string(dir_window_entries[dir].title);
+		
+		dir_widget.txt = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir, vecDirs.size());
 		vecDirs.push_back(dir_widget);
 	}
 	
@@ -178,9 +181,9 @@ void dir_window_show(void)
 		{
 			dir_widget.is_plugin = true;
 			dir_widget.id = (*iter).id;
+			dir_widget.title = (*iter).name;
 			
-			dir_widget.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
-			
+			dir_widget.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir, vecDirs.size());
 			vecDirs.push_back(dir_widget);
 		}
 	}
@@ -214,9 +217,10 @@ void dir_window_show(void)
  * @param title Title of the directory.
  * @param table Table to add the directory widgets to.
  * @param row Row of the table to add the directory widget to.
+ * @param dir_id Directory ID for the "Change..." callback function.
  * @return Textbox.
  */
-static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row)
+static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row, int dir_id)
 {
 	// Create tbe label for the directory.
 	GtkWidget *lblDirectory = gtk_label_new(title);
@@ -251,7 +255,7 @@ static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *ta
 	// Connect the "clicked" signal for the "Change" button.
 	g_signal_connect(GTK_OBJECT(btnChange), "clicked",
 			 G_CALLBACK(dir_window_callback_btnChange_clicked),
-			 txtDirectory);
+			 GINT_TO_POINTER(dir_id));
 	
 	return txtDirectory;
 }
@@ -442,20 +446,23 @@ static void dir_window_callback_response(GtkDialog *dialog, gint response_id, gp
 /**
  * dir_window_callback_btnChange_clicked(): A "Change" button was clicked.
  * @param button Button that was clicked.
- * @param user_data Textbox for this button.
+ * @param user_data Directory ID for this button.
  */
 static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(button);
-	if (!user_data)
+	
+	if (GPOINTER_TO_INT(user_data) >= vecDirs.size())
 		return;
 	
-	// TODO
-	//char tmp[64];
-	//sprintf(tmp, "Select %s Directory", dir_window_entries[dir].title);
+	dir_widget_t *dir_widget = &vecDirs[GPOINTER_TO_INT(user_data)];
+	
+	char title[128];
+	snprintf(title, sizeof(title), "Select %s Directory", dir_widget->title.c_str());
+	title[sizeof(title)-1] = 0x00;
 	
 	// Request a new directory.
-	string new_dir = GensUI::selectDir("Select Directory", gtk_entry_get_text(GTK_ENTRY(user_data)));
+	string new_dir = GensUI::selectDir(title, gtk_entry_get_text(GTK_ENTRY(dir_widget->txt)));
 	
 	// If "Cancel" was selected, don't do anything.
 	if (new_dir.empty())
@@ -466,7 +473,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 		new_dir += GENS_DIR_SEPARATOR_CHR;
 	
 	// Set the new directory.
-	gtk_entry_set_text(GTK_ENTRY(user_data), new_dir.c_str());
+	gtk_entry_set_text(GTK_ENTRY(dir_widget->txt), new_dir.c_str());
 }
 
 
