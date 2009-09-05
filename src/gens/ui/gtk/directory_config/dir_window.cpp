@@ -39,11 +39,11 @@
 
 // C++ includes.
 #include <string>
-#include <list>
 #include <vector>
+#include <list>
 using std::string;
-using std::list;
 using std::vector;
+using std::list;
 
 // GTK+ includes.
 #include <gtk/gtk.h>
