@@ -521,11 +521,11 @@ int Config::load(const string& filename, void* gameActive)
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
-	bppOut = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 32));
+	bppOut = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 16));
 	if (bppOut != 15 && bppOut != 16 && bppOut != 32)
 	{
-		// Invalid bpp. Set it to 32 by default.
-		bppOut = 32;
+		// Invalid bpp. Set it to 16 by default.
+		bppOut = 16;
 	}
 	bppMD = bppOut;
 #endif /* GENS_OS_WIN32 */
