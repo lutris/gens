@@ -150,7 +150,9 @@ void dir_window_show(void)
 		dir_widget.id = dir;
 		dir_widget.title = string(dir_window_entries[dir].title);
 		
-		dir_widget.txt = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir, vecDirs.size());
+		dir_widget.txt = dir_window_create_dir_widgets(
+					dir_window_entries[dir].title,
+					tblInternalDirs, dir, vecDirs.size());
 		vecDirs.push_back(dir_widget);
 	}
 	
@@ -183,7 +185,9 @@ void dir_window_show(void)
 			dir_widget.id = (*iter).id;
 			dir_widget.title = (*iter).name;
 			
-			dir_widget.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir, vecDirs.size());
+			dir_widget.txt = dir_window_create_dir_widgets(
+						(*iter).name.c_str(),
+						tblPluginDirs, dir, vecDirs.size());
 			vecDirs.push_back(dir_widget);
 		}
 	}
