@@ -128,7 +128,7 @@ int Config::save(const string& filename)
 	cfg.writeString("Directories", "BRAM Path", BRAM_Dir);
 	cfg.writeString("Directories", "Dump WAV Path", PathNames.Dump_WAV_Dir);
 	cfg.writeString("Directories", "Dump GYM Path", PathNames.Dump_GYM_Dir);
-	cfg.writeString("Directories", "Screen Shot Path", PathNames.Screenshot_Dir);
+	cfg.writeString("Directories", "Screenshot Path", PathNames.Screenshot_Dir);
 	
 	// Plugin directories.
 	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
@@ -416,7 +416,7 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("Directories", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
 	cfg.getString("Directories", "Dump WAV Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
 	cfg.getString("Directories", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
-	cfg.getString("Directories", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
+	cfg.getString("Directories", "Screenshot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
 	
 	// Plugin directories.
 	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();

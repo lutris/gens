@@ -267,7 +267,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 			   IDM_GRAPHICS_FRAMESKIP_AUTO + (Frame_Skip + 1),
 			   MF_BYCOMMAND);
 	
-	// Screen Shot
+	// Screenshot
 	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
 		      MF_BYCOMMAND | ((Game != NULL) ? MF_ENABLED : MF_GRAYED));
 }

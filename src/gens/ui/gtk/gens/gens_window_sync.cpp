@@ -267,7 +267,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
 	
-	// Screen Shot
+	// Screenshot
 	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
 	
 	// Backend
