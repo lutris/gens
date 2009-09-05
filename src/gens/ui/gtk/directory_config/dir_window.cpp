@@ -40,8 +40,10 @@
 // C++ includes.
 #include <string>
 #include <list>
+#include <vector>
 using std::string;
 using std::list;
+using std::vector;
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -59,16 +61,16 @@ using std::list;
 GtkWidget *dir_window = NULL;
 
 // Widgets.
-static GtkWidget	*txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
 static GtkWidget	*btnCancel, *btnApply, *btnSave;
 
-// Plugin directory widgets.
+// Directory widgets.
 typedef struct _dir_plugin_t
 {
 	GtkWidget	*txt;
+	bool		is_plugin;
 	int		id;
-} dir_plugin_t;
-static list<dir_plugin_t> lstPluginDirs;
+} dir_widget_t;
+static vector<dir_widget_t> vecDirs;
 
 // Widget creation functions.
 static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row);
@@ -135,10 +137,18 @@ void dir_window_show(void)
 	gtk_widget_show(tblInternalDirs);
 	gtk_container_add(GTK_CONTAINER(fraInternalDirs), tblInternalDirs);
 	
+	// Initialize the directory widget vector.
+	vecDirs.clear();
+	vecDirs.reserve(DIR_WINDOW_ENTRIES_COUNT + PluginMgr::lstDirectories.size());
+	
 	// Create all internal directory entry widgets.
+	dir_widget_t dir_widget;
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		txtInternalDir[dir] = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir);
+		dir_widget.is_plugin = false;
+		dir_widget.id = dir;
+		dir_widget.txt = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir);
+		vecDirs.push_back(dir_widget);
 	}
 	
 	// If any plugin directories exist, create the plugin directory entry frame.
@@ -161,17 +171,17 @@ void dir_window_show(void)
 		gtk_container_add(GTK_CONTAINER(fraPluginDirs), tblPluginDirs);
 		
 		// Create all plugin directory entry widgets.
-		lstPluginDirs.clear();
-		dir_plugin_t dir_plugin;
-		int dir = 0;
+		unsigned int dir = 0;
 		
 		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
 		{
-			dir_plugin.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
-			dir_plugin.id = (*iter).id;
+			dir_widget.is_plugin = true;
+			dir_widget.id = (*iter).id;
 			
-			lstPluginDirs.push_back(dir_plugin);
+			dir_widget.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
+			
+			vecDirs.push_back(dir_widget);
 		}
 	}
 	
@@ -255,8 +265,8 @@ void dir_window_close(void)
 	if (!dir_window)
 		return;
 	
-	// Clear the plugin directory widget list.
-	lstPluginDirs.clear();
+	// Clear the directory widget vector.
+	vecDirs.clear();
 	
 	// Destroy the window.
 	gtk_widget_destroy(dir_window);
@@ -269,30 +279,32 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
-	// Internal directories.
-	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
-	{
-		gtk_entry_set_text(GTK_ENTRY(txtInternalDir[dir]), dir_window_entries[dir].entry);
-	}
-	
-	// Plugin directories.
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (list<dir_plugin_t>::iterator iter = lstPluginDirs.begin();
-	     iter != lstPluginDirs.end(); iter++)
+	for (unsigned int dir = 0; dir < vecDirs.size(); dir++)
 	{
-		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
-		if (dirIter == PluginMgr::tblDirectories.end())
-			continue;
-		
-		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdpDir_t& dir = *lstDirIter;
-		
-		// Get the directory.
-		if (dir.get((*iter).id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+		if (!vecDirs[dir].is_plugin)
 		{
-			// Directory retrieved.
-			gtk_entry_set_text(GTK_ENTRY((*iter).txt), dir_buf);
+			// Internal directory.
+			gtk_entry_set_text(GTK_ENTRY(vecDirs[dir].txt),
+					   dir_window_entries[vecDirs[dir].id].entry);
+		}
+		else
+		{
+			// Plugin directory.
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vecDirs[dir].id);
+			if (dirIter == PluginMgr::tblDirectories.end())
+				continue;
+			
+			list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+			const mdpDir_t& mdpDir = *lstDirIter;
+			
+			// Get the directory.
+			if (mdpDir.get(vecDirs[dir].id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+			{
+				// Directory retrieved.
+				gtk_entry_set_text(GTK_ENTRY(vecDirs[dir].txt), dir_buf);
+			}
 		}
 	}
 	
@@ -306,71 +318,70 @@ static void dir_window_init(void)
 static void dir_window_save(void)
 {
 	size_t len;
-	
-	// Internal directories.
-	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
-	{
-		// Get the entry text.
-		strncpy(dir_window_entries[dir].entry,
-			gtk_entry_get_text(GTK_ENTRY(txtInternalDir[dir])),
-			GENS_PATH_MAX);
-		
-		// Make sure the entry is null-terminated.
-		dir_window_entries[dir].entry[GENS_PATH_MAX - 1] = 0x00;
-		
-		// Make sure the end of the directory has a slash.
-		// TODO: Do this in functions that use pathnames.
-		len = strlen(dir_window_entries[dir].entry);
-		if (len > 0 && dir_window_entries[dir].entry[len - 1] != GENS_DIR_SEPARATOR_CHR)
-		{
-			// String needs to be less than 1 minus the max path length
-			// in order to be able to append the directory separator.
-			if (len < (GENS_PATH_MAX - 1))
-			{
-				dir_window_entries[dir].entry[len] = GENS_DIR_SEPARATOR_CHR;
-				dir_window_entries[dir].entry[len + 1] = 0x00;
-			}
-		}
-	}
-	
-	// Plugin directories.
 	char dir_buf[GENS_PATH_MAX];
 	
-	for (list<dir_plugin_t>::iterator iter = lstPluginDirs.begin();
-	     iter != lstPluginDirs.end(); iter++)
+	for (unsigned int dir = 0; dir < vecDirs.size(); dir++)
 	{
-		// Get the entry text.
-		strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY((*iter).txt)), sizeof(dir_buf));
-		
-		// Make sure the entry is null-terminated.
-		dir_buf[GENS_PATH_MAX - 1] = 0x00;
-		
-		// Make sure the end of the directory has a slash.
-		// TODO: Do this in functions that use pathnames.
-		len = strlen(dir_buf);
-		if (len > 0 && dir_buf[len - 1] != GENS_DIR_SEPARATOR_CHR)
+		if (!vecDirs[dir].is_plugin)
 		{
-			// String needs to be less than 1 minus the max path length
-			// in order to be able to append the directory separator.
-			if (len < (GENS_PATH_MAX - 1))
+			// Internal directory.
+			char *entry = dir_window_entries[vecDirs[dir].id].entry;
+			
+			strncpy(entry, gtk_entry_get_text(GTK_ENTRY(vecDirs[dir].txt)),
+				GENS_PATH_MAX);
+			
+			// Make sure the entry is null-terminated.
+			entry[GENS_PATH_MAX-1] = 0x00;
+			
+			// Make sure the end of the directory has a slash.
+			// TODO: Do this in functions that use pathnames.
+			len = strlen(entry);
+			if (len > 0 && entry[len-1] != GENS_DIR_SEPARATOR_CHR)
 			{
-				dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
-				dir_buf[len + 1] = 0x00;
+				// String needs to be less than 1 minus the max path length
+				// in order to be able to append the directory separator.
+				if (len < (GENS_PATH_MAX-1))
+				{
+					entry[len] = GENS_DIR_SEPARATOR_CHR;
+					entry[len+1] = 0x00;
+				}
 			}
 		}
-		
-		// Set the directory entry in the plugin.
-		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
-		if (dirIter == PluginMgr::tblDirectories.end())
-			continue;
-		
-		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdpDir_t& dir = *lstDirIter;
-		
-		// Set the directory.
-		dir.set((*iter).id, dir_buf);
+		else
+		{
+			// Plugin directory.
+			
+			// Get the entry text.
+			strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vecDirs[dir].txt)), sizeof(dir_buf));
+			
+			// Make sure the entry is null-terminated.
+			dir_buf[sizeof(dir_buf)-1] = 0x00;
+			
+			// Make sure the end of the directory has a slash.
+			// TODO: Do this in functions that use pathnames.
+			len = strlen(dir_buf);
+			if (len > 0 && dir_buf[len-1] != GENS_DIR_SEPARATOR_CHR)
+			{
+				// String needs to be less than 1 minus the max path length
+				// in order to be able to append the directory separator.
+				if (len < (GENS_PATH_MAX-1))
+				{
+					dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
+					dir_buf[len+1] = 0x00;
+				}
+			}
+			
+			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vecDirs[dir].id);
+			if (dirIter == PluginMgr::tblDirectories.end())
+				continue;
+			
+			list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+			const mdpDir_t& mdpDir = *lstDirIter;
+			
+			// Set the directory.
+			mdpDir.set(vecDirs[dir].id, dir_buf);
+		}
 	}
-	
 	
 	// Disable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, false);
