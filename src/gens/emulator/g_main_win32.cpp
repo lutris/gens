@@ -225,10 +225,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	audio_clear_sound_buffer();
 	
 	// Save the configuration file.
-#ifndef PACKAGE
-#error PACKAGE not defined!
+#ifndef PACKAGE_NAME
+#error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
 	Config::save(cfg_filename);
 	
 	End_All();

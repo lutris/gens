@@ -208,10 +208,10 @@ int Init_Settings(void)
 	rendMode_W = RenderMgr::begin();
 	
 	// Load the default configuration.
-#ifndef PACKAGE
-#error PACKAGE not defined!
+#ifndef PACKAGE_NAME
+#error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
 	Config::load(cfg_filename, NULL);
 	
 	// Success.
