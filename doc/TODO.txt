@@ -10,8 +10,6 @@ TODO for Gens/GS r7:
 - [Win32] Trim relative plugin directory names.
 - [Win32] Disable the "Apply" button on the "General Options" window if nothing has been changed.
 - [GTK+] Consider setting the event box's background color to match the border color.
-- [GTK+] Show directory name in the directory select box.
-- [Win32] Show directory name in the directory select box.
 - Investigate Gens Rerecording commits r250, r252.
 
 MDP TODO for Gens/GS r7:
