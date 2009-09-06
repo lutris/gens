@@ -21,11 +21,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "vdraw_haiku_t.h"
 #include "vdraw_haiku.hpp"
+#include "vdraw_haiku_t.h"
 
 // VDraw Backend struct.
-const vdraw_backend_t vdraw_backend_ddraw =
+const vdraw_backend_t vdraw_backend_haiku =
 {
 	.name			= "BDirectWindow",
 	.flags			= 0x0,

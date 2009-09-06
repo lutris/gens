@@ -26,7 +26,7 @@ noinst_HEADERS = \
 	render.hpp
 
 # UNIX-like systems require libdl for dlopen().
-if !GENS_OS_WIN32
+if GENS_OS_UNIX
 mdp_test_LDADD = -ldl
 endif
 

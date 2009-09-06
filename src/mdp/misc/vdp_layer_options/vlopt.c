@@ -59,6 +59,8 @@ int MDP_FNCALL vlopt_init(const mdp_host_t *host_srv)
 	static const int uiType = MDP_UI_GTK2;
 #elif defined(GENS_UI_WIN32)
 	static const int uiType = MDP_UI_WIN32;
+#elif defined(GENS_OS_HAIKU)
+	static const int uiType = MDP_UI_HAIKU;
 #endif
 	
 	// Check the UI type.

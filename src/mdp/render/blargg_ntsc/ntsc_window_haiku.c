@@ -1,10 +1,9 @@
 /***************************************************************************
- * Gens: (Haiku) Main Window.                                              *
+ * MDP: Blargg's NTSC Filter. (Window Code) (Haiku)                        *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
- * Copyright (c) 2009 by Phil Costin                                       *
+ * Copyright (c) 2006 by Shay Green                                        *
+ * MDP version Copyright (c) 2008-2009 by David Korth                      *
+ * MDP version Copyright (c) 2009 by Phil Costin                           *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,25 +20,41 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "gens_window.h"
-#include "gens_window_callbacks.hpp"
-#include "gens_window_sync.hpp"
+// C includes.
+#include <math.h>
+#include <stdio.h>
 
-#include "emulator/g_main.hpp"
+#include "ntsc_window.h"
+#include "ntsc_window_common.h"
 
-// Menus.
-#include "gens_menu.hpp"
-#include "ui/common/gens/gens_menu.h"
+#include "mdp_render_blargg_ntsc.h"
+#include "mdp_render_blargg_ntsc_plugin.h"
+#include "md_ntsc.hpp"
 
-// Message logging.
-#include "macros/log_msg.h"
+// MDP error codes.
+#include "mdp/mdp_error.h"
 
-void *gens_window;
+// Callbacks.
 
 /**
- * gens_window_create(): Create the Gens window.
+ * ntsc_window_show(): Show the NTSC Plugin Options window.
+ * @param parent Parent window.
  */
-void gens_window_create(void)
+void ntsc_window_show(void *parent)
 {
 }
 
+
+/**
+ * ntsc_window_close(): Close the VDP Layer Options window.
+ */
+void ntsc_window_close(void)
+{
+}
+
+/**
+ * ntsc_window_load_settings(): Load the NTSC settings.
+ */
+void MDP_FNCALL ntsc_window_load_settings(void)
+{
+}

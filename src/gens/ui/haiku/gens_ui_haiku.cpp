@@ -79,6 +79,12 @@ void GensUI::init(int *argc, char **argv[])
 {
 	GENS_UNUSED_PARAMETER(argc);
 	GENS_UNUSED_PARAMETER(argv);
+
+	// Create the Gens window.
+        gens_window_create();
+
+        // Set the window title to Idle.
+        setWindowTitle_Idle();
 }
 
 
@@ -119,6 +125,15 @@ void GensUI::setWindowTitle(const string& title)
 
 
 /**
+ * setWindowVisibility(): Sets window visibility.
+ * @param visibility true to show; false to hide.
+ */
+void GensUI::setWindowVisibility(const bool visibility)
+{
+}
+
+
+/**
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
@@ -129,6 +144,7 @@ void GensUI::setWindowTitle(const string& title)
 GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 				       const unsigned int style, void* owner)
 {
+	return static_cast<GensUI::MsgBox_Response>(NULL);
 }
 
 
@@ -143,6 +159,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 string GensUI::openFile(const string& title, const string& initFile,
 			const FileFilterType filterType, void* owner)
 {
+	return string("Stub");
 }
 
 
@@ -157,6 +174,7 @@ string GensUI::openFile(const string& title, const string& initFile,
 string GensUI::saveFile(const string& title, const string& initFile,
 			const FileFilterType filterType, void* owner)
 {
+	return string("Stub");
 }
 
 
@@ -169,6 +187,7 @@ string GensUI::saveFile(const string& title, const string& initFile,
  */
 string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
+	return string("Stub");
 }
 
 

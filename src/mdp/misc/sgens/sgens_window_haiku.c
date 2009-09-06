@@ -1,10 +1,9 @@
 /***************************************************************************
- * Gens: (Haiku) Main Window.                                              *
+ * MDP: Sonic Gens. (Window Code) (Haiku)                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
- * Copyright (c) 2009 by Phil Costin                                       *
+ * SGens Copyright (c) 2002 by LOst                                        *
+ * MDP port Copyright (c) 2008-2009 by David Korth                         *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,25 +20,56 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "gens_window.h"
-#include "gens_window_callbacks.hpp"
-#include "gens_window_sync.hpp"
+// C includes.
+#include <stdio.h>
 
-#include "emulator/g_main.hpp"
+#include "sgens_window.h"
+#include "sgens_plugin.h"
+#include "sgens.h"
 
-// Menus.
-#include "gens_menu.hpp"
-#include "ui/common/gens/gens_menu.h"
+// XPM icons.
+#include "sgens_16x16.xpm"
+#include "sgens_32x32.xpm"
 
-// Message logging.
-#include "macros/log_msg.h"
+// SGens ROM type information and widget information.
+#include "sgens_rom_type.h"
+#include "sgens_widget_info.h"
 
-void *gens_window;
+// MDP includes.
+#include "mdp/mdp_error.h"
+#include "mdp/mdp_event.h"
+#include "mdp/mdp_mem.h"
+
 
 /**
- * gens_window_create(): Create the Gens window.
+ * sgens_window_show(): Show the VDP Layer Options window.
+ * @param parent Parent window.
  */
-void gens_window_create(void)
+void MDP_FNCALL sgens_window_show(void *parent)
 {
 }
 
+
+
+/**
+ * sgens_window_close(): Close the VDP Layer Options window.
+ */
+void MDP_FNCALL sgens_window_close(void)
+{
+}
+
+
+/**
+ * sgens_window_update_rom_type(): Update the current ROM type.
+ */
+void MDP_FNCALL sgens_window_update_rom_type(void)
+{
+}
+
+
+/**
+ * sgens_window_update(): Update the information display.
+ */
+void MDP_FNCALL sgens_window_update(void)
+{
+}

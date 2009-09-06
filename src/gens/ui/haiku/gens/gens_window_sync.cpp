@@ -28,6 +28,62 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// C includes.
+#include <string.h>
+
+// C++ includes
+#include <string>
+#include <list>
+#include <deque>
+using std::string;
+using std::list;
+using std::deque;
+
+// Haiku includes
+
+#include "gens_window.h"
+#include "gens_window_sync.hpp"
+#include "gens_menu.hpp"
+
+// Common UI functions.
+#include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_window_sync.h"
+
+#include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
+#include "segacd/cd_sys.hpp"
+#include "util/file/rom.hpp"
+#include "debugger/debugger.hpp"
+
+#include "util/sound/wave.h"
+#include "util/sound/gym.hpp"
+
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
+
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_cd.h"
+
+#include "gens_core/sound/ym2612.hpp"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/sound/pwm.h"
+
+// Renderer / Blitter selection stuff.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/misc/cpuflags.h"
+
+// Plugin Manager and Render Manager.
+#include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
+
+// File management functions.
+#include "util/file/file.hpp"
+
+// Video, Audio.
+#include "video/vdraw.h"
+#include "audio/audio.h"
+
 
 /**
  * STUB functions. These are merely present to allow

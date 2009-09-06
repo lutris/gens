@@ -49,3 +49,7 @@ noinst_HEADERS += \
 		gg_dllmain.h \
 		resource.h
 endif
+
+if GENS_OS_HAIKU
+mdp_misc_game_genie_la_SOURCES += gg_window_haiku.cpp
+endif

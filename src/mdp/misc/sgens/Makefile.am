@@ -46,3 +46,7 @@ noinst_HEADERS += \
 		sgens_dllmain.h \
 		resource.h
 endif
+
+if GENS_OS_HAIKU
+mdp_misc_sgens_la_SOURCES	+= sgens_window_haiku.c
+endif

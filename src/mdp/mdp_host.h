@@ -54,7 +54,7 @@ typedef enum _MDP_UI
 	MDP_UI_QT4		= 2,
 	MDP_UI_WIN32		= 3,
 	MDP_UI_MACOSX_COCOA	= 4,
-	MDP_UI_BEOS		= 5,
+	MDP_UI_HAIKU		= 5,
 	/*! END: MDP v1.0 UI identifiers. !*/
 	
 	MDP_UI_MAX

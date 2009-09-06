@@ -45,3 +45,7 @@ mdp_render_blargg_ntsc_la_LIBADD	+= -lgdi32
 #		vlopt_dllmain.h \
 #		resource.h
 endif
+
+if GENS_OS_HAIKU
+mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_haiku.c
+endif

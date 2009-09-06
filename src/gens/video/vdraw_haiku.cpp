@@ -87,22 +87,6 @@ void vdraw_haiku_update_renderer(void);
  */
 int vdraw_haiku_init(void)
 {
-	mdp_render_t *rendMode = get_mdp_render_t();
-	const int scale = rendMode->scale;
-	
-	// Determine the window size using the scaling factor.
-	if (scale <= 0)
-		return 0;
-	const int w = 320 * scale;
-	const int h = 240 * scale;
-
-	// TODO: Haiku vdraw init code
-
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
-	
-	// SDL initialized successfully.
 	return 0;
 }
 
@@ -122,14 +106,6 @@ int vdraw_haiku_end(void)
  */
 void vdraw_haiku_clear_screen(void)
 {
-	//SDL_LockSurface(vdraw_sdl_screen);
-	//memset(vdraw_sdl_screen->pixels, 0x00,
-	       //vdraw_sdl_screen->pitch * vdraw_sdl_screen->h);
-	//SDL_UnlockSurface(vdraw_sdl_screen);
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
 
@@ -139,67 +115,6 @@ void vdraw_haiku_clear_screen(void)
  */
 int vdraw_haiku_flip(void)
 {
-	//SDL_LockSurface(vdraw_sdl_screen);
-	
-	// Draw the border.
-	//vdraw_sdl_draw_border();
-	
-	//const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
-	
-	// Start of the SDL framebuffer.
-	//const int pitch = vdraw_sdl_screen->pitch;
-	//const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	//const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	
-	//const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
-	
-	// Start of the SDL framebuffer.
-	//unsigned char *start = &(((unsigned char*)(vdraw_sdl_screen->pixels))[startPos]);
-	
-	// Set up the render information.
-	//vdraw_rInfo.destScreen = (void*)start;
-	//vdraw_rInfo.width = 320 - vdraw_border_h;
-	//vdraw_rInfo.height = VDP_Num_Vis_Lines;
-	//vdraw_rInfo.destPitch = pitch;
-/*	
-	if (vdraw_needs_conversion)
-	{
-		// Color depth conversion is required.
-		vdraw_rgb_convert(&vdraw_rInfo);
-	}
-	else
-	{
-		// Color conversion is not required.
-		if (vdraw_get_fullscreen())
-			vdraw_blitFS(&vdraw_rInfo);
-		else
-			vdraw_blitW(&vdraw_rInfo);
-	}
-*/	
-	// Draw the message and/or FPS counter.
-/*
-	if (vdraw_msg_visible)
-	{
-		// Message is visible.
-		draw_text(start, vdraw_sdl_screen->w,
-			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style, FALSE);
-	}
-	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
-	{
-		// FPS is enabled.
-		draw_text(start, vdraw_sdl_screen->w,
-			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style, FALSE);
-	}
-	
-	SDL_UnlockSurface(vdraw_sdl_screen);
-	
-	SDL_Flip(vdraw_sdl_screen);
-*/	
-	// TODO: Return appropriate error code.
 	return 0;
 }
 
@@ -210,108 +125,15 @@ int vdraw_haiku_flip(void)
  */
 void vdraw_haiku_draw_border(void)
 {
-	// TODO: Consolidate this function by using a macro.
-/*	
-	SDL_Rect border;
-	
-	if (!Video.borderColorEmulation)
-	{
-		// Border color emulation is disabled.
-		// Don't do anything if the border color is currently black.
-		if (vdraw_border_color_16 == 0 && vdraw_border_color_32 == 0)
-			return;
-	}
-	
-	unsigned short bc16 = MD_Palette[0];
-	unsigned int bc32 = MD_Palette32[0];
-	
-	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
-	{
-		// Either no game is loaded or the debugger is enabled.
-		// Make sure the border color is black.
-		bc16 = 0;
-		bc32 = 0;
-	}
-	
-	if ((bppOut == 15 || bppOut == 16) && (vdraw_border_color_16 != bc16))
-	{
-		vdraw_border_color_16 = bc16;
-		
-		// Check if the border color needs to be converted.
-		if (bppMD == 15 && bppOut == 16)
-		{
-			// MD palette is 15-bit; output is 16-bit.
-			// MD:  0RRRRRGG GGGBBBBB
-			// Out: RRRRRGGG GGGBBBBB
-			bc16 = ((bc16 & 0x7C00) << 1) | ((bc16 & 0x03E0) << 1) | (bc16 & 0x1F);
-		}
-		else if (bppMD == 16 && bppOut == 15)
-		{
-			// MD palette is 16-bit; output is 15-bit.
-			// MD:  RRRRRGGG GGGBBBBB
-			// Out: 0RRRRRGG GGGBBBBB
-			bc16 = ((bc16 & 0xF800) >> 1) | ((bc16 & 0x07C0) >> 1) | (bc16 & 0x1F);
-		}
-		
-		if (VDP_Num_Vis_Lines < 240)
-		{
-			// Top/Bottom borders.
-			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-			border.y = vdraw_sdl_screen->h - border.h;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-		}
-		if (vdraw_border_h > 0)
-		{
-			// Left/Right borders.
-			if (border.h != 0)
-			{
-				border.y = 0;
-				border.h = 240 - border.h;
-			}
-			
-			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-			border.x = vdraw_sdl_screen->w - border.w;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-		}
-	}
-	else if ((bppOut == 32) && (vdraw_border_color_32 != bc32))
-	{
-		vdraw_border_color_32 = bc32;
-		
-		if (VDP_Num_Vis_Lines < 240)
-		{
-			// Top/Bottom borders.
-			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-			border.y = vdraw_sdl_screen->h - border.h;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-		}
-		if (vdraw_border_h > 0)
-		{
-			// Left/Right borders.
-			if (border.h != 0)
-			{
-				border.y = 0;
-				border.h = 240 - border.h;
-			}
-			
-			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-			border.x = vdraw_sdl_screen->w - border.w;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-		}
-	}
-*/
+}
+
+
+/**                     
+ * vdraw_haiku_reinit_gens_window(): Reinitialize the Gens window. * @return 0 on success; non-zero on error.
+ */                     
+int vdraw_haiku_reinit_gens_window(void)
+{                       
+	return vdraw_haiku_init();
 }
 
 
@@ -320,29 +142,16 @@ void vdraw_haiku_draw_border(void)
  */
 void vdraw_haiku_update_renderer(void)
 {
-/*
-	// Check if a resolution switch is needed.
-	mdp_render_t *rendMode = get_mdp_render_t();
-	const int scale = rendMode->scale;
-	
-	// Determine the window size using the scaling factor.
-	if (scale <= 0)
-		return;
-	const int w = 320 * scale;
-	const int h = 240 * scale;
-	
-	if (vdraw_haiku_screen->w == w && vdraw_haiku_screen->h == h)
-	{
-		// No resolution switch is necessary. Simply clear the screen.
-		vdraw_haiku_clear_screen();
-		return;
-	}
-	
-	// Resolution switch is needed.
-	vdraw_haiku_end();
-	vdraw_haiku_init();
-	
-	// Clear the screen.
-	vdraw_haiku_clear_screen();
-*/
+}
+
+
+/**
+ * vdraw_haiku_update_vsync(): Update the VSync value.
+ * @param fromInitHaiku If true, this function is being called from vdraw_haiku_init().
+ */             
+void vdraw_haiku_update_vsync(const BOOL fromInitHaiku)
+{                       
+        GENS_UNUSED_PARAMETER(fromInitHaiku);
+                        
+        // If Full Screen, reinit();
 }

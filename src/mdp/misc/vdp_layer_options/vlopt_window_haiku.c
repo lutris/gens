@@ -1,10 +1,9 @@
 /***************************************************************************
- * Gens: (Haiku) Main Window.                                              *
+ * Gens: [MDP] VDP Layer Options. (Window Code) (Haiku)                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
- * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,25 +20,58 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "gens_window.h"
-#include "gens_window_callbacks.hpp"
-#include "gens_window_sync.hpp"
 
-#include "emulator/g_main.hpp"
+// C includes.
+#include <stdio.h>
 
-// Menus.
-#include "gens_menu.hpp"
-#include "ui/common/gens/gens_menu.h"
+#include "vlopt_window.h"
+#include "vlopt_options.h"
+#include "vlopt_plugin.h"
+#include "vlopt.h"
 
-// Message logging.
-#include "macros/log_msg.h"
+// XPM icons.
+#include "vlopt_16x16.xpm"
+#include "vlopt_32x32.xpm"
 
-void *gens_window;
+// MDP error codes.
+#include "mdp/mdp_error.h"
+
+// Custom response IDs.
+#define VLOPT_RESPONSE_RESET 1
+
+// Option handling functions.
+static void vlopt_window_load_options(void);
+static void vlopt_window_save_options(void);
+
 
 /**
- * gens_window_create(): Create the Gens window.
+ * vlopt_window_show(): Show the VDP Layer Options window.
+ * @param parent Parent window.
  */
-void gens_window_create(void)
+void vlopt_window_show(void *parent)
 {
 }
 
+
+/**
+ * vlopt_window_close(): Close the VDP Layer Options window.
+ */
+void vlopt_window_close(void)
+{
+}
+
+
+/**
+ * vlopt_window_load_options(): Load the options from MDP_VAL_VDP_LAYER_OPTIONS.
+ */
+static void vlopt_window_load_options(void)
+{
+}
+
+
+/**
+ * vlopt_window_save_options(): Save the options to MDP_VAL_VDP_LAYER_OPTIONS.
+ */
+static void vlopt_window_save_options(void)
+{
+}

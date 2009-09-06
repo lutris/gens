@@ -4,6 +4,7 @@
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
  * MDP port Copyright (c) 2008-2009 by David Korth                         *
+ * MDP port Copyright (c) 2009 by Phil Costin                              *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -60,6 +61,8 @@ int MDP_FNCALL sgens_init(const mdp_host_t *host_srv)
 	static const int uiType = MDP_UI_GTK2;
 #elif defined(GENS_UI_WIN32)
 	static const int uiType = MDP_UI_WIN32;
+#elif defined(GENS_OS_HAIKU)
+	static const int uiType = MDP_UI_HAIKU;
 #endif
 	
 	// Check the UI type.

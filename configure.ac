@@ -356,6 +356,8 @@ if test x$with_opengl = xyes; then
 	with_opengl=no
 	if test x$os = xwin32; then
 		AC_MSG_WARN([OpenGL support is not currently available on Win32. Disabling.])
+	elif test x$os = xhaiku; then
+		AC_MSG_WARN([OpenGL support is not currently available on Haiku. Disabling.])
 	else
 		AC_TRY_COMPILE([
 			#ifndef __APPLE__

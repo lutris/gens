@@ -33,19 +33,23 @@
 #include <string.h>
 
 // Audio backends.
-#ifdef GENS_OS_WIN32
+#if defined(GENS_OS_WIN32)
 	#include "audio_dsound_t.h"
-#else /* !GENS_OS_WIN32 */
+#elif defined(GENS_OS_UNIX)
 	#include "audio_sdl.h"
-#endif /* GENS_OS_WIN32 */
+#elif defined(GENS_OS_HAIKU)
+	#include "audio_haiku.h"
+#endif
 
 static const audio_backend_t * const audio_backends[] =
 {
-	#ifdef GENS_OS_WIN32
+	#if defined(GENS_OS_WIN32)
 		&audio_backend_dsound,
-	#else /* !GENS_OS_WIN32 */
+	#elif defined(GENS_OS_UNIX)
 		&audio_backend_sdl,
-	#endif /* GENS_OS_WIN32 */
+	#elif defined(GENS_OS_HAIKU)
+		&audio_backend_haiku,
+	#endif
 };
 
 // Current backend.

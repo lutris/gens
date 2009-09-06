@@ -44,3 +44,7 @@ noinst_HEADERS += \
 		vlopt_dllmain.h \
 		resource.h
 endif
+
+if GENS_OS_HAIKU
+mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_haiku.c
+endif
