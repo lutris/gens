@@ -50,7 +50,6 @@ void MDP_FNCALL sgens_window_show(void *parent)
 }
 
 
-
 /**
  * sgens_window_close(): Close the VDP Layer Options window.
  */
