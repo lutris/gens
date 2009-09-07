@@ -342,7 +342,6 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	HRESULT rval;
 	LPDIRECTINPUTDEVICE	lpDIJoy;
 	DIPROPRANGE diprg;
-	int i;
  
 	if (!lpDIIJoy || input_dinput_num_joysticks >= MAX_JOYS ||
 	    input_dinput_callback_init_joysticks_enum_counter >= MAX_JOYS)
@@ -397,37 +396,59 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 		return DIENUM_CONTINUE;
 	}
 	
-	diprg.diph.dwSize = sizeof(diprg); 
-	diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
-	diprg.diph.dwObj = DIJOFS_X;
-	diprg.diph.dwHow = DIPH_BYOFFSET;
-	diprg.lMin = -1000;
-	diprg.lMax = +1000;
- 
-	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
-	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
+	// Get joystick capabilities.
+	DIDEVCAPS jsCaps;
+	memset(&jsCaps, 0x00, sizeof(jsCaps));
+	jsCaps.dwSize = sizeof(jsCaps);
+	rval = input_dinput_joy_id[input_dinput_num_joysticks]->GetCapabilities(&jsCaps);
+	if (rval != DI_OK)
 	{
 		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
+			"input_dinput_joy_id[]->GetCapabilities() failed. (Joystick %d)",
 			input_dinput_callback_init_joysticks_enum_counter);
+		return DIENUM_CONTINUE;
 	}
 	
-	diprg.diph.dwSize = sizeof(diprg); 
-	diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
-	diprg.diph.dwObj = DIJOFS_Y;
-	diprg.diph.dwHow = DIPH_BYOFFSET;
-	diprg.lMin = -1000;
-	diprg.lMax = +1000;
- 
-	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
-	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
+	if (jsCaps.dwAxes >= 1)
 	{
-		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
+		// Device has at least 1 axis. Adjust X-axis range.
+		diprg.diph.dwSize = sizeof(diprg); 
+		diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
+		diprg.diph.dwObj = DIJOFS_X;
+		diprg.diph.dwHow = DIPH_BYOFFSET;
+		diprg.lMin = -1000;
+		diprg.lMax = +1000;
+		
+		rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
+		if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
+		{
+			LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+				"input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
+				input_dinput_callback_init_joysticks_enum_counter);
+		}
 	}
 	
-	for(i = 0; i < 10; i++)
+	if (jsCaps.dwAxes >= 2)
+	{
+		// Device has at least 2 axes. Adjust Y-axis range.
+		diprg.diph.dwSize = sizeof(diprg); 
+		diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
+		diprg.diph.dwObj = DIJOFS_Y;
+		diprg.diph.dwHow = DIPH_BYOFFSET;
+		diprg.lMin = -1000;
+		diprg.lMax = +1000;
+		
+		rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
+		if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
+		{
+			LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+				"input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
+				input_dinput_callback_init_joysticks_enum_counter);
+		}
+	}
+	
+	// Attempt to acquire the joystick device.
+	for (unsigned int i = 10; i != 0; i--)
 	{
 		rval = input_dinput_joy_id[input_dinput_num_joysticks]->Acquire();
 		if (rval == DI_OK)
