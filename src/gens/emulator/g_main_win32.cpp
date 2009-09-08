@@ -204,7 +204,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	if (startup->enable_debug_window)
 		ShowWindow(debug_window, nCmdShow);
 	else
-		DestroyWindow(debug_window);
+		debug_window_close();
 #endif
 	
 	// Initialize the video backend.
@@ -249,12 +249,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Config::save(cfg_filename);
 	
 	End_All();
-	DestroyWindow(gens_window);
 	
 #if !defined(GENS_WIN32_CONSOLE)
 	// Close the Debug window.
 	if (debug_window)
-		DestroyWindow(debug_window);
+		debug_window_close();
 #endif
 		
 	// Delete the fonts.
