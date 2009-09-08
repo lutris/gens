@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Command line parser.                                              *
+ * Gens: (Win32) Debug Window.                                             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,45 +20,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PARSE_HPP
-#define GENS_PARSE_HPP
+#ifndef GENS_UI_WIN32_DEBUG_WINDOW_H
+#define GENS_UI_WIN32_DEBUG_WINDOW_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
 #endif
-
-// TODO: Move GENS_PATH_MAX out of g_main.hpp.
-#include "g_main.hpp"
+#include <windows.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Startup mode.
-typedef enum _Gens_StartupMode_t
-{
-	GSM_IDLE = 0,
-	GSM_ROM = 1,
-#ifdef GENS_CDROM
-	GSM_BOOT_CD = 2,
-#endif
-	GSM_MAX
-} Gens_StartupMode_t;
+extern HWND debug_window;
 
-// Startup information.
-typedef struct _Gens_StartupInfo_t
-{
-	Gens_StartupMode_t mode;
-	char filename[GENS_PATH_MAX];
-#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
-	int enable_debug_window;
-#endif
-} Gens_StartupInfo_t;
-
-Gens_StartupInfo_t* parse_args(int argc, char *argv[]);
+void debug_window_create(void);
+void debug_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_PARSE_HPP */
+#endif /* GENS_UI_WIN32_DEBUG_WINDOW_H */

@@ -60,6 +60,9 @@ using std::list;
 
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
+#if !defined(GENS_WIN32_CONSOLE)
+#include "debug_window/debug_window.h"
+#endif
 
 // Win32 instance
 HINSTANCE ghInstance = NULL;
@@ -142,6 +145,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Initialize fonts.
 	fonts_init();
 	
+	// Create the debug window.
+#if !defined(GENS_WIN32_CONSOLE)
+	debug_window_create();
+#endif
+		
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	gens_window_init_hWnd();
@@ -191,7 +199,15 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-	// Initialize the backend.
+#if !defined(GENS_WIN32_CONSOLE)
+	// Check if the debug window should be shown.
+	if (startup->enable_debug_window)
+		ShowWindow(debug_window, nCmdShow);
+	else
+		DestroyWindow(debug_window);
+#endif
+	
+	// Initialize the video backend.
 	if ((int)vdraw_cur_backend_id < 0)
 	{
 		// No backend saved in the configuration file. Use the default.
@@ -211,13 +227,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	GensUI::update();
 	
 	// Reset the renderer.
-	vdraw_reset_renderer(TRUE);
+	vdraw_reset_renderer(true);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
 	// Show the Gens window.
 	ShowWindow(gens_window, nCmdShow);
+	SetFocus(gens_window);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();
@@ -234,6 +251,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	End_All();
 	DestroyWindow(gens_window);
 	
+#if !defined(GENS_WIN32_CONSOLE)
+	// Close the Debug window.
+	if (debug_window)
+		DestroyWindow(debug_window);
+#endif
+		
 	// Delete the fonts.
 	fonts_end();
 	

@@ -458,6 +458,9 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 	Gens_StartupInfo_t *startup = (Gens_StartupInfo_t*)malloc(sizeof(Gens_StartupInfo_t));
 	startup->mode = GSM_IDLE;
 	startup->filename[0] = 0x00;
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+	startup->enable_debug_window = 1;
+#endif
 	
 	while (1)
 	{
