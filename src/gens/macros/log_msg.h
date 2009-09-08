@@ -104,6 +104,26 @@ void log_msgbox(const char* msg, const char* title);
 #define STUB() LOG_MSG(stub, LOG_MSG_LEVEL_WARNING, "STUB function.")
 
 /**
+ * debug_window_log(): Log a message to the debug window.
+ * @param channel Debug channel. (string)
+ * @param level Debug level. (integer)
+ * @param msg Message.
+ * @param ... Parameters.
+ */
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+#include "debug_window/debug_window.h"
+#define DBG_WIN_LOG(channel, level, msg, ...) \
+do { \
+	char log_msg[512]; \
+	snprintf(log_msg, sizeof(log_msg), "%s:%d:%s(): " msg "\n", #channel, level, __func__, ##__VA_ARGS__); \
+	log_msg[sizeof(log_msg)-1] = 0x00; \
+	debug_window_log(log_msg); \
+} while (0)
+#else
+#define debug_window_log(channel, level, msg, ...)
+#endif
+
+/**
  * LOG_MSG(): Output a debug message.
  * @param channel Debug channel. (string)
  * @param level Debug level. (integer)
@@ -116,14 +136,15 @@ do													\
 	if (LOG_MSG_CHANNEL_ ##channel >= level)							\
 	{												\
 		fprintf(stderr, "%s:%d:%s(): " msg "\n", #channel, level, __func__, ##__VA_ARGS__);	\
+		DBG_WIN_LOG(channel, level, msg, ##__VA_ARGS__);					\
 		if (level == 0)										\
 		{											\
-			char box_msg[256], box_title[256];						\
+			char box_msg[512], box_title[512];						\
 			snprintf(box_msg, sizeof(box_msg), "%s(): " msg, __func__, ##__VA_ARGS__);	\
-			box_msg[sizeof(box_msg) - 1] = 0x00;						\
+			box_msg[sizeof(box_msg)-1] = 0x00;						\
 			snprintf(box_title, sizeof(box_msg), "Gens Critical Error: %s", #channel);	\
-			box_title[sizeof(box_msg) - 1] = 0x00;						\
-			log_msgbox(box_msg, box_title);						\
+			box_title[sizeof(box_title) - 1] = 0x00;					\
+			log_msgbox(box_msg, box_title);							\
 		}											\
 	}												\
 } while (0)

@@ -39,6 +39,8 @@ extern HWND debug_window;
 void debug_window_create(void);
 void debug_window_close(void);
 
+void debug_window_log(const char *msg);
+
 #ifdef __cplusplus
 }
 #endif

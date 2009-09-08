@@ -159,6 +159,19 @@ void debug_window_close(void)
 
 
 /**
+ * debug_window_log(): Append a message to the debug window.
+ * @param msg Message to append.
+ */
+void debug_window_log(const char *msg)
+{
+	// TODO: Remove previous lines.
+	int len = GetWindowTextLength(txtDebug);
+	Edit_SetSel(txtDebug, len, len);
+	Edit_ReplaceSel(txtDebug, msg);
+}
+
+
+/**
  * debug_window_wndproc(): Window procedure.
  * @param hWnd hWnd of the window.
  * @param message Window message.
