@@ -74,6 +74,9 @@ static HBRUSH	hbrBackground = NULL;
 // Widget creation functions.
 static void	debug_window_create_child_windows(HWND hWnd);
 
+// Wordwrap function.
+static int CALLBACK debug_window_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code);
+
 
 /**
  * debug_window_create(): Create the Debug window.
@@ -141,6 +144,7 @@ static void debug_window_create_child_windows(HWND hWnd)
 				  0, 0, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT,
 				  hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(txtDebug, fntDebug, TRUE);
+	Edit_SetWordBreakProc(txtDebug, debug_window_txtDebug_WordBreak);
 }
 
 
@@ -209,4 +213,18 @@ static LRESULT CALLBACK debug_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+/**
+ * debug_window_txtDebug_WordBreak(): Wordwrap function.
+ * @param lpch
+ * @param ichCurrent
+ * @param cch
+ * @param code
+ */
+static int CALLBACK debug_window_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code)
+{
+	// Disable all wordwrapping.
+	return 0;
 }
