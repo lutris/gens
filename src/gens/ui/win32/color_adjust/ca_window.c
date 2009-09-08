@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Color Adjustment Window.                                   *
+ * Gens: (Win32) Color Adjustment Window.                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
