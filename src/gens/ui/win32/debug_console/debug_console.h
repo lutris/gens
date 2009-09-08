@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Debug Window.                                             *
+ * Gens: (Win32) Debug Console.                                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_WIN32_DEBUG_WINDOW_H
-#define GENS_UI_WIN32_DEBUG_WINDOW_H
+#ifndef GENS_UI_WIN32_DEBUG_CONSOLE_H
+#define GENS_UI_WIN32_DEBUG_CONSOLE_H
 
 // Win32 includes.
 #define WIN32_LEAN_AND_MEAN
@@ -34,15 +34,15 @@
 extern "C" {
 #endif
 
-extern HWND debug_window;
+extern HWND debug_console;
 
-void debug_window_create(void);
-void debug_window_close(void);
+void debug_console_create(void);
+void debug_console_close(void);
 
-void debug_window_log(const char *msg);
+void debug_console_log(const char *msg);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_UI_WIN32_DEBUG_WINDOW_H */
+#endif /* GENS_UI_WIN32_DEBUG_CONSOLE_H */

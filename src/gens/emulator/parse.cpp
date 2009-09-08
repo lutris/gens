@@ -468,7 +468,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 	startup->mode = GSM_IDLE;
 	startup->filename[0] = 0x00;
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
-	startup->enable_debug_window = 0;
+	startup->enable_debug_console = 0;
 #endif
 	
 	while (1)
@@ -627,7 +627,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_DEBUG_CONSOLE].option))
 		{
 			// Enable Debug console.
-			startup->enable_debug_window = 1;
+			startup->enable_debug_console = 1;
 		}
 #endif
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))

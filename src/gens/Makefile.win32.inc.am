@@ -41,7 +41,7 @@ endif
 
 if !GENS_WIN32_CONSOLE
 gens_SOURCES += \
-		ui/win32/debug_window/debug_window.c
+		ui/win32/debug_console/debug_console.c
 endif
 
 noinst_HEADERS += \
@@ -82,7 +82,7 @@ endif
 
 if !GENS_WIN32_CONSOLE
 noinst_HEADERS += \
-		ui/win32/debug_window/debug_window.h
+		ui/win32/debug_console/debug_console.h
 endif
 
 gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound

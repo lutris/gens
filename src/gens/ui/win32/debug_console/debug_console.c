@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Debug Window.                                             *
+ * Gens: (Win32) Debug Console.                                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "debug_window.h"
+#include "debug_console.h"
 #include "gens/gens_window.h"
 
 // C includes.
@@ -53,7 +53,7 @@
 
 
 // Window.
-HWND debug_window = NULL;
+HWND debug_console = NULL;
 
 // Window class.
 static WNDCLASS debug_wndclass;
@@ -63,7 +63,7 @@ static WNDCLASS debug_wndclass;
 #define DEBUG_WINDOW_HEIGHT ((25*12)+8)
 
 // Window procedure.
-static LRESULT CALLBACK debug_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK debug_console_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 // Widgets.
 static HWND	txtDebug;
@@ -72,33 +72,33 @@ static HWND	txtDebug;
 static HBRUSH	hbrBackground = NULL;
 
 // Widget creation functions.
-static void	debug_window_create_child_windows(HWND hWnd);
+static void	debug_console_create_child_windows(HWND hWnd);
 
 // Wordwrap function.
-static int CALLBACK debug_window_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code);
+static int CALLBACK debug_console_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code);
 
 
 /**
- * debug_window_create(): Create the Debug window.
+ * debug_console_create(): Create the Debug window.
  */
-void debug_window_create(void)
+void debug_console_create(void)
 {
-	if (debug_window)
+	if (debug_console)
 	{
 		// Debug window is already visible. Set focus.
 		// TODO: Figure out how to do this.
-		ShowWindow(debug_window, SW_SHOW);
+		ShowWindow(debug_console, SW_SHOW);
 		return;
 	}
 	
-	if (debug_wndclass.lpfnWndProc != debug_window_wndproc)
+	if (debug_wndclass.lpfnWndProc != debug_console_wndproc)
 	{
 		// Create the background color brush.
 		hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
 		
 		// Create the window class.
 		debug_wndclass.style = 0;
-		debug_wndclass.lpfnWndProc = debug_window_wndproc;
+		debug_wndclass.lpfnWndProc = debug_console_wndproc;
 		debug_wndclass.cbClsExtra = 0;
 		debug_wndclass.cbWndExtra = 0;
 		debug_wndclass.hInstance = ghInstance;
@@ -106,37 +106,37 @@ void debug_window_create(void)
 		debug_wndclass.hCursor = NULL;
 		debug_wndclass.hbrBackground = hbrBackground;
 		debug_wndclass.lpszMenuName = NULL;
-		debug_wndclass.lpszClassName = TEXT("debug_window");
+		debug_wndclass.lpszClassName = TEXT("debug_console");
 		
 		RegisterClass(&debug_wndclass);
 	}
 	
 	// Create the window.
-	debug_window = CreateWindow(TEXT("debug_window"), TEXT("Gens/GS - Debug Window"),
+	debug_console = CreateWindow(TEXT("debug_console"), TEXT("Gens/GS - Debug Console"),
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT,
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(debug_window, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(debug_console, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT);
 	
 	// Center the window on the parent window.
 	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	gsft_win32_center_on_window(debug_window, gens_window);
+	gsft_win32_center_on_window(debug_console, gens_window);
 	
-	UpdateWindow(debug_window);
+	UpdateWindow(debug_console);
 	
 	// Don't show the Debug window until requested by the main program.
-	//ShowWindow(debug_window, SW_SHOW);
+	//ShowWindow(debug_console, SW_SHOW);
 }
 
 
 /**
- * debug_window_create_child_windows(): Create child windows.
+ * debug_console_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void debug_window_create_child_windows(HWND hWnd)
+static void debug_console_create_child_windows(HWND hWnd)
 {
 	// Create the textbox.
 	txtDebug = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
@@ -144,29 +144,29 @@ static void debug_window_create_child_windows(HWND hWnd)
 				  0, 0, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT,
 				  hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(txtDebug, fntDebug, TRUE);
-	Edit_SetWordBreakProc(txtDebug, debug_window_txtDebug_WordBreak);
+	Edit_SetWordBreakProc(txtDebug, debug_console_txtDebug_WordBreak);
 }
 
 
 /**
- * debug_window_close(): Close the Debug window.
+ * debug_console_close(): Close the Debug console.
  */
-void debug_window_close(void)
+void debug_console_close(void)
 {
-	if (!debug_window)
+	if (!debug_console)
 		return;
 	
 	// Destroy the window.
-	DestroyWindow(debug_window);
-	debug_window = NULL;
+	DestroyWindow(debug_console);
+	debug_console = NULL;
 }
 
 
 /**
- * debug_window_log(): Append a message to the debug window.
+ * debug_console_log(): Append a message to the debug console.
  * @param msg Message to append.
  */
-void debug_window_log(const char *msg)
+void debug_console_log(const char *msg)
 {
 	// TODO: Remove previous lines.
 	int len = GetWindowTextLength(txtDebug);
@@ -180,19 +180,19 @@ void debug_window_log(const char *msg)
 
 
 /**
- * debug_window_wndproc(): Window procedure.
+ * debug_console_wndproc(): Window procedure.
  * @param hWnd hWnd of the window.
  * @param message Window message.
  * @param wParam
  * @param lParam
  * @return
  */
-static LRESULT CALLBACK debug_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK debug_console_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
 		case WM_CREATE:
-			debug_window_create_child_windows(hWnd);
+			debug_console_create_child_windows(hWnd);
 			break;
 		
 		case WM_CTLCOLOREDIT:
@@ -209,10 +209,10 @@ static LRESULT CALLBACK debug_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 		}
 		
 		case WM_DESTROY:
-			if (hWnd != debug_window)
+			if (hWnd != debug_console)
 				break;
 			
-			debug_window = NULL;
+			debug_console = NULL;
 			break;
 	}
 	
@@ -221,13 +221,13 @@ static LRESULT CALLBACK debug_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 
 
 /**
- * debug_window_txtDebug_WordBreak(): Wordwrap function.
+ * debug_console_txtDebug_WordBreak(): Wordwrap function.
  * @param lpch
  * @param ichCurrent
  * @param cch
  * @param code
  */
-static int CALLBACK debug_window_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code)
+static int CALLBACK debug_console_txtDebug_WordBreak(LPTSTR lpch, int ichCurrent, int cch, int code)
 {
 	// Disable all wordwrapping.
 	return 0;

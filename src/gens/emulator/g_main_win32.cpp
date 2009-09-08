@@ -61,7 +61,7 @@ using std::list;
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 #if !defined(GENS_WIN32_CONSOLE)
-#include "debug_window/debug_window.h"
+#include "debug_console/debug_console.h"
 #endif
 
 // Win32 instance
@@ -147,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Create the debug window.
 #if !defined(GENS_WIN32_CONSOLE)
-	debug_window_create();
+	debug_console_create();
 #endif
 		
 	// gens_window is needed before anything else is set up.
@@ -201,10 +201,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 #if !defined(GENS_WIN32_CONSOLE)
 	// Check if the debug window should be shown.
-	if (startup->enable_debug_window)
-		ShowWindow(debug_window, nCmdShow);
+	if (startup->enable_debug_console)
+		ShowWindow(debug_console, nCmdShow);
 	else
-		debug_window_close();
+		debug_console_close();
 #endif
 	
 	// Initialize the video backend.
@@ -252,8 +252,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 #if !defined(GENS_WIN32_CONSOLE)
 	// Close the Debug window.
-	if (debug_window)
-		debug_window_close();
+	if (debug_console)
+		debug_console_close();
 #endif
 		
 	// Delete the fonts.

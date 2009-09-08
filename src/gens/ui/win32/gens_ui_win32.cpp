@@ -71,7 +71,7 @@
 #include "select_cdrom/selcd_window.hpp"
 #include "country_code/ccode_window.h"
 #include "plugin_manager/pmgr_window.hpp"
-#include "debug_window/debug_window.h"
+#include "debug_console/debug_console.h"
 #include "about/about_window.hpp"
 
 // Plugins.
@@ -281,7 +281,7 @@ void GensUI::update(void)
 #endif
 		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
 		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)) ||
-		    (debug_window && IsDialogMessage(debug_window, &msg)) ||
+		    (debug_console && IsDialogMessage(debug_console, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.

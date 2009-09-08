@@ -51,7 +51,7 @@ typedef struct _Gens_StartupInfo_t
 	Gens_StartupMode_t mode;
 	char filename[GENS_PATH_MAX];
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
-	int enable_debug_window;
+	int enable_debug_console;
 #endif
 } Gens_StartupInfo_t;
 
