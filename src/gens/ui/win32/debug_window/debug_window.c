@@ -172,6 +172,10 @@ void debug_window_log(const char *msg)
 	int len = GetWindowTextLength(txtDebug);
 	Edit_SetSel(txtDebug, len, len);
 	Edit_ReplaceSel(txtDebug, msg);
+	
+	// Set the cursor position to the end of the buffer.
+	len = GetWindowTextLength(txtDebug);
+	SendMessage(txtDebug, EM_LINESCROLL, 0, len);
 }
 
 
