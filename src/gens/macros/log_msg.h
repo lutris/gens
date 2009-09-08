@@ -115,7 +115,7 @@ void log_msgbox(const char* msg, const char* title);
 #define DBG_WIN_LOG(channel, level, msg, ...) \
 do { \
 	char log_msg[512]; \
-	snprintf(log_msg, sizeof(log_msg), "%s:%d:%s(): " msg "\n", #channel, level, __func__, ##__VA_ARGS__); \
+	snprintf(log_msg, sizeof(log_msg), "%s:%d:%s(): " msg "\r\n", #channel, level, __func__, ##__VA_ARGS__); \
 	log_msg[sizeof(log_msg)-1] = 0x00; \
 	debug_window_log(log_msg); \
 } while (0)
