@@ -97,18 +97,6 @@ void get_default_save_path(char *buf, size_t size)
  */
 int main(int argc, char *argv[])
 {
-	if (geteuid() == 0)
-	{
-		// Don't run Gens/GS as root!
-		static const char gensRootErr[] =
-				"Error: Gens/GS should not be run as root.\n"
-				"Please log in as a regular user.";
-		
-		fprintf(stderr, "%s\n", gensRootErr);
-		
-		return 1;
-	}
-	
 #if !defined(GENS_DEBUG)
 	// Install the signal handler.
 	gens_sighandler_init();
