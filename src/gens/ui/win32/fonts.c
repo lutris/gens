@@ -42,12 +42,7 @@
 HFONT fntMain;
 HFONT fntTitle;
 HFONT fntMono;
-
-// Font enumeration callbacks.
-static int CALLBACK font_enum_callback_fixedsys(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme,
-						DWORD FontType, LPARAM lParam);
-static int CALLBACK font_enum_callback_courier_new(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme,
-						   DWORD FontType, LPARAM lParam);
+HFONT fntDebug;
 
 
 /**
@@ -69,15 +64,11 @@ void fonts_init(void)
 	ncm.lfMessageFont.lfWeight = FW_BOLD;
 	fntTitle = CreateFontIndirect(&ncm.lfMessageFont);
 	
-	// Enumerate the fonts to find a monospaced font.
-	LOGFONT lfMonoFont;
-	lfMonoFont.lfCharSet = DEFAULT_CHARSET;
-	lfMonoFont.lfPitchAndFamily = 0;
-	_tcscpy(lfMonoFont.lfFaceName, TEXT("Fixedsys"));
-	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)font_enum_callback_fixedsys, 0, 0);
-	_tcscpy(lfMonoFont.lfFaceName, TEXT("Courier New"));
-	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)font_enum_callback_courier_new, 0, 0);
+	// Set up the monospaced font. (WinXP: Fixedsys)
+	fntMono = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
 	
+	// Set up the debug font. (WinXP: Terminal)
+	fntDebug = (HFONT)GetStockObject(OEM_FIXED_FONT);
 }
 
 
@@ -91,79 +82,4 @@ void fonts_end(void)
 	
 	DeleteFont(fntTitle);
 	fntTitle = NULL;
-	
-	DeleteFont(fntMono);
-	fntMono = NULL;
-}
-
-
-/**
- * font_enum_callback_fixedsys(): Callback for finding the "Fixedsys" font.
- * @param lpelfe
- * @param lpntme
- * @param FontType
- * @param lParam
- */
-static int CALLBACK font_enum_callback_fixedsys(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme,
-						DWORD FontType, LPARAM lParam)
-{
-	GENS_UNUSED_PARAMETER(lpntme);
-	GENS_UNUSED_PARAMETER(FontType);
-	GENS_UNUSED_PARAMETER(lParam);
-	
-	// Verify that this is the correct font.
-	if (_tcsicmp(lpelfe->elfLogFont.lfFaceName, TEXT("Fixedsys")))
-	{
-		// Incorrect font. Continue enumeration.
-		return 1;
-	}
-	
-	// If a font has been created already, delete it.
-	if (fntMono)
-		DeleteFont(fntMono);
-	
-	// Create the "Fixedsys" font.
-	LOGFONT lfMono;
-	memset(&lfMono, 0x00, sizeof(lfMono));
-	_tcscpy(lfMono.lfFaceName, TEXT("Fixedsys"));
-	fntMono = CreateFontIndirect(&lfMono);
-	
-	// Stop enumeration.
-	return 0;
-}
-
-
-/**
- * font_enum_callback_courier_new(): Callback for finding the "Courier New" font.
- * @param lpelfe
- * @param lpntme
- * @param FontType
- * @param lParam
- */
-static int CALLBACK font_enum_callback_courier_new(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme,
-						   DWORD FontType, LPARAM lParam)
-{
-	GENS_UNUSED_PARAMETER(lpntme);
-	GENS_UNUSED_PARAMETER(FontType);
-	GENS_UNUSED_PARAMETER(lParam);
-	
-	// Verify that this is the correct font.
-	if (_tcsicmp(lpelfe->elfLogFont.lfFaceName, TEXT("Courier New")))
-	{
-		// Incorrect font. Continue enumeration.
-		return 1;
-	}
-	
-	// If a font has been created already, don't do anything.
-	if (fntMono)
-		return 0;
-	
-	// Create the "Courier New" font.
-	LOGFONT lfMono;
-	memset(&lfMono, 0x00, sizeof(lfMono));
-	_tcscpy(lfMono.lfFaceName, TEXT("Courier New"));
-	fntMono = CreateFontIndirect(&lfMono);
-	
-	// Stop enumeration.
-	return 0;
 }
