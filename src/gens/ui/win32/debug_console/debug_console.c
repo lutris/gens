@@ -159,6 +159,7 @@ void debug_console_close(void)
 	// Destroy the window.
 	DestroyWindow(debug_console);
 	debug_console = NULL;
+	txtDebug = NULL;
 }
 
 
@@ -168,6 +169,9 @@ void debug_console_close(void)
  */
 void debug_console_log(const char *msg)
 {
+	if (!debug_console || !txtDebug)
+		return;
+	
 	// TODO: Remove previous lines.
 	int len = GetWindowTextLength(txtDebug);
 	Edit_SetSel(txtDebug, len, len);
@@ -213,6 +217,7 @@ static LRESULT CALLBACK debug_console_wndproc(HWND hWnd, UINT message, WPARAM wP
 				break;
 			
 			debug_console = NULL;
+			txtDebug = NULL;
 			break;
 	}
 	
