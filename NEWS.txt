@@ -59,11 +59,39 @@ Bug Fixes:
 * [SDL] Gens/GS now recognizes diagonals on POV hats properly. This bug
   was reported (and fixed) by superG on the Ubuntu Forums.
 
+* Fixed the "Crazy" and "Gens Logo" intro effects so they work again.
+  The intro effect is now configurable in the "General Options" window.
+  Note that the "Gens Logo" effect may have problems on Win32 if the
+  desktop color depth doesn't match the rendering color depth.
+
+* The "Directory Configuration" window now correctly shows the directory
+  names in the "Select Directory" window title. This regressed when the
+  "Directory Configuration" window was ported back to C in r7_pre1.
+
+* [Win32] If the "Normal" renderer can't be initialized in Full Screen in
+  the DirectDraw renderer, try the "Double" renderer instead. Some newer
+  Windows video drivers don't support double-scanning 320x240, so 640x480
+  must be used instead.
+
+* [Win32] Fixed a massive lag regression from the "back-to-c" branch.
+  The DirectSound audio backend was sleeping for 1 ms while waiting for
+  the write pointer to change, which caused issues with the Windows
+  scheduler on some systems. Thanks to djohe from #retro for helping to
+  diagnose and solve this problem.
+
 --------------------------------
 
 Miscellaneous:
 
 * automake-1.10 is now required to build Gens/GS.
+
+* The "Double" renderer is now default for both Full Screen and Windowed modes.
+
+* Stretch mode now defaults to "Horizontal Only".
+
+* [Win32] Window reinitialization has been improved when switching to/from
+  Full Screen. The reinitialization code from the DirectDraw 4 and GDI
+  renderers have been merged into a single function.
 
 ================================================================
 
