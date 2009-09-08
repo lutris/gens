@@ -158,6 +158,9 @@ static const opt0arg_str_t opt0arg_str[] =
 #ifdef GENS_CDROM
 	{"boot-cd",	"Boot SegaCD"},
 #endif
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+	{"debug",	"Enable debug console"},
+#endif
 	{NULL, NULL}
 };
 
@@ -169,6 +172,9 @@ enum opt0arg_enum
 	OPT0_QUICKEXIT,
 #ifdef GENS_CDROM
 	OPT0_BOOT_CD,
+#endif
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+	OPT0_DEBUG_CONSOLE,
 #endif
 	OPT0_TOTAL
 };
@@ -285,6 +291,9 @@ static const struct option long_options[] =
 	LONGOPT_0ARG(OPT0_QUICKEXIT),
 #ifdef GENS_CDROM
 	LONGOPT_0ARG(OPT0_BOOT_CD),
+#endif
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+	LONGOPT_0ARG(OPT0_DEBUG_CONSOLE),
 #endif
 	
 	// Boolean parameters.
@@ -459,7 +468,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 	startup->mode = GSM_IDLE;
 	startup->filename[0] = 0x00;
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
-	startup->enable_debug_window = 1;
+	startup->enable_debug_window = 0;
 #endif
 	
 	while (1)
@@ -612,6 +621,13 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			// Boot SegaCD on startup.
 			startup->mode = GSM_BOOT_CD;
+		}
+#endif
+#if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_DEBUG_CONSOLE].option))
+		{
+			// Enable Debug console.
+			startup->enable_debug_window = 1;
 		}
 #endif
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))
