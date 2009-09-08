@@ -232,7 +232,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Config::save(cfg_filename);
 	
 	End_All();
-	ChangeDisplaySettings(NULL, 0);
 	DestroyWindow(gens_window);
 	
 	// Delete the fonts.
