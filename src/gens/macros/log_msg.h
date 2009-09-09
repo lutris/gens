@@ -120,7 +120,7 @@ do { \
 	debug_console_log(log_msg); \
 } while (0)
 #else
-#define debug_window_log(channel, level, msg, ...)
+#define DBG_WIN_LOG(channel, level, msg, ...)
 #endif
 
 /**
