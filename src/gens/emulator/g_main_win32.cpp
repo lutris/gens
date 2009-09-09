@@ -249,13 +249,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Config::save(cfg_filename);
 	
 	End_All();
+	DestroyWindow(gens_window);
 	
 #if !defined(GENS_WIN32_CONSOLE)
 	// Close the Debug window.
 	if (debug_console)
 		debug_console_close();
 #endif
-		
+	
 	// Delete the fonts.
 	fonts_end();
 	
@@ -273,6 +274,5 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 #endif
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
-	
 	return 0;
 }
