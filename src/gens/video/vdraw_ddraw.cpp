@@ -937,10 +937,6 @@ int vdraw_ddraw_flip(void)
 			// Other renderer.
 			
 			LPDIRECTDRAWSURFACE4 curBlit = lpDDS_Blit;
-#ifdef CORRECT_256_ASPECT_RATIO
-			if(!IS_FULL_X_RESOLUTION)
-				curBlit = lpDDS_Back; // have to use it or the aspect ratio will be way off
-#endif
 			rval = curBlit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			
 			if (FAILED(rval))
@@ -976,6 +972,7 @@ int vdraw_ddraw_flip(void)
 			curBlit->Unlock(NULL);
 			
 			// Draw the border.
+			// TODO: This doesn't work here due to weird border calculations.
 			vdraw_ddraw_draw_border(curBlit, RectDest);
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
