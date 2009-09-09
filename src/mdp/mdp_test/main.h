@@ -63,6 +63,11 @@
 		printf("%s: ", test); \
 		fflush(NULL); \
 	} while (0)
+#define TEST_START_ARGS(test, ...) \
+	do { \
+		printf(test ":", ##__VA_ARGS__); \
+		fflush(NULL); \
+	} while (0)
 
 #define TEST_FAIL(err) \
 	do { \
@@ -105,6 +110,11 @@
 #define TEST_PASS() \
 	do { \
 		printf("\t" COLOR_PASS "PASSED" COLOR_OFF "\n"); \
+		fflush(NULL); \
+	} while (0)
+#define TEST_PASS_MSG(msg) \
+	do { \
+		printf("\t" COLOR_PASS "PASSED: %s" COLOR_OFF "\n", msg); \
 		fflush(NULL); \
 	} while (0)
 

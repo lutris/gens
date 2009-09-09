@@ -34,6 +34,8 @@ int mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer);
 
 int renderer_clear(void);
 
+int renderer_test_all(void);
+
 #ifdef __cplusplus
 }
 #endif

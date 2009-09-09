@@ -47,6 +47,7 @@ static int shutdown_plugin(const mdp_t *plugin);
 int plugin_check(const char *filename)
 {
 	int rval = 0;
+	int passed = 1;
 	printf("Testing plugin '%s'...\n", filename);
 	
 	// Attempt to open the specified plugin.
@@ -89,6 +90,11 @@ int plugin_check(const char *filename)
 	if (rval != 0)
 		goto Finish;
 	
+	// Test renderer plugins.
+	rval = renderer_test_all();
+	if (rval != 0)
+		passed = 0;
+	
 	// Shut down the plugin.
 	rval = shutdown_plugin(mdp);
 	if (rval != 0)
@@ -98,7 +104,9 @@ Finish:
 	if (DLL)
 		mdp_dlclose(DLL);
 	printf("Finished testing plugin '%s'.\n", filename);
-	return rval;
+	if (passed == 1)
+		return rval;
+	return -MDP_ERR_UNKNOWN;
 }
 
 
@@ -123,7 +131,7 @@ static int validate_plugin_info(const mdp_t *plugin)
 	}
 	
 	// Add a newline.
-	puts("");
+	putchar('\n');
 	
 	// Check for a plugin description field.
 	mdp_desc_t *desc = plugin->desc;
@@ -198,7 +206,7 @@ static int validate_plugin_info(const mdp_t *plugin)
 static int initialize_plugin(const mdp_t *plugin)
 {
 	TEST_START("Initializing plugin");
-	puts("");
+	putchar('\n');
 	
 	// Get the mdp_func_t pointer.
 	mdp_func_t *func = plugin->func;
@@ -240,7 +248,7 @@ static int initialize_plugin(const mdp_t *plugin)
 static int shutdown_plugin(const mdp_t *plugin)
 {
 	TEST_START("Shutting down plugin");
-	puts("");
+	putchar('\n');
 	
 	// Get the mdp_func_t pointer.
 	mdp_func_t *func = plugin->func;
