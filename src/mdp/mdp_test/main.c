@@ -29,7 +29,7 @@
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "MDP: Mega Drive Plugins %d.%d.%d\n"
-		"Test Suite version %d.%d.%d\n\n"
+		"Test Suite version %d.%d.%d%s\n\n"
 		"Copyright (c) 2008-2009 by David Korth.\n\n"
 		"This program is licensed under the GNU General Public License v2.\n"
 		"See http://www.gnu.org/licenses/gpl-2.0.html for more information.\n\n",
@@ -38,7 +38,13 @@ int main(int argc, char *argv[])
 		MDP_VERSION_REVISION(TEST_MDP_INTERFACE_VERSION),
 		MDP_VERSION_MAJOR(TEST_VERSION),
 		MDP_VERSION_MINOR(TEST_VERSION),
-		MDP_VERSION_REVISION(TEST_VERSION));
+		MDP_VERSION_REVISION(TEST_VERSION),
+#ifdef TEST_VERSION_DEVEL
+		"+"
+#else
+		""
+#endif
+	       );
 	
 	// Check parameters.
 	if (argc <= 1)

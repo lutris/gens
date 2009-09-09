@@ -30,7 +30,8 @@
 #define TEST_MDP_INTERFACE_VERSION MDP_VERSION(1, 0, 0)
 
 // Test suite version.
-#define TEST_VERSION MDP_VERSION(0, 1, 0)
+#define TEST_VERSION MDP_VERSION(0, 0, 1)
+#define TEST_VERSION_DEVEL
 
 #ifdef _WIN32
 #define DIRSEP_CHR '\\'
