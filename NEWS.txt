@@ -79,6 +79,11 @@ Bug Fixes:
   scheduler on some systems. Thanks to djohe from #retro for helping to
   diagnose and solve this problem.
 
+* [Win32] Removed a call to ChangeDesktopSettings() on exit. Notably,
+  this fixes a bug in Wine where Gens would disable the second monitor
+  on exit. It probably also fixes some flicker issues on Vista when
+  the program exited.
+
 --------------------------------
 
 Miscellaneous:
@@ -92,6 +97,9 @@ Miscellaneous:
 * [Win32] Window reinitialization has been improved when switching to/from
   Full Screen. The reinitialization code from the DirectDraw 4 and GDI
   renderers have been merged into a single function.
+
+* [Win32] The Release build now has an option for a debug console. To enable
+  the debug console, specify the "--debug" parameter on the command line.
 
 ================================================================
 
