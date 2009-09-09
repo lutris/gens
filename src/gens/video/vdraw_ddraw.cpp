@@ -253,6 +253,7 @@ int vdraw_ddraw_init(void)
 					"Renderer is set to Normal; attempting to use Double instead.");
 				rendMode_FS++;
 				vdraw_set_renderer(rendMode_FS);
+				vdraw_text_printf(1500, "Normal rendering failed. Using Double.");
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			
