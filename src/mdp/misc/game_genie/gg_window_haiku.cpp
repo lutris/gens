@@ -98,7 +98,8 @@ static void gg_window_save(void)
 static int gg_window_add_code_from_textboxes(void)
 {
 }
-	
+
+
 /**
  * gg_window_add_code(): Add a code to the treeview.
  * @param gg_code Pointer to gg_code_t containing the code to add.
