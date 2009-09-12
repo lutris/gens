@@ -52,6 +52,8 @@
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
+#include "plugins/mdp_incompat.hpp"
+#include "mdp/mdp_error.h"
 
 // File functions.
 #include "util/file/file.hpp"
@@ -101,7 +103,7 @@ typedef enum _pmgr_type_t
 {
 	PMGR_INTERNAL = 0,
 	PMGR_EXTERNAL = 1,
-	//PMGR_INCOMPAT = 2, // TODO
+	PMGR_INCOMPAT = 2,
 	
 	PMGR_MAX
 } pmgr_type_t;
@@ -115,6 +117,7 @@ static void	pmgr_window_create_plugin_list_tab_control(HWND container);
 static void	pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, int id);
 static void	pmgr_window_create_plugin_info_frame(HWND container);
 static void	pmgr_window_populate_plugin_lists(void);
+static void	pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename = "");
 
 // Callbacks.
 static void	pmgr_window_callback_lstPluginList_cursor_changed(int id);
@@ -248,8 +251,7 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
 	// Create the tabs.
 	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&Internal"), PMGR_INTERNAL);
 	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&External"), PMGR_EXTERNAL);
-	// TODO
-	//pmgr_window_create_plugin_list_tab(tabPluginList, "I&ncompatible", PMGR_INCOMPAT);
+	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("I&ncompatible"), PMGR_INCOMPAT);
 }
 
 
@@ -390,37 +392,64 @@ static void pmgr_window_populate_plugin_lists(void)
 		ListView_DeleteAllItems(lstPluginList[i]);
 	}
 	
-	// Add all plugins to the ListView.
-	string pluginName;
-	list<mdp_t*>::iterator curPlugin;
-	pmgr_type_t pmType;
-	
-	for (curPlugin = PluginMgr::lstMDP.begin();
+	// Add all loaded plugins to the ListView.
+	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		mdp_t *plugin = (*curPlugin);
-		
-		if (plugin->desc && plugin->desc->name)
-		{
-			pluginName = string(plugin->desc->name);
-		}
-		else
-		{
-			// No description or name.
-			char tmp[64];
-			snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
-			tmp[sizeof(tmp)-1] = 0x00;
-			pluginName = string(tmp);
-		}
-		
-		// Check for MDP DLL information.
+		pmgr_window_add_plugin_to_list(plugin, MDP_ERR_OK);
+	}
+	
+	// Add incompatible plugins to PMGR_INCOMPAT.
+	for (list<mdp_incompat_t>::iterator curIncompat = PluginMgr::Incompat.begin();
+	     curIncompat != PluginMgr::Incompat.end(); curIncompat++)
+	{
+		const mdp_incompat_t& incompat = (*curIncompat);
+		pmgr_window_add_plugin_to_list(incompat.mdp, incompat.err, incompat.filename);
+	}
+}
+
+
+/**
+ * pmgr_window_add_plugin_to_list(): Add a plugin to the ListViews.
+ * @param plugin mdp_t* of the plugin.
+ * @param err MDP error code. If not MDP_ERR_OK, the plugin is added to PMGR_INCOMPAT.
+ * @param filename Filename of the plugin, if available.
+ */
+static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename)
+{
+	if (!plugin)
+		return;
+	
+	string pluginName;
+	pmgr_type_t pmType;
+	
+	// Determine the plugin name.
+	if (plugin->desc && plugin->desc->name)
+	{
+		pluginName = string(plugin->desc->name);
+	}
+	else
+	{
+		// No description or name.
+		char tmp[64];
+		snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
+		tmp[sizeof(tmp)-1] = 0x00;
+		pluginName = string(tmp);
+	}
+	
+	// Check for MDP DLL information.
+	if (filename.empty())
+	{
+		// Specified filename is empty.
+		// Check PluginMgr::tblMdpDLL for the plugin information.
 		mapMdpDLL::iterator dllIter = PluginMgr::tblMdpDLL.find(plugin);
 		if (dllIter != PluginMgr::tblMdpDLL.end())
 		{
 			// External plugin.
 			pmType = PMGR_EXTERNAL;
 			
-			mdpDLL_t& dll = (*dllIter).second;
+			const mdpDLL_t& dll = (*dllIter).second;
 			pluginName += " (" + File::GetNameFromPath(dll.filename) + ")";
 		}
 		else
@@ -428,49 +457,62 @@ static void pmgr_window_populate_plugin_lists(void)
 			// Internal plugin.
 			pmType = PMGR_INTERNAL;
 		}
-		
-		LVITEM lviPlugin;
-		memset(&lviPlugin, 0x00, sizeof(lviPlugin));
-		
-#ifdef GENS_PNG
-		// Add the plugin's icon to the ImageList.
-		lviPlugin.iImage = -1;
-		HBITMAP hbmpIcon = NULL;
-		if (plugin->desc)
-		{
-			hbmpIcon = pmgr_window_create_bitmap_from_png(plugin->desc->icon, plugin->desc->iconLength);
-		}
-		
-		if (hbmpIcon)
-		{
-			lviPlugin.iImage = ImageList_Add(imglPluginIcons, hbmpIcon, NULL);
-			vectPluginIcons.push_back(hbmpIcon);
-		}
-#endif
-		
-#ifdef GENS_PNG
-		lviPlugin.mask = LVIF_IMAGE | LVIF_PARAM;
-#else
-		lviPlugin.mask = LVIF_PARAM;
-#endif
-		lviPlugin.cchTextMax = 256;
-		lviPlugin.iItem = ListView_GetItemCount(lstPluginList[pmType]);
-		lviPlugin.lParam = (LPARAM)plugin;
-		
-		// First column: Icon.
-		lviPlugin.iSubItem = 0;
-		lviPlugin.pszText = NULL;
-		ListView_InsertItem(lstPluginList[pmType], &lviPlugin);
-		
-		// lParam doesn't need to be set for the subitems.
-		lviPlugin.mask = LVIF_TEXT;
-		lviPlugin.lParam = NULL;
-		
-		// Second column: Plugin name.
-		lviPlugin.iSubItem = 1;
-		lviPlugin.pszText = const_cast<LPTSTR>(pluginName.c_str());
-		ListView_SetItem(lstPluginList[pmType], &lviPlugin);
 	}
+	else
+	{
+		// Filename was specified. Assume external plugin.
+		pmType = PMGR_EXTERNAL;
+		pluginName += " (" + File::GetNameFromPath(filename) + ")";
+	}
+	
+	// If err isn't MDP_ERR_OK, add to PMGR_INCOMPAT.
+	if (err != 0)
+	{
+		pmType = PMGR_INCOMPAT;
+		// TODO: Add the error code to a map.
+	}
+	
+	LVITEM lviPlugin;
+	memset(&lviPlugin, 0x00, sizeof(lviPlugin));
+	
+#ifdef GENS_PNG
+	// Add the plugin's icon to the ImageList.
+	lviPlugin.iImage = -1;
+	HBITMAP hbmpIcon = NULL;
+	if (plugin->desc)
+	{
+		hbmpIcon = pmgr_window_create_bitmap_from_png(plugin->desc->icon, plugin->desc->iconLength);
+	}
+	
+	if (hbmpIcon)
+	{
+		lviPlugin.iImage = ImageList_Add(imglPluginIcons, hbmpIcon, NULL);
+		vectPluginIcons.push_back(hbmpIcon);
+	}
+#endif
+	
+#ifdef GENS_PNG
+	lviPlugin.mask = LVIF_IMAGE | LVIF_PARAM;
+#else
+	lviPlugin.mask = LVIF_PARAM;
+#endif
+	lviPlugin.cchTextMax = 256;
+	lviPlugin.iItem = ListView_GetItemCount(lstPluginList[pmType]);
+	lviPlugin.lParam = (LPARAM)plugin;
+	
+	// First column: Icon.
+	lviPlugin.iSubItem = 0;
+	lviPlugin.pszText = NULL;
+	ListView_InsertItem(lstPluginList[pmType], &lviPlugin);
+	
+	// lParam doesn't need to be set for the subitems.
+	lviPlugin.mask = LVIF_TEXT;
+	lviPlugin.lParam = NULL;
+	
+	// Second column: Plugin name.
+	lviPlugin.iSubItem = 1;
+	lviPlugin.pszText = const_cast<LPTSTR>(pluginName.c_str());
+	ListView_SetItem(lstPluginList[pmType], &lviPlugin);
 }
 
 
