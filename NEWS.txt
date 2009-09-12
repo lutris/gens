@@ -101,6 +101,9 @@ Miscellaneous:
 * [Win32] The Release build now has an option for a debug console. To enable
   the debug console, specify the "--debug" parameter on the command line.
 
+* Incompatible MDP plugins are now displayed in a third tab in the Plugin Manager
+  window. The description field displays the MDP error code.
+
 ================================================================
 
 Changes from r7_pre2 to r7_pre3 [PREVIEW RELEASE]:
