@@ -84,6 +84,10 @@ Bug Fixes:
   on exit. It probably also fixes some flicker issues on Vista when
   the program exited.
 
+* SRAM functionality was accidentally broken in Release 7, Preview 2.
+  I overhauled the ROM header parser but forgot to byteswap various values,
+  including the SRAM addresses. SRAM works now.
+
 --------------------------------
 
 Miscellaneous:
