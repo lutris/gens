@@ -98,16 +98,6 @@ static HWND	lblPluginMainInfo;
 static HWND	lblPluginSecInfo;
 static HWND	lblPluginDesc;
 
-// Plugin List.
-typedef enum _pmgr_type_t
-{
-	PMGR_INTERNAL = 0,
-	PMGR_EXTERNAL = 1,
-	PMGR_INCOMPAT = 2,
-	
-	PMGR_MAX
-} pmgr_type_t;
-
 static HWND	tabPluginList;
 static HWND	lstPluginList[PMGR_MAX];
 

@@ -66,16 +66,6 @@ static GtkWidget	*lblPluginSecInfo;
 static GtkWidget	*lblPluginDesc;
 static GtkWidget	*fraPluginDesc;
 
-// Plugin List.
-typedef enum _pmgr_type_t
-{
-	PMGR_INTERNAL = 0,
-	PMGR_EXTERNAL = 1,
-	PMGR_INCOMPAT = 2,
-	
-	PMGR_MAX
-} pmgr_type_t;
-
 static GtkWidget	*lstPluginList[PMGR_MAX];
 static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL};
 

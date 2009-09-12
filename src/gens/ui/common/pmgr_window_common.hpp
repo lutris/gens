@@ -27,6 +27,10 @@
 #include <config.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef GENS_PNG
 
 #include <png.h>
@@ -35,6 +39,21 @@ extern unsigned int		pmgr_window_png_datalen;
 extern unsigned int		pmgr_window_png_datapos;
 
 void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
+
+#endif
+
+// Plugin ListViews.
+typedef enum _pmgr_type_t
+{
+	PMGR_INTERNAL = 0,
+	PMGR_EXTERNAL = 1,
+	PMGR_INCOMPAT = 2,
+	
+	PMGR_MAX
+} pmgr_type_t;
+
+#ifdef __cplusplus
+}
 #endif
 
 #ifdef __cplusplus
