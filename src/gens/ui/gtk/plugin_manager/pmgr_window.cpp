@@ -363,12 +363,9 @@ static void pmgr_window_populate_plugin_lists(void)
 		
 #ifdef GENS_PNG
 		// Icon.
-		if (i != PMGR_INCOMPAT)
-		{
-			renderer = gtk_cell_renderer_pixbuf_new();
-			colIcon = gtk_tree_view_column_new_with_attributes("Icon", renderer, "pixbuf", 3, NULL);
-			gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colIcon);
-		}
+		renderer = gtk_cell_renderer_pixbuf_new();
+		colIcon = gtk_tree_view_column_new_with_attributes("Icon", renderer, "pixbuf", 3, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colIcon);
 #endif
 		
 		// Plugin name.
@@ -461,7 +458,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 #ifdef GENS_PNG
 	// Create the pixbuf for the plugin icon.
 	GdkPixbuf *pbufIcon = NULL;
-	if (plugin->desc)
+	if (plugin->desc && plugin->desc->icon && plugin->desc->iconLength > 0)
 	{
 		pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
 	}
