@@ -391,11 +391,22 @@ void ROM::fillROMInfo(ROM_t *rom)
 	
 	// Load the ROM header.
 	memcpy(rom, &Rom_Data[0x100], sizeof(*rom));
+	
+	// TODO: Make sure this is correct.
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
 		// ROM is byteswapped. Unswap the header.
 		be16_to_cpu_array(rom, sizeof(*rom));
 	}
+	
+	// Byteswap the values in the header.
+	rom->CheckSum		= be16_to_cpu(rom->CheckSum);
+	rom->ROM_Start_Address	= be32_to_cpu(rom->ROM_Start_Address);
+	rom->ROM_End_Address	= be32_to_cpu(rom->ROM_End_Address);
+	rom->RAM_Start_Address	= be32_to_cpu(rom->RAM_Start_Address);
+	rom->RAM_End_Address	= be32_to_cpu(rom->RAM_End_Address);
+	rom->SRAM_Start_Address	= be32_to_cpu(rom->SRAM_Start_Address);
+	rom->SRAM_End_Address	= be32_to_cpu(rom->SRAM_End_Address);
 	
 	if (memcmp(rom->Serial_Number, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060", sizeof(rom->Serial_Number)) == 0)
 		ice = 1;
