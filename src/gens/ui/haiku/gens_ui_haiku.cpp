@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "ui/haiku/gens/gens_app.hpp"
 #include "gens/gens_window.h"
 #include "ui/haiku/gens/gens_menu.hpp"
 
@@ -47,6 +48,7 @@
 #include "country_code/ccode_window.h"
 #include "about/about_window.hpp"
 #include "plugin_manager/pmgr_window.hpp"
+#include <Application.h>
 
 // Plugins.
 #include "plugins/pluginmgr.hpp"
@@ -81,10 +83,15 @@ void GensUI::init(int *argc, char **argv[])
 	GENS_UNUSED_PARAMETER(argv);
 
 	// Create the Gens window.
-        gens_window_create();
+	//gens_window_create();
+	new GensApplication();
 
-        // Set the window title to Idle.
-        setWindowTitle_Idle();
+	// Set the window title to Idle.
+	setWindowTitle_Idle();
+
+	// Enter the main application loop
+	be_app->Run();
+	delete be_app;
 }
 
 

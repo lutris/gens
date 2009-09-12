@@ -25,14 +25,66 @@
 #define GENS_HAIKU_GENS_WINDOW_H
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
-extern void *gens_window;
-void gens_window_create(void);
+#include <Window.h>
 
-#ifdef __cplusplus
-}
-#endif
+#define kMsgOpenROM 'orom'
+#define kMsgBootCD 'bootcd'
+#define kMsgNetplay 'netplay'
+#define kMsgCloseROM 'crom'
+#define kMsgGameGenie 'gg'
+#define kMsgLoadState 'ls'
+#define kMsgSaveStateAs 'ssa'
+#define kMsgQuickLoad 'ql'
+#define kMsgQuickSave 'qs'
+#define kMsgFullScreen 'fs'
+#define kMsgVSync 'vs'
+#define kMsgStretch 'str'
+#define kMsgOpenGL 'ogl'
+#define kMsgColorAdjust 'ca'
+#define kMsgSpriteLimit 'sl'
+#define kMsgScreenShot 'ss'
+#define kMsgHardReset 'hr'
+#define kMsgReset68K 'r68k'
+#define kMsgResetZ80 'rz80'
+#define kMsgPerfectSync 'ps'
+#define kMsgSound 'snd'
+#define kMsgStereo 'st'
+#define kMsgZ80 'z80'
+#define kMsgYM2612 'ym'
+#define kMsgYM2612Impr 'ymi'
+#define kMsgDAC 'dac'
+#define kMsgDACImpr 'daci'
+#define kMsgPSG 'psg'
+#define kMsgPSGImpr 'psgi'
+#define kMsgPCM 'pcm'
+#define kMsgPWM 'pwm'
+#define kMsgCDDA 'cdda'
+#define kMsgWAVDump 'wd'
+#define kMsgGYMDump 'gd'
+#define kMsgGeneralOptions 'go'
+#define kMsgJoypads 'jp'
+#define kMsgDirectories 'dr'
+#define kMsgBIOSMisc 'bm'
+#define kMsgSDLSoundTest 'sst'
+#define kMsgCurCDDrive 'cd'
+#define kMsgLoadConfig 'lc'
+#define kMsgSaveConfigAs 'sc'
+#define kMsgAbout 'ab'
+
+class BMenu;
+class BMenuItem;
+class BMessage;
+
+class GensWindow : public BWindow {
+
+public:
+	GensWindow();
+	~GensWindow();
+};
+
+#else
+	void *gens_window;
+#endif /* __cplusplus */
 
 #endif /* GENS_HAIKU_GENS_WINDOW_H */

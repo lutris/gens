@@ -23,6 +23,7 @@ gens_SOURCES += \
 # UI sources.
 gens_SOURCES += \
 		ui/haiku/gens_ui_haiku.cpp \
+		ui/haiku/gens/gens_app.cpp \
 		ui/haiku/gens/gens_window.cpp \
 		ui/haiku/gens/gens_window_callbacks.cpp \
 		ui/haiku/gens/gens_window_sync.cpp \
@@ -90,6 +91,8 @@ noinst_HEADERS += \
 #noinst_HEADERS += \
 #		ui/haiku/select_cdrom/selcd_window.hpp
 #endif # GENS_CDROM
+
+gens_LDADD += -lbe
 
 gens_CFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
