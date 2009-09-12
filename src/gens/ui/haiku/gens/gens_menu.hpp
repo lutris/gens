@@ -39,12 +39,14 @@ extern int gens_menu_do_callbacks;
 
 #ifdef __cplusplus
 
+void gens_menu_parse(const GensMenuItem_t* menu, BMenuBar *menuBar);
+
 // Hash table containing all the menu items.
 // Key is the menu ID.
 #include "libgsft/gsft_hashtable.hpp"
 #include <utility>
-typedef GSFT_HASHTABLE<uint16_t, BMenuItem *> gensMenuMap_t;
-typedef std::pair<uint16_t, BMenuItem *> gensMenuMapItem_t;
+typedef GSFT_HASHTABLE<uint16_t, BMenuItem*> gensMenuMap_t;
+typedef std::pair<uint16_t, BMenuItem*> gensMenuMapItem_t;
 
 extern gensMenuMap_t gens_menu_map;
 
