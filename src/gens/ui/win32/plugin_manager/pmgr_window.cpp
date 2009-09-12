@@ -112,6 +112,12 @@ static void	pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 // Callbacks.
 static void	pmgr_window_callback_lstPluginList_cursor_changed(int id);
 
+// Hashtable of error codes.
+#include "libgsft/gsft_hashtable.hpp"
+typedef GSFT_HASHTABLE<mdp_t*, int> mapMdpErrs_t;
+static mapMdpErrs_t mapMdpErrs;
+typedef std::pair<mdp_t*, int> pairMdpErr_t;
+
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
 static HWND	imgPluginIcon;
@@ -381,6 +387,7 @@ static void pmgr_window_populate_plugin_lists(void)
 			return;
 		ListView_DeleteAllItems(lstPluginList[i]);
 	}
+	mapMdpErrs.clear();
 	
 	// Add all loaded plugins to the ListView.
 	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
@@ -459,7 +466,9 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	if (err != 0)
 	{
 		pmType = PMGR_INCOMPAT;
-		// TODO: Add the error code to a map.
+		
+		// Add the error code to the MDP error code map.
+		mapMdpErrs.insert(pairMdpErr_t(plugin, err));
 	}
 	
 	LVITEM lviPlugin;
@@ -517,6 +526,9 @@ void pmgr_window_close(void)
 	// Destroy the window.
 	DestroyWindow(pmgr_window);
 	pmgr_window = NULL;
+	
+	// Clear the map of MDP errors.
+	mapMdpErrs.clear();
 	
 #ifdef GENS_PNG
 	// Destroy the image list.
@@ -610,6 +622,9 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 				break;
 			
 			pmgr_window = NULL;
+			
+			// Clear the map of MDP errors.
+			mapMdpErrs.clear();
 			
 #ifdef GENS_PNG
 			// Destroy the image list.
@@ -739,15 +754,26 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	Edit_SetText(lblPluginSecInfo, ssSecInfo.str().c_str());
 	
 	// Plugin description.
+	string pluginDesc;
 	if (desc->description)
+		pluginDesc = string("Description:") + WIN32_ENDL + charset_utf8_to_cp1252(desc->description);
+	
+	// Check for an MDP error code.
+	mapMdpErrs_t::iterator errIter = mapMdpErrs.find(plugin);
+	if (errIter != mapMdpErrs.end())
 	{
-		string pluginDesc = string("Description:") + WIN32_ENDL + charset_utf8_to_cp1252(desc->description);
-		Edit_SetText(lblPluginDesc, pluginDesc.c_str());
+		// Found an MDP error code.
+		if (!pluginDesc.empty())
+			pluginDesc += "\n\n";
+		
+		char err_code[32];
+		snprintf(err_code, sizeof(err_code), "0x%08X", -(*errIter).second);
+		err_code[sizeof(err_code)-1] = 0x00;
+		
+		pluginDesc += "MDP error code: " + string(err_code);
 	}
-	else
-	{
-		Edit_SetText(lblPluginDesc, NULL);
-	}
+	
+	Edit_SetText(lblPluginDesc, pluginDesc.c_str());
 	
 #ifdef GENS_PNG
 	// Set the plugin icon.
