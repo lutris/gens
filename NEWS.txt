@@ -96,7 +96,7 @@ Miscellaneous:
 
 * [Win32] Window reinitialization has been improved when switching to/from
   Full Screen. The reinitialization code from the DirectDraw 4 and GDI
-  renderers have been merged into a single function.
+  renderers has been merged into a single function.
 
 * [Win32] The Release build now has an option for a debug console. To enable
   the debug console, specify the "--debug" parameter on the command line.
