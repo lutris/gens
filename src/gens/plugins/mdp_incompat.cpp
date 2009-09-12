@@ -119,7 +119,7 @@ void MDP_Incompat::add(mdp_t *plugin, int err, const string& filename)
 			if (orig_desc->website)
 				tmp_mdp_desc->website = gsft_strdup(orig_desc->website);
 			if (orig_desc->license)
-				tmp_mdp_desc->website = gsft_strdup(orig_desc->license);
+				tmp_mdp_desc->license = gsft_strdup(orig_desc->license);
 			
 			unsigned int *iconLength = const_cast<unsigned int*>(&tmp_mdp_desc->iconLength);
 			*iconLength = orig_desc->iconLength;
