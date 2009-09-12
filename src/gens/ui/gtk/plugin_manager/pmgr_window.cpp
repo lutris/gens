@@ -41,6 +41,8 @@
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
+#include "plugins/mdp_incompat.hpp"
+#include "mdp/mdp_error.h"
 
 // File functions.
 #include "util/file/file.hpp"
@@ -69,7 +71,7 @@ typedef enum _pmgr_type_t
 {
 	PMGR_INTERNAL = 0,
 	PMGR_EXTERNAL = 1,
-	//PMGR_INCOMPAT = 2, // TODO
+	PMGR_INCOMPAT = 2, // TODO
 	
 	PMGR_MAX
 } pmgr_type_t;
@@ -82,6 +84,7 @@ static void	pmgr_window_create_plugin_list_notebook(GtkWidget *container);
 static void	pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id);
 static void	pmgr_window_create_plugin_info_frame(GtkWidget *container);
 static void	pmgr_window_populate_plugin_lists(void);
+static void	pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename = "");
 
 // Callbacks.
 static gboolean	pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -183,8 +186,7 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
 	// Create the pages.
 	pmgr_window_create_plugin_list_page(tabPluginList, "_Internal", PMGR_INTERNAL);
 	pmgr_window_create_plugin_list_page(tabPluginList, "_External", PMGR_EXTERNAL);
-	// TODO
-	//pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
+	pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
 	
 	// Connect the notebook's "switch-page" signal.
 	g_signal_connect((gpointer)tabPluginList, "switch-page",
@@ -332,14 +334,16 @@ static void pmgr_window_populate_plugin_lists(void)
 		else
 		{
 #ifdef GENS_PNG
+			lmPluginList[i] = gtk_list_store_new(4,
+				G_TYPE_STRING,		// Plugin name.
+				G_TYPE_POINTER,		// mdp_t* pointer.
+				G_TYPE_INT,		// MDP error code. (usually MDP_ERR_OK)
+				GDK_TYPE_PIXBUF);	// Plugin icon.
+#else
 			lmPluginList[i] = gtk_list_store_new(3,
 				G_TYPE_STRING,		// Plugin name.
 				G_TYPE_POINTER,		// mdp_t* pointer.
-				GDK_TYPE_PIXBUF);	// Plugin icon.
-#else
-			lmPluginList[i] = gtk_list_store_new(2,
-				G_TYPE_STRING,		// Plugin name.
-				G_TYPE_POINTER);	// mdp_t* pointer.
+				G_TYPE_INT);		// MDP error code. (usually MDP_ERR_OK)
 #endif
 		}
 		
@@ -359,9 +363,12 @@ static void pmgr_window_populate_plugin_lists(void)
 		
 #ifdef GENS_PNG
 		// Icon.
-		renderer = gtk_cell_renderer_pixbuf_new();
-		colIcon = gtk_tree_view_column_new_with_attributes("Icon", renderer, "pixbuf", 2, NULL);
-		gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colIcon);
+		if (i != PMGR_INCOMPAT)
+		{
+			renderer = gtk_cell_renderer_pixbuf_new();
+			colIcon = gtk_tree_view_column_new_with_attributes("Icon", renderer, "pixbuf", 3, NULL);
+			gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colIcon);
+		}
 #endif
 		
 		// Plugin name.
@@ -370,38 +377,65 @@ static void pmgr_window_populate_plugin_lists(void)
 		gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colPlugin);
 	}
 	
-	// Add all plugins to the treeviews.
-	// TODO: Use the appropriate treeviews, depending on the plugin type/state.
-	string pluginName;
-	GtkTreeIter iter;
-	pmgr_type_t pmType;
-	
+	// Add all loaded plugins to the treeviews.
 	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		mdp_t *plugin = (*curPlugin);
-		
-		if (plugin->desc && plugin->desc->name)
-		{
-			pluginName = string(plugin->desc->name);
-		}
-		else
-		{
-			// No description or name.
-			char tmp[64];
-			snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
-			tmp[sizeof(tmp)-1] = 0x00;
-			pluginName = string(tmp);
-		}
-		
-		// Check for MDP DLL information.
+		pmgr_window_add_plugin_to_list(plugin, MDP_ERR_OK);
+	}
+	
+	// Add incompatible plugins to PMGR_INCOMPAT.
+	for (list<mdp_incompat_t>::iterator curIncompat = PluginMgr::Incompat.begin();
+	     curIncompat != PluginMgr::Incompat.end(); curIncompat++)
+	{
+		const mdp_incompat_t& incompat = (*curIncompat);
+		pmgr_window_add_plugin_to_list(incompat.mdp, incompat.err, incompat.filename);
+	}
+}
+
+
+/**
+ * pmgr_window_add_plugin_to_list(): Add a plugin to the GtkTreeViews.
+ * @param plugin mdp_t* of the plugin.
+ * @param err MDP error code. If not MDP_ERR_OK, the plugin is added to PMGR_INCOMPAT.
+ * @param filename Filename of the plugin, if available.
+ */
+static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename)
+{
+	if (!plugin)
+		return;
+	
+	string pluginName;
+	GtkTreeIter iter;
+	pmgr_type_t pmType;
+	
+	// Determine the plugin name.
+	if (plugin->desc && plugin->desc->name)
+	{
+		pluginName = string(plugin->desc->name);
+	}
+	else
+	{
+		// No description or name.
+		char tmp[64];
+		snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
+		tmp[sizeof(tmp)-1] = 0x00;
+		pluginName = string(tmp);
+	}
+	
+	// Check for MDP DLL information.
+	if (filename.empty())
+	{
+		// Specified filename is empty.
+		// Check PluginMgr::tblMdpDLL for the plugin information.
 		mapMdpDLL::iterator dllIter = PluginMgr::tblMdpDLL.find(plugin);
 		if (dllIter != PluginMgr::tblMdpDLL.end())
 		{
 			// External plugin.
 			pmType = PMGR_EXTERNAL;
 			
-			mdpDLL_t& dll = (*dllIter).second;
+			const mdpDLL_t& dll = (*dllIter).second;
 			pluginName += " (" + File::GetNameFromPath(dll.filename) + ")";
 		}
 		else
@@ -409,30 +443,40 @@ static void pmgr_window_populate_plugin_lists(void)
 			// Internal plugin.
 			pmType = PMGR_INTERNAL;
 		}
-		
-		// Add an entry to the list store.
-		gtk_list_store_append(lmPluginList[pmType], &iter);
-		
-#ifdef GENS_PNG
-		// Create the pixbuf for the plugin icon.
-		GdkPixbuf *pbufIcon = NULL;
-		if (plugin->desc)
-		{
-			pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
-		}
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
-				   0, pluginName.c_str(), 1, plugin, 2, pbufIcon, -1);
-		
-		if (pbufIcon)
-		{
-			// Unreference the pixbuf.
-			g_object_unref(pbufIcon);
-		}
-#else
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
-				   0, pluginName.c_str(), 1, plugin, -1);
-#endif /* GENS_PNG */
 	}
+	else
+	{
+		// Filename was specified. Assume external plugin.
+		pmType = PMGR_EXTERNAL;
+		pluginName += " (" + File::GetNameFromPath(filename) + ")";
+	}
+	
+	// If err isn't MDP_ERR_OK, add to PMGR_INCOMPAT.
+	if (err != 0)
+		pmType = PMGR_INCOMPAT;
+	
+	// Add an entry to the list store.
+	gtk_list_store_append(lmPluginList[pmType], &iter);
+	
+#ifdef GENS_PNG
+	// Create the pixbuf for the plugin icon.
+	GdkPixbuf *pbufIcon = NULL;
+	if (plugin->desc)
+	{
+		pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
+	}
+	gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
+			   0, pluginName.c_str(), 1, plugin, 2, err, 3, pbufIcon, -1);
+	
+	if (pbufIcon)
+	{
+		// Unreference the pixbuf.
+		g_object_unref(pbufIcon);
+	}
+#else
+	gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
+			   0, pluginName.c_str(), 1, plugin, 2, err, -1);
+#endif /* GENS_PNG */
 }
 
 
@@ -458,7 +502,7 @@ void pmgr_window_close(void)
 		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmPluginList[i]), &iter);
 		while (valid)
 		{
-			gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList[i]), &iter, 2, &pbufIcon, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList[i]), &iter, 3, &pbufIcon, -1);
 			if (pbufIcon)
 				g_object_unref(pbufIcon);
 			
@@ -571,14 +615,15 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	
 	// Found a selected plugin.
 	mdp_t *plugin;
+	int err;
 	
 #ifdef GENS_PNG
 	// Get the plugin icon and mdp_t*.
 	GdkPixbuf *pbufIcon;
-	gtk_tree_model_get(gtm, &iter, 1, &plugin, 2, &pbufIcon, -1);
+	gtk_tree_model_get(gtm, &iter, 1, &plugin, 2, &err, 3, &pbufIcon, -1);
 #else
 	// Get the mdp_t*.
-	gtk_tree_model_get(gtm, &iter, 1, &plugin, -1);
+	gtk_tree_model_get(gtm, &iter, 1, &plugin, 2, &err, -1);
 #endif
 	
 	// Get the plugin information.
@@ -665,12 +710,30 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	gtk_label_set_use_markup(GTK_LABEL(lblPluginSecInfo), TRUE);
 	
 	// Plugin description.
-	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
-	if (desc->description)
+	if (err == MDP_ERR_OK)
+		gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
+	
+	if (desc->description || err != MDP_ERR_OK)
 	{
 		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), "<b><i>Description:</i></b>");
 		gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), TRUE);
 		gtk_widget_set_size_request(lblPluginDesc, fraPluginDesc_width - 12, 64);
+		
+		if (err != MDP_ERR_OK)
+		{
+			// An error occurred while loading the plugin.
+			string sDesc; char err_code[32];
+			if (desc->description)
+				sDesc = string(desc->description) + "\n\n";
+			
+			snprintf(err_code, sizeof(err_code), "0x%08X", -err);
+			err_code[sizeof(err_code)-1] = 0x00;
+			
+			sDesc += "MDP error code: " + string(err_code);
+			// TODO: error description.
+			
+			gtk_label_set_text(GTK_LABEL(lblPluginDesc), sDesc.c_str());
+		}
 	}
 	else
 	{

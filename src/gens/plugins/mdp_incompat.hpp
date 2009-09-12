@@ -45,6 +45,10 @@ class MDP_Incompat
 		~MDP_Incompat();
 		
 		void add(mdp_t *plugin, int err, const std::string& filename);
+		
+		// TODO: Make these return read-only iterators.
+		std::list<mdp_incompat_t>::iterator begin(void) { return m_lstIncompat.begin(); }
+		std::list<mdp_incompat_t>::iterator end(void) { return m_lstIncompat.end(); }
 	
 	protected:
 		std::list<mdp_incompat_t> m_lstIncompat;
