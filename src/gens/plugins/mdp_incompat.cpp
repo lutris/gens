@@ -66,6 +66,7 @@ MDP_Incompat::~MDP_Incompat()
 			free((void*)(mdp_desc->description));
 			free((void*)(mdp_desc->website));
 			free((void*)(mdp_desc->license));
+			free((void*)(mdp_desc->icon));
 			
 			// Free the description field.
 			free(mdp_desc);
@@ -119,6 +120,15 @@ void MDP_Incompat::add(mdp_t *plugin, int err, const string& filename)
 				tmp_mdp_desc->website = gsft_strdup(orig_desc->website);
 			if (orig_desc->license)
 				tmp_mdp_desc->website = gsft_strdup(orig_desc->license);
+			
+			unsigned int *iconLength = const_cast<unsigned int*>(&tmp_mdp_desc->iconLength);
+			*iconLength = orig_desc->iconLength;
+			if (orig_desc->icon)
+			{
+				// Copy the icon.
+				tmp_mdp_desc->icon = (unsigned char*)malloc(*iconLength);
+				memcpy(const_cast<unsigned char*>(tmp_mdp_desc->icon), orig_desc->icon, *iconLength);
+			}
 			
 			tmp_mdp->desc = tmp_mdp_desc;
 		}
