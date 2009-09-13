@@ -129,8 +129,18 @@ static inline void drawStr_1x(pixel *screen, const int pitch, const int x, const
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
 				if (str[cx] == 0x00)
+				{
+					// End of the string.
 					break;
+				}
+				
 				uint8_t cRow = vdraw_msg_prerender_1x[cy][cx + chr_offset];
+				if (cRow == 0x00)
+				{
+					// Empty line.
+					screen_pos += charSize;
+					continue;
+				}
 				
 				for (unsigned int px = 8; px != 0; px--)
 				{
@@ -176,8 +186,18 @@ static inline void drawStr_2x(pixel *screen, const int pitch, const int x, const
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
 				if (str[cx] == 0x00)
+				{
+					// End of the string.
 					break;
+				}
+				
 				uint16_t cRow = vdraw_msg_prerender_2x[cy >> 1][cx + chr_offset];
+				if (cRow == 0x00)
+				{
+					// Empty line.
+					screen_pos += charSize;
+					continue;
+				}
 				
 				for (unsigned int px = 16; px != 0; px--)
 				{
