@@ -110,20 +110,19 @@ static void vdraw_text_prerender(void)
 }
 
 
-template<typename pixel>
-static inline void drawStr_1x(pixel *screen, const int pitch, const int x, const int y,
-			      const unsigned int charSize, const unsigned int msgWidth, const unsigned int numLines,
-			       const vdraw_style_t *style, const pixel transparentMask,
-			       const char *str)
+template<typename pixel, typename prerender_buf, unsigned int charSize, unsigned int hiPixMask, unsigned int cyShift>
+static inline void drawStr_preRender(pixel *screen, const int pitch, const int x, const int y,
+					const unsigned int msgWidth, const unsigned int numLines,
+					const vdraw_style_t *style, const pixel transparentMask,
+					const char *str, const prerender_buf str_prerender)
 {
 	pixel *screen_start = &screen[y*pitch + x];
 	const unsigned int chars_per_line = (msgWidth / charSize);
-	const unsigned int len = strlen(str);
 	unsigned int chr_offset = 0;
 	
-	for (unsigned int line = 0; line < (numLines * 8); line += 8)
+	for (unsigned int line = 0; line < (numLines * charSize); line += charSize)
 	{
-		for (unsigned int cy = 0; cy < 8; cy++)
+		for (unsigned int cy = 0; cy < charSize; cy++)
 		{
 			pixel *screen_pos = screen_start + ((cy + line) * pitch);
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
@@ -134,7 +133,7 @@ static inline void drawStr_1x(pixel *screen, const int pitch, const int x, const
 					break;
 				}
 				
-				uint8_t cRow = vdraw_msg_prerender_1x[cy][cx + chr_offset];
+				unsigned int cRow = str_prerender[cy >> cyShift][cx + chr_offset];
 				if (cRow == 0x00)
 				{
 					// Empty line.
@@ -142,66 +141,9 @@ static inline void drawStr_1x(pixel *screen, const int pitch, const int x, const
 					continue;
 				}
 				
-				for (unsigned int px = 8; px != 0; px--)
+				for (unsigned int px = charSize; px != 0; px--)
 				{
-					if (cRow & 0x80)
-					{
-						// Dot is opaque. Draw it.
-						// TODO: Original asm version had transparency in a separate function for performance.
-						// See if that would actually help.
-						// TODO: The transparency method used here might be slow on DDraw when using video memory.
-						if (!style->transparent)
-							*screen_pos = style->dot_color;
-						else
-							*screen_pos = ((style->dot_color & transparentMask) >> 1) +
-								      ((*screen_pos & transparentMask) >> 1);
-					}
-					cRow <<= 1;
-					screen_pos++;
-				}
-			}
-		}
-		
-		chr_offset += chars_per_line;
-	}
-}
-
-
-template<typename pixel>
-static inline void drawStr_2x(pixel *screen, const int pitch, const int x, const int y,
-			      const unsigned int charSize, const unsigned int msgWidth, const unsigned int numLines,
-			      const vdraw_style_t *style, const pixel transparentMask,
-			      const char *str)
-{
-	pixel *screen_start = &screen[y*pitch + x];
-	const unsigned int chars_per_line = (msgWidth / charSize);
-	const unsigned int len = strlen(str);
-	unsigned int chr_offset = 0;
-	
-	for (unsigned int line = 0; line < (numLines * 16); line += 16)
-	{
-		for (unsigned int cy = 0; cy < 16; cy++)
-		{
-			pixel *screen_pos = screen_start + ((cy + line) * pitch);
-			for (unsigned int cx = 0; cx < chars_per_line; cx++)
-			{
-				if (str[cx] == 0x00)
-				{
-					// End of the string.
-					break;
-				}
-				
-				uint16_t cRow = vdraw_msg_prerender_2x[cy >> 1][cx + chr_offset];
-				if (cRow == 0x00)
-				{
-					// Empty line.
-					screen_pos += charSize;
-					continue;
-				}
-				
-				for (unsigned int px = 16; px != 0; px--)
-				{
-					if (cRow & 0x8000)
+					if (cRow & hiPixMask)
 					{
 						// Dot is opaque. Draw it.
 						// TODO: Original asm version had transparency in a separate function for performance.
@@ -307,41 +249,31 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	cx = x; cy = y;
 	if (style->double_size)
 	{
-#if 0
-		for (cPos = 0; cPos < msgLength; cPos++)
-		{
-			// TODO: Make text shadow an option.
-			drawChar_2x(screen, pitch, cx+1, cy+1, &textShadowStyle,
-				    transparentMask, (unsigned char)msg[cPos]);
-			
-			drawChar_2x(screen, pitch, cx-1, cy-1, style,
-				    transparentMask, (unsigned char)msg[cPos]);
-		}
-		
-		cx += charSize;
-		if (cx - x >= msgWidth)
-		{
-			cx = x;
-			cy += charSize;
-		}
-#endif
 		// 2x text rendering.
 		// TODO: Make text shadow an option.
-		drawStr_2x(screen, pitch, cx+1, cy+1, charSize, msgWidth, (lineBreaks + 1),
-			   &textShadowStyle, transparentMask, msg);
+		drawStr_preRender<pixel, uint16_t[8][1024], 16, 0x8000, 1>
+					(screen, pitch, cx+1, cy+1, msgWidth, (lineBreaks + 1),
+					 &textShadowStyle, transparentMask,
+					 msg, vdraw_msg_prerender_2x);
 		
-		drawStr_2x(screen, pitch, cx, cy, charSize, msgWidth, (lineBreaks + 1),
-			   style, transparentMask, msg);
+		drawStr_preRender<pixel, uint16_t[8][1024], 16, 0x8000, 1>
+					(screen, pitch, cx, cy, msgWidth, (lineBreaks + 1),
+					 style, transparentMask,
+					 msg, vdraw_msg_prerender_2x);
 	}
 	else
 	{
 		// 1x text rendering.
 		// TODO: Make text shadow an option.
-		drawStr_1x(screen, pitch, cx+1, cy+1, charSize, msgWidth, (lineBreaks + 1),
-			   &textShadowStyle, transparentMask, msg);
+		drawStr_preRender<pixel, uint8_t[8][1024], 8, 0x80, 0>
+					(screen, pitch, cx+1, cy+1, msgWidth, (lineBreaks + 1),
+					 &textShadowStyle, transparentMask,
+					 msg, vdraw_msg_prerender_1x);
 		
-		drawStr_1x(screen, pitch, cx, cy, charSize, msgWidth, (lineBreaks + 1),
-			   style, transparentMask, msg);
+		drawStr_preRender<pixel, uint8_t[8][1024], 8, 0x80, 0>
+					(screen, pitch, cx, cy, msgWidth, (lineBreaks + 1),
+					 style, transparentMask,
+					 msg, vdraw_msg_prerender_1x);
 	}
 }
 
