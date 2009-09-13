@@ -171,6 +171,8 @@ int vdraw_init(void)
 	// Calculate the initial text styles.
 	memset(&vdraw_fps_style, 0x00, sizeof(vdraw_fps_style));
 	memset(&vdraw_msg_style, 0x00, sizeof(vdraw_msg_style));
+	
+	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
 	
