@@ -60,7 +60,7 @@ install: build
 	$(MAKE) DESTDIR=$(CURDIR)/debian/gens install
 	
 	# Don't package .la files for MDP plugins.
-	find debian/tmp/usr/lib/mdp -name *.la | xargs rm
+	find debian/gens/usr/lib/mdp -name *.la | xargs rm
 
 
 # Build architecture-independent files here.
