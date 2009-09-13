@@ -86,7 +86,7 @@ static void vdraw_text_prerender(void)
 	{
 		for (unsigned int row = 0; row < 8; row++)
 		{
-			vdraw_msg_prerender[row][chr] = C64_charset[vdraw_msg_text[chr]][row];
+			vdraw_msg_prerender[row][chr] = C64_charset[(unsigned char)vdraw_msg_text[chr]][row];
 		}
 	}
 }
@@ -175,12 +175,8 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			      const char *msg, const pixel transparentMask, const vdraw_style_t *style,
 			      const bool isDDraw)
 {
-	int cPos;
-	unsigned int x, y, cx, cy;
+	unsigned int x, y;
 	unsigned int charSize;
-	
-	const bool fullScreen = vdraw_get_fullscreen();
-	const list<mdp_render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
 	
 	// The message must be specified.
 	if (!msg)
@@ -210,7 +206,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			// With the DirectDraw renderer, the vertical shift is weird
 			// in normal (1x) rendering.
 			
-			if (fullScreen && vdraw_get_sw_render())
+			if (vdraw_get_fullscreen() && vdraw_get_sw_render())
 			{
 				// Software rendering.
 				x = (isFullXRes() ? 0 : (32 * vdraw_scale));
@@ -250,17 +246,16 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	vdraw_style_t textShadowStyle = *style;
 	textShadowStyle.dot_color = 0;
 	
-	cx = x; cy = y;
 	if (style->double_size)
 	{
 		// 2x text rendering.
 		// TODO: Make text shadow an option.
 		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, cx+1, cy+1, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
 					 &textShadowStyle, transparentMask, msg);
 		
 		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, cx, cy, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
 					 style, transparentMask, msg);
 	}
 	else
@@ -268,11 +263,11 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		// 1x text rendering.
 		// TODO: Make text shadow an option.
 		drawStr_preRender<pixel, 8, false>
-					(screen, pitch, cx+1, cy+1, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
 					 &textShadowStyle, transparentMask, msg);
 		
 		drawStr_preRender<pixel, 8, false>
-					(screen, pitch, cx, cy, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
 					 style, transparentMask, msg);
 	}
 }
