@@ -65,39 +65,78 @@ static uint32_t	vdraw_msg_time = 0;
 // Text buffer.
 char vdraw_msg_text[1024];
 
+// Prerendered text for the on-screen display.
+// 1x: Each byte represents 8 pixels, or one line for a character.
+// 2x: Each word represents 16 pixels, or one line for a character.
+// TODO: Consolidate 1x and 2x.
+uint8_t vdraw_msg_prerender_1x[8][1024];
+uint16_t vdraw_msg_prerender_2x[8*2][1024];
+
+
+/**
+ * vdraw_text_prerender(): Prerender the onscreen text to the character buffer.
+ */
+static void vdraw_text_prerender(void)
+{
+	// Prerender the text.
+	
+	// TODO: This only supports 1x rendering.
+	// Do 2x rendering later.
+	
+	unsigned int len = strlen(vdraw_msg_text);
+	for (unsigned int chr = 0; chr < len; chr++)
+	{
+		for (unsigned int row = 0; row < 8; row++)
+		{
+			vdraw_msg_prerender_1x[row][chr] = C64_charset[vdraw_msg_text[chr]][row];
+		}
+	}
+}
+
 
 template<typename pixel>
-static inline void drawChar_1x(pixel *screen, const int pitch, const int x, const int y,
+static inline void drawStr_1x(pixel *screen, const int pitch, const int x, const int y,
+			      const unsigned int charSize, const unsigned int msgWidth, const unsigned int numLines,
 			       const vdraw_style_t *style, const pixel transparentMask,
-			       const unsigned char ch)
+			       const char *str)
 {
-	unsigned short cx, cy;
-	pixel* screenPos;
-	unsigned char cRow;
+	pixel *screen_start = &screen[y*pitch + x];
+	const unsigned int chars_per_line = (msgWidth / charSize);
+	const unsigned int len = strlen(str);
+	unsigned int chr_offset = 0;
 	
-	screenPos = &screen[y*pitch + x];
-	for (cy = 0; cy < 8; cy++)
+	for (unsigned int line = 0; line < (numLines * 8); line += 8)
 	{
-		// Each character is 8 bytes, with each row representing 8 dots.
-		// A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.
-		cRow = C64_charset[ch][cy];
-		for (cx = 0; cx < 8; cx++)
+		for (unsigned int cy = 0; cy < 8; cy++)
 		{
-			if (cRow & 0x80)
+			pixel *screen_pos = screen_start + ((cy + line) * pitch);
+			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
-				// Dot is opaque. Draw it.
-				// TODO: Original asm version had transparency in a separate function for performance.
-				// See if that would actually help.
-				if (!style->transparent)
-					*screenPos = style->dot_color;
-				else
-					*screenPos = ((style->dot_color & transparentMask) >> 1) +
-						     ((*screenPos & transparentMask) >> 1);
+				if (str[cx] == 0x00)
+					break;
+				unsigned char cRow = (unsigned char)vdraw_msg_prerender_1x[cy][cx + chr_offset];
+				
+				for (unsigned int px = 8; px != 0; px--)
+				{
+					if (cRow & 0x80)
+					{
+						// Dot is opaque. Draw it.
+						// TODO: Original asm version had transparency in a separate function for performance.
+						// See if that would actually help.
+						// TODO: The transparency method used here might be slow on DDraw when using video memory.
+						if (!style->transparent)
+							*screen_pos = style->dot_color;
+						else
+							*screen_pos = ((style->dot_color & transparentMask) >> 1) +
+								      ((*screen_pos & transparentMask) >> 1);
+					}
+					cRow <<= 1;
+					screen_pos++;
+				}
 			}
-			cRow <<= 1;
-			screenPos++;
 		}
-		screenPos += (pitch - 8);
+		
+		chr_offset += chars_per_line;
 	}
 }
 
@@ -154,16 +193,20 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			      const char *msg, const pixel transparentMask, const vdraw_style_t *style,
 			      const bool isDDraw)
 {
-	int msgLength, cPos;
-	unsigned short linebreaks, msgWidth;
-	unsigned short x, y, cx, cy;
-	unsigned char charSize;
+	int cPos;
+	unsigned int x, y, cx, cy;
+	unsigned int charSize;
 	
 	const bool fullScreen = vdraw_get_fullscreen();
 	const list<mdp_render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
 	
 	// The message must be specified.
 	if (!msg)
+		return;
+	
+	// Get the message length.
+	const unsigned int msgLength = strlen(msg);
+	if (msgLength == 0)
 		return;
 	
 	// Character size
@@ -217,36 +260,24 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
 	
-	// Get the message length.
-	msgLength = strlen(msg);
-	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16;
-	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
-	y -= (linebreaks * charSize);
+	const unsigned int msgWidth = w - 16;
+	const unsigned short lineBreaks = ((msgLength - 1) * charSize) / msgWidth;
+	y -= (lineBreaks * charSize);
 	
 	vdraw_style_t textShadowStyle = *style;
 	textShadowStyle.dot_color = 0;
 	
 	cx = x; cy = y;
-	for (cPos = 0; cPos < msgLength; cPos++)
+	if (style->double_size)
 	{
-		if (style->double_size)
+		for (cPos = 0; cPos < msgLength; cPos++)
 		{
 			// TODO: Make text shadow an option.
 			drawChar_2x(screen, pitch, cx+1, cy+1, &textShadowStyle,
 				    transparentMask, (unsigned char)msg[cPos]);
 			
 			drawChar_2x(screen, pitch, cx-1, cy-1, style,
-				    transparentMask, (unsigned char)msg[cPos]);
-		}
-		else
-		{
-			// TODO: Make text shadow an option.
-			drawChar_1x(screen, pitch, cx+1, cy+1, &textShadowStyle,
-				    transparentMask, (unsigned char)msg[cPos]);
-			
-			drawChar_1x(screen, pitch, cx, cy, style,
 				    transparentMask, (unsigned char)msg[cPos]);
 		}
 		
@@ -256,6 +287,16 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 			cx = x;
 			cy += charSize;
 		}
+	}
+	else
+	{
+		// 1x. Use prerendered text.
+		// TODO: Make text shadow an option.
+		drawStr_1x(screen, pitch, cx+1, cy+1, charSize, msgWidth, (lineBreaks + 1),
+			   &textShadowStyle, transparentMask, msg);
+		
+		drawStr_1x(screen, pitch, cx, cy, charSize, msgWidth, (lineBreaks + 1),
+			   style, transparentMask, msg);
 	}
 }
 
@@ -392,6 +433,9 @@ void vdraw_text_write(const char* msg, const int duration)
 	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
+	// Prerender the text.
+	vdraw_text_prerender();
+	
 	if (duration > 0)
 	{
 		// Set the message timer.
@@ -432,9 +476,10 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	
 	// TODO: Add localization.
 	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, ap);
-	
-	// Make sure the string is null-terminated.
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	
+	// Prerender the text.
+	vdraw_text_prerender();
 	
 	if (duration > 0)
 	{
