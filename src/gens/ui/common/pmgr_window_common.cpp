@@ -26,6 +26,8 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
+
 // C++ includes
 #include <string>
 #include <sstream>
