@@ -127,7 +127,7 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 			pixel *screen_pos = screen_start + ((cy + line) * pitch);
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
-				if (str[cx] == 0x00)
+				if (str[cx + chr_offset] == 0x00)
 				{
 					// End of the string.
 					break;
