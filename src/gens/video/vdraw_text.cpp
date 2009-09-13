@@ -67,7 +67,7 @@ char vdraw_msg_text[1024];
 
 // Prerendered text for the on-screen display.
 // Each byte represents 8 pixels, or one line for a character.
-uint8_t vdraw_msg_prerender[8][1024];
+static uint8_t vdraw_msg_prerender[8][1024];
 
 
 /**
