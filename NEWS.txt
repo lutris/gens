@@ -108,6 +108,10 @@ Miscellaneous:
 * Incompatible MDP plugins are now displayed in a third tab in the Plugin Manager
   window. The description field displays the MDP error code.
 
+* [Ubuntu] The Ubuntu package no longer includes static libraries and libtool
+  files (.a and .la, respectively) for MDP plugins, since they're useless.
+  External MDP plugins can't be linked at compile-time.
+
 ================================================================
 
 Changes from r7_pre2 to r7_pre3 [PREVIEW RELEASE]:
