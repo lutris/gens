@@ -255,7 +255,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 					 &textShadowStyle, transparentMask, msg);
 		
 		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x-1, y-1, msgWidth, (lineBreaks + 1),
 					 style, transparentMask, msg);
 	}
 	else
