@@ -13,3 +13,12 @@ love:
 	@echo Baby don\'t hurt me.
 	@echo Don\'t hurt me.
 	@echo No more.
+
+me:
+	@if [ "`id -u`" != "0" ]; then echo "What? Make it yourself!" ; else echo "Okay." ; fi
+
+a:
+	@echo >/dev/null
+
+sandwich:
+	@echo >/dev/null
