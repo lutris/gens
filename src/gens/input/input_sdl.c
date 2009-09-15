@@ -308,7 +308,10 @@ uint16_t input_sdl_get_key(void)
 				    cur_joy->axes[i] != INPUT_SDL_JOYSTATE_AXIS_CENTER)
 				{
 					// Axis moved.
-					return INPUT_GETKEY_AXIS(js, i, cur_joy->axes[i]);
+					// NOTE: Axis values are different!
+					// * input_sdl axes: 0 == center; 1 == negative; 2 == positive
+					// * Key values:     0 == negative, 1 == positive
+					return INPUT_GETKEY_AXIS(js, i, (cur_joy->axes[i] - 1));
 				}
 			}
 			
