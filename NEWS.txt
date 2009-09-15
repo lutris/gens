@@ -34,7 +34,18 @@ release of Gens/GS r7.
 
 ================================================================
 
-Changes from r7_pre3 to r7_pre4:
+Changes from r7_pre7 to r7:
+
+Bug Fixes:
+
+* [SDL] Fixed a controller input regression that inverted axes. This regression
+  was introduced in r7_pre4 with the reworking of the SDL key configuration
+  handler to make it ignore the initial joystick state when detecting joystick
+  changes. This bug was reported by superGear in #retro.
+
+================================================================
+
+Changes from r7_pre3 to r7_pre4 [PREVIEW RELEASE]:
 
 Bug Fixes:
 
