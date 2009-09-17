@@ -37,7 +37,7 @@
 #include "ui/gens_ui.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Haiku
 #include "controller_config/cc_window.h"
@@ -79,8 +79,8 @@ using std::string;
  */
 void GensUI::init(int *argc, char **argv[])
 {
-	GENS_UNUSED_PARAMETER(argc);
-	GENS_UNUSED_PARAMETER(argv);
+	GSFT_UNUSED_PARAMETER(argc);
+	GSFT_UNUSED_PARAMETER(argv);
 
 	// Create the Gens window.
 	//gens_window_create();

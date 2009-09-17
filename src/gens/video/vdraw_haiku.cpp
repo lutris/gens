@@ -28,7 +28,7 @@
 #include "macros/log_msg.h"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
@@ -151,7 +151,7 @@ void vdraw_haiku_update_renderer(void)
  */             
 void vdraw_haiku_update_vsync(const BOOL fromInitHaiku)
 {                       
-        GENS_UNUSED_PARAMETER(fromInitHaiku);
+        GSFT_UNUSED_PARAMETER(fromInitHaiku);
                         
         // If Full Screen, reinit();
 }
