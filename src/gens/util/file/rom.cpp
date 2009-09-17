@@ -617,8 +617,8 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!cmp)
 	{
 		// No usable decompressors found.
-		// This is an error, since the "dummy" decompressor should always be usable.
-		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+		// This is a critical error, since the "dummy" decompressor should always be usable.
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"No usable decompressors found.");
 		fclose(fROM);
 		Game = NULL;
