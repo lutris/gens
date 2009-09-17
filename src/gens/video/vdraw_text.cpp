@@ -71,8 +71,7 @@ static unsigned int vdraw_msg_prerender_len;
 template<typename pixel, unsigned int charSize, bool do2x>
 static inline void drawStr_preRender(pixel *screen, const int pitch, const int x, const int y,
 					const unsigned int msgWidth, const unsigned int numLines,
-					const vdraw_style_t *style, const pixel transparentMask,
-					const char *str)
+					const vdraw_style_t *style, const pixel transparentMask)
 {
 	pixel *screen_start = &screen[y*pitch + x];
 	const unsigned int chars_per_line = (msgWidth / charSize);
@@ -85,9 +84,9 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 			pixel *screen_pos = screen_start + ((cy + line) * pitch);
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
-				if (str[cx + chr_offset] == 0x00)
+				if (cx + chr_offset >= vdraw_msg_prerender_len)
 				{
-					// End of the string.
+					// End of string.
 					break;
 				}
 				
@@ -227,11 +226,11 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		// TODO: Make text shadow an option.
 		drawStr_preRender<pixel, 16, true>
 					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
-					 &textShadowStyle, transparentMask, msg);
+					 &textShadowStyle, transparentMask);
 		
 		drawStr_preRender<pixel, 16, true>
 					(screen, pitch, x-1, y-1, msgWidth, (lineBreaks + 1),
-					 style, transparentMask, msg);
+					 style, transparentMask);
 	}
 	else
 	{
@@ -239,11 +238,11 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		// TODO: Make text shadow an option.
 		drawStr_preRender<pixel, 8, false>
 					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
-					 &textShadowStyle, transparentMask, msg);
+					 &textShadowStyle, transparentMask);
 		
 		drawStr_preRender<pixel, 8, false>
 					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
-					 style, transparentMask, msg);
+					 style, transparentMask);
 	}
 }
 

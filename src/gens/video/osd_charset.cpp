@@ -152,5 +152,5 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		chr_num++;
 	}
 	
-	return (chr_num - 1);
+	return chr_num;
 }
