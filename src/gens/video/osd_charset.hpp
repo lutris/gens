@@ -24,6 +24,7 @@
 #define GENS_OSD_CHARSET_HPP
 
 #include <stdint.h>
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +39,7 @@ extern "C" {
 /** Struct for sparse-mapped character set struct. **/
 typedef struct _osd_char_t
 {
-	uint32_t chr;		// Unicode character value.
+	wchar_t chr;		// Unicode character value.
 	uint8_t data[8];	// 8x8 character data. (MSB == left-most pixel)
 } osd_char_t;
 

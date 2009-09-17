@@ -24,7 +24,6 @@
 #include "C64_charset.h"
 
 // C includes.
-#include <stdint.h>
 #include <string.h>
 
 // Character used if a character cannot be found.
@@ -32,8 +31,8 @@ static const uint8_t chr_err[8] = {0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xA
 
 // Hashtable.
 #include "libgsft/gsft_hashtable.hpp"
-typedef GSFT_HASHTABLE<uint32_t, const uint8_t*> mapOsdCharSet_t;
-typedef std::pair<uint32_t, const uint8_t*> pairOsdCharSet_t;
+typedef GSFT_HASHTABLE<wchar_t, const uint8_t*> mapOsdCharSet_t;
+typedef std::pair<wchar_t, const uint8_t*> pairOsdCharSet_t;
 static mapOsdCharSet_t mapOsdCharSet;
 
 
