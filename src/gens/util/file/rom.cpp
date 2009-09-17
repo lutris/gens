@@ -927,9 +927,6 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	
 	Savestate::SaveSRAM();
 	
-	// TODO: Send "Close ROM" event to registered MDP event handlers.
-	//Save_Patch_File();
-	
 	// Audio dumping.
 	if (WAV_Dumping)
 		wav_dump_stop();
