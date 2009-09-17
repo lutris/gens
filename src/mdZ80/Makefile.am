@@ -9,6 +9,9 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
 noinst_LTLIBRARIES = libmdZ80.la
 
+INCLUDES = -I@top_srcdir@/src/
+libmdZ80_la_CCASFLAGS	= $(INCLUDES)
+
 libmdZ80_la_CFLAGS	= $(AM_CFLAGS) -static
 libmdZ80_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
