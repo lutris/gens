@@ -48,7 +48,7 @@ void osd_charset_init(const osd_char_t *charset)
 	mapOsdCharSet.clear();
 	
 	// Add all characters to the map.
-	for (; charset->chr != -1; charset++)
+	for (; charset->chr != (wchar_t)-1; charset++)
 	{
 		if (charset->data == NULL)
 			continue;
@@ -72,13 +72,66 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 	if (mapOsdCharSet.empty())
 		osd_charset_init(&C64_charset[0]);
 	
-	// TODO: UTF-8 translation.
-	unsigned int len = strlen(str);
 	const uint8_t *chr_data;
+	const unsigned char *utf8str = reinterpret_cast<const unsigned char*>(str);
+	unsigned int chr_num = 0;
 	
-	for (unsigned int chr = 0; chr < len; chr++)
+	while (*utf8str)
 	{
-		mapOsdCharSet_t::iterator chrIter = mapOsdCharSet.find(*str++);
+		wchar_t wchr;
+		
+		// Check if this is the start of a UTF-8 sequence.
+		if (!(*utf8str & 0x80))
+		{
+			// Not the start of UTF-8. Assume it's ASCII.
+			wchr = *utf8str++;
+		}
+		else
+		{
+			// Possibly the start of a UTF-8 sequence.
+			
+			// Check for a 2-byte character.
+			if (utf8str[1] != 0x00 &&
+			    ((utf8str[0] & 0xE0) == 0xC0) &&
+			    ((utf8str[1] & 0xC0) == 0x80))
+			{
+				// 2-byte character.
+				wchr = ((utf8str[0] & 0x1F) << 6) |
+				       ((utf8str[1] & 0x3F));
+				utf8str += 2;
+			}
+			else if (utf8str[1] != 0x00 && utf8str[2] != 0x00 &&
+				 ((utf8str[0] & 0xF0) == 0xE0) &&
+				 ((utf8str[1] & 0xC0) == 0x80) &&
+				 ((utf8str[2] & 0xC0) == 0x80))
+			{
+				// 3-byte character.
+				wchr = ((utf8str[0] & 0x1F) << 12) |
+				       ((utf8str[1] & 0x3F) << 6) |
+				       ((utf8str[2] & 0x3F));
+				utf8str += 3;
+			}
+			else if (utf8str[1] != 0x00 && utf8str[2] != 0x00 && utf8str[3] != 0 &&
+				 ((utf8str[0] & 0xF0) == 0xE0) &&
+				 ((utf8str[1] & 0xC0) == 0x80) &&
+				 ((utf8str[2] & 0xC0) == 0x80) &&
+				 ((utf8str[3] & 0xC0) == 0x80))
+			{
+				// 4-byte character.
+				wchr = ((utf8str[0] & 0x1F) << 18) |
+				       ((utf8str[1] & 0x3F) << 12) |
+				       ((utf8str[2] & 0x3F) << 6) |
+				       ((utf8str[3] & 0x3F));
+				utf8str += 4;
+			}
+			else
+			{
+				// Invalid UTF-8 sequence. Assume cp1252.
+				wchr = *utf8str++;
+			}
+		}
+		
+		mapOsdCharSet_t::iterator chrIter = mapOsdCharSet.find(wchr);
 		if (chrIter == mapOsdCharSet.end())
 		{
 			// Character not found.
@@ -92,9 +145,12 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		
 		for (unsigned int row = 0; row < 8; row++)
 		{
-			prerender_buf[row][chr] = chr_data[row];
+			prerender_buf[row][chr_num] = chr_data[row];
 		}
+		
+		// Next character.
+		chr_num++;
 	}
 	
-	return len;
+	return (chr_num - 1);
 }

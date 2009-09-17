@@ -65,6 +65,7 @@ char vdraw_msg_text[1024];
 // Prerendered text for the on-screen display.
 // Each byte represents 8 pixels, or one line for a character.
 static uint8_t vdraw_msg_prerender[8][1024];
+static unsigned int vdraw_msg_prerender_len;
 
 
 template<typename pixel, unsigned int charSize, bool do2x>
@@ -157,9 +158,8 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	if (!msg)
 		return;
 	
-	// Get the message length.
-	const unsigned int msgLength = strlen(msg);
-	if (msgLength == 0)
+	// Message must be longer than 0 characters.
+	if (vdraw_msg_prerender_len == 0)
 		return;
 	
 	// Character size
@@ -215,7 +215,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	
 	// Determine how many linebreaks are needed.
 	const unsigned int msgWidth = w - 16;
-	const unsigned short lineBreaks = ((msgLength - 1) * charSize) / msgWidth;
+	const unsigned short lineBreaks = ((vdraw_msg_prerender_len - 1) * charSize) / msgWidth;
 	y -= (lineBreaks * charSize);
 	
 	vdraw_style_t textShadowStyle = *style;
@@ -381,7 +381,7 @@ void vdraw_text_write(const char* msg, const int duration)
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
 	// Prerender the text.
-	osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
+	vdraw_msg_prerender_len = osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
 	
 	if (duration > 0)
 	{
@@ -426,7 +426,7 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
 	// Prerender the text.
-	osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
+	vdraw_msg_prerender_len = osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
 	
 	if (duration > 0)
 	{
