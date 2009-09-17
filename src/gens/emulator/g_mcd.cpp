@@ -211,10 +211,6 @@ int Init_SegaCD(const char* iso_name)
 	// Initialize BRAM.
 	Savestate::LoadBRAM();
 	
-	// TODO: Send "Load ROM" event to registered MDP event handlers.
-	// Note: This is only used to reset patch information right now.
-	//Load_Patch_File();
-	
 	Reset_Update_Timers();
 	
 	if (SegaCD_Accurate)

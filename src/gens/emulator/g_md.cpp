@@ -328,9 +328,6 @@ int Init_Genesis(ROM_t* MD_ROM)
 		}
 	}
 	
-	// TODO: Send "Load ROM" event to registered MDP event handlers.
-	//Load_Patch_File();
-	
 	Reset_Update_Timers();
 	
 	// Set the appropriate frame update function pointers.
