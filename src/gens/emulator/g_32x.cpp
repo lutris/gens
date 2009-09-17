@@ -128,8 +128,10 @@ int Init_32X(ROM_t* MD_ROM)
 	Controller_1_COM = Controller_2_COM = 0;
 	STOP_DEBUGGING();
 	
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
 	if (!Kaillera_Client_Running)
 		Init_Genesis_SRAM(MD_ROM);
+#endif
 	
 	// Check what country code should be used.
 	// TODO: Get rid of magic numbers.

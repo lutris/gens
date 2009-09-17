@@ -137,13 +137,16 @@ extern int Auto_Pause;
 extern int Auto_Fix_CS;
 extern int Country;
 extern int Country_Order[3];
-extern int Kaillera_Client_Running;
 extern int Intro_Style;
 extern int SegaCD_Accurate;
 extern int Active;
 extern int Quick_Exit;
 extern int FS_Minimised;
 extern int fast_forward;
+
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
+extern int Kaillera_Client_Running;
+#endif
 
 #ifndef GENS_OS_WIN32
 typedef struct _POINT

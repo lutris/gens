@@ -126,8 +126,10 @@ int Country = -1;
 int Country_Order[3];
 int Intro_Style = 2;
 int SegaCD_Accurate = 0;
-int Kaillera_Client_Running = 0;
 int Quick_Exit = 0;
+#if 0// TODO: Replace with MDP "exclusive mode" later.
+int Kaillera_Client_Running = 0;
+#endif
 
 static int Gens_Running = 0;
 

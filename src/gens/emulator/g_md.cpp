@@ -258,8 +258,10 @@ int Init_Genesis(ROM_t* MD_ROM)
 	Controller_1_COM = Controller_2_COM = 0;
 	STOP_DEBUGGING();
 	
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
 	if (!Kaillera_Client_Running)
 		Init_Genesis_SRAM(MD_ROM);
+#endif
 	
 	// Check what country code should be used.
 	// TODO: Get rid of magic numbers.
@@ -405,15 +407,18 @@ int Do_VDP_Only(void)
 
 
 #define CONGRATULATIONS_PRECHECK				\
-	unsigned int old_pc = main68k_context.pc;		\
+unsigned int old_pc = main68k_context.pc;			\
+do {								\
 	if (congratulations == 1 && old_pc < Rom_Size)		\
 	{							\
 		congratulations = 2;				\
 		Rom_Data[old_pc] = ~Rom_Data[old_pc];		\
 		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
-	} do { } while (0)
+	}							\
+} while (0)
 
 #define CONGRATULATIONS_POSTCHECK				\
+do {								\
 	if (congratulations == 2)				\
 	{							\
 		congratulations = 3;				\
@@ -421,7 +426,7 @@ int Do_VDP_Only(void)
 		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
 	}							\
 	congratulations = 0;					\
-	do { } while (0)
+} while (0)
 
 
 /**
