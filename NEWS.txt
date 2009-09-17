@@ -36,6 +36,18 @@ release of Gens/GS r7.
 
 Changes from r7_pre7 to r7:
 
+New Features:
+
+* The on-screen display text drawing code has received several changes:
+  - The text is now cached using the C64 character set data to reduce
+    the time needed to draw the text on every frame.
+  - The 1x and 2x text drawing functions have been consolidated into one
+    templated function.
+  - UTF-8 strings are now supported. Invalid UTF-8 sequences are treated
+    as local codepage characters.
+  - More characters were added to the C64 character set to take advantage
+    of UTF-8 support.
+
 Bug Fixes:
 
 * [SDL] Fixed a controller input regression that inverted axes. This regression
