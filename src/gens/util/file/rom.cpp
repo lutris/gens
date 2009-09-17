@@ -573,6 +573,27 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!fROM)
 	{
 		// Error opening the file.
+		char msg[512];
+		snprintf(msg, sizeof(msg), "The file '%s' could not be opened.",
+			 File::GetNameFromPath(filename.c_str()).c_str());
+		msg[sizeof(msg)-1] = 0x00;
+		
+#if defined(_WIN32) && (!defined(UNICODE) && !defined(_UNICODE))
+		if (filename.find('?') != string::npos)
+		{
+			// A '?' was found in the filename.
+			// On Win32, this usually means that the specified file
+			// had symbols not representable in the local code page,
+			// and this version of Gens/GS was compiled without Unicode support.
+			strncat(msg, "\n\nThe selected file has Unicode symbols in its filename;\n"
+				"however, this version of Gens/GS does not have support\n"
+				"for Unicode strings.", sizeof(msg));
+			msg[sizeof(msg)-1] = 0x00;
+		}
+#endif
+		
+		GensUI::msgBox(msg, "Cannot Open File", GensUI::MSGBOX_ICON_ERROR);
+		
 		Game = NULL;
 		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
