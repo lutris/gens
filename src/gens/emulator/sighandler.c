@@ -26,14 +26,9 @@
 
 #include "sighandler.h"
 
-// Message logging.
 #include "macros/log_msg.h"
-
-// Unused Parameter macro.
-#include "macros/unused.h"
-
-// Git version.
 #include "macros/git.h"
+#include "libgsft/gsft_unused.h"
 
 // C includes.
 #include <stdlib.h>
@@ -271,7 +266,7 @@ static void gens_sighandler(int signum)
 #endif
 {
 #ifdef HAVE_SIGACTION
-	GENS_UNUSED_PARAMETER(context);
+	GSFT_UNUSED_PARAMETER(context);
 #endif
 	
 	if (
