@@ -48,9 +48,9 @@ using std::list;
 #include "plugins/pluginmgr.hpp"
 #include "plugins/rendermgr.hpp"
 
-// Commodore 64 character set.
+// OSD character set.
+#include "osd_charset.hpp"
 #include "C64_charset.h"
-
 
  // Text drawing values.
 static uint32_t m_Transparency_Mask;
@@ -65,28 +65,6 @@ char vdraw_msg_text[1024];
 // Prerendered text for the on-screen display.
 // Each byte represents 8 pixels, or one line for a character.
 static uint8_t vdraw_msg_prerender[8][1024];
-
-
-/**
- * vdraw_text_prerender(): Prerender the onscreen text to the character buffer.
- */
-static void vdraw_text_prerender(void)
-{
-	// Prerender the text.
-	
-	// TODO: This only supports 1x rendering.
-	// Do 2x rendering later.
-	
-	unsigned int len = strlen(vdraw_msg_text);
-	
-	for (unsigned int chr = 0; chr < len; chr++)
-	{
-		for (unsigned int row = 0; row < 8; row++)
-		{
-			vdraw_msg_prerender[row][chr] = C64_charset[(unsigned char)vdraw_msg_text[chr]][row];
-		}
-	}
-}
 
 
 template<typename pixel, unsigned int charSize, bool do2x>
@@ -403,7 +381,7 @@ void vdraw_text_write(const char* msg, const int duration)
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
 	// Prerender the text.
-	vdraw_text_prerender();
+	osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
 	
 	if (duration > 0)
 	{
@@ -448,7 +426,7 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
 	// Prerender the text.
-	vdraw_text_prerender();
+	osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
 	
 	if (duration > 0)
 	{
