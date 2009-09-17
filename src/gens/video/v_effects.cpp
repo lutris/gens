@@ -38,7 +38,6 @@
 #endif
 
 #include "v_effects.hpp"
-#include "v_inline.h"
 #include "gens_core/misc/misc.h"
 #include "gens_core/gfx/fastblur.hpp"
 
@@ -71,7 +70,7 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	zoom_x = (1.0f / zoom_x);
 	zoom_y = 1;
 	
-	const int w = (isFullXRes() ? 320 : 256);
+	const int w = (vdp_isH40() ? 320 : 256);
 	const int w_div2 = (w / 2);
 	const int h = VDP_Num_Vis_Lines;
 	const int h_div2 = (h / 2);

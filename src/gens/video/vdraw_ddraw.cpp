@@ -64,9 +64,6 @@
 // RGB color conversion functions.
 #include "vdraw_RGB.h"
 
-// Inline video functions.
-#include "v_inline.h"
-
 // Audio Handler.
 #include "audio/audio.h"
 
@@ -102,7 +99,7 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int w = (isFullXRes() ? 320 : 256) * vdraw_scale;
+	const int w = (vdp_isH40() ? 320 : 256) * vdraw_scale;
 	const int h = VDP_Num_Vis_Lines * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
@@ -638,7 +635,7 @@ static void vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Rat
 		}
 	}
 
-	if (isFullXRes())
+	if (vdp_isH40())
 	{
 		Dep = 0;
 		
@@ -738,7 +735,7 @@ int vdraw_ddraw_flip(void)
 		
 		Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - Floor them to the smaller value for correct ratio display
 		
-		if (isFullXRes())
+		if (vdp_isH40())
 		{
 			if (Flag_Clr_Scr != 40)
 			{
@@ -1009,7 +1006,7 @@ int vdraw_ddraw_flip(void)
 		GetClientRect(gens_window, &RectDest);
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 		
-		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
+		int Clr_Cmp_Val = vdp_isH40() ? 40 : 32;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
 		{
 			// MD resolution change. Clear the screen.

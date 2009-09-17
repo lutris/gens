@@ -48,9 +48,6 @@
 #include "emulator/g_md.hpp"
 #include "emulator/md_palette.hpp"
 
-// Inline video functions.
-#include "v_inline.h"
-
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
 
@@ -427,7 +424,7 @@ int vdraw_flip(int md_screen_updated)
 	
 	// Check if the display width changed.
 	vdraw_border_h_old = vdraw_border_h;
-	if (isFullXRes())
+	if (vdp_isH40())
 		vdraw_border_h = 0;	// 320x224
 	else
 		vdraw_border_h = 64;	// 256x224

@@ -1,7 +1,18 @@
 #ifndef GENS_VDP_IO_H
 #define GENS_VDP_IO_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdint.h>
+
+// Needed for inline functions.
+#include "gens_core/mem/mem_m68k.h"
+#include "util/file/rom.hpp"
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,8 +105,69 @@ int Set_VDP_Reg(int Num_Reg, uint8_t Val);
 uint8_t VDP_Int_Ack(void);
 void VDP_Update_IRQ_Line(void);
 
+
+/** Inline VDP functions. **/
+
+/**
+ * vdp_isH40(): Determine if the current horiontal resolution is H40.
+ * @return Zero if H32 (256); non-zero if H40 (320).
+ */
+static inline int vdp_isH40(void)
+{
+	// Default when no game is loaded is 1. (320x224)
+	int rval = 0;
+	if ((VDP_Reg.Set4 & 0x1) || !Game)
+		rval = 1;
+#ifdef GENS_DEBUGGER
+	if (debug_mode != DEBUG_NONE)
+		rval = 1;
+#endif
+#if 0
+	if (!FrameCount)
+		rval = 1;
+#endif
+	return rval;
+}
+
+/**
+ * vdp_isH40(): Determine if the current horiontal resolution is H40.
+ * @return Zero if V28 (224); non-zero if V30 (240).
+ */
+static inline int vdp_isV30(void)
+{
+	// Default when no game is loaded is 0. (320x224)
+	int rval = 0;
+	if (((CPU_Mode == 1) && (VDP_Reg.Set2 & 0x8)) && Game)
+		rval = 1;
+#ifdef GENS_DEBUGGER
+	if (debug_mode != DEBUG_NONE)
+		rval = 1;
+#endif
+#if 0
+	if (!FrameCount)
+		rval = 1;
+#endif
+	return rval;
+}
+
 #ifdef __cplusplus
 }
 #endif
+
+/** VDP macros. **/
+
+/**
+ * VDP_SET_VISIBLE_LINES(): Sets the number of visible lines, depending on CPU mode and VDP setting.
+ * Possible options:
+ * - Normal: 224 lines. (V28)
+ * - If PAL and Set2.M2 (bit 3) is set, 240 lines. (V30)
+ */
+#define VDP_SET_VISIBLE_LINES()				\
+do {							\
+	if ((CPU_Mode == 1) && (VDP_Reg.Set2 & 0x8))	\
+		VDP_Num_Vis_Lines = 240;		\
+	else						\
+		VDP_Num_Vis_Lines = 224;		\
+} while (0)
 
 #endif /* GENS_VDP_IO_H */

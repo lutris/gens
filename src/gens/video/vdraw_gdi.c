@@ -22,7 +22,6 @@
 
 #include "vdraw.h"
 #include "vdraw_gdi.h"
-#include "v_inline.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -407,7 +406,7 @@ static void vdraw_gdi_stretch_adjust(void)
 	// Adjust the stretch parameters.
 	vdraw_gdi_stretch_flags = vdraw_get_stretch();
 	
-	if ((vdraw_gdi_stretch_flags & STRETCH_H) && !isFullXRes())
+	if ((vdraw_gdi_stretch_flags & STRETCH_H) && !vdp_isH40())
 	{
 		// Horizontal stretch.
 		vdraw_gdi_stretch_srcX = ((320 - 256) / 2) * vdraw_scale;
@@ -483,7 +482,7 @@ static void vdraw_gdi_draw_border(void)
 			FillRect(hdcComp, &rectBorder, hbrBorder);
 		}
 		
-		if (!isFullXRes() && !(stretch & STRETCH_H))
+		if (!vdp_isH40() && !(stretch & STRETCH_H))
 		{
 			// Left/Right borders.
 			rectBorder.top = 0;
