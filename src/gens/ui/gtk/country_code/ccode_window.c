@@ -38,7 +38,7 @@
 #include <gtk/gtk.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -310,9 +310,9 @@ static void ccode_window_save(void)
  */
 static gboolean ccode_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	ccode_window_close();
 	return FALSE;
@@ -327,8 +327,8 @@ static gboolean ccode_window_callback_close(GtkWidget *widget, GdkEvent *event, 
  */
 static void ccode_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -359,8 +359,8 @@ static void ccode_window_callback_response(GtkDialog *dialog, gint response_id, 
  */
 static void ccode_window_callback_btnUp_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	GtkTreeSelection *selection;
 	GtkTreeIter iter, prevIter;
@@ -407,8 +407,8 @@ static void ccode_window_callback_btnUp_clicked(GtkButton *button, gpointer user
  */
 static void ccode_window_callback_btnDown_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	GtkTreeSelection *selection;
 	GtkTreeIter iter, nextIter;
@@ -452,12 +452,12 @@ static gboolean ccode_window_callback_lstCountryCodes_drag_drop(GtkWidget	*widge
 								guint		time_,
 								gpointer	user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(drag_context);
-	GENS_UNUSED_PARAMETER(x);
-	GENS_UNUSED_PARAMETER(y);
-	GENS_UNUSED_PARAMETER(time_);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(drag_context);
+	GSFT_UNUSED_PARAMETER(x);
+	GSFT_UNUSED_PARAMETER(y);
+	GSFT_UNUSED_PARAMETER(time_);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Enable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, TRUE);

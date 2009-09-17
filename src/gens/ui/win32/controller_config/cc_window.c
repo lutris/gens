@@ -59,7 +59,7 @@
 #include <dinput.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -919,8 +919,8 @@ static BOOL cc_window_configure_key(int player, int button)
  */
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	GENS_UNUSED_PARAMETER(uMsg);
-	GENS_UNUSED_PARAMETER(dwTime);
+	GSFT_UNUSED_PARAMETER(uMsg);
+	GSFT_UNUSED_PARAMETER(dwTime);
 	
 	if (idEvent != IDT_CONFIGURE_BLINK)
 		return;

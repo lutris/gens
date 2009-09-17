@@ -37,7 +37,7 @@ int z80dis(unsigned char *buf, unsigned int *Counter, char str[128]);
 
 
 /* The Z80 logging function uses the FASTCALL calling convention. */
-#include "macros/fastcall.h"
+#include "libgsft/gsft_fastcall.h"
 
 int FASTCALL z80log(unsigned int PC);
 

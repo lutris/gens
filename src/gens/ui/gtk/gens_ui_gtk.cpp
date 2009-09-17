@@ -42,7 +42,7 @@
 #include "macros/log_msg.h"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #ifdef GENS_OS_MACOSX
 // SDL is needed in order to set the SDL window title.
@@ -118,7 +118,7 @@ void GensUI::update(void)
  */
 static gboolean GensUI_GLib_SleepCallback(gpointer data)
 {
-	GENS_UNUSED_PARAMETER(data);
+	GSFT_UNUSED_PARAMETER(data);
 	
 	sleeping = false;
 	return false;

@@ -40,7 +40,7 @@
 #include "emulator/options.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Video Drawing.
 #include "video/vdraw.h"
@@ -623,9 +623,9 @@ static void genopt_window_save(void)
  */
 static gboolean genopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	genopt_window_close();
 	return FALSE;
@@ -640,8 +640,8 @@ static gboolean genopt_window_callback_close(GtkWidget *widget, GdkEvent *event,
  */
 static void genopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{

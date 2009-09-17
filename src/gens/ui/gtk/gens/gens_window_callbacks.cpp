@@ -35,7 +35,7 @@
 #include "ui/gtk/gtk-compat.h"
 
 // Unued Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -56,9 +56,9 @@ using std::string;
  */
 gboolean on_gens_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	close_gens();
 	
@@ -76,11 +76,11 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 				    GtkSelectionData *selection_data, guint target_type, guint time,
 				    gpointer data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(x);
-	GENS_UNUSED_PARAMETER(y);
-	GENS_UNUSED_PARAMETER(target_type);
-	GENS_UNUSED_PARAMETER(data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(x);
+	GSFT_UNUSED_PARAMETER(y);
+	GSFT_UNUSED_PARAMETER(target_type);
+	GSFT_UNUSED_PARAMETER(data);
 	
 	if (selection_data == NULL || gtk_selection_data_get_length(selection_data) == 0)
 	{
@@ -147,9 +147,9 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 			       gint x, gint y, guint time, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(x);
-	GENS_UNUSED_PARAMETER(y);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(x);
+	GSFT_UNUSED_PARAMETER(y);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	if (context->targets)
 	{
@@ -173,9 +173,9 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
  */
 gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	Active = 1;
 	
@@ -195,9 +195,9 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
  */
 gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	if (Auto_Pause && Active)
 	{
@@ -221,9 +221,9 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
  */
 gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	GensUI::wakeup();
 	return false;

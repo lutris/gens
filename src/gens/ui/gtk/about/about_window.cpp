@@ -44,7 +44,7 @@
 #include "gtk-misc.h"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -227,9 +227,9 @@ void about_window_close(void)
  */
 static gboolean about_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	about_window_close();
 	return FALSE;
@@ -244,8 +244,8 @@ static gboolean about_window_callback_close(GtkWidget *widget, GdkEvent *event, 
  */
 static void about_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -315,7 +315,7 @@ static void about_window_update_ice(void)
 
 static gboolean about_window_callback_iceTimer(gpointer data)
 {
-	GENS_UNUSED_PARAMETER(data);
+	GSFT_UNUSED_PARAMETER(data);
 	
 	if (!cx)
 		return FALSE;

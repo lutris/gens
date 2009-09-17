@@ -37,7 +37,7 @@
 #include <gtk/gtk.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // SegaCD
 #include "emulator/g_mcd.hpp"
@@ -364,9 +364,9 @@ static int selcd_window_save(void)
  */
 static gboolean selcd_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	selcd_window_close();
 	return FALSE;
@@ -381,8 +381,8 @@ static gboolean selcd_window_callback_close(GtkWidget *widget, GdkEvent *event, 
  */
 static void selcd_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -413,8 +413,8 @@ static void selcd_window_callback_response(GtkDialog *dialog, gint response_id, 
  */
 static void selcd_window_callback_combobox_changed(GtkComboBox *widget, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Enable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, true);

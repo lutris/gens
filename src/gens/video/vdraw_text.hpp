@@ -29,7 +29,7 @@
 
 #include <stdint.h>
 #include <stdarg.h>
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 #ifdef __cplusplus
 extern "C" {

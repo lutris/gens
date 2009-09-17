@@ -18,7 +18,7 @@ extern "C" {
 #include <stdint.h>
 
 /* The SH2 emulator uses FASTCALL. */
-#include "macros/fastcall.h"
+#include "libgsft/gsft_fastcall.h"
 
 
 /****************************/

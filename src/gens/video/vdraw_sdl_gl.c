@@ -50,7 +50,7 @@
 #include "vdraw_RGB.h"
 
 // Aligned malloc().
-#include "macros/malloc_align.h"
+#include "libgsft/gsft_malloc_align.h"
 
 // OS-Specific OpenGL functions.
 #include "vdraw_gl.h"
@@ -276,7 +276,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	// Allocate the filter buffer.
 	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * (240 * scale) * bytespp;
-	filterBuffer = (unsigned char*)(gens_malloc_align(filterBufferSize, 16));
+	filterBuffer = (unsigned char*)(gsft_malloc_align(filterBufferSize, 16));
 	
 	glViewport(0, 0, vdraw_sdl_gl_screen->w, vdraw_sdl_gl_screen->h);
 	

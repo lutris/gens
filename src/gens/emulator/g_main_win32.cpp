@@ -33,7 +33,7 @@
 using std::list;
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #if !defined(GENS_DEBUG)
 // Signal handler.
@@ -129,7 +129,7 @@ void get_default_save_path(char *buf, size_t size)
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	// hPrevInst is a leftover from Win16.
-	GENS_UNUSED_PARAMETER(hPrevInst);
+	GSFT_UNUSED_PARAMETER(hPrevInst);
 	
 	// Save hInst for other functions.
 	ghInstance = hInst;

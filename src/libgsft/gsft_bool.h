@@ -1,8 +1,7 @@
 /***************************************************************************
- * Gens: Aligned memory allocation macros.                                 *
+ * libgsft: Common Functions.                                              *
+ * gsft_bool.h: Boolean defines.                                           *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -20,37 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MALLOC_ALIGN_H
-#define GENS_MALLOC_ALIGN_H
+#ifndef __GSFT_BOOL_H
+#define __GSFT_BOOL_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#ifdef _WIN32
+	// Win32 has definitions for BOOL.
+	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+	#include <windows.h>
+#else /* !_WIN32 */
+	// Other systems might not have definitions for BOOL.
+	typedef int BOOL;
+#endif /* _WIN32 */
+
+#ifndef TRUE
+#define TRUE 1
 #endif
 
-#ifdef GENS_OS_WIN32
-
-#include <malloc.h>
-static inline void* gens_malloc_align(size_t size, size_t alignment)
-{
-	return _aligned_malloc(size, alignment);
-}
-
-#else /* !GENS_OS_WIN32 */
-
-#include <stdlib.h>
-static inline void* gens_malloc_align(size_t size, size_t alignment)
-{
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
-	void *mem;
-	posix_memalign(&mem, alignment, size);
-	return mem;
-#else
-	// TODO: Write a wrapper class for aligned malloc.
-	((void)alignment);
-	return malloc(size);
+#ifndef FALSE
+#define FALSE 0
 #endif
-}
 
-#endif /* GENS_OS_WIN32 */
-
-#endif /* GENS_MALLOC_ALIGN_H */
+#endif /* __GSFT_BOOL_H */

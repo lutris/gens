@@ -48,14 +48,12 @@
 using std::string;
 using std::stringstream;
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // MDP includes.
 #include "mdp/mdp_error.h"
 
-// gsft_strdup()
+// libgsft includes.
 #include "libgsft/gsft_strdup.h"
+#include "libgsft/gsft_unused.h"
 
 
 /**
@@ -85,7 +83,7 @@ int decompressor_rar_detect_format(FILE *zF)
  */
 int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	GENS_UNUSED_PARAMETER(zF);
+	GSFT_UNUSED_PARAMETER(zF);
 	
 	if (!z_entry_out)
 		return -MDP_ERR_INVALID_PARAMETERS;
@@ -245,7 +243,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 				 mdp_z_entry_t *z_entry,
 				 void *buf, const size_t size)
 {
-	GENS_UNUSED_PARAMETER(zF);
+	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
 	if (!filename || !z_entry || !buf || !size)

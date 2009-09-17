@@ -35,7 +35,7 @@
 #include "ui/gens_ui.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Win32 includes.
 #define WIN32_LEAN_AND_MEAN
@@ -143,8 +143,8 @@ HACCEL hAccelTable_NonMenu;
  */
 void GensUI::init(int *argc, char **argv[])
 {
-	GENS_UNUSED_PARAMETER(argc);
-	GENS_UNUSED_PARAMETER(argv);
+	GSFT_UNUSED_PARAMETER(argc);
+	GSFT_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
 	memset(&winVersion, 0x00, sizeof(winVersion));
@@ -627,7 +627,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
  */
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
-	GENS_UNUSED_PARAMETER(lParam);
+	GSFT_UNUSED_PARAMETER(lParam);
 	
 	if (uMsg == BFFM_INITIALIZED)
 		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);

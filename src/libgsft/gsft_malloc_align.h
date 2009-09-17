@@ -1,8 +1,7 @@
 /***************************************************************************
- * Gens: Fastcall macros.                                                  *
+ * libgsft: Common Functions.                                              *
+ * gsft_malloc_align.h: Aligned memory allocation functions.               *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -20,23 +19,55 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_FASTCALL_H
-#define GENS_FASTCALL_H
+#ifndef __GSFT_MALLOC_ALIGN_H
+#define __GSFT_MALLOC_ALIGN_H
 
-#ifdef _WIN32
-#define FASTCALL	__fastcall
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if defined(_WIN32)
+
+// Win32 supports aligned malloc() using _aligned_malloc().
+#include <malloc.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline void* gsft_malloc_align(size_t size, size_t alignment)
+{
+	return _aligned_malloc(size, alignment);
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#else /* !defined(_WIN32) */
+
+// POSIX systems may or may not support aligned memory allocation.
+#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline void* gsft_malloc_align(size_t size, size_t alignment)
+{
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+	void *mem;
+	posix_memalign(&mem, alignment, size);
+	return mem;
 #else
-
-/* gcc-3.4 or later is required on non-Windows systems for __attribute__ ((fastcall)). */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#if (__GNUC__ < 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__) < 4)
-#error mdZ80 uses __attribute__ ((fastcall)), which requires gcc-3.4 or later.
+	// TODO: Write a wrapper class for aligned malloc.
+	((void)alignment);
+	return malloc(size);
 #endif
-#endif
+}
 
-#define __fastcall	__attribute__ ((fastcall))
-#define FASTCALL	__attribute__ ((fastcall))
-
+#ifdef __cplusplus
+}
 #endif
 
-#endif /* GENS_FASTCALL_H */
+#endif /* defined(_WIN32) */
+
+#endif /* __GSFT_MALLOC_ALIGN_H */

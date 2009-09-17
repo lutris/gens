@@ -23,8 +23,8 @@
 #ifndef GENS_INPUT_DINPUT_HPP
 #define GENS_INPUT_DINPUT_HPP
 
-#include "macros/bool_m.h"
 #include <stdint.h>
+#include "libgsft/gsft_bool.h"
 
 #include "input.h"
 

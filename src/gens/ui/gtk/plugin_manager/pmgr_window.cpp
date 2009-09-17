@@ -37,7 +37,7 @@
 #include <gtk/gtk.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
@@ -514,9 +514,9 @@ void pmgr_window_close(void)
  */
 static gboolean pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	pmgr_window_close();
 	return FALSE;
@@ -531,8 +531,8 @@ static gboolean pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, g
  */
 static void pmgr_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -559,9 +559,9 @@ static void pmgr_window_callback_response(GtkDialog *dialog, gint response_id, g
 static void pmgr_window_callback_tabPluginList_switch_page(GtkNotebook *notebook, GtkNotebookPage *page,
 							   guint page_num, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(notebook);
-	GENS_UNUSED_PARAMETER(page);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(notebook);
+	GSFT_UNUSED_PARAMETER(page);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Activate the "cursor-changed" callback for the page.
 	pmgr_window_callback_lstPluginList_cursor_changed(GTK_TREE_VIEW(lstPluginList[page_num]), GINT_TO_POINTER(page_num));
@@ -575,7 +575,7 @@ static void pmgr_window_callback_tabPluginList_switch_page(GtkNotebook *notebook
  */
 static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(tree_view);
+	GSFT_UNUSED_PARAMETER(tree_view);
 	
 	int id = GPOINTER_TO_INT(user_data);
 	if (id < 0 || id >= PMGR_MAX)
@@ -752,8 +752,8 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
  */
 static void pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	fraPluginDesc_width = allocation->width;
 }

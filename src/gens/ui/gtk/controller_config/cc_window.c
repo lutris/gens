@@ -37,7 +37,7 @@
 #include <gdk/gdkkeysyms.h>
 
 // BOOL macros.
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -53,7 +53,7 @@
 #include <SDL/SDL.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -733,9 +733,9 @@ static void cc_window_show_configuration(int player)
  */
 static gboolean cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	cc_window_close();
 	return FALSE;
@@ -750,8 +750,8 @@ static gboolean cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
  */
 static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -870,7 +870,7 @@ static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, 
  */
 static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(button);
 	
 	if (cc_window_is_configuring)
 		return;
@@ -989,8 +989,8 @@ static gboolean cc_window_callback_blink(gpointer data)
  */
 static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	if (cc_window_is_configuring)
 		return;
@@ -1045,8 +1045,8 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
  */
 static void cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	if (cc_cur_player < 0 || cc_cur_player > 8)
 		return;
@@ -1069,8 +1069,8 @@ static void cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer u
  */
 static void cc_window_callback_chkRestrictInput_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(togglebutton);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(togglebutton);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Enable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, TRUE);

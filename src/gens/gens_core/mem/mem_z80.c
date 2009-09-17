@@ -26,7 +26,7 @@
 #include <stdint.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Gens includes.
 #include "mem_m68k.h"
@@ -186,7 +186,7 @@ void Z80_WriteW(uint32_t address, uint16_t data)
  */
 uint8_t FASTCALL Z80_ReadB_Bad(uint32_t address)
 {
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	// TODO: Invalid address. This should do something other than return 0.
 	return 0;
@@ -211,7 +211,7 @@ uint8_t FASTCALL Z80_ReadB_Ram(uint32_t address)
  */
 uint8_t FASTCALL Z80_ReadB_Bank(uint32_t address)
 {
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	// TODO: Invalid address. This should do something other than return 0.
 	return 0;
@@ -227,7 +227,7 @@ uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t address)
 {
 	// NOTE: The original asm specified an address,
 	// but YM2612_Read() doesn't accept any parameters...
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	//return YM2612_Read(address & 0x03);
 	return YM2612_Read();
@@ -288,7 +288,7 @@ uint8_t FASTCALL Z80_ReadB_68K_Ram(uint32_t address)
  */
 uint16_t FASTCALL Z80_ReadW_Bad(uint32_t address)
 {
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	// TODO: Invalid address. This should do something other than return 0.
 	return 0;
@@ -314,7 +314,7 @@ uint16_t FASTCALL Z80_ReadW_Ram(uint32_t address)
  */
 uint16_t FASTCALL Z80_ReadW_Bank(uint32_t address)
 {
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	// TODO: Invalid address. This should do something other than return 0.
 	return 0;
@@ -330,7 +330,7 @@ uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t address)
 {
 	// NOTE: The original asm specified an address,
 	// but YM2612_Read() doesn't accept any parameters...
-	GENS_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(address);
 	
 	//return (YM2612_Read(address & 0x03) & 0xFF);
 	return (YM2612_Read() & 0xFF);
@@ -384,8 +384,8 @@ uint16_t FASTCALL Z80_ReadW_68K_Ram(uint32_t address)
  */
 void FASTCALL Z80_WriteB_Bad(uint32_t address, uint8_t data)
 {
-	GENS_UNUSED_PARAMETER(address);
-	GENS_UNUSED_PARAMETER(data);
+	GSFT_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(data);
 	
 	// TODO: Invalid address. This should do something.
 	return;
@@ -484,8 +484,8 @@ void FASTCALL Z80_WriteB_68K_Ram(uint32_t address, uint8_t data)
  */
 void FASTCALL Z80_WriteW_Bad(uint32_t address, uint16_t data)
 {
-	GENS_UNUSED_PARAMETER(address);
-	GENS_UNUSED_PARAMETER(data);
+	GSFT_UNUSED_PARAMETER(address);
+	GSFT_UNUSED_PARAMETER(data);
 	
 	// TODO: Invalid address. This should do something.
 	return;

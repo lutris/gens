@@ -60,9 +60,6 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // Gens includes.
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"

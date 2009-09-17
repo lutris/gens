@@ -26,7 +26,7 @@
 
 // Main window.
 #include "gens/gens_window.h"
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // C includes.
 #include <stdio.h>
@@ -146,7 +146,7 @@ mdp_host_t Gens_MDP_Host =
  */
 int MDP_FNCALL mdp_host_val_set(mdp_t *plugin, uint32_t valID, int val)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	switch (valID)
 	{

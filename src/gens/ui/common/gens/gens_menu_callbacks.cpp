@@ -52,7 +52,7 @@
 #include "util/file/config_file.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -156,7 +156,7 @@ int gens_common_menu_callback(uint16_t menuID, uint16_t state)
 
 static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 {
-	GENS_UNUSED_PARAMETER(state);
+	GSFT_UNUSED_PARAMETER(state);
 	
 	string filename;
 	
@@ -703,7 +703,7 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 
 static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 {
-	GENS_UNUSED_PARAMETER(state);
+	GSFT_UNUSED_PARAMETER(state);
 	
 	switch (menuID)
 	{
@@ -765,7 +765,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 
 static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state)
 {
-	GENS_UNUSED_PARAMETER(state);
+	GSFT_UNUSED_PARAMETER(state);
 	
 	switch (menuID)
 	{
@@ -795,7 +795,7 @@ static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state)
 
 static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 {
-	GENS_UNUSED_PARAMETER(state);
+	GSFT_UNUSED_PARAMETER(state);
 	
 	switch (menuID)
 	{

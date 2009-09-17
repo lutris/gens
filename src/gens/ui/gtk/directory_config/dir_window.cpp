@@ -49,7 +49,7 @@ using std::list;
 #include <gtk/gtk.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
@@ -406,9 +406,9 @@ static void dir_window_save(void)
  */
 static gboolean dir_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	dir_window_close();
 	return FALSE;
@@ -423,8 +423,8 @@ static gboolean dir_window_callback_close(GtkWidget *widget, GdkEvent *event, gp
  */
 static void dir_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -455,7 +455,7 @@ static void dir_window_callback_response(GtkDialog *dialog, gint response_id, gp
  */
 static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(button);
+	GSFT_UNUSED_PARAMETER(button);
 	
 	if (GPOINTER_TO_INT(user_data) < 0 || GPOINTER_TO_INT(user_data) >= vectDirs.size())
 		return;
@@ -489,8 +489,8 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
  */
 static void dir_window_callback_textbox_changed(GtkEditable *editable, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(editable);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(editable);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Enable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, true);

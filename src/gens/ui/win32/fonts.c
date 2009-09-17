@@ -34,9 +34,6 @@
 #include <windowsx.h>
 #include <tchar.h>
 
-// Unused parameter macro.
-#include "macros/unused.h"
-
 
 // Fonts.
 HFONT fntMain;

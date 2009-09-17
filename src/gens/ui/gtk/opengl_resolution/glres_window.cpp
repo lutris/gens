@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Gens options.
 #include "emulator/g_main.hpp"
@@ -211,9 +211,9 @@ static void glres_window_save(void)
  */
 static gboolean glres_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	glres_window_close();
 	return FALSE;
@@ -228,8 +228,8 @@ static gboolean glres_window_callback_close(GtkWidget *widget, GdkEvent *event, 
  */
 static void glres_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(dialog);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	switch (response_id)
 	{
@@ -260,8 +260,8 @@ static void glres_window_callback_response(GtkDialog *dialog, gint response_id, 
  */
 static void glres_window_callback_spn_value_changed(GtkSpinButton *spinbutton, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(spinbutton);
-	GENS_UNUSED_PARAMETER(user_data);
+	GSFT_UNUSED_PARAMETER(spinbutton);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	// Enable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, true);

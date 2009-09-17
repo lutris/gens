@@ -36,7 +36,7 @@
 #include "gens_menu.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
@@ -261,9 +261,9 @@ static void on_gens_window_close(void)
  */
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	GENS_UNUSED_PARAMETER(hWnd);
-	GENS_UNUSED_PARAMETER(message);
-	GENS_UNUSED_PARAMETER(lParam);
+	GSFT_UNUSED_PARAMETER(hWnd);
+	GSFT_UNUSED_PARAMETER(message);
+	GSFT_UNUSED_PARAMETER(lParam);
 	
 	// Force a wakeup.
 	GensUI::wakeup();

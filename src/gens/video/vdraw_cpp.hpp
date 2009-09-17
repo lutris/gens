@@ -27,7 +27,7 @@
 #ifndef GENS_VDRAW_CPP_HPP
 #define GENS_VDRAW_CPP_HPP
 
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 #ifdef __cplusplus
 extern "C" {

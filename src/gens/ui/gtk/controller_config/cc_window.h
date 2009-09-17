@@ -31,7 +31,7 @@ extern "C" {
 #include <gtk/gtk.h>
 
 // BOOL macros.
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 extern GtkWidget *cc_window;
 extern BOOL cc_window_is_configuring;

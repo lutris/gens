@@ -53,7 +53,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 /************************************************************************
  * Controller key mapping.

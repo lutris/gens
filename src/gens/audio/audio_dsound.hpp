@@ -23,7 +23,7 @@
 #ifndef GENS_AUDIO_DSOUND_HPP
 #define GENS_AUDIO_DSOUND_HPP
 
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 #include "audio.h"
 
 #ifdef __cplusplus

@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-#include "macros/fastcall.h"
+#include "libgsft/gsft_fastcall.h"
 
 #ifdef __cplusplus
 extern "C" {

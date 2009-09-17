@@ -80,7 +80,7 @@ do {										\
 #include "util/file/rom.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 extern int ice;
 
@@ -195,7 +195,7 @@ int MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address, uint32_t *ret_v
 
 int MDP_FNCALL mdp_host_mem_write_8(mdp_t *plugin, int memID, uint32_t address, uint8_t data)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -232,7 +232,7 @@ int MDP_FNCALL mdp_host_mem_write_8(mdp_t *plugin, int memID, uint32_t address, 
 
 int MDP_FNCALL mdp_host_mem_write_16(mdp_t *plugin, int memID, uint32_t address, uint16_t data)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -271,7 +271,7 @@ int MDP_FNCALL mdp_host_mem_write_16(mdp_t *plugin, int memID, uint32_t address,
 
 int MDP_FNCALL mdp_host_mem_write_32(mdp_t *plugin, int memID, uint32_t address, uint32_t data)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -561,7 +561,7 @@ static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint32_t address,
 
 int MDP_FNCALL mdp_host_mem_write_block_8(mdp_t *plugin, int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -628,7 +628,7 @@ int MDP_FNCALL mdp_host_mem_write_block_8(mdp_t *plugin, int memID, uint32_t add
 /* TODO: Test this function. */
 int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -686,7 +686,7 @@ int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t ad
 
 int MDP_FNCALL mdp_host_mem_write_block_32(mdp_t *plugin, int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
@@ -770,7 +770,7 @@ static int mdp_host_mem_size_set_MD_ROM(unsigned int size)
 
 int MDP_FNCALL mdp_host_mem_size_set(mdp_t *plugin, int memID, unsigned int size)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;

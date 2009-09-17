@@ -26,14 +26,12 @@
 
 #include "dummy.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // MDP includes.
 #include "mdp/mdp_error.h"
 
-// gsft_strdup()
+// libgsft includes.
 #include "libgsft/gsft_strdup.h"
+#include "libgsft/gsft_unused.h"
 
 // C includes.
 #include <stdlib.h>
@@ -63,7 +61,7 @@ const decompressor_t decompressor_dummy =
  */
 static int decompressor_dummy_detect_format(FILE *zF)
 {
-	GENS_UNUSED_PARAMETER(zF);
+	GSFT_UNUSED_PARAMETER(zF);
 	
 	// The dummy decompressor accepts all files.
 	return 1;
@@ -79,7 +77,7 @@ static int decompressor_dummy_detect_format(FILE *zF)
  */
 static int decompressor_dummy_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	GENS_UNUSED_PARAMETER(filename);
+	GSFT_UNUSED_PARAMETER(filename);
 	
 	if (!zF || !z_entry_out)
 		return -MDP_ERR_INVALID_PARAMETERS;
@@ -117,8 +115,8 @@ size_t decompressor_dummy_get_file(FILE *zF, const char *filename,
 				   mdp_z_entry_t *z_entry,
 				   void *buf, const size_t size)
 {
-	GENS_UNUSED_PARAMETER(filename);
-	GENS_UNUSED_PARAMETER(z_entry);
+	GSFT_UNUSED_PARAMETER(filename);
+	GSFT_UNUSED_PARAMETER(z_entry);
 	
 	// All parameters (except filename and file_list) must be specified.
 	if (!zF || !buf || !size)

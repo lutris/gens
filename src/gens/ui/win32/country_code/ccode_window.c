@@ -72,9 +72,6 @@ typedef struct
 	SendMessage((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
 #endif
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 
 // Window.
 HWND ccode_window = NULL;

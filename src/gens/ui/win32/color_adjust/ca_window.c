@@ -45,9 +45,6 @@
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // Gens includes.
 #include "emulator/md_palette.hpp"
 #include "emulator/g_main.hpp"

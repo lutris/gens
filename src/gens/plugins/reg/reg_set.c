@@ -26,7 +26,7 @@
 
 // C includes.
 #include <stdint.h>
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 #include "reg_set.h"
 #include "mdp/mdp_error.h"
@@ -313,7 +313,7 @@ static int mdp_host_reg_set_z80(int regID, uint32_t new_value)
  */
 int MDP_FNCALL mdp_host_reg_set(mdp_t *plugin, int icID, int regID, uint32_t new_value)
 {
-	GENS_UNUSED_PARAMETER(plugin);
+	GSFT_UNUSED_PARAMETER(plugin);
 	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;

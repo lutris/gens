@@ -31,14 +31,12 @@
 // MiniZip.
 #include "minizip/unzip.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // MDP includes.
 #include "mdp/mdp_error.h"
 
-// gsft_strdup().
+// libgsft includes.
 #include "libgsft/gsft_strdup.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Zip decompressor functions.
@@ -85,7 +83,7 @@ static int decompressor_zip_detect_format(FILE *zF)
  */
 static int decompressor_zip_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
-	GENS_UNUSED_PARAMETER(zF);
+	GSFT_UNUSED_PARAMETER(zF);
 	
 	if (!filename || !z_entry_out)
 		return -MDP_ERR_INVALID_PARAMETERS;
@@ -157,7 +155,7 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
-	GENS_UNUSED_PARAMETER(zF);
+	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
 	if (!filename || !z_entry || !buf || !size)

@@ -54,9 +54,6 @@ using std::string;
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 
 // Window.
 HWND bmf_window = NULL;

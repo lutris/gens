@@ -43,9 +43,6 @@
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// Unused Parameter macro.
-#include "macros/unused.h"
-
 // Gens includes.
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"

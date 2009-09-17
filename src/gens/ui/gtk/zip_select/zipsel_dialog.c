@@ -29,7 +29,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
@@ -118,7 +118,7 @@ static zipsel_dialog_t zipsel_dialog_create(void)
 
 static gboolean zipsel_dialog_callback_lstFiles_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
-	GENS_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(widget);
 	
 	if (GTK_IS_DIALOG(user_data) && event->type == GDK_2BUTTON_PRESS)
 	{

@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: Boolean macros for C.                                             *
+ * libgsft: Common Functions.                                              *
+ * gsft_bool.h: FASTCALL macros.                                           *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,35 +19,36 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_BOOL_M_H
-#define GENS_BOOL_M_H
+#ifndef __GSFT_FASTCALL_H
+#define __GSFT_FASTCALL_H
 
-#ifdef __cplusplus
-extern "C" {
+#if !defined(__i386__)
+
+/* FASTCALL only exists on i386. */
+#define FASTCALL
+#define __fastcall
+
+#else /* defined(__i386__) */
+
+/* i386 system. */
+
+#if defined(_WIN32)
+/* Win32 has __fastcall. */
+#define FASTCALL	__fastcall
+#else /* !defined(_WIN32) */
+
+/* gcc-3.4 or later is required on non-Windows systems for __attribute__ ((fastcall)). */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if (__GNUC__ < 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__) < 4)
+#error This program uses __attribute__ ((fastcall)), which requires gcc-3.4 or later.
+#endif
 #endif
 
-#ifdef _WIN32
-	// Win32 has definitions for BOOL.
-	#define WIN32_LEAN_AND_MEAN
-	#ifndef NOMINMAX
-		#define NOMINMAX
-	#endif
-	#include <windows.h>
-#else /* !_WIN32 */
-	// Other systems might not have definitions for BOOL.
-	typedef int BOOL;
-#endif /* _WIN32 */
+#define __fastcall	__attribute__ ((fastcall))
+#define FASTCALL	__attribute__ ((fastcall))
 
-#ifndef TRUE
-#define TRUE 1
-#endif
+#endif /* defined(_WIN32) */
 
-#ifndef FALSE
-#define FALSE 0
-#endif
+#endif /* !defined(__i386__) */
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* GENS_MATH_M_H */
+#endif /* __GSFT_FASTCALL_H */

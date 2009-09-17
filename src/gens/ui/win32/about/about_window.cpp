@@ -59,7 +59,7 @@ using std::string;
 #include "macros/git.h"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Audio Handler.
 #include "audio/audio.h"
@@ -508,7 +508,7 @@ static void about_window_update_ice(void)
 
 static void CALLBACK about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	GENS_UNUSED_PARAMETER(uMsg);
+	GSFT_UNUSED_PARAMETER(uMsg);
 	
 	if (!(hWnd == about_window && idEvent == IDT_ICETIMER && ice == 3))
 		return;

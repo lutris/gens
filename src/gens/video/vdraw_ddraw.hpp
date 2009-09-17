@@ -23,11 +23,11 @@
 #ifndef GENS_VDRAW_DDRAW_HPP
 #define GENS_VDRAW_DDRAW_HPP
 
+#include "libgsft/gsft_bool.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "macros/bool_m.h"
 
 // Function prototypes.
 int	vdraw_ddraw_init(void);
