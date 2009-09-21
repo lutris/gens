@@ -55,6 +55,12 @@ Bug Fixes:
   handler to make it ignore the initial joystick state when detecting joystick
   changes. This bug was reported by superGear in #retro.
 
+* Fixed a regression with DMA from SegaCD Word RAM via the cell conversion
+  table. This regression was introduced when I attempted to implement the
+  VDP's 128k (64k-word) wrapping behavior. This regression didn't affect
+  "Sonic CD", but it did affect "Heart of the Alien". Thanks to tetsuo
+  from #retro for helping to diagnose and solve this problem.
+
 ================================================================
 
 Changes from r7_pre3 to r7_pre4 [PREVIEW RELEASE]:
