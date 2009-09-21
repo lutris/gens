@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 // Function prototypes.
 int	vdraw_haiku_init(void);

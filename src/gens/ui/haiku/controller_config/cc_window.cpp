@@ -34,7 +34,7 @@
 #include <unistd.h>
 
 // BOOL macros.
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -47,7 +47,7 @@
 #include "input/input.h"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 
 /**

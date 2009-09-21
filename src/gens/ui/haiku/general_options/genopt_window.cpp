@@ -38,7 +38,7 @@
 #include "emulator/options.hpp"
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Video Drawing.
 #include "video/vdraw.h"

@@ -45,7 +45,7 @@ using std::string;
 using std::list;
 
 // Unused Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"

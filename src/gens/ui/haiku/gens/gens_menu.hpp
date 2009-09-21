@@ -39,7 +39,7 @@ extern int gens_menu_do_callbacks;
 
 #ifdef __cplusplus
 
-void gens_menu_parse(const GensMenuItem_t* menu, BMenuBar *menuBar);
+void gens_menu_parse(const GensMenuItem_t* menu, BMenuBar *menuBar, BWindow *win);
 
 // Hash table containing all the menu items.
 // Key is the menu ID.

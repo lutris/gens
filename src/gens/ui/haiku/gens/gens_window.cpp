@@ -58,7 +58,7 @@ GensWindow::GensWindow()
 	AddChild(menuBar);
 	
 	// Create the menus.
-	gens_menu_parse(&gmiMain[0], menuBar);
+	gens_menu_parse(&gmiMain[0], menuBar, this);
 }
 
 

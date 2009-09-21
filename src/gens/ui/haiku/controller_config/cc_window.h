@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 // BOOL macros.
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 
 extern BOOL cc_window_is_configuring;
 

@@ -59,9 +59,6 @@
 // RGB color conversion functions.
 #include "vdraw_RGB.h"
 
-// Inline video functions.
-#include "v_inline.h"
-
 // Audio Handler.
 #include "audio/audio.h"
 

@@ -24,7 +24,7 @@
 #ifndef GENS_INPUT_HAIKU_HPP
 #define GENS_INPUT_HAIKU_HPP
 
-#include "macros/bool_m.h"
+#include "libgsft/gsft_bool.h"
 #include <stdint.h>
 
 #include "input.h"

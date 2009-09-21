@@ -34,7 +34,7 @@
 #include "ui/gens_ui.hpp"
 
 // Unued Parameter macro.
-#include "macros/unused.h"
+#include "libgsft/gsft_unused.h"
 
 // File management functions.
 #include "util/file/file.hpp"
