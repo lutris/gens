@@ -441,14 +441,16 @@ section .text align=64
 %elif %1 < 8
 	mov	ax, [_Cell_Conv_Tab + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	short %%No_Carry
+	jnc	short %%No_Carry_8
 	xor	esi, 0x10000
+%%No_Carry_8:
 	mov	ax, [_Ram_Word_1M + eax * 2 + 0x00000]
 %elif %1 < 9
 	mov	ax, [_Cell_Conv_Tab + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	short %%No_Carry
+	jnc	short %%No_Carry_9
 	xor	esi, 0x10000
+%%No_Carry_9:
 	mov	ax, [_Ram_Word_1M + eax * 2 + 0x20000]
 %endif
 %%No_Carry:
