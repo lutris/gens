@@ -54,12 +54,16 @@ using std::list;
 #include "util/file/config_file.hpp"
 
 // Video, Input.
-#include "video/vdraw_sdl.h"
+#include "video/vdraw_haiku_t.h"
 #include "video/vdraw_cpp.hpp"
-#include "input/input_sdl.h"
+#include "input/input_haiku_t.h"
 
+// Application Related.
+#include "ui/gens_ui.hpp"
+#include "ui/haiku/gens/gens_app.hpp"
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
+#include "ui/haiku/gens/gens_menu.hpp"
 
 #include "port/timer.h"
 
@@ -165,10 +169,17 @@ int main(int argc, char *argv[])
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
-	// Show the Gens window.
+	// Create the Gens window.
+	//gens_window_create();
+	new GensApplication();
+
+	// Set the window title to Idle.
+	GensUI::setWindowTitle_Idle();
 	
-	// Run the Gens Main Loop.
-	GensMainLoop();
+	// Enter the main application loop
+	be_app->SetPulseRate(10000);
+	be_app->Run();
+	delete be_app;
 	
 	// Save the configuration file.
 #ifndef PACKAGE_NAME

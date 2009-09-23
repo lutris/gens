@@ -26,6 +26,8 @@ class BMenuBar;
 class GensApplication : public BApplication {
 	BWindow *window;
 	BMenuBar *menuBar;
+	
+	void Pulse();
 public:
 	GensApplication();
 };

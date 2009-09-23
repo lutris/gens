@@ -81,17 +81,6 @@ void GensUI::init(int *argc, char **argv[])
 {
 	GSFT_UNUSED_PARAMETER(argc);
 	GSFT_UNUSED_PARAMETER(argv);
-
-	// Create the Gens window.
-	//gens_window_create();
-	new GensApplication();
-
-	// Set the window title to Idle.
-	setWindowTitle_Idle();
-
-	// Enter the main application loop
-	be_app->Run();
-	delete be_app;
 }
 
 
