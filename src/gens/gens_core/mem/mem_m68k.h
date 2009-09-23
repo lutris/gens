@@ -49,7 +49,12 @@ extern int SRAM_Enabled;
 
 extern int Z80_M68K_Cycle_Tab[512];
 
-extern int Z80_State;
+/** Z80 state. **/
+#define Z80_STATE_ENABLED	(1 << 0)
+#define Z80_STATE_BUSREQ	(1 << 1)
+#define Z80_STATE_RESET		(1 << 2)
+
+extern unsigned int Z80_State;
 extern int Last_BUS_REQ_Cnt;
 extern int Last_BUS_REQ_St;
 extern int Bank_M68K;

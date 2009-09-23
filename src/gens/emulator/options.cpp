@@ -409,7 +409,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 			audio_play_sound();
 		
 		// Make sure Z80 sound emulation is enabled.
-		if (!(Z80_State & 1))
+		if (!(Z80_State & Z80_STATE_ENABLED))
 			setSoundZ80(true);
 		
 		YM2612_Enable = 1;
@@ -513,7 +513,7 @@ void Options::setSoundStereo(const bool newSoundStereo)
  */
 bool Options::soundZ80(void)
 {
-	return (Z80_State & 1);
+	return (Z80_State & Z80_STATE_ENABLED);
 }
 
 /**
@@ -524,12 +524,12 @@ void Options::setSoundZ80(const bool newSoundZ80)
 {
 	if (newSoundZ80)
 	{
-		Z80_State |= 1;
+		Z80_State |= Z80_STATE_ENABLED;
 		vdraw_text_write("Z80 Enabled", 1000);
 	}
 	else
 	{
-		Z80_State &= ~1;
+		Z80_State &= ~Z80_STATE_ENABLED;
 		vdraw_text_write("Z80 Disabled", 1000);
 	}
 }

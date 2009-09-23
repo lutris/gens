@@ -254,7 +254,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Sound", "Rate", audio_get_sound_rate());
 	cfg.writeBool("Sound", "Stereo", audio_get_stereo());
 	
-	cfg.writeInt("Sound", "Z80 State", Z80_State & 1);
+	cfg.writeInt("Sound", "Z80 State", Z80_State & Z80_STATE_ENABLED);
 	cfg.writeInt("Sound", "YM2612 State", YM2612_Enable & 1);
 	cfg.writeInt("Sound", "PSG State", PSG_Enable & 1);
 	cfg.writeInt("Sound", "DAC State", DAC_Enable & 1);
@@ -595,9 +595,9 @@ int Config::load(const string& filename, void* gameActive)
 	audio_set_stereo(cfg.getBool("Sound", "Stereo", true));
 	
 	if (cfg.getInt("Sound", "Z80 State", 1))
-		Z80_State |= 1;
+		Z80_State |= Z80_STATE_ENABLED;
 	else
-		Z80_State &= ~1;
+		Z80_State &= ~Z80_STATE_ENABLED;
 	
 	// Only load the IC sound settings if sound can be initialized.
 	// TODO: Change it to load the settings unconditionally?

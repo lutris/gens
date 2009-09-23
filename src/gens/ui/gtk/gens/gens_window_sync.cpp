@@ -567,7 +567,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	const uint16_t soundMenuItems[10][2] =
 	{
 		{IDM_SOUND_STEREO,		audio_get_stereo()},
-		{IDM_SOUND_Z80,			Z80_State & 1},
+		{IDM_SOUND_Z80,			Z80_State & Z80_STATE_ENABLED},
 		{IDM_SOUND_YM2612,		YM2612_Enable},
 		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
 		{IDM_SOUND_DAC,			DAC_Enable},

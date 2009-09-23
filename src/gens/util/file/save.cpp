@@ -423,11 +423,11 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// 0x440: Z80 busreq
 		// 0x444: Z80 reset
-		Z80_State &= ~6;
+		Z80_State &= ~(Z80_STATE_BUSREQ | Z80_STATE_RESET);
 		if (data[0x440] & 1)
-			Z80_State |= 2;
+			Z80_State |= Z80_STATE_BUSREQ;
 		if (data[0x444] & 1)
-			Z80_State |= 4;
+			Z80_State |= Z80_STATE_RESET;
 		
 		// 0x448: Z80 bank.
 		ImportData(&Bank_Z80, data, 0x448, 4);
@@ -440,7 +440,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	else if ((m_Version >= 4) || (m_Version == 0))
 	{
 		// New savestate version compatible with Kega.
-		Z80_State &= ~6;
+		Z80_State &= ~(Z80_STATE_BUSREQ | Z80_STATE_RESET);
 		
 		if (m_Version == 4)
 		{
@@ -449,7 +449,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 			M_Z80.IFF.b.IFF1 = (data[0x438] & 1) << 2;
 			M_Z80.IFF.b.IFF2 = (data[0x438] & 1) << 2;
 			
-			Z80_State |= (data[0x439] & 1) << 1;
+			if (data[0x439] & 1)
+				Z80_State |= Z80_STATE_BUSREQ;
 		}
 		else
 		{
@@ -458,8 +459,10 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 			M_Z80.IFF.b.IFF1 = (md_save.z80_reg.IFF1 & 1) << 2;
 			M_Z80.IFF.b.IFF2 = M_Z80.IFF.b.IFF1;
 			
-			Z80_State |= (md_save.z80_reg.state_busreq ^ 1) << 1;
-			Z80_State |= (md_save.z80_reg.state_reset ^ 1) << 2;
+			if (!md_save.z80_reg.state_busreq)
+				Z80_State |= Z80_STATE_BUSREQ;
+			if (!md_save.z80_reg.state_reset)
+				Z80_State |= Z80_STATE_RESET;
 		}
 		
 		// Clear VDP control.
@@ -1023,8 +1026,8 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save.z80_reg.HL2 = cpu_to_le16((uint16_t)(M_Z80.HL2.w.HL2));
 	md_save.z80_reg.I = M_Z80.I;
 	md_save.z80_reg.IFF1 = (M_Z80.IFF.b.IFF1 >> 2);
-	md_save.z80_reg.state_reset  = (((Z80_State & 4) >> 2) ^ 1);
-	md_save.z80_reg.state_busreq = (((Z80_State & 2) >> 1) ^ 1);
+	md_save.z80_reg.state_busreq = (((Z80_State & Z80_STATE_BUSREQ) ? 1 : 0) ^ 1);
+	md_save.z80_reg.state_reset  = (((Z80_State & Z80_STATE_RESET) ? 1 : 0) ^ 1);
 	md_save.z80_reg.bank = cpu_to_le32(Bank_Z80);
 	
 	// Z80 RAM.

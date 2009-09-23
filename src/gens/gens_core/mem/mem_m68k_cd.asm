@@ -88,6 +88,11 @@ section .bss align=64
 		%define _Cycles_Z80		Cycles_Z80
 	%endif
 	
+	; Z80 state.
+	Z80_STATE_ENABLED	equ (1 << 0)
+	Z80_STATE_BUSREQ	equ (1 << 1)
+	Z80_STATE_RESET		equ (1 << 2)
+	
 	extern _M_Z80
 	extern _Z80_State
 	extern _Last_BUS_REQ_Cnt
@@ -491,7 +496,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], 6
+		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	ecx
@@ -512,7 +517,7 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], 2
+		test	byte [_Z80_State], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
@@ -931,7 +936,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], 6
+		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	ecx
@@ -952,7 +957,7 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], 2
+		test	byte [_Z80_State], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
@@ -1305,7 +1310,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], 6
+		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	short .bad
 		
 		push	edx
@@ -1336,16 +1341,16 @@ section .text align=64
 		xor	ecx, ecx
 		mov	ah, [_Z80_State]
 		mov	dword [_Controller_1_Counter], ecx
-		test	al, 1
+		test	al, 1	; TODO: Should this be ah, Z80_STATE_ENABLED ?
 		mov	dword [_Controller_1_Delay], ecx
 		mov	dword [_Controller_2_Counter], ecx
 		mov	dword [_Controller_2_Delay], ecx
 		jnz	short .deactivated
 		
-		test	ah, 2
+		test	ah, Z80_STATE_BUSREQ
 		jnz	short .already_activated
 		
-		or	ah, 2
+		or	ah, Z80_STATE_BUSREQ
 		push	edx
 		mov	[_Z80_State], ah
 		mov	ebx, [_Cycles_M68K]
@@ -1372,13 +1377,13 @@ section .text align=64
 		call	_main68k_readOdometer
 		mov	cl, [_Z80_State]
 		mov	[_Last_BUS_REQ_Cnt], eax
-		test	cl, 2
+		test	cl, Z80_STATE_BUSREQ
 		setnz	[_Last_BUS_REQ_St]
 		jz	short .already_deactivated
 		
 		push	edx
 		mov	ebx, [_Cycles_M68K]
-		and	cl, ~2
+		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
 		mov	[_Z80_State], cl
 		mov	edx, [_Cycles_Z80]
@@ -1408,7 +1413,7 @@ section .text align=64
 		call	_mdZ80_reset
 		add	esp, 4
 		
-		or	byte [_Z80_State], 4
+		or	byte [_Z80_State], Z80_STATE_RESET
 		call	_YM2612_Reset
 		pop	edx
 		pop	ecx
@@ -1416,7 +1421,7 @@ section .text align=64
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~4
+		and	byte [_Z80_State], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
@@ -1851,7 +1856,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], 6
+		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	edx
@@ -1876,16 +1881,16 @@ section .text align=64
 		xor	ecx, ecx
 		mov	al, [_Z80_State]
 		mov	dword [_Controller_1_Counter], ecx
-		test	ah, 1
+		test	ah, 1	; TODO: Should this be al, Z80_STATE_ENABLED ?
 		mov	dword [_Controller_1_Delay], ecx
 		mov	dword [_Controller_2_Counter], ecx
 		mov	dword [_Controller_2_Delay], ecx
 		jnz	short .deactivated
 		
-		test	al, 2
+		test	al, Z80_STATE_BUSREQ
 		jnz	short .already_activated
 		
-		or	al, 2
+		or	al, Z80_STATE_BUSREQ
 		push	edx
 		mov	[_Z80_State], al
 		mov	ebx, [_Cycles_M68K]
@@ -1912,13 +1917,13 @@ section .text align=64
 		call	_main68k_readOdometer
 		mov	cl, [_Z80_State]
 		mov	[_Last_BUS_REQ_Cnt], eax
-		test	cl, 2
+		test	cl, Z80_STATE_BUSREQ
 		setnz	[_Last_BUS_REQ_St]
 		jz	short .already_deactivated
 		
 		push	edx
 		mov	ebx, [_Cycles_M68K]
-		and	cl, ~2
+		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
 		mov	[_Z80_State], cl
 		mov	edx, [_Cycles_Z80]
@@ -1948,7 +1953,7 @@ section .text align=64
 		call	_mdZ80_reset
 		add	esp, 4
 		
-		or	byte [_Z80_State], 4
+		or	byte [_Z80_State], Z80_STATE_RESET
 		call	_YM2612_Reset
 		pop	edx
 		pop	ecx
@@ -1956,7 +1961,7 @@ section .text align=64
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~4
+		and	byte [_Z80_State], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
