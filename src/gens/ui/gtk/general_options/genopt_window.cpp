@@ -102,6 +102,7 @@ static GtkWidget	*chkMisc_FastBlur;
 static GtkWidget	*chkMisc_SegaCDLEDs;
 static GtkWidget	*chkMisc_BorderColorEmulation;
 static GtkWidget	*chkMisc_PauseTint;
+static GtkWidget	*chkMisc_SuspendScreenSaver;
 
 // Widget creation functions.
 static void	genopt_window_create_osd_frame(GtkWidget *container, const char* title, int index);
@@ -445,6 +446,14 @@ static void genopt_window_create_misc_settings_frame(GtkWidget *container)
 	g_signal_connect(GTK_OBJECT(chkMisc_PauseTint), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
+	// Suspend Screensaver
+	chkMisc_SuspendScreenSaver = gtk_check_button_new_with_label("Suspend Screensaver");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_SuspendScreenSaver), 2);
+	gtk_widget_show(chkMisc_SuspendScreenSaver);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_SuspendScreenSaver, false, false, 0);
+	g_signal_connect(GTK_OBJECT(chkMisc_SuspendScreenSaver), "toggled",
+			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
+	
 	// VBox for intro effect.
 	GtkWidget *vboxIntroEffect = gtk_vbox_new(false, 4);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffect), 8);
@@ -510,6 +519,7 @@ static void genopt_window_init(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation), Video.borderColorEmulation);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint), Video.pauseTint);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SuspendScreenSaver), Settings.suspendScreenSaver);
 	
 	// FPS counter
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), vdraw_get_fps_enabled());
@@ -550,6 +560,7 @@ static void genopt_window_save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
+	Settings.suspendScreenSaver = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SuspendScreenSaver));
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
