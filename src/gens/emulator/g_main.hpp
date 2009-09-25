@@ -53,7 +53,8 @@ extern "C" {
 // Gens settings
 typedef struct _Gens_Settings_t
 {
-	int restrict_input;	// If 1, restructs U+D/L+R.
+	int restrict_input;	// If non-zero, restructs U+D/L+R.
+	int suspendScreenSaver;	// If non-zero, suspends screensaver while game is active.
 } Gens_Settings_t;
 
 

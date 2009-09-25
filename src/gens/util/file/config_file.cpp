@@ -215,6 +215,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("General", "Window Y", Window_Pos.y);
 	cfg.writeInt("General", "Intro Style", Intro_Style);
 	cfg.writeInt("General", "Free Mode Color", vdraw_get_intro_effect_color());
+	cfg.writeInt("General", "Suspend Screensaver", Settings.suspendScreenSaver);
 	
 	// Video adjustments
 	cfg.writeInt("Graphics", "Contrast", Contrast_Level);
@@ -487,6 +488,8 @@ int Config::load(const string& filename, void* gameActive)
 	Window_Pos.y = cfg.getInt("General", "Window Y", 0);
 	Intro_Style = cfg.getInt("General", "Intro Style", 0);
 	vdraw_set_intro_effect_color(cfg.getInt("General", "Free Mode Color", 7));
+	Settings.suspendScreenSaver = cfg.getInt("General", "Suspend Screensaver", 1);
+	GensUI::updateScreenSaver();
 	
 	// Video adjustments.
 	Contrast_Level = cfg.getInt("Graphics", "Contrast", 100);

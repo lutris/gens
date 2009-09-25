@@ -81,6 +81,7 @@ class GensUI
 		
 		static void setWindowTitle(const string& title);
 		static void setWindowVisibility(const bool visibility);
+		static void updateScreenSaver(void);
 		
 		static string openFile(const string& title, const string& initFile,
 				       const FileFilterType filterType, void* owner = NULL);
@@ -128,6 +129,9 @@ class GensUI
 		static MsgBox_Response msgBox(const string& msg, const string& title = GENS_APPNAME,
 					      const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
 					      void* owner = NULL);
+	
+	private:
+		static void setScreenSaver(const bool newScreenSaver);
 };
 
 #endif /* __cplusplus */

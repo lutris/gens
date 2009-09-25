@@ -25,6 +25,7 @@
 #endif
 
 #include "gens_ui.hpp"
+#include "emulator/g_main.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -148,4 +149,18 @@ void GensUI_setWindowVisibility(const int visibility)
 #ifndef GENS_OS_WIN32
 	GensUI::setWindowVisibility(visibility);
 #endif
+}
+
+
+/**
+ * updateScreenSaver(): Update the screensaver suspend state.
+ */
+void GensUI::updateScreenSaver(void)
+{
+	if (!Settings.suspendScreenSaver)
+	{
+		// Screensaver suspension is disabled.
+		setScreenSaver(false);
+		return;
+	}
 }
