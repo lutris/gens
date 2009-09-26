@@ -301,6 +301,8 @@ static void genopt_window_create_child_windows(HWND hWnd)
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_SuspendScreenSaver, fntMain, true);
+	// TODO: Remove this once screensaver suspend is implemented for Win32.
+	Button_Enable(chkMisc_SuspendScreenSaver, false);
 	
 	// Intro Effect label.
 	frameTop += 16+8;
