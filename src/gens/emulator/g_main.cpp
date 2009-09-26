@@ -433,7 +433,7 @@ void GensMainLoop(void)
 		}
 		else
 #endif /* GENS_DEBUGGER */
-		if (Genesis_Started || _32X_Started || SegaCD_Started)
+		if (Game != NULL)
 		{
 			if ((Active) && (!Paused))
 			{
@@ -443,12 +443,12 @@ void GensMainLoop(void)
 				else
 					Update_Emulation();
 				
-				#ifdef GENS_OS_UNIX
+#ifdef GENS_OS_UNIX
 				// Prevent 100% CPU usage.
 				// The CPU scheduler will take away CPU time from Gens/GS if
 				// it notices that the process is eating up too much CPU time.
 				GensUI::sleep(1, true);
-				#endif
+#endif
 			}
 			else
 			{
