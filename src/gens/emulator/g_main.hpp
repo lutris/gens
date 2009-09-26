@@ -133,7 +133,6 @@ extern Gens_VideoSettings_t Video;
 extern int Flag_Clr_Scr;
 
 extern int Current_State;
-//extern int gl_linear_filter;
 extern int Show_LED;
 extern int Auto_Pause;
 extern int Auto_Fix_CS;

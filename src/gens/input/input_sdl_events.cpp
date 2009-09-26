@@ -402,14 +402,17 @@ void input_sdl_event_key_down(int key)
 			}
 			break;
 		
-		/*
+#if 0	// TODO: Should this hotkey be implemented?
+#ifdef GENS_OPENGL
 		case GENS_KEY_f:
+			// Toggle the OpenGL Linear Filter.
 			if (IS_KMOD_CTRL(mod))
-				gl_linear_filter = !gl_linear_filter;
+				Options::setOpenGL_LinearFilter(!Options::OpenGL_LinearFilter());
 			break;
-		*/
-		
-		/* TODO: Fix MINIMIZE.
+#endif
+#endif
+
+#if 0	// TODO: Fix the MINIMIZE() macro.
 		case GENS_KEY_g:
 			if (IS_KMOD_CTRL(mod))
 			{
@@ -419,9 +422,7 @@ void input_sdl_event_key_down(int key)
 				//open_game_genie();
 			}
 			break;
-		*/
-		
-		/*
+				
 		case GENS_KEY_o:
 			if (IS_KMOD_CTRL(mod))
 			{
@@ -432,7 +433,6 @@ void input_sdl_event_key_down(int key)
 				Get_Rom();
 			}
 			break;
-		*/
 		
 		/* TODO: Fix MINIMIZE.
 		case GENS_KEY_p:
@@ -450,6 +450,7 @@ void input_sdl_event_key_down(int key)
 			}
 			break;
 		*/
+#endif
 		
 		case GENS_KEY_q:
 			if (allow_gtk_hotkeys && IS_KMOD_CTRL(mod))
