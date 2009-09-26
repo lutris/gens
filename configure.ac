@@ -9,7 +9,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Gens/GS version numbers.
 AC_DEFINE(GENS_VERSION_WIN32, [2,16,6,94], Gens Win32 Version Number)
-AC_DEFINE(GENS_GS_VERSION, "r7_pre4", Gens/GS Version Number)
+AC_DEFINE(GENS_GS_VERSION, "r7_pre4+", Gens/GS Version Number)
 
 # Automake build features.
 AC_CANONICAL_BUILD
@@ -162,8 +162,27 @@ AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debug = xyes -o x$enable_debug = xfu
 
 if test x$os = xunix -o x$os = xlinux -o x$os = xmacosx; then
 
-# Linux allows UI selection.
-# TODO: Re-enable this eventually.
+# Unix or Unix-like operating system.
+
+# Check for libX11.
+PKG_CHECK_MODULES([X11], [x11], [has_libX11=yes], [has_libX11=no])
+if test x$has_libX11 = xyes; then
+	AC_DEFINE(HAVE_LIBX11, 1, Define to 1 if you have the `X11' library (-lX11).)
+fi
+AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])
+AC_SUBST(X11_CFLAGS)
+AC_SUBST(X11_LIBS)
+
+# Check for libXss-1.1. (XScreenSaver)
+PKG_CHECK_MODULES([XScrnSaver], [xscrnsaver >= 1.1], [has_libXss=yes], [has_libXss=no])
+if test x$has_libXss = xyes; then
+	AC_DEFINE(HAVE_LIBXSS, 1, Define to 1 if you have the `Xss' library (-lXss).)
+fi
+AM_CONDITIONAL([HAVE_LIBXSS], [test x$has_libXss = xyes])
+AC_SUBST(XScrnSaver_CFLAGS)
+AC_SUBST(XScrnSaver_LIBS)
+
+# TODO: Allow UI selection later on.
 #AC_ARG_ENABLE(ui, AC_HELP_STRING([--enable-ui=[[ui]]], [Enable either the 'gtk' or 'qt4' UI [[default=gtk]]]), ui=$enableval, ui=gtk)
 #if test x$ui != xgtk && test x$ui != xqt4; then
 #	ui=gtk
