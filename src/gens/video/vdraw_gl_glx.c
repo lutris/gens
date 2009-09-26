@@ -186,7 +186,7 @@ int vdraw_gl_is_supported(void)
 	// X server due to a null pointer dereference. So, we have to check
 	// if the X server supports GLX manually.
 	
-	// Get the X11 display.
+	// Open the X11 display.
 	Display *dpy;
 	char *dpyname = getenv("DISPLAY");
 	dpy = XOpenDisplay(dpyname);
