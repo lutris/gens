@@ -1104,10 +1104,12 @@ void Options::setBackend(VDRAW_BACKEND newBackend)
  * @param w Width.
  * @param h Height.
  */
-void Options::setOpenGL_Resolution(int w, int h)
+void Options::setOpenGL_Resolution(const int w, const int h)
 {
 	// TODO: Move this to VDraw_GL.
 	
+	if (w <= 0 || h <= 0)
+		return;
 	if (Video.GL.width == w && Video.GL.height == h)
 		return;
 	
@@ -1130,7 +1132,28 @@ void Options::setOpenGL_Resolution(int w, int h)
 	
 	// OpenGL mode is currently enabled. Change the resolution.
 	vdraw_reset_renderer(TRUE);
+	
+	// Synchronize the Graphics Menu.
+	Sync_Gens_Window_GraphicsMenu();
+}
 
+
+/**
+ * setOpenGL_Resolution(): Set the OpenGL Linear Filter state.
+ * @param newFilter New linear filter setting.
+ */
+void Options::setOpenGL_LinearFilter(bool newFilter)
+{
+	if (Video.GL.glLinearFilter == newFilter)
+		return;
+	
+	Video.GL.glLinearFilter = newFilter;
+	
+	if (Video.GL.glLinearFilter)
+		vdraw_text_write("Enabled OpenGL Linear Filter", 1500);
+	else
+		vdraw_text_write("Disabled OpenGL Linear Filter", 1500);
+	
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
 }

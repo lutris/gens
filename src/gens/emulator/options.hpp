@@ -109,7 +109,8 @@ class Options
 		static void setBackend(VDRAW_BACKEND newBackend);
 		
 #ifdef GENS_OPENGL
-		static void setOpenGL_Resolution(int w, int h);
+		static void setOpenGL_Resolution(const int w, const int h);
+		static void setOpenGL_LinearFilter(const bool newFilter);
 #endif /* GENS_OPENGL */
 		
 		/** Renderer selection. **/
