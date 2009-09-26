@@ -110,6 +110,8 @@ class Options
 		
 #ifdef GENS_OPENGL
 		static void setOpenGL_Resolution(const int w, const int h);
+		
+		static void Options::OpenGL_LinearFilter(void);
 		static void setOpenGL_LinearFilter(const bool newFilter);
 #endif /* GENS_OPENGL */
 		
