@@ -417,7 +417,7 @@ static int vdraw_sdl_gl_flip(void)
 		draw_text(filterBuffer, rowLength, texWidth, texHeight,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
-	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !IS_DEBUGGING())
+	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(filterBuffer, rowLength, texWidth, texHeight,

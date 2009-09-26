@@ -124,7 +124,7 @@ int Init_32X(ROM_t* MD_ROM)
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_SSH2;
 	
 	Flag_Clr_Scr = 1;
-	Paused = Frame_Number = 0;
+	Settings.Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	Controller_1_COM = Controller_2_COM = 0;
 	STOP_DEBUGGING();
@@ -244,7 +244,7 @@ void Reset_32X(void)
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
-	Paused = 0;
+	Settings.Paused = 0;
 	Controller_1_COM = Controller_2_COM = 0;
 	_32X_ADEN = _32X_RES = _32X_FM = _32X_RV = 0;
 	

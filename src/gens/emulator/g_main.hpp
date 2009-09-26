@@ -55,6 +55,9 @@ typedef struct _Gens_Settings_t
 {
 	int restrict_input;	// If non-zero, restructs U+D/L+R.
 	int suspendScreenSaver;	// If non-zero, suspends screensaver while game is active.
+	
+	int Active;		// If non-zero, the Gens window is active. (Only 0 if auto-pause is enabled.)
+	int Paused;		// If non-zero, emulation is paused.
 } Gens_Settings_t;
 
 
@@ -129,8 +132,6 @@ extern Gens_VideoSettings_t Video;
 // TODO: Only used for DirectDraw.
 extern int Flag_Clr_Scr;
 
-extern int Paused;
-extern int Net_Play;
 extern int Current_State;
 //extern int gl_linear_filter;
 extern int Show_LED;
@@ -140,12 +141,12 @@ extern int Country;
 extern int Country_Order[3];
 extern int Intro_Style;
 extern int SegaCD_Accurate;
-extern int Active;
 extern int Quick_Exit;
 extern int FS_Minimised;
 extern int fast_forward;
 
 #if 0	// TODO: Replace with MDP "exclusive mode" later.
+extern int Net_Play;
 extern int Kaillera_Client_Running;
 #endif
 

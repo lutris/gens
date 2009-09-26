@@ -223,7 +223,7 @@ static int vdraw_sdl_flip(void)
 			  vdraw_rInfo.height * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
-	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !IS_DEBUGGING())
+	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,

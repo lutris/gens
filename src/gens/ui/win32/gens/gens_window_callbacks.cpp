@@ -128,7 +128,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			return 0;
 		
 		case WM_CREATE:
-			Active = 1;
+			Settings.Active = 1;
 			break;
 		
 		case WM_DESTROY:
@@ -160,14 +160,14 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				input_dinput_init_joysticks(hWnd);
 				
 				// Auto Pause - reactivate the game.
-				Active = 1;
+				Settings.Active = 1;
 			}
 			else
 			{
 				// Auto Pause - deactivate the game.
-				if (Auto_Pause && Active)
+				if (Auto_Pause && Settings.Active)
 				{
-					Active = 0;
+					Settings.Active = 0;
 					audio_clear_sound_buffer();
 				}
 			}
@@ -278,31 +278,31 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			if (IS_DEBUGGING())
 			{
 				Options::setDebugMode(DEBUG_NONE);
-				Paused = 0;
+				Settings.Paused = 0;
 				Sync_Gens_Window_CPUMenu();
 			}
 			else
 #endif /* GENS_DEBUGGER */
-			if (Paused)
+			if (Settings.Paused)
 			{
-				Paused = 0;
+				Settings.Paused = 0;
 			}
 			else
 			{
-				Paused = 1;
+				Settings.Paused = 1;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
 			break;
 		
 		case IDCMD_PAUSE:
-			if (Paused)
+			if (Settings.Paused)
 			{
-				Paused = 0;
+				Settings.Paused = 0;
 			}
 			else
 			{
-				Paused = 1;
+				Settings.Paused = 1;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}

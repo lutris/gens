@@ -130,29 +130,31 @@ void input_sdl_event_key_down(int key)
 			if (Options::debugMode())
 			{
 				Options::setDebugMode(DEBUG_NONE);
-				Paused = 0;
+				Settings.Paused = 0;
 				Sync_Gens_Window_CPUMenu();
 			}
 			else
 #endif /* GENS_DEBUGGER */
-			if (Paused)
+			if (Settings.Paused)
 			{
-				Paused = 0;
+				Settings.Paused = 0;
 			}
 			else
 			{
-				Paused = 1;
+				Settings.Paused = 1;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
 			break;
 		
 		case GENS_KEY_PAUSE:
-			if (Paused)
-				Paused = 0;
+			if (Settings.Paused)
+			{
+				Settings.Paused = 0;
+			}
 			else
 			{
-				Paused = 1;
+				Settings.Paused = 1;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}

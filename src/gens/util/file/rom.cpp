@@ -957,7 +957,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	if (SegaCD_Started)
 		Stop_CD();
 	
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
 	Net_Play = 0;
+#endif
 	Genesis_Started = 0;
 	_32X_Started = 0;
 	SegaCD_Started = 0;

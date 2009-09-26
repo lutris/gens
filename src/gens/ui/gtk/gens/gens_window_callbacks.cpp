@@ -177,7 +177,7 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 	GSFT_UNUSED_PARAMETER(event);
 	GSFT_UNUSED_PARAMETER(user_data);
 	
-	Active = 1;
+	Settings.Active = 1;
 	
 	// Reset the SDL key modifier state.
 	input_sdl_reset_modifiers();
@@ -199,9 +199,9 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	GSFT_UNUSED_PARAMETER(event);
 	GSFT_UNUSED_PARAMETER(user_data);
 	
-	if (Auto_Pause && Active)
+	if (Auto_Pause && Settings.Active)
 	{
-		Active = 0;
+		Settings.Active = 0;
 		audio_clear_sound_buffer();
 	}
 	

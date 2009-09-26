@@ -113,9 +113,6 @@ POINT Window_Pos;
 char Str_Tmp[1024];
 
 char **language_name = NULL;
-int Active = 1;
-int Paused = 0;
-int Net_Play = 0;
 int Full_Screen = 0;
 int Resolution = 1;
 int Show_LED = 0;
@@ -128,6 +125,7 @@ int Intro_Style = 2;
 int SegaCD_Accurate = 0;
 int Quick_Exit = 0;
 #if 0// TODO: Replace with MDP "exclusive mode" later.
+int Net_Play = 0;
 int Kaillera_Client_Running = 0;
 #endif
 
@@ -172,7 +170,9 @@ int Init_Settings(void)
 	
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
 	Net_Play = 0;
+#endif
 	Sprite_Over = 1;
 	
 	GYM_Dumping = 0;
@@ -435,7 +435,7 @@ void GensMainLoop(void)
 #endif /* GENS_DEBUGGER */
 		if (Game != NULL)
 		{
-			if ((Active) && (!Paused))
+			if (Settings.Active && !Settings.Paused)
 			{
 				// EMULATION ACTIVE
 				if (fast_forward)
@@ -458,7 +458,7 @@ void GensMainLoop(void)
 				else
 					Do_VDP_Only();
 				
-				if (Paused && Video.pauseTint)
+				if (Settings.Paused && Video.pauseTint)
 				{
 					// Emulation is paused.
 					veffect_pause_tint();

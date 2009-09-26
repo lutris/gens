@@ -252,7 +252,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	audio_clear_sound_buffer();
 	
 	Flag_Clr_Scr = 1;
-	Paused = Frame_Number = 0;
+	Settings.Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	Controller_1_COM = Controller_2_COM = 0;
 	STOP_DEBUGGING();
@@ -347,7 +347,7 @@ void Reset_Genesis(void)
 	audio_clear_sound_buffer();
 	
 	Controller_1_COM = Controller_2_COM = 0;
-	Paused = 0;
+	Settings.Paused = 0;
 	
 	// If the ROM size is smaller than 2MB, enable SRAM.
 	// Otherwise, disable SRAM.

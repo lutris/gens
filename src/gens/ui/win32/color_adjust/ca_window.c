@@ -308,7 +308,7 @@ static void ca_window_save(void)
 		// Emulation is running. Update the CRAM.
 		CRam_Flag = 1;
 		
-		if (!Paused)
+		if (!Settings.Paused)
 		{
 			// TODO: Just update CRAM. Don't update the frame.
 			Update_Emulation_One();

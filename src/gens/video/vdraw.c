@@ -350,7 +350,7 @@ int vdraw_flip(int md_screen_updated)
 		{
 			vdraw_msg_timer_update();
 		}
-		else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
+		else if (vdraw_fps_enabled && (Game != NULL) && !Settings.Paused)
 		{
 			if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
 			{

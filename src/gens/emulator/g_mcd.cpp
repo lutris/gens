@@ -163,7 +163,7 @@ int Init_SegaCD(const char* iso_name)
 	Options::setGameName(1);
 	
 	Flag_Clr_Scr = 1;
-	Paused = Frame_Number = 0;
+	Settings.Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	BRAM_Ex_State &= 0x100;
 	Controller_1_COM = Controller_2_COM = 0;
@@ -291,7 +291,7 @@ void Reset_SegaCD(void)
 	Controller_1_COM = Controller_2_COM = 0;
 	SRAM_ON = 0;
 	SRAM_Write = 0;
-	Paused = 0;
+	Settings.Paused = 0;
 	BRAM_Ex_State &= 0x100;
 	
 	// Update the CD-ROM name.

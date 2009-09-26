@@ -203,7 +203,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			// 2. Someone used a Win32 API tool to remove the MF_GRAYED style.
 			//
 			// So, let's give them what they really want: A Rick Roll! :)
-			Paused = 1;
+			Settings.Paused = 1;
 			//Pause_Screen();
 			audio_clear_sound_buffer();
 			ShellExecute(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
@@ -523,7 +523,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			if (!Game)
 				break;
 			
-			Paused = 0;
+			Settings.Paused = 0;
 			main68k_reset();
 			
 			if (Genesis_Started || _32X_Started)
@@ -542,7 +542,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			if (!Game || !SegaCD_Started)
 				break;
 			
-			Paused = 0;
+			Settings.Paused = 0;
 			sub68k_reset();
 			vdraw_text_write("Sub 68000 CPU reset", 1000);
 			break;
@@ -556,7 +556,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			if (!Game || !_32X_Started)
 				break;
 			
-			Paused = 0;
+			Settings.Paused = 0;
 			SH2_Reset(&M_SH2, 1);
 			vdraw_text_write("Master SH2 reset", 1000);
 			break;
@@ -570,7 +570,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			if (!Game || !_32X_Started)
 				break;
 			
-			Paused = 0;
+			Settings.Paused = 0;
 			SH2_Reset(&S_SH2, 1);
 			vdraw_text_write("Slave SH2 reset", 1000);
 			break;
