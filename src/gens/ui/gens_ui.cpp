@@ -26,6 +26,7 @@
 
 #include "gens_ui.hpp"
 #include "emulator/g_main.hpp"
+#include "util/file/rom.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -164,5 +165,15 @@ void GensUI::updateScreenSaverSuspend(void)
 		return;
 	}
 	
-	// TODO: Suspend the screensaver when a game is running.
+	// Determine if the screensaver suspension should be enabled.
+	if (Game != NULL && Settings.Active && !Settings.Paused)
+	{
+		// Game is running. Screensaver suspension should be enabled.
+		setScreenSaverSuspend(true);
+	}
+	else
+	{
+		// Game is not running. Screensaver suspension should be disabled.
+		setScreenSaverSuspend(false);
+	}
 }
