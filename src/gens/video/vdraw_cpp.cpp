@@ -31,6 +31,7 @@
 #include "macros/log_msg.h"
 
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -74,6 +75,9 @@ void vdraw_reset_renderer(const BOOL reset_video)
 			exit(1);
 		}
 	}
+	
+	// Update the screensaver suspend state.
+	GensUI::updateScreenSaverSuspend();
 }
 
 
