@@ -124,7 +124,10 @@ void input_sdl_event_key_down(int key)
 			break;
 		case GENS_KEY_ESCAPE:
 			if (Quick_Exit)
+			{
 				close_gens();
+				break;
+			}
 			
 #ifdef GENS_DEBUGGER
 			if (Options::debugMode())
@@ -145,6 +148,7 @@ void input_sdl_event_key_down(int key)
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
+			GensUI::updateScreenSaverSuspend();
 			break;
 		
 		case GENS_KEY_PAUSE:
@@ -158,6 +162,7 @@ void input_sdl_event_key_down(int key)
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
+			GensUI::updateScreenSaverSuspend();
 			break;
 		
 		case GENS_KEY_BACKSPACE:
