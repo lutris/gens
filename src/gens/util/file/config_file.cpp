@@ -489,7 +489,7 @@ int Config::load(const string& filename, void* gameActive)
 	Intro_Style = cfg.getInt("General", "Intro Style", 0);
 	vdraw_set_intro_effect_color(cfg.getInt("General", "Free Mode Color", 7));
 	Settings.suspendScreenSaver = cfg.getInt("General", "Suspend Screensaver", 1);
-	GensUI::updateScreenSaver();
+	GensUI::updateScreenSaverSuspend();
 	
 	// Video adjustments.
 	Contrast_Level = cfg.getInt("Graphics", "Contrast", 100);
