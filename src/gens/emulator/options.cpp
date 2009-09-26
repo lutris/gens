@@ -1142,7 +1142,7 @@ void Options::setOpenGL_Resolution(const int w, const int h)
  * OpenGL_LinearFilter(): Get the current OpenGL Linear Filter state.
  * @return OpenGL Linear Filter state.
  */
-void Options::OpenGL_LinearFilter(void)
+bool Options::OpenGL_LinearFilter(void)
 {
 	return Video.GL.glLinearFilter;
 }
