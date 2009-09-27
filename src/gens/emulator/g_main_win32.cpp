@@ -194,7 +194,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		return 0;
 	
 	// Initialize the UI.
-	Settings.showMenuBar = 1;
 	GensUI::init(NULL, NULL);
 	
 	// not yet finished (? - wryun)

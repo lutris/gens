@@ -108,23 +108,48 @@ void gens_window_create(void)
  */
 void gens_window_create_menubar(void)
 {
-	// TODO: Popup menu if fullscreen.
+	if (MainMenu)
+	{
+		// Menu bar already exists. Delete it.
+		DestroyMenu(MainMenu);
+		gens_menu_clear();
+	}
+	
 	DestroyMenu(MainMenu);
 	
 	// Create the main menu.
-	if (vdraw_get_fullscreen())
-		MainMenu = CreatePopupMenu();
-	else
+	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
+	{
+		// Create a menu bar.
 		MainMenu = CreateMenu();
+	}
+	else
+	{
+		// Create a popup menu.
+		MainMenu = CreatePopupMenu();
+	}
 	
-	// Menus
+	// Parse the menus.
 	gens_menu_parse(&gmiMain[0], MainMenu);
 	
+	// Synchronize the menus.
+	Sync_Gens_Window();
+	
 	// Set the menu bar.
-	if (vdraw_get_fullscreen())
-		SetMenu(gens_window, NULL);
-	else
+	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
 		SetMenu(gens_window, MainMenu);
+	else
+		SetMenu(gens_window, NULL);
+	
+	if (!vdraw_get_fullscreen())
+	{
+		// Resize the window after the menu bar is rebuilt.
+		if (vdraw_scale <= 0)
+			return;
+		const int w = 320 * vdraw_scale;
+		const int h = 240 * vdraw_scale;
+		gsft_win32_set_actual_window_size(gens_window, w, h);
+	}
 }
 
 
@@ -181,12 +206,6 @@ void gens_window_reinit(void)
 	// Rebuild the menu bar.
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	gens_window_create_menubar();
-	
-	if (!vdraw_get_fullscreen())
-	{
-		// Resize the window after the menu bar is rebuilt.
-		gsft_win32_set_actual_window_size(gens_window, w, h);
-	}
 	
 	// Synchronize menus.
 	Sync_Gens_Window();

@@ -234,6 +234,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_FULLSCREEN,
 		      MF_BYCOMMAND | (fullScreen ? MF_CHECKED : MF_UNCHECKED));
 	
+	// Show Menu Bar
+	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_MENUBAR,
+		       MF_BYCOMMAND | (fullScreen ? MF_DISABLED : MF_ENABLED));
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_MENUBAR,
+		      MF_BYCOMMAND | (Settings.showMenuBar ? MF_CHECKED : MF_UNCHECKED));
+	
 	// VSync
 	if (fullScreen)
 		flags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
@@ -250,10 +256,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 			   MF_BYCOMMAND);
 	
 	// Backend
-	Sync_Gens_Window_GraphicsMenu_Backend(mnuGraphics, 4);
+	Sync_Gens_Window_GraphicsMenu_Backend(mnuGraphics, 5);
 	
 	// Render
-	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 7);
+	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 8);
 	
 	// Sprite Limit
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SPRITELIMIT,

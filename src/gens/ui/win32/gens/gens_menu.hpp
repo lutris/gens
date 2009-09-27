@@ -37,8 +37,8 @@ extern "C" {
 
 void		gens_menu_parse(const GensMenuItem_t* menu, HMENU container);
 
-// New menu handler.
 HMENU		gens_menu_find_item(uint16_t id);
+void		gens_menu_clear(void);
 
 extern HMENU	MainMenu;
 extern HACCEL	hAccelTable_Menu;

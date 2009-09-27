@@ -34,7 +34,7 @@ using std::string;
 using std::vector;
 
 // Main menu.
-HMENU MainMenu;
+HMENU MainMenu = NULL;
 // Accelerator table for the Gens main menu.
 HACCEL hAccelTable_Menu = NULL;
 
@@ -224,4 +224,13 @@ HMENU gens_menu_find_item(uint16_t id)
 		return NULL;
 	
 	return (*mnuIter).second;
+}
+
+
+/**
+ * gens_menu_clear(): Clear the menu map.
+ */
+void gens_menu_clear(void)
+{
+	gens_menu_map.clear();
 }

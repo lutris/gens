@@ -100,7 +100,7 @@ static bool paintsEnabled = true;
 
 static void on_gens_window_close(void);
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void fullScreenPopupMenu(HWND hWnd);
+static void showPopupMenu(HWND hWnd, bool adjustMousePointer);
 static void dragDropFile(HDROP hDrop);
 
 
@@ -192,7 +192,9 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 		case WM_RBUTTONDOWN:
 			if (vdraw_get_fullscreen())
-				fullScreenPopupMenu(hWnd);
+				showPopupMenu(hWnd, true);
+			else if (!Settings.showMenuBar)
+				showPopupMenu(hWnd, false);
 			break;
 		
 		case WM_COMMAND:
@@ -445,18 +447,22 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 
 
 /**
- * fullScreenPopupMenu(): Show the Popup Menu while in fullscreen mode.
+ * showPopupMenu(): Show the Popup Menu.
  * @param hWnd Window handle.
+ * @param adjustMousePointer If true, adjusts the mouse pointer.
  */
-static void fullScreenPopupMenu(HWND hWnd)
+static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 {
 	// Full Screen, right mouse button click.
 	// Show the popup menu.
 	audio_clear_sound_buffer();
 	
-	// Show the mouse pointer.
-	while (ShowCursor(false) >= 0) { }
-	while (ShowCursor(true) < 0) { }
+	if (adjustMousePointer)
+	{
+		// Show the mouse pointer.
+		while (ShowCursor(false) >= 0) { }
+		while (ShowCursor(true) < 0) { }
+	}
 	
 	POINT pt;
 	GetCursorPos(&pt);
@@ -467,9 +473,12 @@ static void fullScreenPopupMenu(HWND hWnd)
 	TrackPopupMenu(MainMenu, TPM_LEFTALIGN | TPM_TOPALIGN, pt.x, pt.y, NULL, hWnd, NULL);
 	paintsEnabled = true;
 	
-	// Hide the mouse pointer.
-	while (ShowCursor(true) < 0) { }
-	while (ShowCursor(false) >= 0) { }
+	if (adjustMousePointer)
+	{
+		// Hide the mouse pointer.
+		while (ShowCursor(true) < 0) { }
+		while (ShowCursor(false) >= 0) { }
+	}
 }
 
 
