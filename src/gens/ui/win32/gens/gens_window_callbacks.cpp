@@ -275,10 +275,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 	{
 		case IDCMD_ESC:
 			if (Quick_Exit)
-			{
 				close_gens();
-				break;
-			}
 			
 #ifdef GENS_DEBUGGER
 			if (IS_DEBUGGING())
@@ -299,7 +296,6 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
-			GensUI::updateScreenSaverSuspend();
 			break;
 		
 		case IDCMD_PAUSE:
@@ -313,7 +309,6 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
-			GensUI::updateScreenSaverSuspend();
 			break;
 		
 		case IDCMD_FRAMESKIP_AUTO:
