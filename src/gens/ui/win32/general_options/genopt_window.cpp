@@ -86,10 +86,10 @@ static WNDCLASS genopt_wndclass;
 
 // Window size.
 #define GENOPT_WINDOW_WIDTH  344
-#define GENOPT_WINDOW_HEIGHT 320
+#define GENOPT_WINDOW_HEIGHT 300
 
 #define GENOPT_FRAME_WIDTH  160
-#define GENOPT_FRAME_HEIGHT (GENOPT_WINDOW_HEIGHT-48)
+#define GENOPT_FRAME_HEIGHT 252
 
 // Window procedure.
 static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -115,7 +115,6 @@ static HWND	chkMisc_FastBlur;
 static HWND	chkMisc_SegaCDLEDs;
 static HWND	chkMisc_BorderColorEmulation;
 static HWND	chkMisc_PauseTint;
-static HWND	chkMisc_SuspendScreenSaver;
 
 // GDI objects.
 static HBRUSH	brushOSD[4][2];
@@ -294,14 +293,6 @@ static void genopt_window_create_child_windows(HWND hWnd)
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_PauseTint, fntMain, true);
 	
-	// Suspend Screensaver
-	frameTop += 20;
-	chkMisc_SuspendScreenSaver = CreateWindow(WC_BUTTON, TEXT("Suspend Screensaver"),
-						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop, 128, 20,
-						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_SuspendScreenSaver, fntMain, true);
-	
 	// Intro Effect label.
 	frameTop += 16+8;
 	HWND lblIntroEffect = CreateWindow(WC_STATIC, TEXT("Intro Effect:"),
@@ -475,7 +466,6 @@ static void genopt_window_init(void)
 	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_SuspendScreenSaver, (Settings.suspendScreenSaver ? BST_CHECKED : BST_UNCHECKED));
 	
 	// FPS counter
 	Button_SetCheck(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
@@ -516,7 +506,6 @@ static void genopt_window_save(void)
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
 	Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
-	Settings.suspendScreenSaver = (Button_GetCheck(chkMisc_SuspendScreenSaver) == BST_CHECKED);
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
