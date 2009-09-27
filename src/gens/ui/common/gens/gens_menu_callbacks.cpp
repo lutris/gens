@@ -332,6 +332,9 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_GRAPHICS_MENUBAR:
+			if (vdraw_get_fullscreen)
+				break;
+			
 			Settings.showMenuBar = !state;
 			
 			// Rebuild the Gens Menu Bar.
