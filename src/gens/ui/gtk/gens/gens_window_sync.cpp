@@ -686,41 +686,8 @@ void Sync_Gens_Window_PluginsMenu(void)
 	mnuPlugins_sub = gtk_menu_new();
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuPlugins), mnuPlugins_sub);
 	
-	// Create the plugin menu items.
-	GtkWidget *mnuItem;
-	string sMenuText;
-	size_t mnemonicPos;
-	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
-	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
-	{
-		sMenuText = (*curMenuItem).text;
-		mnemonicPos = sMenuText.find('&');
-		if (mnemonicPos != string::npos)
-			sMenuText[mnemonicPos] = '_';
-		
-		mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText.c_str());
-		gtk_widget_show(mnuItem);
-		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
-		
-		// Set the menu item check state.
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), (*curMenuItem).checked);
-		
-		// Set the callback handler.
-		g_signal_connect((gpointer)mnuItem, "activate",
-			 	G_CALLBACK(gens_gtk_menu_callback),
-				GINT_TO_POINTER((*curMenuItem).id));
-	}
-	
-	// If plugin menu items were added, add the Plugin Manager separator.
-	if (PluginMgr::lstMenuItems.size() != 0)
-	{
-		mnuItem = gtk_separator_menu_item_new();
-		gtk_widget_show(mnuItem);
-		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
-	}
-	
 	// Add the Plugin Manager menu item.
-	mnuItem = gtk_menu_item_new_with_mnemonic("Plugin Manager");
+	GtkWidget *mnuItem = gtk_menu_item_new_with_mnemonic("Plugin Manager");
 	gtk_widget_show(mnuItem);
 	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
 	
@@ -728,6 +695,40 @@ void Sync_Gens_Window_PluginsMenu(void)
 	g_signal_connect((gpointer)mnuItem, "activate",
 			 G_CALLBACK(gens_gtk_menu_callback),
 			 GINT_TO_POINTER(IDM_PLUGINS_MANAGER));
+	
+	if (PluginMgr::lstMenuItems.size() != 0)
+	{
+		// Plugin menu items were created.
+		
+		// Add the Plugin Manager separator.
+		mnuItem = gtk_separator_menu_item_new();
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+		
+		// Create the plugin menu items.
+		string sMenuText;
+		size_t mnemonicPos;
+		for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
+		     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
+		{
+			sMenuText = (*curMenuItem).text;
+			mnemonicPos = sMenuText.find('&');
+			if (mnemonicPos != string::npos)
+				sMenuText[mnemonicPos] = '_';
+			
+			mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText.c_str());
+			gtk_widget_show(mnuItem);
+			gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+			
+			// Set the menu item check state.
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), (*curMenuItem).checked);
+			
+			// Set the callback handler.
+			g_signal_connect((gpointer)mnuItem, "activate",
+					G_CALLBACK(gens_gtk_menu_callback),
+					GINT_TO_POINTER((*curMenuItem).id));
+		}
+	}
 	
 	// Enable callbacks.
 	gens_menu_do_callbacks = 1;
