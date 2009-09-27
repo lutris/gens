@@ -590,28 +590,30 @@ void Sync_Gens_Window_PluginsMenu(void)
 		   (UINT_PTR)mnuPlugins, TEXT("&Plugins"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_PLUGINS_MENU, mnuPlugins));
 	
-	// Create the plugin menu items.
-	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
-	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
-	{
-		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
-			   (*curMenuItem).id, (*curMenuItem).text.c_str());
-		
-		// Set the menu item check state.
-		CheckMenuItem(mnuPlugins, (*curMenuItem).id,
-			      MF_BYCOMMAND | ((*curMenuItem).checked ? MF_CHECKED : MF_UNCHECKED));
-	}
-	
-	// If plugin menu items were added, add the Plugin Manager separator.
-	if (PluginMgr::lstMenuItems.size() != 0)
-	{
-		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_SEPARATOR,
-			   IDM_SEPARATOR, NULL);
-	}
-	
 	// Add the Plugin Manager menu item.
 	InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
 		   IDM_PLUGINS_MANAGER, TEXT("Plugin Manager"));
+	
+	if (PluginMgr::lstMenuItems.size() != 0)
+	{
+		// Plugin menu items were created.
+		
+		// Add the Plugin Manager separator.
+		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_SEPARATOR,
+			   IDM_SEPARATOR, NULL);
+		
+		// Create the plugin menu items.
+		for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
+		     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
+		{
+			InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
+					(*curMenuItem).id, (*curMenuItem).text.c_str());
+			
+			// Set the menu item check state.
+			CheckMenuItem(mnuPlugins, (*curMenuItem).id,
+					MF_BYCOMMAND | ((*curMenuItem).checked ? MF_CHECKED : MF_UNCHECKED));
+		}
+	}
 }
 
 
