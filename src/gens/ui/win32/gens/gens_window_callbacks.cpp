@@ -129,7 +129,6 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 		case WM_CREATE:
 			Settings.Active = 1;
-			GensUI::updateScreenSaverSuspend();
 			break;
 		
 		case WM_DESTROY:
@@ -162,7 +161,6 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				
 				// Auto Pause - reactivate the game.
 				Settings.Active = 1;
-				GensUI::updateScreenSaverSuspend();
 			}
 			else
 			{
@@ -171,7 +169,6 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				{
 					Settings.Active = 0;
 					audio_clear_sound_buffer();
-					GensUI::updateScreenSaverSuspend();
 				}
 			}
 			

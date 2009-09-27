@@ -498,9 +498,6 @@ int ROM::openROM(const string& filename, string z_filename)
 	// Update the window title.
 	Options::setGameName();
 	
-	// Update the screensaver suspend state.
-	GensUI::updateScreenSaverSuspend();
-	
 	// Raise the MDP_EVENT_OPEN_ROM event.
 	// TODO: Get rid of the file extension for event.rom_z_name.
 	mdp_event_open_rom_t event;
@@ -990,11 +987,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	// Raise the MDP_EVENT_CLOSE_ROM event.
 	EventMgr::RaiseEvent(MDP_EVENT_CLOSE_ROM, NULL);
 	
-	// Update the window title.
 	GensUI::setWindowTitle_Idle();
-	
-	// Update the screensaver suspend state.
-	GensUI::updateScreenSaverSuspend();
 }
 
 

@@ -178,7 +178,6 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 	GSFT_UNUSED_PARAMETER(user_data);
 	
 	Settings.Active = 1;
-	GensUI::updateScreenSaverSuspend();
 	
 	// Reset the SDL key modifier state.
 	input_sdl_reset_modifiers();
@@ -204,7 +203,6 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	{
 		Settings.Active = 0;
 		audio_clear_sound_buffer();
-		GensUI::updateScreenSaverSuspend();
 	}
 	
 	// Reset the SDL key modifier state.

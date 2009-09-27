@@ -519,11 +519,11 @@ static void genopt_window_save(void)
 	Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
 	Settings.suspendScreenSaver = (Button_GetCheck(chkMisc_SuspendScreenSaver) == BST_CHECKED);
+	GensUI::updateScreenSaverSuspend();
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
 	Settings.Active = !Auto_Pause;
-	GensUI::updateScreenSaverSuspend();
 	
 	// FPS counter
 	vdraw_set_fps_enabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
