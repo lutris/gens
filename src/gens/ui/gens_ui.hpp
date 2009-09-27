@@ -81,7 +81,7 @@ class GensUI
 		
 		static void setWindowTitle(const string& title);
 		static void setWindowVisibility(const bool visibility);
-		static void updateScreenSaverSuspend(void);
+		static void updateScreenSaver(void);
 		
 		static string openFile(const string& title, const string& initFile,
 				       const FileFilterType filterType, void* owner = NULL);
@@ -131,7 +131,7 @@ class GensUI
 					      void* owner = NULL);
 	
 	private:
-		static void setScreenSaverSuspend(const bool newSuspend);
+		static void setScreenSaver(const bool newScreenSaver);
 };
 
 #endif /* __cplusplus */

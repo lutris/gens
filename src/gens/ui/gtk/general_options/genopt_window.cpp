@@ -562,7 +562,7 @@ static void genopt_window_save(void)
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
 	Settings.suspendScreenSaver = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SuspendScreenSaver));
-	GensUI::updateScreenSaverSuspend();
+	GensUI::updateScreenSaver();
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.

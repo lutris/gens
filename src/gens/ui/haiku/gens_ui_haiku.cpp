@@ -208,19 +208,18 @@ void GensUI::setMousePointer(bool busy)
 
 
 /**
- * setScreenSaverSuspend(): Set the screensaver suspend state.
- * @param newSuspend New screensaver suspend state.
+ * setScreenSaver(): Set the screensaver suspend state.
+ * @param newScreenSaver New screensaver suspend state.
  */
-void GensUI::setScreenSaverSuspend(bool newSuspend)
+void GensUI::setScreenSaver(bool newScreenSaver)
 {
-	static bool prevSuspend = false;
+	static bool prevScreenSaver = false;
 	
-	if (newSuspend == prevSuspend)
+	if (newScreenSaver == prevScreenSaver)
 		return;
 	
-	
 	// Store the new screensaver suspend state.
-	prevSuspend = newSuspend;
+	prevScreenSaver = newScreenSaver;
 	
-	// TODO: Implement GensUI::setScreenSaverSuspend() for Haiku.
+	// TODO: Implement GensUI::setScreenSaver() for Haiku.
 }

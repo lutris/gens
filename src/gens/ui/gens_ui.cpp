@@ -153,16 +153,14 @@ void GensUI_setWindowVisibility(const int visibility)
 
 
 /**
- * updateScreenSaverSuspend(): Update the screensaver suspend state.
+ * updateScreenSaver(): Update the screensaver suspend state.
  */
-void GensUI::updateScreenSaverSuspend(void)
+void GensUI::updateScreenSaver(void)
 {
 	if (!Settings.suspendScreenSaver)
 	{
 		// Screensaver suspension is disabled.
-		setScreenSaverSuspend(false);
+		setScreenSaver(false);
 		return;
 	}
-	
-	// TODO: Suspend the screensaver when a game is running.
 }
