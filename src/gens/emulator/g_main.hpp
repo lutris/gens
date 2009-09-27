@@ -54,7 +54,6 @@ extern "C" {
 typedef struct _Gens_Settings_t
 {
 	int restrict_input;	// If non-zero, restructs U+D/L+R.
-	int suspendScreenSaver;	// If non-zero, suspends screensaver while game is active.
 	
 	int Active;		// If non-zero, the Gens window is active. (Only 0 if auto-pause is enabled.)
 	int Paused;		// If non-zero, emulation is paused.

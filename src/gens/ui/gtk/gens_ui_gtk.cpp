@@ -20,6 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
@@ -586,23 +587,4 @@ void GensUI::setMousePointer(bool busy)
 	gdk_cursor_destroy(cursor);
 	
 	update();
-}
-
-
-/**
- * setScreenSaver(): Set the screensaver suspend state.
- * @param newScreenSaver New screensaver suspend state.
- */
-void GensUI::setScreenSaver(bool newScreenSaver)
-{
-	static bool prevScreenSaver = false;
-	
-	if (newScreenSaver == prevScreenSaver)
-		return;
-	
-	
-	// Store the new screensaver suspend state.
-	prevScreenSaver = newScreenSaver;
-	
-	// TODO: Implement GensUI::setScreenSaver() for GTK+.
 }
