@@ -38,7 +38,6 @@
 // Main settings.
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
-#include "gens_ui.hpp"
 
 // Unused Parameter macro.
 #include "libgsft/gsft_unused.h"
@@ -562,7 +561,6 @@ static void genopt_window_save(void)
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
 	Settings.suspendScreenSaver = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SuspendScreenSaver));
-	GensUI::updateScreenSaver();
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.

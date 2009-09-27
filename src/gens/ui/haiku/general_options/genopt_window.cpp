@@ -36,7 +36,6 @@
 // Main settings.
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
-#include "gens_ui.hpp"
 
 // Unused Parameter macro.
 #include "libgsft/gsft_unused.h"
