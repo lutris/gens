@@ -27,7 +27,6 @@
 #include "gens_ui.hpp"
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
-#include "video/vdraw.h"
 
 // C includes.
 #include <stdio.h>
@@ -167,9 +166,9 @@ void GensUI::updateScreenSaverSuspend(void)
 	}
 	
 	// Determine if the screensaver suspension should be enabled.
-	if ((Game != NULL && Settings.Active && !Settings.Paused) || vdraw_get_fullscreen())
+	if (Game != NULL && Settings.Active && !Settings.Paused)
 	{
-		// Game is running, or Gens is set to fullscreen. Screensaver suspension should be enabled.
+		// Game is running. Screensaver suspension should be enabled.
 		setScreenSaverSuspend(true);
 	}
 	else
