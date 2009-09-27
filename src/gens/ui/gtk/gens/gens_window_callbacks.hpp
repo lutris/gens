@@ -47,6 +47,9 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 // Expose callback.
 gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 
+// Mouse callback for SDL socket.
+gboolean gens_window_sdlsock_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif

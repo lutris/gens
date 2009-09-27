@@ -34,8 +34,10 @@ extern int	gens_menu_do_callbacks;
 
 void		gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelGroup *accel_group);
 
-void		gens_gtk_menu_callback(GtkMenuItem *menuitem, gpointer user_data);
 GtkWidget*	gens_menu_find_item(uint16_t id);
+void		gens_menu_clear(void);
+
+void		gens_gtk_menu_callback(GtkMenuItem *menuitem, gpointer user_data);
 
 #ifdef __cplusplus
 }

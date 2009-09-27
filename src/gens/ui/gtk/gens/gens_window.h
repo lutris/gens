@@ -32,8 +32,10 @@ extern "C" {
 
 extern GtkWidget *gens_window;
 extern GtkWidget *gens_window_sdlsock;
+extern GtkWidget *gens_menu_bar;
 
 void gens_window_create(void);
+void gens_window_create_menubar(void);
 
 #ifdef __cplusplus
 }

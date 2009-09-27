@@ -35,7 +35,9 @@
 #include "gtk-misc.h"
 #include "gtk-compat.h"
 
+#include "emulator/g_main.hpp"
 #include "gens/gens_window.h"
+#include "gens/gens_window_sync.hpp"
 #include "ui/gens_ui.hpp"
 
 // Message logging.
@@ -49,7 +51,8 @@
 #include <SDL/SDL.h>
 #endif
 
-// Input handler.
+// Video and Input handlers.
+#include "video/vdraw.h"
 #include "input/input.h"
 
 
@@ -195,6 +198,9 @@ void GensUI::setWindowVisibility(const bool visibility)
 		gtk_widget_show(gens_window);
 	else
 		gtk_widget_hide(gens_window);
+	
+	// Update the menu bar's visibility.
+	Sync_Gens_Window_MenuBarVisibility();
 }
 
 

@@ -107,6 +107,26 @@ void Sync_Gens_Window(void)
 	Sync_Gens_Window_SoundMenu();
 	Sync_Gens_Window_OptionsMenu();
 	Sync_Gens_Window_PluginsMenu();
+	Sync_Gens_Window_MenuBarVisibility();
+}
+
+
+/**
+ * Sync_Gens_Window_MenuBarVisibility(): Synchronize the menu bar's visibility.
+ */
+void Sync_Gens_Window_MenuBarVisibility(void)
+{
+	if (!GTK_IS_MENU_BAR(gens_menu_bar))
+	{
+		// gens_menu_bar is not a GtkMenuBar.
+		// Don't do anything.
+		return;
+	}
+	
+	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
+		gtk_widget_show(gens_menu_bar);
+	else
+		gtk_widget_hide(gens_menu_bar);
 }
 
 
@@ -219,13 +239,20 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 void Sync_Gens_Window_GraphicsMenu(void)
 {
 	uint16_t id;
+	GtkWidget *mnuItem;
 	
 	// Disable callbacks so nothing gets screwed up.
 	gens_menu_do_callbacks = 0;
 	
 	// Enable Full Screen only if the current backend supports it.
-	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_FULLSCREEN),
-				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_FULLSCREEN));
+	mnuItem = gens_menu_find_item(IDM_GRAPHICS_FULLSCREEN);
+	gtk_widget_set_sensitive(mnuItem, (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_FULLSCREEN));
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), vdraw_get_fullscreen());
+	
+	// Show Menu Bar.
+	mnuItem = gens_menu_find_item(IDM_GRAPHICS_MENUBAR);
+	gtk_widget_set_sensitive(mnuItem, !vdraw_get_fullscreen());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), Settings.showMenuBar);
 	
 	// Simple checkbox items
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_VSYNC)), Video.VSync_W);

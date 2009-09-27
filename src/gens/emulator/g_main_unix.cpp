@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
 	Init_PRNG();
 	
 	// Initialize the UI.
+	Settings.showMenuBar = 1;
 	GensUI::init(&argc, &argv);
 	
 	// Initialize vdraw_sdl.
@@ -190,6 +191,9 @@ int main(int argc, char *argv[])
 	
 	// Reset the renderer.
 	vdraw_reset_renderer(true);
+	
+	// Create the menu bar.
+	gens_window_create_menubar();
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

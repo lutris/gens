@@ -26,6 +26,7 @@
 
 #include "emulator/g_main.hpp"
 #include "gens_window_callbacks.hpp"
+#include "gens_window.h"
 #include "gens_window_sync.hpp"
 
 #include "util/file/rom.hpp"
@@ -40,7 +41,8 @@
 // File management functions.
 #include "util/file/file.hpp"
 
-// Audio Handler.
+// Video and Audio Handler.
+#include "video/vdraw.h"
 #include "audio/audio.h"
 
 // SDL input event handler.
@@ -217,7 +219,7 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
  * @param widget GTK+ widget.
  * @param event GDK expose event.
  * @param user_data User data.
- * @return True to stop other handlers from being invoked; false to allow the event to propagate.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
  */
 gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
 {
@@ -226,5 +228,41 @@ gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gp
 	GSFT_UNUSED_PARAMETER(user_data);
 	
 	GensUI::wakeup();
+	return false;
+}
+
+
+/**
+ * gens_window_sdlsock_button_press(): SDL socket mouse button event.
+ * @param widget GTK+ widget.
+ * @param event GDK button event.
+ * @param user_data User data.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_sdlsock_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+{
+	GSFT_UNUSED_PARAMETER(widget);
+	GSFT_UNUSED_PARAMETER(event);
+	
+	if (!GTK_IS_MENU(gens_menu_bar))
+	{
+		// gens_menu_bar is not a GtkMenu.
+		// Don't do anything.
+		return false;
+	}
+	
+	if (event->type == GDK_BUTTON_PRESS && event->button == 3)
+	{
+		// Right-click.
+		if (!vdraw_get_fullscreen() && !Settings.showMenuBar)
+		{
+			// Show the GTK+ menu.
+			gtk_menu_popup(GTK_MENU(gens_menu_bar), NULL, NULL, NULL, NULL,
+			       	event->button, event->time);
+			return true;
+		}
+	}
+	
+	// Unhandled event
 	return false;
 }

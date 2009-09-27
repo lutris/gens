@@ -30,6 +30,7 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
+#include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bmf_window.hpp"
@@ -328,6 +329,13 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			// TODO: See if draw->setRender() is still needed.
 			//draw->setRender(Video.Render_Mode);
 			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_MENUBAR:
+			Settings.showMenuBar = !state;
+			
+			// Rebuild the Gens Menu Bar.
+			gens_window_create_menubar();
 			break;
 		
 		case IDM_GRAPHICS_VSYNC:

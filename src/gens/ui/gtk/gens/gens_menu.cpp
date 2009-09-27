@@ -329,6 +329,15 @@ GtkWidget* gens_menu_find_item(uint16_t id)
 
 
 /**
+ * gens_menu_clear(): Clear the menu map.
+ */
+void gens_menu_clear(void)
+{
+	gens_menu_map.clear();
+}
+
+
+/**
  * gens_gtk_menu_callback(): Menu item callback. (GTK+)
  * @param menuitem Menu item widget.
  * @param user_data Menu item ID.

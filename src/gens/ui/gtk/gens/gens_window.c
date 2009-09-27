@@ -29,6 +29,7 @@
 // Menus.
 #include "gens_menu.hpp"
 #include "ui/common/gens/gens_menu.h"
+#include "video/vdraw.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -42,18 +43,11 @@
 #include <ige-mac-integration.h>
 #endif
 
-
-// Window.
+// Widgets.
 GtkWidget *gens_window = NULL;
-
-// SDL "socket".
-GtkWidget *gens_window_sdlsock;
-
-// Accelerator Group.
-GtkAccelGroup *gens_window_accel_group;
-
-// Widget creation functions.
-static void gens_window_create_menubar(GtkWidget *container);
+GtkWidget *gens_window_sdlsock = NULL;
+GtkWidget *gens_menu_bar = NULL;
+static GtkWidget *gens_vbox_main = NULL;
 
 
 /**
@@ -107,9 +101,6 @@ void gens_window_create(void)
 	// Free the icon list.
 	g_list_free(gens_icon_list);
 	
-	// Create the accelerator group.
-	gens_window_accel_group = gtk_accel_group_new();
-	
 	// Create the Gens window.
 	gens_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_resizable(GTK_WINDOW(gens_window), FALSE);
@@ -118,17 +109,14 @@ void gens_window_create(void)
 	gtk_window_set_title(GTK_WINDOW(gens_window), "Gens");
 	
 	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 0);
-	gtk_widget_show(vboxMain);
-	gtk_container_add(GTK_CONTAINER(gens_window), vboxMain);
-	
-	// Create the menu bar.
-	gens_window_create_menubar(vboxMain);
+	gens_vbox_main = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(gens_vbox_main);
+	gtk_container_add(GTK_CONTAINER(gens_window), gens_vbox_main);
 	
 	// Create the HBox for the SDL "socket".
 	GtkWidget *hboxSocket = gtk_hbox_new(FALSE, 0);
 	gtk_widget_show(hboxSocket);
-	gtk_box_pack_start(GTK_BOX(vboxMain), hboxSocket, TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(gens_vbox_main), hboxSocket, TRUE, TRUE, 0);
 	
 	// Create the SDL "socket".
 	gens_window_sdlsock = gtk_event_box_new();
@@ -137,9 +125,6 @@ void gens_window_create(void)
 	// Set the background color of the SDL "socket" to black.
 	GdkColor bg = {0, 0, 0, 0};
 	gtk_widget_modify_bg(gens_window_sdlsock, GTK_STATE_NORMAL, &bg);
-	
-	// Add the accel group.
-	gtk_window_add_accel_group(GTK_WINDOW(gens_window), gens_window_accel_group);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gens_window, "delete-event",
@@ -178,24 +163,61 @@ void gens_window_create(void)
 	// Expose event.
 	g_signal_connect(gens_window_sdlsock, "expose-event",
 			 G_CALLBACK(gens_window_sdlsock_expose), NULL);
+	
+	// Button Press event.
+	g_signal_connect(gens_window_sdlsock, "button-press-event",
+			 G_CALLBACK(gens_window_sdlsock_button_press), NULL);
 }
 
 
 /**
  * create_gens_window_menubar(): Create the menu bar.
- * @param container Container for the menu bar.
  */
-static void gens_window_create_menubar(GtkWidget *container)
+void gens_window_create_menubar(void)
 {
-	GtkWidget *menu_bar = gtk_menu_bar_new();
-	gtk_widget_show(menu_bar);
-	gtk_box_pack_start(GTK_BOX(container), menu_bar, FALSE, FALSE, 0);
+	if (gens_menu_bar != NULL)
+	{
+		// Menu bar already exists. Delete it.
+		gtk_widget_destroy(gens_menu_bar);
+		gens_menu_clear();
+	}
+	
+	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
+	{
+		// Create a menu bar.
+		gens_menu_bar = gtk_menu_bar_new();
+		gtk_box_pack_start(GTK_BOX(gens_vbox_main), gens_menu_bar, FALSE, FALSE, 0);
+	}
+	else
+	{
+		// Create a popup menu.
+		gens_menu_bar = gtk_menu_new();
+	}
+	
+	// Accelerator Group.
+	static GtkAccelGroup *gens_menu_accel_group = NULL;
+	if (gens_menu_accel_group != NULL)
+	{
+		// Delete the accelerator group.
+		gtk_window_remove_accel_group(GTK_WINDOW(gens_window), gens_menu_accel_group);
+		g_object_unref(gens_menu_accel_group);
+	}
+	
+	// Create an accelerator group.
+	gens_menu_accel_group = gtk_accel_group_new();
 	
 	// Parse the menus.
-	gens_menu_parse(&gmiMain[0], menu_bar, gens_window_accel_group);
+	gens_menu_parse(&gmiMain[0], gens_menu_bar, gens_menu_accel_group);
+	
+	// Add the accel group.
+	gtk_window_add_accel_group(GTK_WINDOW(gens_window), gens_menu_accel_group);
+	
+	// Synchronize the menus.
+	Sync_Gens_Window();
 	
 #ifdef GDK_WINDOWING_QUARTZ
 	// Set the menu bar as the MacOS X menu bar.
-	ige_mac_menu_set_menu_bar(GTK_MENU_SHELL(menu_bar));
+	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
+		ige_mac_menu_set_menu_bar(GTK_MENU_SHELL(gens_menu_bar));
 #endif
 }
