@@ -453,8 +453,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
  */
 static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 {
-	// Full Screen, right mouse button click.
-	// Show the popup menu.
+	// Clear the sound buffer to prevent stuttering.
 	audio_clear_sound_buffer();
 	
 	if (adjustMousePointer)
