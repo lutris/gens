@@ -169,18 +169,6 @@ PKG_CHECK_MODULES([X11], [x11], [has_libX11=yes], [has_libX11=no])
 if test x$has_libX11 = xyes; then
 	AC_DEFINE(HAVE_LIBX11, 1, Define to 1 if you have the `X11' library (-lX11).)
 fi
-AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])
-AC_SUBST(X11_CFLAGS)
-AC_SUBST(X11_LIBS)
-
-# Check for libXss-1.1. (XScreenSaver)
-PKG_CHECK_MODULES([XScrnSaver], [xscrnsaver >= 1.1], [has_libXss=yes], [has_libXss=no])
-if test x$has_libXss = xyes; then
-	AC_DEFINE(HAVE_LIBXSS, 1, Define to 1 if you have the `Xss' library (-lXss).)
-fi
-AM_CONDITIONAL([HAVE_LIBXSS], [test x$has_libXss = xyes])
-AC_SUBST(XScrnSaver_CFLAGS)
-AC_SUBST(XScrnSaver_LIBS)
 
 # TODO: Allow UI selection later on.
 #AC_ARG_ENABLE(ui, AC_HELP_STRING([--enable-ui=[[ui]]], [Enable either the 'gtk' or 'qt4' UI [[default=gtk]]]), ui=$enableval, ui=gtk)
@@ -266,6 +254,11 @@ fi
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
+
+# X11 conditional and substitutions.
+AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])
+AC_SUBST(X11_CFLAGS)
+AC_SUBST(X11_LIBS)
 
 # Check for nasm.
 AC_ARG_WITH(nasm, AC_HELP_STRING([--with-nasm[[=nasm]]], [Select nasm or yasm [[default=nasm]]]), with_nasm=$withval, with_nasm=nasm)
