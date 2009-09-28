@@ -196,7 +196,7 @@ void gens_window_reinit(void)
 			curStyle &= ~WS_OVERLAPPEDWINDOW;
 			curStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS;
 		}
-		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
+		SetWindowLongPtr(gens_window, GWL_STYLE, curStyle);
 		
 		// Reposition the window.
 		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
