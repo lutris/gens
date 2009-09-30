@@ -1,4 +1,7 @@
-TODO for Gens/GS r7:
+Gens/GS TODO List
+
+Release 7:
+
 - hq3x: Broken on Win32 in some cases. (Check width division!)
 - Don't show "Zip File Selection Dialog" if:
   - A ROM is opened in Full Screen.
@@ -11,6 +14,10 @@ TODO for Gens/GS r7:
 - [Win32] Disable the "Apply" button on the "General Options" window if nothing has been changed.
 - [GTK+] Consider setting the event box's background color to match the border color.
 - Investigate Gens Rerecording commits r250, r252.
+- [GTK+] Load "Show Menu Bar" setting at startup to prevent menu bar screwiness.
+  - Window shows up with no menu bar initially, then the menu bar is added.
+- [Win32] Add a configuration option to disable ASPI support. (Win9x has issues occasionally.)
+- Finish the Gens/GS manual.
 
 MDP TODO for Gens/GS r7:
 - Finish MDP documentation.
@@ -18,9 +25,22 @@ MDP TODO for Gens/GS r7:
 - Implement mdp_host_t->emulator_control(MDP_EMUCTRL_RELOAD_INFO).
 - Finish an initial test suite for MDP rendering plugins.
 
-Stuff done in r7:
-- 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
-  (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
+Release 7.1:
+
+- Convert the SH2 memory functions to read/write memory in 16-bit byteswapped format, similar to 68K.
+  - This will allow use of the MD ROM buffer for SH2 functions, and save 4MB of memory.
+- Extend MD ROM buffer to 8 MB. (8 MB in MD mode only; 32X limited to 4 MB.)
+- mdZ80 using function pointer tables and pagetables for memory access.
+- Change GensUI to C-style linkage instead of a class.
+- DirectDraw 7 VDraw backend.
+  - Hardware color conversion. (Always render in 15/16-bit color.)
+  - Get border color drawing working in fullscreen when in 2x or higher.
+- Initial VDP debugging plugin.
+- "Cheat Finder" plugin.
+- Use Flag_Clr_Scr consistently. (Maybe rename it?)
+- Z80 RESET should force YM2612 to hold RESET. (i.e. don't accept writes when Z80 is in RESET)
+- Allow selecting renderers on the command line. (regression from m6)
+  - Set a variable in Gens_StartupInfo_t?
 
 TODO for later:
 - [Win32] Improve DirectDraw border color drawing, especially when the window
@@ -43,7 +63,6 @@ MDP TODO for later:
 
 Big Features TODO:
 - libcdio
-- mdZ80 C port
 - ZOMG
 - Reimplement the language system.
 - Fix the interpolated_scanline 16-bit color asm (non-mmx) renderer.
@@ -59,6 +78,8 @@ High-Level TODO:
 - (possibly?) Use Carbon/Cocoa for menus on MacOS.
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
+- Add a simple OSD menu for Gens/GS SDL in fullscreen.
+  - Maybe later, add a full OSD UI. (Will need to implement runtime UI switching in Gens/GS and MDP.)
 
 Low Priority:
 - Add MacOS X Aqua UI
