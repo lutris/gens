@@ -14,12 +14,12 @@ mdp_misc_ips_patcher_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-ve
 mdp_misc_ips_patcher_la_SOURCES = \
 		ips_plugin.c	\
 		ips.c		\
-		ips_file.cpp	\
-		ups_file.cpp
+		ips_file.cpp
+#ups_file.cpp
 
 noinst_HEADERS = \
 		ips_plugin.h	\
 		ips_icon.h	\
 		ips.h		\
-		ips_file.cpp	\
-		ups_file.cpp
+		ips_file.hpp
+#ups_file.hpp
