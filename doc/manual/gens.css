@@ -63,3 +63,16 @@ table.compatibility td.compat_yes
 {
 	font-weight: bold;
 }
+
+.value
+{
+	font-family: monospace;
+}
+
+pre.code
+{
+	padding: 8px;
+	border: 1px dashed;
+	background-color: silver;
+	font-family: monospace;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Gens/GS - Plugins - Game Genie</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='gens.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>Gens/GS - Plugins - Game Genie</h1>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'>Plugins</nav>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="plugin-gamegenie.html">Game Genie</a></span>
+</div>
+
+<p class='screenshot'>
+	<img src='images/plugin-gamegenie.png' alt="Game Genie" title="Game Genie">
+</p>
+
+<p>
+The Game Genie plugin allows you to enter cheat codes for various games.
+Codes entered for a game are saved in a game-specific patch file located in
+the emulator's save file directory. If the emulator supports MDP directory
+registration, then this directory can be customized from within the emulator.
+</p>
+
+<p>
+Supported code formats: (M68K)
+<table>
+	<tr>
+		<th>Example Code</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='value'>AA6T-AAXC</td>
+		<td>Game Genie.</td>
+	</tr>
+	<tr>
+		<td class='value'>123456:7890</td>
+		<td>16-bit patch code.</td>
+	</tr>
+	<tr>
+		<td class='value'>123456:78</td>
+		<td>8-bit patch code.</td>
+	</tr>
+	<tr>
+		<td class='value'>123456:7890ABCD</td>
+		<td>32-bit patch code.</td>
+	</tr>
+</table>
+
+<p>
+Note: 16-bit and 32-bit patch codes for the M68K CPU must be word-aligned;
+that is, they must have an even address. Unaligned addresses will not be
+accepted, and will show an error message.
+</p>
+
+<p>
+Version 1.0 of the Game Genie plugin only supports the M68K address space.
+Future versions of the plugin will support the Z80, S68K, MSH2, and SSH2
+address spaces.
+</p>
+
+<h2>Old Patch Code File Format</h2>
+
+<p>
+Older versions of Gens (and Gens/GS) included built-in Game Genie functionality.
+The older Game Genie functionality used a different format for storing patch
+codes. The old format is a two-field tab-delimited file, where the first field
+is the code as entered by the user and the second field is the name of the code.
+An example can be seen below.
+</p>
+
+<pre class='code'>
+AA6T-AAXC	Sonic 3: Level Select
+</pre>
+
+<h2>New Patch Code File Format</h2>
+
+<p>
+The Game Genie plugin uses a new patch code file format. The format starts with
+a one-line header, followed by colon-delimited codes. An example of this format
+can be seen below.
+</p>
+
+<pre class='code'>
+MDP Game Genie Patch Code File
+M68K:003962:4000:Sonic 3: Level Select
+</pre>
+
+<p>
+The first field indicates the CPU this code is intended for. Only one CPU is
+valid for version 1.0 of the Game Genie plugin, &quot;M68K&quot; (the main
+MC68000 CPU). The second field indicates the address, in hexadecimal. The
+third field indicates the data, in hexadecimal. The data field is either 2
+digits for 8-bit, 4 digits for 16-bit, or 8 digits for 32-bit. Finally, the
+last field contains the name of the code. Note that extra colons in the last
+field are included as part of the code's name.
+</p>
+
+<p>
+For compatibility purposes, the Game Genie plugin supports loading old patch
+code files; however, all new patch files will be saved in the new patch code
+file format.
+</p>
+
+</body>
+</html>
