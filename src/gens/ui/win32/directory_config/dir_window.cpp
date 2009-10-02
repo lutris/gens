@@ -382,13 +382,13 @@ static void dir_window_save(void)
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.
 			len = strlen(entry);
-			if (len > 0 && entry[len-1] != GENS_DIR_SEPARATOR_CHR)
+			if (len > 0 && entry[len-1] != GSFT_DIR_SEP_CHR)
 			{
 				// String needs to be less than 1 minus the max path length
 				// in order to be able to append the directory separator.
 				if (len < (GENS_PATH_MAX-1))
 				{
-					entry[len] = GENS_DIR_SEPARATOR_CHR;
+					entry[len] = GSFT_DIR_SEP_CHR;
 					entry[len+1] = 0x00;
 				}
 			}
@@ -406,13 +406,13 @@ static void dir_window_save(void)
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.
 			len = strlen(dir_buf);
-			if (len > 0 && dir_buf[len-1] != GENS_DIR_SEPARATOR_CHR)
+			if (len > 0 && dir_buf[len-1] != GSFT_DIR_SEP_CHR)
 			{
 				// String needs to be less than 1 minus the max path length
 				// in order to be able to append the directory separator.
 				if (len < (GENS_PATH_MAX-1))
 				{
-					dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
+					dir_buf[len] = GSFT_DIR_SEP_CHR;
 					dir_buf[len+1] = 0x00;
 				}
 			}
@@ -530,8 +530,8 @@ static void dir_window_callback_btnChange_clicked(int dir)
 		return;
 	
 	// Make sure the end of the directory has a slash.
-	if (new_dir.at(new_dir.length() - 1) != GENS_DIR_SEPARATOR_CHR)
-		new_dir += GENS_DIR_SEPARATOR_CHR;
+	if (new_dir.at(new_dir.length() - 1) != GSFT_DIR_SEP_CHR)
+		new_dir += GSFT_DIR_SEP_CHR;
 	
 	// Set the new directory.
 	SetWindowText(dir_widget->txt, new_dir.c_str());

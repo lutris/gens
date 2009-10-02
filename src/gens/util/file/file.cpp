@@ -29,6 +29,9 @@
 #include <string>
 using std::string;
 
+// libgsft includes.
+#include "libgsft/gsft_file.h"
+
 
 /**
  * GetNameFromPath(): Get the filename part of a pathname.
@@ -37,7 +40,7 @@ using std::string;
  */
 string File::GetNameFromPath(const string& fullPath)
 {
-	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
+	size_t pos = fullPath.rfind(GSFT_DIR_SEP_CHR);
 	
 	if (pos == string::npos)
 		return fullPath;
@@ -55,7 +58,7 @@ string File::GetNameFromPath(const string& fullPath)
  */
 string File::GetDirFromPath(const string& fullPath)
 {
-	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
+	size_t pos = fullPath.rfind(GSFT_DIR_SEP_CHR);
 	
 	if (pos == string::npos)
 		return "";

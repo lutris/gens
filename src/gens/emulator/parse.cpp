@@ -73,8 +73,12 @@
 #include "audio/audio.h"
 #include "input/input.h"
 
+// libgsft includes.
+#include "libgsft/gsft_file.h"
+
 // Include this *last* to avoid naming conflicts.
 #include "parse.hpp"
+
 
 // 1-argument parameter struct.
 struct opt1arg_str_t
@@ -428,10 +432,10 @@ static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 	// TODO: Concatenate the path to Rom_Dir?
 #ifdef GENS_OS_WIN32
 	/* Win32: Check for "C:\" and "\\" prefixes. */
-	if ((isalpha(filename[0]) && filename[1] == ':' && filename[2] == '\\') ||
-	    (filename[0] == '\\' && filename[1] == '\\'))
+	if ((isalpha(filename[0]) && filename[1] == ':' && filename[2] == GSFT_DIR_SEP_CHR) ||
+	    (filename[0] == GSFT_DIR_SEP_CHR && filename[1] == GSFT_DIR_SEP_CHR))
 #else /* !GENS_OS_WIN32 */
-	if (filename[0] == GENS_DIR_SEPARATOR_CHR)
+	if (filename[0] == GSFT_DIR_SEP_CHR)
 #endif /* GENS_OS_WIN32 */
 	{
 		// Absolute pathname.
@@ -443,7 +447,7 @@ static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 		// Relative pathname.
 		if (!getcwd(startup->filename, sizeof(startup->filename)))
 			return;
-		strcat(startup->filename, GENS_DIR_SEPARATOR_STR);
+		strcat(startup->filename, GSFT_DIR_SEP_STR);
 		strcat(startup->filename, filename);
 	}
 	

@@ -64,7 +64,10 @@ using std::deque;
 #include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
+
+// libgsft includes.
 #include "libgsft/gsft_byteswap.h"
+#include "libgsft/gsft_file.h"
 
 #include "ui/gens_ui.hpp"
 #include "zip_select/zipsel_dialog.h"
@@ -180,7 +183,7 @@ void ROM::updateROMName(const char* filename)
 {
 	int length = strlen(filename) - 1;
 	
-	while ((length >= 0) && (filename[length] != GENS_DIR_SEPARATOR_CHR))
+	while ((length >= 0) && (filename[length] != GSFT_DIR_SEP_CHR))
 		length--;
 	
 	length++;

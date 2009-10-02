@@ -23,14 +23,6 @@
 #ifndef GENS_FILE_HPP
 #define GENS_FILE_HPP
 
-#ifdef _WIN32
-#define GENS_DIR_SEPARATOR_STR "\\"
-#define GENS_DIR_SEPARATOR_CHR '\\'
-#else /* !_WIN32 */
-#define GENS_DIR_SEPARATOR_STR "/"
-#define GENS_DIR_SEPARATOR_CHR '/'
-#endif /* WIN32 */
-
 #ifdef __cplusplus
 
 #include <string>
@@ -42,16 +34,6 @@ class File
 		static std::string GetNameFromPath(const std::string& fullPath);
 		static std::string GetDirFromPath(const std::string& fullPath);
 		
-		/**
-		 * exists(): Check if a file exists.
-		 * @return True if the file exists; false if the file doesn't exist.
-		 */
-		static inline bool Exists(const std::string& filename)
-		{
-			// access() returns 0 on success, and -1 on failure.
-			return (!access(filename.c_str(), F_OK));
-		}
-	
 	private:
 		// Don't allow instantiation of this class.
 		File() { }

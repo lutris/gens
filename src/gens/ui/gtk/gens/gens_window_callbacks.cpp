@@ -35,8 +35,9 @@
 #include "ui/gtk/gtk-uri.h"
 #include "ui/gtk/gtk-compat.h"
 
-// Unued Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_file.h"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -130,7 +131,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 	g_free(unescaped);
 	
 	// Check that the file actually exists.
-	if (File::Exists(filename))
+	if (gsft_file_exists(filename.c_str()))
 	{
 		// File exists. Open it as a ROM image.
 		ROM::openROM(filename);

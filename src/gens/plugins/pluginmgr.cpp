@@ -35,6 +35,9 @@
 // File management functions.
 #include "util/file/file.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_file.h"
+
 // CPU flags
 #include "gens_core/misc/cpuflags.h"
 
@@ -142,10 +145,10 @@ void PluginMgr::init(void)
 	
 #if !defined(GENS_OS_WIN32)
 	// Linux/UNIX: Load external plugins from the user's ~/.gens directory first.
-	scanExternalPlugins(string(PathNames.Gens_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
+	scanExternalPlugins(string(PathNames.Gens_Path) + GSFT_DIR_SEP_STR + "plugins");
 #else	
 	// Win32: Load external plugins from the Gens directory.
-	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
+	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GSFT_DIR_SEP_STR + "plugins");
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_MDP_DIR
@@ -303,7 +306,7 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	{
 		// Check the file type.
 		curEntry.filename = string(directory) +
-				    string(GENS_DIR_SEPARATOR_STR) +
+				    string(GSFT_DIR_SEP_STR) +
 				    string(d_entry->d_name);
 		stat(curEntry.filename.c_str(), &d_stat);
 		filetype = d_stat.st_mode;

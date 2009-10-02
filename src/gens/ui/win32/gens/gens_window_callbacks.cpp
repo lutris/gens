@@ -35,8 +35,9 @@
 // Menus.
 #include "gens_menu.hpp"
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_file.h"
 
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
@@ -494,7 +495,7 @@ static void dragDropFile(HDROP hDrop)
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
-		if (File::Exists(filename))
+		if (gsft_file_exists(filename))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

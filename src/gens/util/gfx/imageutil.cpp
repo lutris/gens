@@ -39,8 +39,9 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 
-// Byteswapping macros.
+// libgsft includes.
 #include "libgsft/gsft_byteswap.h"
+#include "libgsft/gsft_file.h"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -479,7 +480,7 @@ int ImageUtil::screenShot(void)
 		num++;
 		snprintf(filename, sizeof(filename), "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Filename, num, ext);
 		filename[sizeof(filename)-1] = 0x00;
-	} while (File::Exists(filename));
+	} while (gsft_file_exists(filename));
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
