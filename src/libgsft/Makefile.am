@@ -9,7 +9,8 @@ libgsft_la_CXXFLAGS	= $(AM_CXXFLAGS) -static -O3 -funroll-loops
 libgsft_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 libgsft_la_SOURCES = \
-		gsft_byteswap.c
+		gsft_byteswap.c \
+		gsft_file.c
 
 noinst_HEADERS = \
 		gsft_fncall.h \
@@ -18,7 +19,8 @@ noinst_HEADERS = \
 		gsft_bool.h \
 		gsft_fastcall.h \
 		gsft_malloc_align.h \
-		gsft_unused.h
+		gsft_unused.h \
+		gsft_file.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
