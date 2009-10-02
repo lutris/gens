@@ -59,6 +59,7 @@ using std::list;
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_file.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
@@ -348,25 +349,10 @@ static void dir_window_init(void)
 			}
 			
 			// Directory retrieved.
-			
-			// If the directory is absolute with regards to the Gens directory,
-			// convert it to a relative pathname.
-			
-			if (!strncmp(dir_buf, PathNames.Gens_EXE_Path, gens_exe_pathlen))
-			{
-				// Directory is absolute with regards to the Gens directory.
-				// Convert it to a relative pathname.
-				snprintf(dir_buf_rel, sizeof(dir_buf_rel),
-					 "." GENS_DIR_SEPARATOR_STR "%s", &dir_buf[gens_exe_pathlen]);
-				dir_buf_rel[sizeof(dir_buf_rel)-1] = 0x00;
-				Edit_SetText(vectDirs[dir].txt, dir_buf_rel);
-			}
-			else
-			{
-				// Directory is not relative with regards to the Gens directory.
-				// Use the full directory.
-				Edit_SetText(vectDirs[dir].txt, dir_buf);
-			}
+			// If necessary, convert it to a relative pathname.
+			gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
+					     dir_buf_rel, sizeof(dir_buf_rel));
+			Edit_SetText(vectDirs[dir].txt, dir_buf_rel);
 		}
 	}
 	
@@ -381,6 +367,7 @@ static void dir_window_save(void)
 {
 	size_t len;
 	char dir_buf[GENS_PATH_MAX];
+	char dir_buf_abs[GENS_PATH_MAX];
 	
 	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
@@ -430,14 +417,9 @@ static void dir_window_save(void)
 				}
 			}
 			
-			// Check if the beginning of the directory is ".\\".
-			if (dir_buf[0] == '.' && dir_buf[1] == GENS_DIR_SEPARATOR_CHR)
-			{
-				// Relative pathname. Convert to full pathname.
-				string tmp_path = string(PathNames.Gens_EXE_Path) + string(&dir_buf[2]);
-				strncpy(dir_buf, tmp_path.c_str(), sizeof(dir_buf));
-				dir_buf[sizeof(dir_buf)-1] = 0x00;
-			}
+			// If necessary, convert the pathname to an absolute pathname.
+			gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
+					     dir_buf_abs, sizeof(dir_buf_abs));
 			
 			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
 			if (dirIter == PluginMgr::tblDirectories.end())
@@ -447,7 +429,7 @@ static void dir_window_save(void)
 			const mdpDir_t& mdpDir = *lstDirIter;
 			
 			// Set the directory.
-			mdpDir.set(vectDirs[dir].id, dir_buf);
+			mdpDir.set(vectDirs[dir].id, dir_buf_abs);
 		}
 	}
 	
