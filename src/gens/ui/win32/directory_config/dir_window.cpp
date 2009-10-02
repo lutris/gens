@@ -318,6 +318,8 @@ void dir_window_close(void)
 static void dir_window_init(void)
 {
 	char dir_buf[GENS_PATH_MAX];
+	char dir_buf_rel[GENS_PATH_MAX];
+	const unsigned int gens_exe_pathlen = strlen(PathNames.Gens_EXE_Path);
 	
 	// Internal directories.
 	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
@@ -339,10 +341,30 @@ static void dir_window_init(void)
 			const mdpDir_t& mdpDir = *lstDirIter;
 			
 			// Get the directory.
-			if (mdpDir.get(vectDirs[dir].id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+			if (mdpDir.get(vectDirs[dir].id, dir_buf, sizeof(dir_buf)) != MDP_ERR_OK)
 			{
-				// Directory retrieved.
-				// TODO: If the path is relative to the Gens directory, shorten it.
+				// Error retrieving the directory.
+				continue;
+			}
+			
+			// Directory retrieved.
+			
+			// If the directory is absolute with regards to the Gens directory,
+			// convert it to a relative pathname.
+			
+			if (!strncmp(dir_buf, PathNames.Gens_EXE_Path, gens_exe_pathlen))
+			{
+				// Directory is absolute with regards to the Gens directory.
+				// Convert it to a relative pathname.
+				snprintf(dir_buf_rel, sizeof(dir_buf_rel),
+					 "." GENS_DIR_SEPARATOR_STR "%s", &dir_buf[gens_exe_pathlen]);
+				dir_buf_rel[sizeof(dir_buf_rel)-1] = 0x00;
+				Edit_SetText(vectDirs[dir].txt, dir_buf_rel);
+			}
+			else
+			{
+				// Directory is not relative with regards to the Gens directory.
+				// Use the full directory.
 				Edit_SetText(vectDirs[dir].txt, dir_buf);
 			}
 		}
