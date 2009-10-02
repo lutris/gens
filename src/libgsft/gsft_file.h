@@ -32,10 +32,12 @@
 
 #include "gsft_fncall.h"
 #include <string.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 /**
  * gsft_file_abs_to_rel(): Convert an absolute pathname to a relative pathname.
@@ -56,6 +58,15 @@ DLL_LOCAL void GSFT_FNCALL gsft_file_abs_to_rel(const char *path_abs, const char
  */
 DLL_LOCAL void GSFT_FNCALL gsft_file_rel_to_abs(const char *path_rel, const char *path_root,
 						char *path_abs, size_t path_abs_len);
+
+
+/**
+ * gsft_file_exists(): Determine if a file exists.
+ * @param filename	[in] Filename.
+ * @return 0 if the file doesn't exist; non-zero if the file exists.
+ */
+#define gsft_file_exists(filename)	(!access(filename, F_OK))
+
 
 #ifdef __cplusplus
 }
