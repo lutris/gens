@@ -349,7 +349,7 @@ static void dir_window_init(void)
 			}
 			
 			// Directory retrieved.
-			// If necessary, convert it to a relative pathname.
+			// If possible, convert it to a relative pathname.
 			gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
 					     dir_buf_rel, sizeof(dir_buf_rel));
 			Edit_SetText(vectDirs[dir].txt, dir_buf_rel);
@@ -505,7 +505,8 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
  */
 static void dir_window_callback_btnChange_clicked(int dir)
 {
-	char cur_dir[GENS_PATH_MAX];
+	char dir_buf[GENS_PATH_MAX];
+	char dir_buf_abs[GENS_PATH_MAX];
 	string new_dir;
 	
 	if (dir < 0 || dir >= vectDirs.size())
@@ -514,8 +515,12 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	dir_widget_t *dir_widget = &vectDirs[dir];
 	
 	// Get the currently entered directory.
-	Edit_GetText(dir_widget->txt, cur_dir, sizeof(cur_dir));
-	cur_dir[sizeof(cur_dir)-1] = 0x00;
+	Edit_GetText(dir_widget->txt, dir_buf, sizeof(dir_buf));
+	dir_buf[sizeof(dir_buf)-1] = 0x00;
+	
+	// Convert the current directory to an absolute pathname, if necessary.
+	gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
+			     dir_buf_abs, sizeof(dir_buf_abs));
 	
 	// Set the title of the window.
 	char tmp[128];
@@ -523,7 +528,7 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	tmp[sizeof(tmp)-1] = 0x00;
 	
 	// Request a new directory.
-	new_dir = GensUI::selectDir(tmp, cur_dir, dir_window);
+	new_dir = GensUI::selectDir(tmp, dir_buf_abs, dir_window);
 	
 	// If "Cancel" was selected, don't do anything.
 	if (new_dir.empty())
@@ -533,8 +538,12 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	if (new_dir.at(new_dir.length() - 1) != GSFT_DIR_SEP_CHR)
 		new_dir += GSFT_DIR_SEP_CHR;
 	
+	// Convert the new directory to a relative pathname, if possible.
+	gsft_file_abs_to_rel(new_dir.c_str(), PathNames.Gens_EXE_Path,
+			     dir_buf, sizeof(dir_buf));
+	
 	// Set the new directory.
-	SetWindowText(dir_widget->txt, new_dir.c_str());
+	SetWindowText(dir_widget->txt, dir_buf);
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, true);
