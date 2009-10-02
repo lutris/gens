@@ -408,6 +408,15 @@ static void dir_window_save(void)
 				}
 			}
 			
+			// Check if the beginning of the directory is ".\\".
+			if (dir_buf[0] == '.' && dir_buf[1] == GENS_DIR_SEPARATOR_CHR)
+			{
+				// Relative pathname. Convert to full pathname.
+				string tmp_path = string(PathNames.Gens_EXE_Path) + string(&dir_buf[2]);
+				strncpy(dir_buf, tmp_path.c_str(), sizeof(dir_buf));
+				dir_buf[sizeof(dir_buf)-1] = 0x00;
+			}
+			
 			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
 			if (dirIter == PluginMgr::tblDirectories.end())
 				continue;
