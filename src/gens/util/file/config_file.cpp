@@ -96,6 +96,9 @@
 using std::deque;
 using std::list;
 
+// libgsft includes.
+#include "libgsft/gsft_file.h"
+
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -135,13 +138,28 @@ int Config::save(const string& filename)
 	     iter != PluginMgr::lstDirectories.end(); iter++)
 	{
 		char dir_buf[GENS_PATH_MAX];
+#ifdef GENS_OS_WIN32
+		char dir_buf_rel[GENS_PATH_MAX];
+#endif
 		
 		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
 		buf[sizeof(buf)-1] = 0x00;
 		
+		// Get the directory from the plugin.
 		(*iter).get((*iter).id, dir_buf, sizeof(dir_buf));
 		
+#ifdef GENS_OS_WIN32
+		// Convert the directory from an absolute pathname to a
+		// relative pathname, if possible.
+		gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
+				     dir_buf_rel, sizeof(dir_buf_rel));
+		
+		// Save the setting.
+		cfg.writeString("Directories", buf, dir_buf_rel);
+#else
+		// Save the setting.
 		cfg.writeString("Directories", buf, dir_buf);
+#endif		
 	}
 	
 	// Genesis firmware.
@@ -402,6 +420,8 @@ int Config::saveAs(void)
  */
 int Config::load(const string& filename, void* gameActive)
 {
+	char buf[256];
+	
 #ifdef GENS_OS_WIN32
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
@@ -423,14 +443,26 @@ int Config::load(const string& filename, void* gameActive)
 	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 	     iter != PluginMgr::lstDirectories.end(); iter++)
 	{
-		char buf[256];
+#ifdef GENS_OS_WIN32
+		char dir_buf_abs[GENS_PATH_MAX];
+#endif
 		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
 		buf[sizeof(buf)-1] = 0x00;
 		
 		string dir_buf = cfg.getString("Directories", buf, "");
 		if (!dir_buf.empty())
 		{
+#ifdef GENS_OS_WIN32
+			// If the pathname is relative, convert it to absolute.
+			gsft_file_rel_to_abs(dir_buf.c_str(), PathNames.Gens_EXE_Path,
+					     dir_buf_abs, sizeof(dir_buf_abs));
+			
+			// Set the plugin directory.
+			(*iter).set((*iter).id, dir_buf_abs);
+#else
+			// Set the plugin directory.
 			(*iter).set((*iter).id, dir_buf.c_str());
+#endif
 		}
 	}
 	
@@ -452,7 +484,6 @@ int Config::load(const string& filename, void* gameActive)
 	ROM::Recent_ROM_t recentROM;
 	string tmpFilename;
 	
-	char buf[256];
 	for (int romNum = 1; romNum <= 9; romNum++)
 	{
 		sprintf(buf, "ROM %d", romNum);
