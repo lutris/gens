@@ -109,9 +109,6 @@ int fast_forward = 0;
 
 POINT Window_Pos;
 
-// Stupid temporary string needed for some stuff.
-char Str_Tmp[1024];
-
 char **language_name = NULL;
 int Full_Screen = 0;
 int Resolution = 1;

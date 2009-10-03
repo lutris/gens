@@ -163,9 +163,6 @@ extern char **language_name;
 extern unsigned char Keys[];
 extern unsigned char joystate[];
 
-// Stupid temporary string needed for some stuff.
-extern char Str_Tmp[GENS_PATH_MAX];
-
 int Change_68K_Type(int hWnd, int Num, int Reset_SND);
 //extern void Read_To_68K_Space(int adr);
 
