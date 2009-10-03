@@ -193,12 +193,11 @@ int Savestate::LoadState(const string& filename)
 	if (fread(buf, 1, len, f))
 	{
 		// Verify that the savestate is in GSX format.
-		static const unsigned char gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
+		static const uint8_t gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
 		if (memcmp(&buf[0], &gsxHeader[0], sizeof(gsxHeader)))
 		{
 			// Header does not match GSX.
-			sprintf(Str_Tmp, "Error: State %d is not in GSX format.", Current_State);
-			vdraw_text_write(Str_Tmp, 2000);
+			vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
 			fclose(f);
 			return 0;
 		}
@@ -228,8 +227,7 @@ int Savestate::LoadState(const string& filename)
 		CRam_Flag = 1;
 		VRam_Flag = 1;
 		
-		sprintf(Str_Tmp, "STATE %d LOADED", Current_State);
-		vdraw_text_write(Str_Tmp, 2000);
+		vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
 	}
 	
 	fclose(f);
@@ -288,8 +286,7 @@ int Savestate::SaveState(const string& filename)
 	fwrite(State_Buffer, 1, len, f);
 	fclose(f);
 	
-	sprintf(Str_Tmp, "STATE %d SAVED", Current_State);
-	vdraw_text_write(Str_Tmp, 2000);
+	vdraw_text_printf(2000, "STATE %d SAVED", Current_State);
 	
 	return 1;
 }
