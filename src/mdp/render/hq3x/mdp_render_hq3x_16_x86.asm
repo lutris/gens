@@ -486,32 +486,15 @@ loc_calcPitchDiff	equ -4
 	mov	dword [prevline], 0
 	mov	dword [nextline], ebx
 	
-%macro DIV_BY_6 1
-	; Optimized Division by Constant from http://www.agner.org/optimize/optimizing_assembly.pdf
-	; Dividend: %1 -> eax
-	; Divisor:  edx
-	; Quotient: edx
-	mov	eax, %1
-	mov	edx, 0xAAAAAAAB
-	mul	edx
-	shr	edx, 2
-%endmacro
-	
-%macro MUL_BY_6 2
-	; Optimized Multiplication by 6 [written by David Korth]
-	; %1 == register with value to multiply by 6
-	; %2 == temporary register
-	add	%1, %1
-	mov	%2, %1
-	add	%1, %1
-	add	%1, %2
-%endmacro
-	
 	; MDP: Calculate the difference between the pitch and the source width.
-	DIV_BY_6	[ebp + arg_destPitch]
-	sub		edx, [ebp + arg_width]
-	MUL_BY_6	edx, eax
-	mov		[ebp + loc_calcPitchDiff], edx
+	; Subtract width*6 from the destination pitch to get the difference.
+	mov	eax, [ebp + arg_width]
+	mov	edx, [ebp + arg_destPitch]
+	add	eax, eax		; %eax == width*2
+	add	eax, [ebp + arg_width]	; %eax == width*3
+	add	eax, eax		; %eax == width*6
+	sub	edx, eax		; %edx == destPitch - (width*6)
+	mov	[ebp + loc_calcPitchDiff], edx
 	
 	; Get the height.
 	mov	edx, [ebp + arg_height]
