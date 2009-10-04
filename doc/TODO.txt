@@ -11,8 +11,6 @@ Release 7:
 - [Win32] Disable the "Apply" button on the "General Options" window if nothing has been changed.
 - [GTK+] Consider setting the event box's background color to match the border color.
 - Investigate Gens Rerecording commits r250, r252.
-- [GTK+] Load "Show Menu Bar" setting at startup to prevent menu bar screwiness.
-  - Window shows up with no menu bar initially, then the menu bar is added.
 - [Win32] Add a configuration option to disable ASPI support. (Win9x has issues occasionally.)
 - Finish the Gens/GS manual.
 
