@@ -10,7 +10,6 @@ Release 7:
 - Error handling in plugins.
 - Decrease PWM volume. Chilly Willy's PWM scaling patch made it too loud.
 - Change vdraw_scale to unsigned int?
-- [Win32] Trim relative plugin directory names.
 - [Win32] Disable the "Apply" button on the "General Options" window if nothing has been changed.
 - [GTK+] Consider setting the event box's background color to match the border color.
 - Investigate Gens Rerecording commits r250, r252.
@@ -41,11 +40,11 @@ Release 7.1:
 - Z80 RESET should force YM2612 to hold RESET. (i.e. don't accept writes when Z80 is in RESET)
 - Allow selecting renderers on the command line. (regression from m6)
   - Set a variable in Gens_StartupInfo_t?
+- [Win32] Trim pathnames for all files and directories located in the Gens directory.
 
 TODO for later:
 - [Win32] Improve DirectDraw border color drawing, especially when the window
   is a different aspect ratio than 4:3.
-- [Win32] Use DirectDraw 7's built-in color conversion. (See AamirM's sample code.)
 - Re-add v5 32X savestate load support.
   - Rewrite all GSX savestate functions to use structs.
 - Implement proper TMSS support using the !CartCE register ($A14101, bit 0)
