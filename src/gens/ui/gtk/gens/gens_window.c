@@ -186,6 +186,7 @@ void gens_window_create_menubar(void)
 	{
 		// Create a menu bar.
 		gens_menu_bar = gtk_menu_bar_new();
+		gtk_widget_show(gens_menu_bar);
 		gtk_box_pack_start(GTK_BOX(gens_vbox_main), gens_menu_bar, FALSE, FALSE, 0);
 	}
 	else

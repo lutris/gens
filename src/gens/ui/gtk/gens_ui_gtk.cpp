@@ -198,9 +198,6 @@ void GensUI::setWindowVisibility(const bool visibility)
 		gtk_widget_show(gens_window);
 	else
 		gtk_widget_hide(gens_window);
-	
-	// Update the menu bar's visibility.
-	Sync_Gens_Window_MenuBarVisibility();
 }
 
 

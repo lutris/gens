@@ -170,6 +170,12 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
+	// Create the menu bar.
+	gens_window_create_menubar();
+	
+	// Update the UI.
+	GensUI::update();
+	
 	// Initialize the video backend.
 	if ((int)vdraw_cur_backend_id < 0)
 	{
@@ -186,14 +192,8 @@ int main(int argc, char *argv[])
 	check_startup_mode(startup);
 	free(startup);
 	
-	// Update the UI.
-	GensUI::update();
-	
 	// Reset the renderer.
 	vdraw_reset_renderer(true);
-	
-	// Create the menu bar.
-	gens_window_create_menubar();
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

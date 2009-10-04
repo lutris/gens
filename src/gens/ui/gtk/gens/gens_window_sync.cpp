@@ -107,26 +107,6 @@ void Sync_Gens_Window(void)
 	Sync_Gens_Window_SoundMenu();
 	Sync_Gens_Window_OptionsMenu();
 	Sync_Gens_Window_PluginsMenu();
-	Sync_Gens_Window_MenuBarVisibility();
-}
-
-
-/**
- * Sync_Gens_Window_MenuBarVisibility(): Synchronize the menu bar's visibility.
- */
-void Sync_Gens_Window_MenuBarVisibility(void)
-{
-	if (!GTK_IS_MENU_BAR(gens_menu_bar))
-	{
-		// gens_menu_bar is not a GtkMenuBar.
-		// Don't do anything.
-		return;
-	}
-	
-	if (!vdraw_get_fullscreen() && Settings.showMenuBar)
-		gtk_widget_show(gens_menu_bar);
-	else
-		gtk_widget_hide(gens_menu_bar);
 }
 
 
