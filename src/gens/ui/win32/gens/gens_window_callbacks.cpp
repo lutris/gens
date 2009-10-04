@@ -293,6 +293,8 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			else
 			{
 				Settings.Paused = 1;
+				if (ice == 2)
+					ice = 3;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
@@ -306,6 +308,8 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			else
 			{
 				Settings.Paused = 1;
+				if (ice == 2)
+					ice = 3;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}

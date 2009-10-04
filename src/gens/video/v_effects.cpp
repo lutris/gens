@@ -392,8 +392,6 @@ void veffect_pause_tint(void)
 			T_veffect_pause_tint<uint16_t, MD_Screen,
 					     (uint16_t)0x7C00, (uint16_t)0x03E0, (uint16_t)0x001F,
 					     10, 5, 0>();
+			break;
 	}
-	
-	if (ice == 2)
-		ice = 3;
 }

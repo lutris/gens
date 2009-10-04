@@ -142,6 +142,8 @@ void input_sdl_event_key_down(int key)
 			else
 			{
 				Settings.Paused = 1;
+				if (ice == 2)
+					ice = 3;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
@@ -155,6 +157,8 @@ void input_sdl_event_key_down(int key)
 			else
 			{
 				Settings.Paused = 1;
+				if (ice == 2)
+					ice = 3;
 				//Pause_Screen();
 				audio_clear_sound_buffer();
 			}
