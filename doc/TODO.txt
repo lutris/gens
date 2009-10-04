@@ -8,7 +8,6 @@ Release 7:
 - cc_window.c: Add checkboxes to the "Input Devices" listbox for filtering.
 - Error handling in plugins.
 - Decrease PWM volume. Chilly Willy's PWM scaling patch made it too loud.
-- Change vdraw_scale to unsigned int?
 - [Win32] Disable the "Apply" button on the "General Options" window if nothing has been changed.
 - [GTK+] Consider setting the event box's background color to match the border color.
 - Investigate Gens Rerecording commits r250, r252.
