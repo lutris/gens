@@ -2,7 +2,6 @@ Gens/GS TODO List
 
 Release 7:
 
-- hq3x: Broken on Win32 in some cases. (Check width division!)
 - Don't show "Zip File Selection Dialog" if:
   - A ROM is opened in Full Screen.
   - An archive has multiple files but only one has a ROM file extension.
@@ -41,6 +40,7 @@ Release 7.1:
 - Allow selecting renderers on the command line. (regression from m6)
   - Set a variable in Gens_StartupInfo_t?
 - [Win32] Trim pathnames for all files and directories located in the Gens directory.
+- [Win32] hq3x: Broken in some cases. (Check width division!)
 
 TODO for later:
 - [Win32] Improve DirectDraw border color drawing, especially when the window
