@@ -9,5 +9,8 @@ cbob_SOURCES = cbob.c
 # Hack to get CBOB to build using the BUILD compiler when
 # cross-compiling for Win32.
 # NOTE: This will only work with gcc.
-cbob$(EXEEXT):
-	$(build_alias)-gcc -o cbob$(EXEEXT) ${srcdir}/cbob.c
+cbob.o: cbob.c
+	$(build_alias)-gcc -o cbob.o -c ${srcdir}/cbob.c
+
+cbob$(EXEEXT): cbob.o
+	$(build_alias)-gcc -o cbob$(EXEEXT) cbob.o
