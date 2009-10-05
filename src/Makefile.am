@@ -3,4 +3,4 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = extlib starscream mdZ80 libgsft gens mdp
+SUBDIRS = extlib starscream mdZ80 libgsft cbob gens mdp
