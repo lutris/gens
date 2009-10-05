@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
 	in_filename_symbol[sizeof(in_filename_symbol)-1] = 0x00;
 	
 	// Convert non-alphanumeric characters to underscores.
-	for (char *n = &in_filename_symbol[0]; *n != 0x00; n++)
+	char *n;
+	for (n = &in_filename_symbol[0]; *n != 0x00; n++)
 	{
 		if (!isalnum(*n))
 			*n = '_';
