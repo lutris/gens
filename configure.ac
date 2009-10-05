@@ -757,6 +757,7 @@ AC_CONFIG_FILES([
 	src/gens/plugins/render/Makefile
 	src/gens/plugins/render/double/Makefile
 	src/gens/plugins/render/normal/Makefile
+	src/gens/fw/Makefile
 	src/mdp/Makefile
 	src/mdp/mdp_test/Makefile
 	src/mdp/misc/Makefile

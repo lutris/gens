@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-SUBDIRS = plugins
+SUBDIRS = plugins fw
 
 if GENS_X86_ASM
 gens_x86_asm_o =
@@ -338,6 +338,7 @@ gens_LDADD = \
 		$(top_builddir)/src/starscream/libstarscream.la \
 		$(top_builddir)/src/mdZ80/libmdZ80.la \
 		$(top_builddir)/src/libgsft/libgsft.la \
+		fw/libgens_fw.la \
 		-lm @RT_LIBS@ @ICONV_LIBS@
 
 if GENS_MP3
@@ -403,9 +404,6 @@ CLEANFILES = ${ASMFILES}
 gens_CFLAGS	= $(AM_CFLAGS)
 gens_CXXFLAGS	= $(AM_CXXFLAGS)
 gens_LDFLAGS	= $(AM_LDFLAGS)
-
-# Binary files.
-include $(srcdir)/Makefile.cbob.inc.am
 
 # OS-specific includes
 
