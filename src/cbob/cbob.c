@@ -171,4 +171,7 @@ int main(int argc, char *argv[])
 	
 	// End the CBOB array.
 	fprintf(f_out, "};\n");
+	
+	// Success!
+	return EXIT_SUCCESS;
 }
