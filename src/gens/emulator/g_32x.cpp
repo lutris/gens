@@ -95,6 +95,7 @@ int Init_32X(ROM_t* MD_ROM)
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_MSH2;
 	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
+		// External firmware file opened.
 		fread(&_32X_MSH2_Rom[0], 1, sizeof(_32X_MSH2_Rom), f);
 		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(_32X_MSH2_Rom));
 		fclose(f);
@@ -111,6 +112,7 @@ int Init_32X(ROM_t* MD_ROM)
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_SSH2;
 	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
+		// External firmware file opened.
 		fread(&_32X_SSH2_Rom[0], 1, sizeof(_32X_SSH2_Rom), f);
 		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(_32X_SSH2_Rom));
 		fclose(f);
