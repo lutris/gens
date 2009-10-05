@@ -34,7 +34,6 @@
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 #include "util/gfx/imageutil.hpp"
-#include "gens_core/misc/misc.h"
 #include "emulator/md_palette.hpp"
 #include "emulator/g_update.hpp"
 

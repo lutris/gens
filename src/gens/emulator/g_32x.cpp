@@ -26,12 +26,10 @@
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 #include "gens_core/sound/pwm.h"
-#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
-#include "gens_core/misc/misc.h"
 #include "libgsft/gsft_byteswap.h"
 
 #include "ui/gens_ui.hpp"

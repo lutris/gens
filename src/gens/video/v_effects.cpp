@@ -38,7 +38,6 @@
 #endif
 
 #include "v_effects.hpp"
-#include "gens_core/misc/misc.h"
 #include "gens_core/gfx/fastblur.hpp"
 
 #include "emulator/g_main.hpp"

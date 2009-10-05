@@ -36,12 +36,10 @@
 #include "gens_core/sound/pcm.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/cd_file.h"
-#include "debugger/debugger.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
-#include "gens_core/misc/misc.h"
 #include "libgsft/gsft_byteswap.h"
 
 #include "ui/gens_ui.hpp"

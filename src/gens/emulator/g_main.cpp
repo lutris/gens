@@ -42,7 +42,6 @@
 #include "g_md.hpp"
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
-#include "gens_core/misc/misc.h"
 #include "gens_core/misc/cpuflags.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"

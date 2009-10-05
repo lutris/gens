@@ -63,8 +63,6 @@ using std::deque;
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
-#include "gens_core/misc/misc.h"
-
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
 #include "libgsft/gsft_file.h"

@@ -60,7 +60,6 @@ using std::list;
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 
-#include "gens_core/misc/misc.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "util/file/save.hpp"
 

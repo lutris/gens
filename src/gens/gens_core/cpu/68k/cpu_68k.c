@@ -10,7 +10,6 @@
 
 #include "util/file/save.hpp"
 #include "gens_core/sound/ym2612.hpp"
-#include "gens_core/misc/misc.h"
 #include "gens_core/gfx/gfx_cd.h"
 
 #include "gens_core/io/io.h"

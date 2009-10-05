@@ -57,7 +57,6 @@
 #include "gens_core/sound/pwm.h"
 #include "util/gfx/imageutil.hpp"
 #include "gens_core/io/io.h"
-#include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
 
 // CD-ROM drive access
