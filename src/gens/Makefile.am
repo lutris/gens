@@ -404,6 +404,9 @@ gens_CFLAGS	= $(AM_CFLAGS)
 gens_CXXFLAGS	= $(AM_CXXFLAGS)
 gens_LDFLAGS	= $(AM_LDFLAGS)
 
+# Binary files.
+include $(srcdir)/Makefile.cbob.inc.am
+
 # OS-specific includes
 
 if GENS_OS_UNIX
