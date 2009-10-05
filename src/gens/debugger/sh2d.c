@@ -12,22 +12,27 @@
 
 #define SH2D_VERSION "0.2"
 
-#define ZERO_F  0	/* 0 format */
-#define N_F     1	/* n format */
-#define M_F     2	/* m format */
-#define NM_F    3	/* nm format */
-#define MD_F    4	/* md format */
-#define ND4_F   5	/* nd4 format */
-#define NMD_F   6	/* nmd format */
-#define D_F     7	/* d format */
-#define D12_F   8	/* d12 format */
-#define ND8_F   9	/* nd8 format */
-#define I_F     10	/* i format */
-#define NI_F    11	/* ni format */
+typedef enum _SH2D_INST_FMT
+{
+	ZERO_F	= 0,	/* 0 format */
+	N_F     = 1,	/* n format */
+	M_F     = 2,	/* m format */
+	NM_F    = 3,	/* nm format */
+	MD_F    = 4,	/* md format */
+	ND4_F   = 5,	/* nd4 format */
+	NMD_F   = 6,	/* nmd format */
+	D_F     = 7,	/* d format */
+	D12_F   = 8,	/* d12 format */
+	ND8_F   = 9,	/* nd8 format */
+	I_F     = 10,	/* i format */
+	NI_F    = 11,	/* ni format */
+	
+	SH2D_INS_FMT_MAX
+} SH2D_INST_FMT;
 
 typedef struct
 {
-	int format;
+	SH2D_INST_FMT format;
 	const char* mnem;
 	unsigned short mask;	/* mask used to obtain opcode bits */
 	unsigned short bits;	/* opcode bits */
@@ -301,7 +306,7 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 		return;
 	}
 	
-	// Invalid Opcode
+	// Invalid Opcode.
 	strcpy(cdeb, s_addr);
 	strcat(cdeb, InvalidOpcode);
 }
