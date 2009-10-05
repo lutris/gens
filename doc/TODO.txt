@@ -38,6 +38,8 @@ Release 7.1:
   - Set a variable in Gens_StartupInfo_t?
 - [Win32] Trim pathnames for all files and directories located in the Gens directory.
 - [Win32] hq3x: Broken in some cases. (Check width division!)
+- Reports of slowdown on fglrx 9.10/8.660 (Ubuntu 9.10 beta) with an rv710 (RadeonHD 4350) [dmb in @retro]
+  - Check with Ubuntu 8.04 and fglrx on rv530 (FireGL V5200)
 
 TODO for later:
 - [Win32] Improve DirectDraw border color drawing, especially when the window
