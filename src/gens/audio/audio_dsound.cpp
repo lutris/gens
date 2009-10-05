@@ -36,7 +36,6 @@
 #endif /* GENS_X86_ASM */
 
 // Gens includes.
-#include "gens_core/mem/mem_m68k.h"
 #include "gens/gens_window.h"
 
 // CPU flags.
@@ -89,29 +88,12 @@ int audio_dsound_init(void)
 {
 	HRESULT rval;
 	WAVEFORMATEX wfx;
-	int videoLines;
 	
 	if (audio_initialized)
 		return -1;
 	
 	// Make sure sound is shut down first.
 	audio_dsound_end();
-	
-	// Calculate the segment length.
-	audio_calc_segment_length();
-	
-	videoLines = (CPU_Mode ? 312 : 262);
-	for (int i = 0; i < videoLines; i++)
-	{
-		Sound_Extrapol[i][0] = ((audio_seg_length * i) / videoLines);
-		Sound_Extrapol[i][1] = (((audio_seg_length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
-	}
-	for (int i = 0; i < audio_seg_length; i++)
-		Sound_Interpol[i] = ((videoLines * i) / audio_seg_length);
-	
-	// Clear the segment buffers.
-	memset(Seg_L, 0x00, sizeof(Seg_L));
-	memset(Seg_R, 0x00, sizeof(Seg_L));
 	
 	// Attempt to initialize DirectSound.
 	rval = DirectSoundCreate(NULL, &lpDS, NULL);

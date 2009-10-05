@@ -117,6 +117,24 @@ int audio_init(AUDIO_BACKEND backend)
 	audio_wp_inc = audio_cur_backend->wp_inc;
 #endif /* GENS_OS_WIN32 */
 	
+	// Calculate the segment length.
+	audio_calc_segment_length();
+	
+	// Build the sound extrapolation and interpolation tables.
+	int i;
+	int videoLines = (CPU_Mode ? 312 : 262);
+	for (i = 0; i < videoLines; i++)
+	{
+		Sound_Extrapol[i][0] = ((audio_seg_length * i) / videoLines);
+		Sound_Extrapol[i][1] = (((audio_seg_length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
+	}
+	for (i = 0; i < audio_seg_length; i++)
+		Sound_Interpol[i] = ((videoLines * i) / audio_seg_length);
+	
+	// Clear the segment buffers.
+	memset(Seg_L, 0x00, sizeof(Seg_L));
+	memset(Seg_R, 0x00, sizeof(Seg_R));
+	
 	// Initialize the backend.
 	if (audio_cur_backend->init)
 		return audio_cur_backend->init();

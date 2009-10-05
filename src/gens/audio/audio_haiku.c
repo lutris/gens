@@ -34,7 +34,6 @@
 
 // Gens includes.
 #include "emulator/g_main.hpp"
-#include "gens_core/mem/mem_m68k.h"
 
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"

@@ -35,7 +35,6 @@
 
 // Gens includes.
 #include "emulator/g_main.hpp"
-#include "gens_core/mem/mem_m68k.h"
 
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"
@@ -88,23 +87,6 @@ static int audio_sdl_init(void)
 	
 	// Make sure sound is shut down first.
 	audio_sdl_end();
-	
-	// Calculate the segment length.
-	audio_calc_segment_length();
-	
-	int i;
-	int videoLines = (CPU_Mode ? 312 : 262);
-	for (i = 0; i < videoLines; i++)
-	{
-		Sound_Extrapol[i][0] = ((audio_seg_length * i) / videoLines);
-		Sound_Extrapol[i][1] = (((audio_seg_length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
-	}
-	for (i = 0; i < audio_seg_length; i++)
-		Sound_Interpol[i] = ((videoLines * i) / audio_seg_length);
-	
-	// Clear the segment buffers.
-	memset(Seg_L, 0x00, sizeof(Seg_L));
-	memset(Seg_R, 0x00, sizeof(Seg_R));
 	
 	// Attempt to initialize SDL audio.
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
