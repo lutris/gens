@@ -22,7 +22,7 @@ AM_INIT_AUTOMAKE([1.10])
 # Disable the Fortran check.
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 
-# Checks for programs.
+# Check for programs.
 AM_PROG_AS
 AC_PROG_CXX
 AC_PROG_AWK
@@ -35,6 +35,9 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_LIBTOOL
+
+# Enable C99.
+AC_PROG_CC_C99
 
 # Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
 if test "$CFLAGS" = "-g -O2"; then
@@ -138,11 +141,6 @@ AM_CONDITIONAL([GENS_OBJ_ELF32], [test x$obj_format = xelf32])
 AM_CONDITIONAL([GENS_OBJ_ELF64], [test x$obj_format = xelf64])
 AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 
-# Enable C99 mode.
-# (Disabled on Win32 due to some weird issues.)
-if test x$os != xwin32; then
-	AC_PROG_CC_C99
-fi
 # Debugging symbols and warnings.
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
