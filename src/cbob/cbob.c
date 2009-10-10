@@ -46,8 +46,7 @@ static void show_usage(char *filename)
 	       "Copyright 2009 by David Korth.\n\n"
 	       "This program is licensed under the GNU General Public License v2.\n"
 	       "See http://www.gnu.org/licenses/gpl-2.0.html for more information.\n\n"
-	       "Usage: %s input.bin [output.c]\n"
-	       "If no output file is specified, input.c will be used.\n",
+	       "Usage: %s input.bin output.c\n",
 	       CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR,
 	       CBOB_VERSION_REVISION, filename);
 }
@@ -55,7 +54,7 @@ static void show_usage(char *filename)
 int main(int argc, char *argv[])
 {
 	// TODO: getopt()
-	if (argc < 2)
+	if (argc < 3)
 	{
 		show_usage(argv[0]);
 		return EXIT_FAILURE;
@@ -98,31 +97,16 @@ int main(int argc, char *argv[])
 			*n = '_';
 	}
 	
-	// Determine the output filename.
-	char *out_filename;
-	int out_filename_gen = 0;
-	if (argc < 3)
-	{
-		// No output file specified. Create one.
-		// TODO
-		fprintf(stderr, "TODO: Create output filename.\n");
-		return EXIT_FAILURE;
-	}
-	else
-	{
-		// Output file specified.
-		out_filename = argv[2];
-	}
+	// Get the output filenames.
+	const char *out_filename_c = argv[2];
 	
-	// Open the output file.
-	FILE *f_out = fopen(out_filename, "wb");
+	// Open the C output file.
+	FILE *f_out = fopen(out_filename_c, "wb");
 	if (!f_out)
 	{
 		fprintf(stderr, "Error: Could not open output file '%s'. Error %d: %s.\n",
-			out_filename, errno, strerror(errno));
+			out_filename_c, errno, strerror(errno));
 		fclose(f_in);
-		if (out_filename_gen)
-			free(out_filename);
 		return EXIT_FAILURE;
 	}
 	
