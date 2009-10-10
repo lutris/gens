@@ -65,6 +65,9 @@ Bug Fixes:
   "Sonic CD", but it did affect "Heart of the Alien". Thanks to tetsuo
   from #retro for helping to diagnose and solve this problem.
 
+* [SDL] Fixed a bug in Controller Configuration where POV hats weren't read
+  properly. This bug was reported by dmb in #retro.
+
 ================================================================
 
 Changes from r7_pre3 to r7_pre4 [PREVIEW RELEASE]:
