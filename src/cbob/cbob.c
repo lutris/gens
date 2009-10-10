@@ -163,16 +163,16 @@ int main(int argc, char *argv[])
 	int write_fsize;
 	for (write_fsize = in_fsize; write_fsize > 0; write_fsize -= 16)
 	{
-		size_t n = fread(data, sizeof(data[0]), sizeof(data), f_in);
-		if (n == 0)
+		size_t sz = fread(data, sizeof(data[0]), sizeof(data), f_in);
+		if (sz == 0)
 			break;
 		
 		fprintf(f_out_c, "\t");
 		unsigned char *dataptr = &data[0];
-		for (; n != 0; n--)
+		for (; sz != 0; sz--)
 		{
 			fprintf(f_out_c, "0x%02X", *dataptr++);
-			if (n == 1)
+			if (sz == 1)
 			{
 				if (write_fsize > 16)
 					fprintf(f_out_c, ",");
