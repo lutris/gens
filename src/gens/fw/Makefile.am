@@ -18,6 +18,8 @@ bios32xm.bin.c:
 bios32xs.bin.c:
 	$(CBOB) $(srcdir)/bios32xs.bin $@
 
+CLEANFILES = bios32xg.bin.c bios32xm.bin.c bios32xs.bin.c
+
 libgens_fw_la_SOURCES = \
 		bios32xg.bin.c \
 		bios32xm.bin.c \
