@@ -271,7 +271,6 @@ uint16_t input_sdl_get_key(void)
 {
 	// TODO: Optimize this function.
 	GdkEvent *event;
-	SDL_Event sdl_event;
 	
 	// Update the UI.
 	GensUI_update();
@@ -334,12 +333,9 @@ uint16_t input_sdl_get_key(void)
 					else if (cur_joy->povhats[i] & SDL_HAT_LEFT)
 						povHatDirection = INPUT_JOYSTICK_POVHAT_LEFT;
 					else
-						break;
+						continue;
 					
-					return INPUT_GETKEY_POVHAT_DIRECTION(
-							sdl_event.jhat.which,
-							sdl_event.jhat.hat,
-							povHatDirection);
+					return INPUT_GETKEY_POVHAT_DIRECTION(js, i, povHatDirection);
 				}
 			}
 		}
