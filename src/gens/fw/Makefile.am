@@ -13,11 +13,11 @@ libgens_fw_la_LDFLAGS	= $(AM_LDFLAGS) -static
 # TODO: Write macros to make this easier to maintain.
 
 # C files.
-bios32xg.bin.c:
+bios32xg.bin.c: $(CBOB)
 	$(CBOB) $(srcdir)/bios32xg.bin $@
-bios32xm.bin.c:
+bios32xm.bin.c: $(CBOB)
 	$(CBOB) $(srcdir)/bios32xm.bin $@
-bios32xs.bin.c:
+bios32xs.bin.c: $(CBOB)
 	$(CBOB) $(srcdir)/bios32xs.bin $@
 
 # H files.
@@ -34,5 +34,3 @@ libgens_fw_la_SOURCES = \
 		bios32xg.bin.c \
 		bios32xm.bin.c \
 		bios32xs.bin.c
-
-libgens_fw_la_DEPENDENCIES = $(CBOB)
