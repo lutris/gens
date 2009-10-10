@@ -75,9 +75,9 @@ Bug Fixes:
 Miscellaneous:
 
 * A new utility called "CBOB" (C Binary Object Builder) is used to convert the
-  reverse-engineered Sega 32X firmware images into C arrays at build time. This
-  eliminates the need to have a pre-converted source code file, plus it makes
-  it easier to update the included firmware images (and add more built-in
+  reverse-engineered Sega 32X firmware images into C arrays at compile time.
+  This eliminates the need to have a pre-converted source code file, plus it
+  makes it easier to update the included firmware images (and add more built-in
   binaries) at a later date.
 
 ================================================================
