@@ -43,12 +43,13 @@
 static void show_usage(char *filename)
 {
 	fprintf(stderr, "C Binary Object Builder v%d.%d.%d\n"
-	       "Copyright 2009 by David Korth.\n\n"
-	       "This program is licensed under the GNU General Public License v2.\n"
-	       "See http://www.gnu.org/licenses/gpl-2.0.html for more information.\n\n"
-	       "Usage: %s input.bin output.c\n",
-	       CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR,
-	       CBOB_VERSION_REVISION, filename);
+		"Copyright 2009 by David Korth.\n\n"
+		"This program is licensed under the GNU General Public License v2.\n"
+		"See http://www.gnu.org/licenses/gpl-2.0.html for more information.\n\n"
+		"Usage: %s input.bin output.c\n"
+		"Note: output.h is automatically generated.\n",
+		CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR,
+		CBOB_VERSION_REVISION, filename);
 }
 
 int main(int argc, char *argv[])
@@ -100,13 +101,41 @@ int main(int argc, char *argv[])
 	// Get the output filenames.
 	const char *out_filename_c = argv[2];
 	
-	// Open the C output file.
-	FILE *f_out = fopen(out_filename_c, "wb");
-	if (!f_out)
+	char out_filename_h[PATH_MAX + 16];
+	strncpy(out_filename_h, out_filename_c, sizeof(out_filename_h));
+	out_filename_h[sizeof(out_filename_h)-1] = 0x00;
+	
+	// Change the H output filename's extension.
+	char *h_extpos = strrchr(out_filename_h, '.');
+	const char *h_slashpos = strrchr(out_filename_h, DIR_SEP_CHR);
+	if (h_extpos && (!h_slashpos || (h_slashpos < h_extpos)))
 	{
-		fprintf(stderr, "Error: Could not open output file '%s'. Error %d: %s.\n",
+		// Extension found. Null it out.
+		*h_extpos = 0x00;
+	}
+	
+	// Concatenate ".h".
+	strcat(out_filename_h, ".h");
+	printf("Filename: %s\n", out_filename_h);
+	
+	// Open the C output file.
+	FILE *f_out_c = fopen(out_filename_c, "wb");
+	if (!f_out_c)
+	{
+		fprintf(stderr, "Error: Could not open C output file '%s'. Error %d: %s.\n",
 			out_filename_c, errno, strerror(errno));
 		fclose(f_in);
+		return EXIT_FAILURE;
+	}
+	
+	// Open the H output file.
+	FILE *f_out_h = fopen(out_filename_h, "wb");
+	if (!f_out_h)
+	{
+		fprintf(stderr, "Error: Could not open H output file '%s'. Error %d: %s.\n",
+			out_filename_h, errno, strerror(errno));
+		fclose(f_in);
+		fclose(f_out_c);
 		return EXIT_FAILURE;
 	}
 	
@@ -115,46 +144,77 @@ int main(int argc, char *argv[])
 	long in_fsize = ftell(f_in);
 	fseek(f_in, 0, SEEK_SET);
 	
+	/** Generate the C file. **/
+	
 	// Write the CBOB header.
-	// TODO: Get the filename portion of the input file.
-	fprintf(f_out,
+	fprintf(f_out_c,
 		"/**\n"
 		" * This file was generated using the C Binary Object Builder v%d.%d.%d.\n"
+		" * CBOB Source Code File.\n"
 		" *\n"
 		" * Source file: %s\n"
 		" */\n\n", CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR, CBOB_VERSION_REVISION, in_filename);
 	
 	// Start the CBOB array.
-	fprintf(f_out, "const unsigned char cbob_%s[%ld] =\n{\n", in_filename_symbol, in_fsize);
+	fprintf(f_out_c, "const unsigned char cbob_%s[%ld] =\n{\n", in_filename_symbol, in_fsize);
 	
 	// Write the CBOB data.
 	unsigned char data[16];
-	for (; in_fsize > 0; in_fsize -= 16)
+	int write_fsize;
+	for (write_fsize = in_fsize; write_fsize > 0; write_fsize -= 16)
 	{
 		size_t n = fread(data, sizeof(data[0]), sizeof(data), f_in);
 		if (n == 0)
 			break;
 		
-		fprintf(f_out, "\t");
+		fprintf(f_out_c, "\t");
 		unsigned char *dataptr = &data[0];
 		for (; n != 0; n--)
 		{
-			fprintf(f_out, "0x%02X", *dataptr++);
+			fprintf(f_out_c, "0x%02X", *dataptr++);
 			if (n == 1)
 			{
-				if (in_fsize > 16)
-					fprintf(f_out, ",");
-				fprintf(f_out, "\n");
+				if (write_fsize > 16)
+					fprintf(f_out_c, ",");
+				fprintf(f_out_c, "\n");
 			}
 			else
 			{
-				fprintf(f_out, ", ");
+				fprintf(f_out_c, ", ");
 			}
 		}
 	}
 	
 	// End the CBOB array.
-	fprintf(f_out, "};\n");
+	fprintf(f_out_c, "};\n");
+	
+	// Close the C and input files.
+	fclose(f_out_c);
+	fclose(f_in);
+	
+	/** Generate the H file. **/
+	
+	// Write the CBOB header.
+	fprintf(f_out_h,
+		"/**\n"
+		" * This file was generated using the C Binary Object Builder v%d.%d.%d.\n"
+		" * CBOB Header File.\n"
+		" *\n"
+		" * Source file: %s\n"
+		" */\n\n", CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR, CBOB_VERSION_REVISION, in_filename);
+	
+	// Declare the CBOB array.
+	fprintf(f_out_h,
+		"#ifdef __cplusplus\n"
+		"extern \"C\" {\n"
+		"#endif\n\n"
+		"extern const unsigned char cbob_%s[%ld];\n\n"
+		"#ifdef __cplusplus\n"
+		"}\n"
+		"#endif\n", in_filename_symbol, in_fsize);
+	
+	// Close the H file.
+	fclose(f_out_h);
 	
 	// Success!
 	return EXIT_SUCCESS;
