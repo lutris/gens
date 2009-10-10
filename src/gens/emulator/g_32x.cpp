@@ -44,7 +44,9 @@
 #include "gens_core/vdp/vdp_32x_32bit.h"
 
 // Reverse-engineered 32X firmware.
-#include "fw_32x.h"
+#include "fw/bios32xg.bin.h"
+#include "fw/bios32xm.bin.h"
+#include "fw/bios32xs.bin.h"
 
 
 #define SH2_EXEC(cycM, cycS)		\
@@ -84,8 +86,8 @@ int Init_32X(ROM_t* MD_ROM)
 	else
 	{
 		// Use the reverse-engineered firmware.
-		memcpy(&_32X_Genesis_Rom[0], &fw_re_32X_mc68000[0], sizeof(fw_re_32X_mc68000));
-		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(fw_re_32X_mc68000));
+		memcpy(&_32X_Genesis_Rom[0], &cbob_bios32xg_bin[0], sizeof(cbob_bios32xg_bin));
+		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(cbob_bios32xg_bin));
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_68K;
 	
@@ -101,8 +103,8 @@ int Init_32X(ROM_t* MD_ROM)
 	else
 	{
 		// Use the reverse-engineered firmware.
-		memcpy(&_32X_MSH2_Rom[0], &fw_re_32X_msh2[0], sizeof(fw_re_32X_msh2));
-		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(fw_re_32X_msh2));
+		memcpy(&_32X_MSH2_Rom[0], &cbob_bios32xm_bin[0], sizeof(cbob_bios32xm_bin));
+		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(cbob_bios32xm_bin));
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_MSH2;
 	
@@ -118,8 +120,8 @@ int Init_32X(ROM_t* MD_ROM)
 	else
 	{
 		// Use the reverse-engineered firmware.
-		memcpy(&_32X_SSH2_Rom[0], &fw_re_32X_ssh2[0], sizeof(fw_re_32X_ssh2));
-		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(fw_re_32X_ssh2));
+		memcpy(&_32X_SSH2_Rom[0], &cbob_bios32xs_bin[0], sizeof(cbob_bios32xs_bin));
+		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(cbob_bios32xs_bin));
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_SSH2;
 	

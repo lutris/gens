@@ -79,7 +79,6 @@ gens_SOURCES = \
 		emulator/g_update.cpp \
 		emulator/parse.cpp \
 		emulator/options.cpp \
-		emulator/fw_32x.c \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
@@ -205,7 +204,6 @@ noinst_HEADERS = \
 		emulator/g_update.hpp \
 		emulator/parse.hpp \
 		emulator/options.hpp \
-		emulator/fw_32x.h \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \
 		gens_core/cpu/sh2/sh2.h \
@@ -375,7 +373,8 @@ gens_DEPENDENCIES = \
 		${gens_mdp_static} \
 		$(top_builddir)/src/starscream/libstarscream.la \
 		$(top_builddir)/src/mdZ80/libmdZ80.la \
-		$(top_builddir)/src/libgsft/libgsft.la
+		$(top_builddir)/src/libgsft/libgsft.la \
+		fw/libgens_fw.la
 
 if GENS_MP3
 gens_DEPENDENCIES += $(top_builddir)/src/extlib/mp3_dec/libmp3_dec.la
