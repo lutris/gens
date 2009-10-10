@@ -74,8 +74,6 @@ High-Level TODO:
 - Improve the Zip File Selection Dialog
 - SSG-EG: http://www.spritesmind.net/_GenDev/forum/viewtopic.php?p=5716#5716
 - (possibly?) Use Carbon/Cocoa for menus on MacOS.
-- Write a utility to convert PNG to a static const unsigned char[].
-  - Tentative name: "C Binary Object Builder" (CBOB)
 - Add a simple OSD menu for Gens/GS SDL in fullscreen.
   - Maybe later, add a full OSD UI. (Will need to implement runtime UI switching in Gens/GS and MDP.)
 
