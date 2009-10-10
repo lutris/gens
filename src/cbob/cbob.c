@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 	// Write the CBOB header.
 	fprintf(f_out_c,
 		"/**\n"
-		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING "\n"
+		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING ".\n"
 		" * CBOB Source Code File.\n"
 		" *\n"
 		" * Source file: %s\n"
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 	// Write the CBOB header.
 	fprintf(f_out_h,
 		"/**\n"
-		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING "\n"
+		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING ".\n"
 		" * CBOB Header File.\n"
 		" *\n"
 		" * Source file: %s\n"
