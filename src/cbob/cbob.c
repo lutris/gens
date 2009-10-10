@@ -25,9 +25,9 @@
 #include <errno.h>
 
 #define CBOB_VERSION_MAJOR 0
-#define CBOB_VERSION_MINOR 0
-#define CBOB_VERSION_REVISION 1
-#define CBOB_VERSION_DEVELOPMENT
+#define CBOB_VERSION_MINOR 1
+#define CBOB_VERSION_REVISION 0
+//#define CBOB_VERSION_DEVELOPMENT
 
 #define _QUOTEME(x) #x
 #define QUOTEME(x) _QUOTEME(x)
