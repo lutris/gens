@@ -52,6 +52,8 @@ New Features:
   in windowed mode while the menu bar is hidden, right-click anywhere in the
   Gens/GS window.
 
+--------------------------------
+
 Bug Fixes:
 
 * [SDL] Fixed a controller input regression that inverted axes. This regression
@@ -67,6 +69,16 @@ Bug Fixes:
 
 * [SDL] Fixed a bug in Controller Configuration where POV hats weren't read
   properly. This bug was reported by dmb in #retro.
+
+--------------------------------
+
+Miscellaneous:
+
+* A new utility called "CBOB" (C Binary Object Builder) is used to convert the
+  reverse-engineered Sega 32X firmware images into C arrays at build time. This
+  eliminates the need to have a pre-converted source code file, plus it makes
+  it easier to update the included firmware images (and add more built-in
+  binaries) at a later date.
 
 ================================================================
 
