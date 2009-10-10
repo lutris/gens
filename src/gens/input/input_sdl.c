@@ -286,12 +286,16 @@ uint16_t input_sdl_get_key(void)
 		int js;
 		for (js = 0; js < input_sdl_num_joysticks; js++)
 		{
-			int i;
+			int i, num_items;
 			input_sdl_joystate_t *cur_joy = &input_sdl_joystate[js];
 			input_sdl_joystate_t *prev_joy = &prev_joystate[js];
 			
 			// Check buttons.
-			for (i = 0; i < INPUT_JOYSTICK_MAX_BUTTONS; i++)
+			num_items = SDL_JoystickNumButtons(input_sdl_joys[js]);
+			if (num_items > INPUT_JOYSTICK_MAX_BUTTONS)
+				num_items = INPUT_JOYSTICK_MAX_BUTTONS;
+			
+			for (i = 0; i < num_items; i++)
 			{
 				if (!prev_joy->buttons[i] && cur_joy->buttons[i])
 				{
@@ -301,7 +305,11 @@ uint16_t input_sdl_get_key(void)
 			}
 			
 			// Check axes.
-			for (i = 0; i < INPUT_JOYSTICK_MAX_AXES; i++)
+			num_items = SDL_JoystickNumAxes(input_sdl_joys[js]);
+			if (num_items > INPUT_JOYSTICK_MAX_AXES)
+				num_items = INPUT_JOYSTICK_MAX_AXES;
+			
+			for (i = 0; i < num_items; i++)
 			{
 				if (prev_joy->axes[i] == INPUT_SDL_JOYSTATE_AXIS_CENTER &&
 				    cur_joy->axes[i] != INPUT_SDL_JOYSTATE_AXIS_CENTER)
@@ -314,9 +322,12 @@ uint16_t input_sdl_get_key(void)
 				}
 			}
 			
-			// Check POV hats.
-			// NOTE: UNTESTED - Linux doesn't support POV hats.
-			for (i = 0; i < INPUT_JOYSTICK_MAX_POVHATS; i++)
+			// Check POV hats. (Needed on Ubuntu 9.04+; maybe 8.10, too.)
+			num_items = SDL_JoystickNumHats(input_sdl_joys[js]);
+			if (num_items > INPUT_JOYSTICK_MAX_POVHATS)
+				num_items = INPUT_JOYSTICK_MAX_POVHATS;
+			
+			for (i = 0; i < num_items; i++)
 			{
 				if (prev_joy->povhats[i] == SDL_HAT_CENTERED &&
 				    cur_joy->povhats[i] != SDL_HAT_CENTERED)
