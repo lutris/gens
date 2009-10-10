@@ -27,6 +27,16 @@
 #define CBOB_VERSION_MAJOR 0
 #define CBOB_VERSION_MINOR 0
 #define CBOB_VERSION_REVISION 1
+#define CBOB_VERSION_DEVELOPMENT
+
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+
+#ifndef CBOB_VERSION_DEVELOPMENT
+#define CBOB_VERSION_STRING QUOTEME(CBOB_VERSION_MAJOR) "." QUOTEME(CBOB_VERSION_MINOR) "." QUOTEME(CBOB_VERSION_REVISION)
+#else
+#define CBOB_VERSION_STRING QUOTEME(CBOB_VERSION_MAJOR) "." QUOTEME(CBOB_VERSION_MINOR) "." QUOTEME(CBOB_VERSION_REVISION) "+"
+#endif
 
 #ifdef _WIN32
 #define DIR_SEP_CHR '\\'
@@ -42,14 +52,12 @@
 
 static void show_usage(char *filename)
 {
-	fprintf(stderr, "C Binary Object Builder v%d.%d.%d\n"
+	fprintf(stderr, "C Binary Object Builder v" CBOB_VERSION_STRING "\n"
 		"Copyright 2009 by David Korth.\n\n"
 		"This program is licensed under the GNU General Public License v2.\n"
 		"See http://www.gnu.org/licenses/gpl-2.0.html for more information.\n\n"
 		"Usage: %s input.bin output.c\n"
-		"Note: output.h is automatically generated.\n",
-		CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR,
-		CBOB_VERSION_REVISION, filename);
+		"Note: output.h is automatically generated.\n", filename);
 }
 
 int main(int argc, char *argv[])
@@ -149,11 +157,11 @@ int main(int argc, char *argv[])
 	// Write the CBOB header.
 	fprintf(f_out_c,
 		"/**\n"
-		" * This file was generated using the C Binary Object Builder v%d.%d.%d.\n"
+		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING "\n"
 		" * CBOB Source Code File.\n"
 		" *\n"
 		" * Source file: %s\n"
-		" */\n\n", CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR, CBOB_VERSION_REVISION, in_filename);
+		" */\n\n", in_filename);
 	
 	// Start the CBOB array.
 	fprintf(f_out_c, "const unsigned char cbob_%s[%ld] =\n{\n", in_filename_symbol, in_fsize);
@@ -197,11 +205,11 @@ int main(int argc, char *argv[])
 	// Write the CBOB header.
 	fprintf(f_out_h,
 		"/**\n"
-		" * This file was generated using the C Binary Object Builder v%d.%d.%d.\n"
+		" * This file was generated using the C Binary Object Builder v" CBOB_VERSION_STRING "\n"
 		" * CBOB Header File.\n"
 		" *\n"
 		" * Source file: %s\n"
-		" */\n\n", CBOB_VERSION_MAJOR, CBOB_VERSION_MINOR, CBOB_VERSION_REVISION, in_filename);
+		" */\n\n", in_filename);
 	
 	// Declare the CBOB array.
 	fprintf(f_out_h,
