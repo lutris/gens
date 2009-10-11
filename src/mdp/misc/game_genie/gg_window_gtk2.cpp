@@ -279,7 +279,6 @@ void gg_window_show(void *parent)
 			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 			       NULL);
 	
-	/*
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(gg_window),
 						GG_RESPONSE_DEACTIVATE_ALL,
@@ -288,7 +287,7 @@ void gg_window_show(void *parent)
 						GTK_RESPONSE_CANCEL,
 						GTK_RESPONSE_APPLY,
 						-1);
-#endif*/
+#endif
 	
 	// Initialize the Game Genie code treeview.
 	gg_window_init();
