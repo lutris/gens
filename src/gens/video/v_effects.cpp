@@ -334,6 +334,7 @@ template<typename pixel, pixel *mdScreen,
 	 unsigned int RShift, unsigned int GShift, unsigned int BShift>
 static void T_veffect_pause_tint(void)
 {
+	// TODO: Adjust this function for RGB Color Scaling.
 	uint8_t r, g, b, nr, ng, nb;
 	uint16_t sum;
 	
