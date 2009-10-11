@@ -20,6 +20,7 @@
  ***************************************************************************/
 
 #include "gsft_file.h"
+#include "gsft_strz.h"
 
 #include <stdio.h>
 
@@ -39,15 +40,13 @@ void GSFT_FNCALL gsft_file_abs_to_rel(const char *path_abs, const char *path_roo
 	if (strncmp(path_abs, path_root, path_root_len) != 0)
 	{
 		// Root path not found. Copy the absolute path as-is.
-		strncpy(path_rel, path_abs, path_rel_len);
-		path_rel[path_rel_len-1] = 0x00;
+		strzcpy(path_rel, path_abs, path_rel_len);
 		return;
 	}
 	
 	// Root path found.
-	snprintf(path_rel, path_rel_len,
+	szprintf(path_rel, path_rel_len,
 		 "." GSFT_DIR_SEP_STR "%s", &path_abs[path_root_len]);
-	path_rel[path_rel_len-1] = 0x00;
 	return;
 }
 
@@ -66,13 +65,11 @@ void GSFT_FNCALL gsft_file_rel_to_abs(const char *path_rel, const char *path_roo
 	if (path_rel[0] != '.' || path_rel[1] != GSFT_DIR_SEP_CHR)
 	{
 		// Not relative. Copy the path as-is.
-		strncpy(path_abs, path_rel, path_abs_len);
-		path_abs[path_abs_len-1] = 0x00;
+		strzcpy(path_abs, path_rel, path_abs_len);
 		return;
 	}
 	
 	// Relative pathname.
-	snprintf(path_abs, path_abs_len, "%s%s", path_root, &path_rel[2]);
-	path_abs[path_abs_len-1] = 0x00;
+	szprintf(path_abs, path_abs_len, "%s%s", path_root, &path_rel[2]);
 	return;
 }
