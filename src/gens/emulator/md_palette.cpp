@@ -150,6 +150,14 @@ static inline void T_Recalculate_Palettes(void)
 		g = ((i >> 5) & 0x1F) << (GBits - 5);
 		b = ((i >> 10) & 0x1F) << (BBits - 5);
 		
+		// Scale the colors to full RGB.
+		if (Scale_Colors)
+		{
+			r = (r * RMask) / (0x1F << (RBits - 5));
+			g = (g * GMask) / (0x1F << (GBits - 5));
+			b = (b * BMask) / (0x1F << (BBits - 5));
+		}
+		
 		// Adjust brightness.
 		if (brightness != 0)
 		{
