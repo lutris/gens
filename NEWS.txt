@@ -52,6 +52,13 @@ New Features:
   in windowed mode while the menu bar is hidden, right-click anywhere in the
   Gens/GS window.
 
+* Added an RGB Color Scaling option. This option scales colors to their full
+  brightness, which is accurate to how the original console worked. For
+  example, on the MD, a color component 0xE indicates full brightness; however,
+  on Gens/GS in 32-bit color, this would get scaled to 0xE0 (224) instead of
+  0xFF (255). With Color Scaling on, it is now properly scaled to full
+  brightness.
+
 --------------------------------
 
 Bug Fixes:
