@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Gens/GS - Dialogs - Color Adjust</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='gens.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>Gens/GS - Dialogs - Color Adjust</h1>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'>Dialogs</nav>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="color-adjust.html">Color Adjust</a></span>
+</div>
+
+<p class='screenshot'>
+	<img src='images/dialog-ca.png' alt="Color Adjust" title="Color Adjust">
+</p>
+
+<p>The Color Adjust window allows you to adjust various color settings.</p>
+
+<p>
+<span class='option'>Contrast</span>: Adjusts the contrast of the image.
+</p>
+
+<table align='center'>
+	<tr>
+		<th>Contrast: -50</th>
+		<th>Original</th>
+		<th>Contrast: +50</th>
+	</th>
+	<tr>
+		<td><img src="images/dialog-ca/ca-contrast-d50.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-original.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-contrast-u50.png" width="320" height="224"></td>
+	</tr>
+</table>
+
+<p>
+<span class='option'>Brightness</span>: Adjusts the brightness of the image.
+</p>
+
+<table align='center'>
+	<tr>
+		<th>Brightness: -50</th>
+		<th>Original</th>
+		<th>Brightness: +50</th>
+	</th>
+	<tr>
+		<td><img src="images/dialog-ca/ca-brightness-d50.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-original.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-brightness-u50.png" width="320" height="224"></td>
+	</tr>
+</table>
+
+<p>
+<span class='option'>Grayscale</span>: If enabled, converts the image to shades of gray.
+</p>
+
+<p>
+<span class='option'>Inverted</span>: If enabled, inverts the colors, resulting in a photo negative.
+</p>
+
+<table align='center'>
+	<tr>
+		<th>Original</th>
+		<th>Grayscale</th>
+		<th>Inverted</th>
+	</th>
+	<tr>
+		<td><img src="images/dialog-ca/ca-original.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-grayscale.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-inverted.png" width="320" height="224"></td>
+	</tr>
+</table>
+
+<p>
+<span class='option'>Color Scaling</span>: Enables RGB Color Scaling. This
+option scales the maximum color components for each system to the maximum
+color output for the current color depth, resulting in a brighter image.
+For instance, an MD color value <span class='value'>0xEEE</span> would
+normally get converted to <span class='value'>#E0E0E0</span> with RGB Color
+Scaling disabled, but with RGB Color Scaling enabled, it gets converted to
+<span class='value'>#FFFFFF</span>. This is more accurate to how the original
+system works: an MD color value <span class='value'>0xEEE</span> tells the
+VDP to output full brightness on all three color channels.
+</p>
+
+<table align='center'>
+	<tr>
+		<th>Original</th>
+		<th>RGB Color Scaling</th>
+	</th>
+	<tr>
+		<td><img src="images/dialog-ca/ca-noscale.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-original.png" width="320" height="224"></td>
+	</tr>
+</table>
+
+</body>
+</html>
