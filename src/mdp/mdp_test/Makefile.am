@@ -25,9 +25,11 @@ noinst_HEADERS = \
 	host_srv.h \
 	render.hpp
 
+mdp_test_LDADD = $(top_builddir)/src/libgsft/libgsft.la
+
 # UNIX-like systems require libdl for dlopen().
 if GENS_OS_UNIX
-mdp_test_LDADD = -ldl
+mdp_test_LDADD += -ldl
 endif
 
 # Win32 subsystem selection.

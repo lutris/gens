@@ -26,6 +26,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 int main(int argc, char *argv[])
 {
 	fprintf(stderr, "MDP: Mega Drive Plugins %d.%d.%d\n"
@@ -79,16 +82,14 @@ int main(int argc, char *argv[])
 		    (argv[i][0] != '.' && argv[i][1] != DIRSEP_CHR) &&
 		    (argv[i][0] != '.' && argv[i][1] != '.' && argv[i][2] != DIRSEP_CHR))
 		{
-			snprintf(dll_filename, sizeof(dll_filename),
+			szprintf(dll_filename, sizeof(dll_filename),
 				 ".%c%s", DIRSEP_CHR, argv[i]);
 		}
 		else
 #endif
 		{
-			strncpy(dll_filename, argv[i], sizeof(dll_filename));
+			strzcpy(dll_filename, argv[i], sizeof(dll_filename));
 		}
-		
-		dll_filename[sizeof(dll_filename)-1] = 0x00;
 		
 		if (!plugin_check(dll_filename))
 			success_count++;
