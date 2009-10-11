@@ -174,15 +174,15 @@ void selcd_window_show(void)
 			 G_CALLBACK(selcd_window_callback_combobox_changed), NULL);
 	
 	// Create the dialog buttons.
-	btnCancel = gtk_dialog_add_button(GTK_DIALOG(selcd_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	btnApply  = gtk_dialog_add_button(GTK_DIALOG(selcd_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(selcd_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	btnSave   = gtk_dialog_add_button(GTK_DIALOG(selcd_window), GTK_STOCK_SAVE, GTK_RESPONSE_OK);
 	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(selcd_window),
 						GTK_RESPONSE_OK,
-						GTK_RESPONSE_APPLY,
 						GTK_RESPONSE_CANCEL,
+						GTK_RESPONSE_APPLY,
 						-1);
 #endif
 	
