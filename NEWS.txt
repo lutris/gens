@@ -34,7 +34,7 @@ release of Gens/GS r7.
 
 ================================================================
 
-Changes from r7_pre4 to r7_pre5:
+Changes from r7_pre4 to r7_pre5 [PREVIEW RELEASE]:
 
 New Features:
 
