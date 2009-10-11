@@ -201,6 +201,7 @@ static const optBarg_str_t optBarg_str[] =
 	OPTBARG_STR("swblit",		"Software blitting"),
 	OPTBARG_STR("greyscale",	"Greyscale"),
 	OPTBARG_STR("invert",		"Invert color"),
+	OPTBARG_STR("scale-colors",	"Scale colors to full RGB"),
 	OPTBARG_STR("spritelimit",	"Sprite limit"),
 	OPTBARG_STR("sound",		"Sound"),
 	OPTBARG_STR("stereo",		"Stereo"),
@@ -229,6 +230,7 @@ enum optBarg_enum
 	OPTB_SWBLIT,
 	OPTB_GREYSCALE,
 	OPTB_INVERT,
+	OPTB_SCALE,
 	OPTB_SPRITELIMIT,
 	OPTB_SOUND,
 	OPTB_STEREO,
@@ -304,6 +306,7 @@ static const struct option long_options[] =
 	LONGOPT_BARG(OPTB_SWBLIT),
 	LONGOPT_BARG(OPTB_GREYSCALE),
 	LONGOPT_BARG(OPTB_INVERT),
+	LONGOPT_BARG(OPTB_SCALE),
 	LONGOPT_BARG(OPTB_SPRITELIMIT),
 	LONGOPT_BARG(OPTB_SOUND),
 	LONGOPT_BARG(OPTB_STEREO),
@@ -513,6 +516,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_GREYSCALE], Greyscale);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_INVERT], Invert_Color);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_SCALE], Scale_Colors);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_SPRITELIMIT], Sprite_Over);
 		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_FRAMESKIP].option, Frame_Skip);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_Z80], Z80_State);

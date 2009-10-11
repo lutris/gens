@@ -36,6 +36,7 @@ int Contrast_Level;
 int Brightness_Level;
 int Greyscale;
 int Invert_Color;
+int Scale_Colors;	// If set, scales colors to full RGB.
 
 
 /**
@@ -111,6 +112,14 @@ static inline void T_Recalculate_Palettes(void)
 		r = (color & 0xF) << (RBits - 4);
 		g = ((color >> 4) & 0x0F) << (GBits - 4);
 		b = ((color >> 8) & 0x0F) << (BBits - 4);
+		
+		// Scale the colors to full RGB.
+		if (Scale_Colors)
+		{
+			r = (r * RMask) / (0xE << (RBits - 4));
+			g = (g * GMask) / (0xE << (GBits - 4));
+			b = (b * BMask) / (0xE << (BBits - 4));
+		}
 		
 		// Adjust brightness.
 		if (brightness != 0)

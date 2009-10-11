@@ -31,6 +31,7 @@ extern int Contrast_Level;
 extern int Brightness_Level;
 extern int Greyscale;
 extern int Invert_Color;
+extern int Scale_Colors;
 
 void Recalculate_Palettes(void);
 

@@ -53,6 +53,7 @@ static GtkWidget	*sldContrast;
 static GtkWidget	*sldBrightness;
 static GtkWidget	*chkGrayscale;
 static GtkWidget	*chkInverted;
+static GtkWidget	*chkScaleColors;
 static GtkWidget	*btnCancel, *btnApply, *btnSave;
 
 // Color adjustment load/save functions.
@@ -182,6 +183,13 @@ void ca_window_show(void)
 	g_signal_connect((gpointer)chkInverted, "toggled",
 			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
+	// "Scale Colors" checkbox.
+	chkScaleColors = gtk_check_button_new_with_mnemonic("_Scale Colors");
+	gtk_widget_show(chkScaleColors);
+	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkScaleColors, TRUE, FALSE, 0);
+	g_signal_connect((gpointer)chkScaleColors, "toggled",
+			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
+	
 	// Create the dialog buttons.
 	btnCancel = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	btnApply  = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
@@ -230,6 +238,7 @@ static void ca_window_init(void)
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkGrayscale), Greyscale);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInverted), Invert_Color);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScaleColors), Scale_Colors);
 	
 	// Disable the "Apply" button initially.
 	gtk_widget_set_sensitive(btnApply, FALSE);
@@ -246,6 +255,7 @@ static void ca_window_save(void)
 	
 	Greyscale = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkGrayscale));
 	Invert_Color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkInverted));
+	Scale_Colors = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkScaleColors));
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
