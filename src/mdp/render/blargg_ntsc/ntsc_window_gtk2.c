@@ -37,6 +37,9 @@
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // Window.
 static GtkWidget *ntsc_window = NULL;
 
@@ -407,12 +410,12 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	if (i == 0)
 	{
 		// Hue. No decimal places.
-		snprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
+		szprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
+		szprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
 	}
 	
 	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);

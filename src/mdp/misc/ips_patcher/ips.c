@@ -28,6 +28,9 @@
 #include "ips_plugin.h"
 #include "ips_file.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // MDP includes.
 #include "mdp/mdp_stdint.h"
 #include "mdp/mdp_cpuflags.h"
@@ -103,7 +106,7 @@ static int MDP_FNCALL ips_event_handler(int event_id, void *event_info)
 		
 		// IPS patch file is [save directory]/ROM_name.ips.
 		char patch_filename[1024];
-		snprintf(patch_filename, sizeof(patch_filename),
+		szprintf(patch_filename, sizeof(patch_filename),
 			 "%s/%s.ips", ips_save_path, openROM->rom_name);
 		
 		// Attempt to load the patch.
@@ -128,9 +131,7 @@ static int MDP_FNCALL ips_dir_get(int dir_id, char *out_buf, unsigned int size)
 	if (dir_id != ips_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strncpy(out_buf, ips_save_path, size);
-	out_buf[size-1] = 0x00;
-	
+	strzcpy(out_buf, ips_save_path, size);
 	return MDP_ERR_OK;
 }
 
@@ -146,8 +147,6 @@ static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf)
 	if (dir_id != ips_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strncpy(ips_save_path, buf, sizeof(ips_save_path));
-	ips_save_path[sizeof(ips_save_path)-1] = 0x00;
-	
+	strzcpy(ips_save_path, buf, sizeof(ips_save_path));
 	return MDP_ERR_OK;
 }

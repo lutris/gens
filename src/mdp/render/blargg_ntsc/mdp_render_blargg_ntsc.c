@@ -38,6 +38,9 @@
 #include <stdlib.h>
 #include <errno.h>
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // MDP Host Services.
 const mdp_host_t *ntsc_host_srv = NULL;
 static int ntsc_menuItemID = 0;
@@ -285,9 +288,7 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			// Save individual values.
 			for (i = 0; i < NTSC_CTRL_COUNT; i++)
 			{
-				snprintf(buf, sizeof(buf), "%d", ntsc_internal_to_display(i, mdp_md_ntsc_setup.params[i]));
-				buf[sizeof(buf)-1] = 0x00;
-				
+				szprintf(buf, sizeof(buf), "%d", ntsc_internal_to_display(i, mdp_md_ntsc_setup.params[i]));
 				ntsc_host_srv->config_set(&mdp, ntsc_controls[i].name, buf);
 			}
 			

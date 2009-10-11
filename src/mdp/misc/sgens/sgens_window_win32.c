@@ -51,6 +51,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_strz.h"
 
 // Window.
 static HWND	sgens_window = NULL;
@@ -431,28 +432,23 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	snprintf(tmp, sizeof(tmp), "%d", info.score);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%d", info.score);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
 	
 	// Time.
-	snprintf(tmp, sizeof(tmp), "%02d:%02d:%02d", info.time.min, info.time.sec, info.time.frames);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%02d:%02d:%02d", info.time.min, info.time.sec, info.time.frames);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_TIME], tmp);
 	
 	// Rings.
-	snprintf(tmp, sizeof(tmp), "%d", info.rings);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%d", info.rings);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS], tmp);
 	
 	// Lives.
-	snprintf(tmp, sizeof(tmp), "%d", info.lives);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%d", info.lives);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_LIVES], tmp);
 	
 	// Continues.
-	snprintf(tmp, sizeof(tmp), "%d", info.continues);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%d", info.continues);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_CONTINUES], tmp);
 	
 	// Rings remaining for Perfect Bonus.
@@ -460,49 +456,40 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
-		snprintf(tmp, sizeof(tmp), "%d", info.rings_for_perfect_bonus);
-		tmp[sizeof(tmp)-1] = 0x00;
+		szprintf(tmp, sizeof(tmp), "%d", info.rings_for_perfect_bonus);
 		Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], tmp);
 	}
 	
 	// Water status.
-	snprintf(tmp, sizeof(tmp), "%s", (info.water_level != 0 ? "ON" : "OFF"));
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%s", (info.water_level != 0 ? "ON" : "OFF"));
 	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_ENABLED], tmp);
 	
 	// Water level.
-	snprintf(tmp, sizeof(tmp), "%04X", info.water_level);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%04X", info.water_level);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_LEVEL], tmp);
 	
 	// Number of emeralds.
-	snprintf(tmp, sizeof(tmp), "%d", info.emeralds);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%d", info.emeralds);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 	
 	// Camera X position.
-	snprintf(tmp, sizeof(tmp), "%04X", info.camera_x);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%04X", info.camera_x);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 	
 	// Camera Y position.
-	snprintf(tmp, sizeof(tmp), "%04X", info.camera_y);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%04X", info.camera_y);
 	Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 	
 	// Player angle.
-	snprintf(tmp, sizeof(tmp), "%0.02f" DEGREE_SYMBOL, info.player_angle);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%0.02f" DEGREE_SYMBOL, info.player_angle);
 	Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 	
 	// Player X position.
-	snprintf(tmp, sizeof(tmp), "%04X", info.player_x);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%04X", info.player_x);
 	Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
 	
 	// Player Y position.
-	snprintf(tmp, sizeof(tmp), "%04X", info.player_y);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "%04X", info.player_y);
 	Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	
 	// SGens window has been updated.

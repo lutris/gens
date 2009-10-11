@@ -44,6 +44,9 @@
 #include "mdp/mdp_event.h"
 #include "mdp/mdp_mem.h"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // Window.
 static GtkWidget *sgens_window = NULL;
 
@@ -227,7 +230,7 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		
 		// Information label.
-		sprintf(tmp, "<tt>%s</tt>", level_info[i].initial);
+		szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", level_info[i].initial);
 		lblLevelInfo[i] = gtk_label_new(tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo[i]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblLevelInfo[i]), GTK_JUSTIFY_RIGHT);
@@ -277,7 +280,7 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		
 		// Information label.
-		sprintf(tmp, "<tt>%s</tt>", player_info[i].initial);
+		szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", player_info[i].initial);
 		lblPlayerInfo[i] = gtk_label_new(tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo[i]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblPlayerInfo[i]), GTK_JUSTIFY_RIGHT);
@@ -405,32 +408,27 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.score);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.score);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), TRUE);
 	
 	// Time.
-	snprintf(tmp, sizeof(tmp), "<tt>%02d:%02d:%02d</tt>", info.time.min, info.time.sec, info.time.frames);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%02d:%02d:%02d</tt>", info.time.min, info.time.sec, info.time.frames);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), TRUE);
 	
 	// Rings.
-	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.rings);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.rings);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), TRUE);
 	
 	// Lives.
-	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.lives);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.lives);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), TRUE);
 	
 	// Continues.
-	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.continues);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.continues);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), TRUE);
 	
@@ -439,56 +437,48 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
-		snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.rings_for_perfect_bonus);
-		tmp[sizeof(tmp)-1] = 0x00;
+		szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.rings_for_perfect_bonus);
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
 	}
 	
 	// Water status.
-	snprintf(tmp, sizeof(tmp), "<tt>%s</tt>", (info.water_level != 0 ? "ON" : "OFF"));
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", (info.water_level != 0 ? "ON" : "OFF"));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), TRUE);
 	
 	// Water level.
-	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.water_level);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.water_level);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), TRUE);
 	
 	// Number of emeralds.
-	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.emeralds);
+	szprintf(tmp, sizeof(tmp), "<tt>%d</tt>", info.emeralds);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
 	
 	// Camera X position.
-	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.camera_x);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.camera_x);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
 	
 	// Camera Y position.
-	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.camera_y);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.camera_y);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 	
 	// Player angle.
-	snprintf(tmp, sizeof(tmp), "<tt>%0.02f" DEGREE_SYMBOL "</tt>", info.player_angle);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%0.02f" DEGREE_SYMBOL "</tt>", info.player_angle);
 	gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
 	
 	// Player X position.
-	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.player_x);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.player_x);
 	gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
 	
 	// Player Y position.
-	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.player_y);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", info.player_y);
 	gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	

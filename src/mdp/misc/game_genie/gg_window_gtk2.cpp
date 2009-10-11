@@ -36,6 +36,9 @@
 #include <list>
 using std::list;
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 #include "gg_window.hpp"
 #include "gg_plugin.h"
 #include "gg.hpp"
@@ -609,10 +612,9 @@ static int gg_window_add_code_from_textboxes(void)
 				break;
 		}
 		
-		snprintf(err_msg_full, sizeof(err_msg_full),
+		szprintf(err_msg_full, sizeof(err_msg_full),
 			 "The specified code, \"%s\", could not be added due to an error:\n\n%s",
 			 code_txt, err_msg);
-		err_msg_full[sizeof(err_msg_full)-1] = 0x00;
 		
 		// Show an error message.
 		GtkWidget *msgbox = gtk_message_dialog_new(

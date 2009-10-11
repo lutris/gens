@@ -39,8 +39,9 @@
 #include <list>
 using std::list;
 
-// gsft_strtok_r().
+// libgsft includes.
 #include "libgsft/gsft_strtok_r.h"
+#include "libgsft/gsft_strz.h"
 
 // MDP includes.
 #include "mdp/mdp_stdint.h"
@@ -229,8 +230,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 			else
 			{
 				// Copy the name to the gg_code.
-				strncpy(gg_code.name, tokens[3], sizeof(gg_code.name));
-				gg_code.name[sizeof(gg_code.name)-1] = 0x00;
+				strzcpy(gg_code.name, tokens[3], sizeof(gg_code.name));
 			}
 		}
 		else
@@ -311,8 +311,7 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 			ELIMINATE_NEWLINES(tokens[1]);
 			
 			// Copy the name of the code.
-			strncpy(gg_code.name, tokens[1], sizeof(gg_code.name));
-			gg_code.name[sizeof(gg_code.name)-1] = 0x00;
+			strzcpy(gg_code.name, tokens[1], sizeof(gg_code.name));
 		}
 		else
 		{

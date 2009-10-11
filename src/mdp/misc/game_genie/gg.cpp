@@ -32,6 +32,9 @@
 #include <string>
 using std::string;
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 #include "gg.hpp"
 #include "gg_plugin.h"
 #include "gg_window.hpp"
@@ -232,9 +235,7 @@ static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size)
 	if (dir_id != gg_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strncpy(out_buf, gg_save_path, size);
-	out_buf[size-1] = 0x00;
-	
+	strzcpy(out_buf, gg_save_path, size);
 	return MDP_ERR_OK;
 }
 
@@ -250,8 +251,6 @@ static int MDP_FNCALL gg_dir_set(int dir_id, const char *buf)
 	if (dir_id != gg_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strncpy(gg_save_path, buf, sizeof(gg_save_path));
-	gg_save_path[sizeof(gg_save_path)-1] = 0x00;
-	
+	strzcpy(gg_save_path, buf, sizeof(gg_save_path));
 	return MDP_ERR_OK;
 }

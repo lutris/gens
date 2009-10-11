@@ -26,6 +26,9 @@
 #include <stdio.h>
 #include <string.h>
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // Game Genie characters.
 static const char gg_chars[] =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
@@ -319,13 +322,13 @@ int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size)
 			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					snprintf(buf, size, "%06X:%02X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%06X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					snprintf(buf, size, "%06X:%04X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%06X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					snprintf(buf, size, "%06X:%08X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%06X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
@@ -340,13 +343,13 @@ int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size)
 			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					snprintf(buf, size, "%04X:%02X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%04X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					snprintf(buf, size, "%04X:%04X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%04X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					snprintf(buf, size, "%04X:%08X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%04X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
@@ -363,13 +366,13 @@ int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size)
 			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					snprintf(buf, size, "%08X:%02X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%08X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					snprintf(buf, size, "%08X:%04X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%08X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					snprintf(buf, size, "%08X:%08X", gg_code->address, gg_code->data);
+					szprintf(buf, size, "%08X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
@@ -383,9 +386,6 @@ int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size)
 			// Invalid code.
 			return 1;
 	}
-	
-	// Make sure the code is null-terminated.
-	buf[size-1] = 0x00;
 	
 	// Code formatted successfully.
 	return 0;
