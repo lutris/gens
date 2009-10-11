@@ -34,6 +34,9 @@
 #include <list>
 using std::list;
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // Video Drawing.
 #include "vdraw.h"
 
@@ -376,8 +379,7 @@ void vdraw_text_write(const char* msg, const int duration)
 		return;
 	
 	// TODO: Add localization.
-	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
-	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	strzcpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
 	
 	// Prerender the text.
 	vdraw_msg_prerender_len = osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);
@@ -421,8 +423,7 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 		return;
 	
 	// TODO: Add localization.
-	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, ap);
-	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	vszprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, ap);
 	
 	// Prerender the text.
 	vdraw_msg_prerender_len = osd_charset_prerender(vdraw_msg_text, vdraw_msg_prerender);

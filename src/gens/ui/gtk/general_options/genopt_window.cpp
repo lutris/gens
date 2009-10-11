@@ -39,8 +39,9 @@
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 // Video Drawing.
 #include "video/vdraw.h"
@@ -220,7 +221,7 @@ static void genopt_window_create_osd_frame(GtkWidget *container, const char* tit
 	char tmp[64];
 	
 	// Create the frame.
-	sprintf(tmp, "<b><i>%s</i></b>", title);
+	szprintf(tmp, sizeof(tmp), "<b><i>%s</i></b>", title);
 	GtkWidget *fraOSD = gtk_frame_new(tmp);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraOSD), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraOSD))), true);

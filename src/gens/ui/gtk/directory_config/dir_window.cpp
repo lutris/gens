@@ -51,6 +51,7 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_file.h"
+#include "libgsft/gsft_strz.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
@@ -337,11 +338,8 @@ static void dir_window_save(void)
 			char *entry = dir_window_entries[vectDirs[dir].id].entry;
 			
 			// Get the entry text.
-			strncpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
+			strzcpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
 				GENS_PATH_MAX);
-			
-			// Make sure the entry is null-terminated.
-			entry[GENS_PATH_MAX-1] = 0x00;
 			
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.
@@ -362,10 +360,7 @@ static void dir_window_save(void)
 			// Plugin directory.
 			
 			// Get the entry text.
-			strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)), sizeof(dir_buf));
-			
-			// Make sure the entry is null-terminated.
-			dir_buf[sizeof(dir_buf)-1] = 0x00;
+			strzcpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)), sizeof(dir_buf));
 			
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.
@@ -464,8 +459,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	dir_widget_t *dir_widget = &vectDirs[GPOINTER_TO_INT(user_data)];
 	
 	char title[128];
-	snprintf(title, sizeof(title), "Select %s Directory", dir_widget->title.c_str());
-	title[sizeof(title)-1] = 0x00;
+	szprintf(title, sizeof(title), "Select %s Directory", dir_widget->title.c_str());
 	
 	// Request a new directory.
 	string new_dir = GensUI::selectDir(title, gtk_entry_get_text(GTK_ENTRY(dir_widget->txt)), dir_window);

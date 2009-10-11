@@ -65,6 +65,9 @@
 #include <list>
 using std::list;
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // Haiku Key Constants
 #include <InterfaceKit.h>
 
@@ -263,7 +266,6 @@ int input_haiku_get_key_name(uint16_t key, char* buf, int size)
 	}
 	
 	// Known key.
-	strncpy(buf, key_name, size);
-	buf[size - 1] = 0x00;
+	strzcpy(buf, key_name, size);
 	return 0;
 }

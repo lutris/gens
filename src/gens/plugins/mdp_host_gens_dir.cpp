@@ -28,6 +28,9 @@
 
 #include "pluginmgr.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // C includes.
 #include <string.h>
 
@@ -56,14 +59,11 @@ int MDP_FNCALL mdp_host_dir_get_default_save_path(char *buf, unsigned int size)
 #ifdef GENS_OS_WIN32
 	// Win32's default save path is ".\\".
 	// Return the full save path instead.
-	strncpy(buf, PathNames.Gens_EXE_Path, size);
+	strzcpy(buf, PathNames.Gens_EXE_Path, size);
 #else
 	// Get the actual default save path.
 	get_default_save_path(buf, size);
 #endif
-	
-	// Make sure the return buffer is null-terminated.
-	buf[size-1] = 0x00;
 	
 	return MDP_ERR_OK;
 }

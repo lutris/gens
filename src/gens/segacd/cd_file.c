@@ -2,22 +2,26 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include "cd_file.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include "cd_sys.hpp"
-#include "cd_file.h"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "util/file/rom.hpp"
 #include "gens_core/mem/mem_s68k.h"
+
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
 
 // MP3 support
 #ifdef GENS_MP3
 #include "cdda_mp3.h"
 #endif /* GENS_MP3 */
 
-struct _file_track Tracks[100];
+file_track Tracks[100];
 
 char cp_buf[2560];
 unsigned char Track_Played;
@@ -127,15 +131,14 @@ int Load_ISO(char* buf, const char* iso_name)
 	
 	Cur_LBA = Tracks[0].Length;	// Size in sectors
 	
-	strncpy(tmp_name, iso_name, sizeof(tmp_name));
-	tmp_name[sizeof(tmp_name)-1] = 0x00;
+	strzcpy(tmp_name, iso_name, sizeof(tmp_name));
 	
 	for (num_track = 2, i = 0; i < 100; i++)
 	{
 		for (j = 0; j < 20; j++)
 		{
-			tmp_name[strlen (iso_name) - 4] = 0;
-			sprintf(tmp_ext, exts[j], i);
+			tmp_name[strlen(iso_name)-4] = 0;
+			szprintf(tmp_ext, sizeof(tmp_ext), exts[j], i);
 			
 			strcat(tmp_name, tmp_ext);
 			tmp_file = fopen (tmp_name, "rb");

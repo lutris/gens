@@ -23,6 +23,9 @@
 #include "mdp_host_gens_config.hpp"
 #include "mdp/mdp_error.h"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // C++ includes.
 #include <string>
 using std::string;
@@ -56,10 +59,7 @@ int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* d
 		if (!def)
 			out_buf[0] = 0x00;
 		else
-		{
-			strncpy(out_buf, def, size);
-			out_buf[size-1] = 0x00;
-		}
+			strzcpy(out_buf, def, size);
 		return MDP_ERR_OK;
 	}
 	
@@ -73,16 +73,12 @@ int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* d
 		if (!def)
 			out_buf[0] = 0x00;
 		else
-		{
-			strncpy(out_buf, def, size);
-			out_buf[size-1] = 0x00;
-		}
+			strzcpy(out_buf, def, size);
 		return MDP_ERR_OK;
 	}
 	
 	// Key found.
-	strncpy(out_buf, (*cfgItem).second.c_str(), size);
-	out_buf[size-1] = 0x00;
+	strzcpy(out_buf, (*cfgItem).second.c_str(), size);
 	return MDP_ERR_OK;
 }
 

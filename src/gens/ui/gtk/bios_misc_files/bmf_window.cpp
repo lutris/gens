@@ -41,8 +41,9 @@ using std::string;
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 
 // Window.
@@ -239,7 +240,7 @@ static void bmf_window_save(void)
 			continue;
 		
 		// Save the entry text.
-		strncpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
+		strzcpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
 	}
 	
 	// Disable the "Apply" button.
@@ -314,8 +315,7 @@ static void bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 		return;
 	
 	char tmp[128];
-	snprintf(tmp, sizeof(tmp), "Select %s File", bmf_entries[file].title);
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "Select %s File", bmf_entries[file].title);
 	
 	// Request a new file.
 	string new_file = GensUI::openFile(tmp, gtk_entry_get_text(GTK_ENTRY(txtFile[file])),

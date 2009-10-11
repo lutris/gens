@@ -97,6 +97,7 @@ using std::list;
 
 // libgsft includes.
 #include "libgsft/gsft_file.h"
+#include "libgsft/gsft_strz.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
@@ -141,8 +142,7 @@ int Config::save(const string& filename)
 		char dir_buf_rel[GENS_PATH_MAX];
 #endif
 		
-		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
-		buf[sizeof(buf)-1] = 0x00;
+		szprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
 		
 		// Get the directory from the plugin.
 		(*iter).get((*iter).id, dir_buf, sizeof(dir_buf));
@@ -179,16 +179,16 @@ int Config::save(const string& filename)
 	for (deque<ROM::Recent_ROM_t>::iterator rom = ROM::Recent_ROMs.begin();
 	     rom != ROM::Recent_ROMs.end(); rom++)
 	{
-		sprintf(buf, "ROM %d", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d", romNum);
 		cfg.writeString("ROM History", buf, (*rom).filename);
 		
-		sprintf(buf, "ROM %d Compressed", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d Compressed", romNum);
 		if (!(*rom).z_filename.empty())
 			cfg.writeString("ROM History", buf, (*rom).z_filename);
 		else
 			cfg.deleteEntry("ROM History", buf);
 		
-		sprintf(buf, "ROM %d Type", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d Type", romNum);
 		cfg.writeInt("ROM History", buf, (*rom).type, true, 4);
 		
 		romNum++;
@@ -197,20 +197,20 @@ int Config::save(const string& filename)
 	// Make sure unused ROM entries are deleted.
 	for (int i = romNum; i <= 9; i++)
 	{
-		sprintf(buf, "ROM %d", i);
+		szprintf(buf, sizeof(buf), "ROM %d", i);
 		cfg.deleteEntry("ROM History", buf);
 		
-		sprintf(buf, "ROM %d Compressed", i);
+		szprintf(buf, sizeof(buf), "ROM %d Compressed", i);
 		cfg.deleteEntry("ROM History", buf);
 		
-		sprintf(buf, "ROM %d Type", i);
+		szprintf(buf, sizeof(buf), "ROM %d Type", i);
 		cfg.deleteEntry("ROM History", buf);
 	}
 	
 	// Delete any empty "Compressed" entries.
 	for (int i = 1; i <= 9; i++)
 	{
-		sprintf(buf, "ROM %d Compressed", i);
+		szprintf(buf, sizeof(buf), "ROM %d Compressed", i);
 		if (cfg.getString("ROM History", buf, "").empty())
 			cfg.deleteEntry("ROM History", buf);
 	}
@@ -335,7 +335,7 @@ int Config::save(const string& filename)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s.%s", input_player_names[player], input_key_names[button]);
+			szprintf(buf, sizeof(buf), "%s.%s", input_player_names[player], input_key_names[button]);
 			cfg.writeInt("Input", buf, input_keymap[player].data[button], true, 4);
 		}
 	}
@@ -363,14 +363,13 @@ int Config::save(const string& filename)
 		// Write the configuration items.
 		// TODO: Use a standardized function for UUID conversion.
 		const unsigned char *mdp_uuid = plugin->uuid;
-		snprintf(MDP_section, sizeof(MDP_section),
+		szprintf(MDP_section, sizeof(MDP_section),
 			 "~MDP:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 			 mdp_uuid[0], mdp_uuid[1], mdp_uuid[2], mdp_uuid[3],
 			 mdp_uuid[4], mdp_uuid[5],
 			 mdp_uuid[6], mdp_uuid[7],
 			 mdp_uuid[8], mdp_uuid[9],
 			 mdp_uuid[10], mdp_uuid[11], mdp_uuid[12], mdp_uuid[13], mdp_uuid[14], mdp_uuid[15]);
-		MDP_section[sizeof(MDP_section)-1] = 0x00;
 		
 		// Write the configuration items.
 		mapConfigItems& mapCfg = ((*cfgIter).second);
@@ -446,8 +445,7 @@ int Config::load(const string& filename, void* gameActive)
 #ifdef GENS_OS_WIN32
 		char dir_buf_abs[GENS_PATH_MAX];
 #endif
-		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
-		buf[sizeof(buf)-1] = 0x00;
+		szprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
 		
 		string dir_buf = cfg.getString("Directories", buf, "");
 		if (!dir_buf.empty())
@@ -486,17 +484,17 @@ int Config::load(const string& filename, void* gameActive)
 	
 	for (int romNum = 1; romNum <= 9; romNum++)
 	{
-		sprintf(buf, "ROM %d", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d", romNum);
 		tmpFilename = cfg.getString("ROM History", buf, "");
 		if (tmpFilename.empty())
 			continue;
 		
 		recentROM.filename = tmpFilename;
 		
-		sprintf(buf, "ROM %d Compressed", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d Compressed", romNum);
 		recentROM.z_filename = cfg.getString("ROM History", buf, "");
 		
-		sprintf(buf, "ROM %d Type", romNum);
+		szprintf(buf, sizeof(buf), "ROM %d Type", romNum);
 		recentROM.type = cfg.getInt("ROM History", buf, 0);
 		
 		ROM::Recent_ROMs.push_back(recentROM);
@@ -722,7 +720,7 @@ int Config::load(const string& filename, void* gameActive)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s.%s", input_player_names[player], input_key_names[button]);
+			szprintf(buf, sizeof(buf), "%s.%s", input_player_names[player], input_key_names[button]);
 			input_keymap[player].data[button] = input_update_joykey_format(
 					cfg.getInt("Input", buf, cur_def_keymap->data[button]));
 		}
@@ -748,14 +746,13 @@ int Config::load(const string& filename, void* gameActive)
 		// Write the configuration items.
 		// TODO: Use a standardized function for UUID conversion.
 		const unsigned char *mdp_uuid = plugin->uuid;
-		snprintf(MDP_section, sizeof(MDP_section),
+		szprintf(MDP_section, sizeof(MDP_section),
 			 "~MDP:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 			 mdp_uuid[0], mdp_uuid[1], mdp_uuid[2], mdp_uuid[3],
 			 mdp_uuid[4], mdp_uuid[5],
 			 mdp_uuid[6], mdp_uuid[7],
 			 mdp_uuid[8], mdp_uuid[9],
 			 mdp_uuid[10], mdp_uuid[11], mdp_uuid[12], mdp_uuid[13], mdp_uuid[14], mdp_uuid[15]);
-		MDP_section[sizeof(MDP_section)-1] = 0x00;
 		
 		// Check if the plugin has any configuration items.
 		if (!cfg.sectionExists(MDP_section))

@@ -25,6 +25,9 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // C includes.
 #include <stdlib.h>
 
@@ -283,13 +286,7 @@ void INI::getString(const string& section, const string& key, const string& def,
 {
 	string tmp;
 	tmp = getString(section, key, def);
-	strncpy(buf, tmp.c_str(), size);
-	
-	if (tmp.length() >= size)
-	{
-		// String size exceeds the buffer. Set the last byte in the buffer to NULL.
-		buf[size - 1] = 0x00;
-	}
+	strzcpy(buf, tmp.c_str(), size);
 }
 
 

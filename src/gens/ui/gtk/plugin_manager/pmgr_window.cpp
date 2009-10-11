@@ -36,8 +36,9 @@
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
@@ -406,8 +407,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	{
 		// No description or name.
 		char tmp[64];
-		snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
-		tmp[sizeof(tmp)-1] = 0x00;
+		szprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
 		pluginName = string(tmp);
 	}
 	
@@ -713,8 +713,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 			if (desc->description)
 				sDesc = string(desc->description) + "\n\n";
 			
-			snprintf(err_code, sizeof(err_code), "0x%08X", -err);
-			err_code[sizeof(err_code)-1] = 0x00;
+			szprintf(err_code, sizeof(err_code), "0x%08X", -err);
 			
 			sDesc += "MDP error code: " + string(err_code);
 			// TODO: error description.

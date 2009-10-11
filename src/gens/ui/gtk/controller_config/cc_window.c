@@ -36,8 +36,10 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
-// BOOL macros.
+// libgsft includes.
 #include "libgsft/gsft_bool.h"
+#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_unused.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -51,9 +53,6 @@
 
 // TODO: Move SDL-specific code to input_sdl.c.
 #include <SDL/SDL.h>
-
-// Unused Parameter macro.
-#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -231,7 +230,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	gtk_box_pack_start(GTK_BOX(container), alignPort, FALSE, FALSE, 0);
 	
 	// Create the frame.
-	sprintf(tmp, "<b><i>Port %d</i></b>", port);
+	szprintf(tmp, sizeof(tmp), "<b><i>Port %d</i></b>", port);
 	GtkWidget *fraPort = gtk_frame_new(tmp);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPort), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPort))), TRUE);
@@ -286,9 +285,9 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	for (i = 0; i < 4; i++)
 	{
 		if (i == 0)
-			sprintf(playerName, "Player %d", port);
+			szprintf(playerName, sizeof(playerName), "Player %d", port);
 		else
-			sprintf(playerName, "Player %d%c", port, 'A' + (char)i);
+			szprintf(playerName, sizeof(playerName), "Player %d%c", port, 'A' + (char)i);
 		
 		// Determine the player number to use for the callback and widget pointer storage.
 		if (i == 0)
@@ -421,11 +420,9 @@ static void cc_window_populate_input_devices(GtkListStore *list)
 		const char *joy_name_SDL = SDL_JoystickName(joy);
 		
 		if (joy_name_SDL)
-			snprintf(joy_name, sizeof(joy_name), "Joystick %d: %s", joy, joy_name_SDL);
+			szprintf(joy_name, sizeof(joy_name), "Joystick %d: %s", joy, joy_name_SDL);
 		else
-			snprintf(joy_name, sizeof(joy_name), "Joystick %d", joy);
-		
-		joy_name[sizeof(joy_name) - 1] = 0x00;
+			szprintf(joy_name, sizeof(joy_name), "Joystick %d", joy);
 		
 		// Add the joystick entry to the list model.
 		gtk_list_store_append(list, &iter);
@@ -471,7 +468,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	for (button = 0; button < 12; button++)
 	{
 		// Button label.
-		sprintf(tmp, "%s:", input_key_names[button]);
+		szprintf(tmp, sizeof(tmp), "%s:", input_key_names[button]);
 		lblButton[button] = gtk_label_new(tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblButton[button]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblButton[button]), GTK_JUSTIFY_RIGHT);
@@ -677,10 +674,11 @@ static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key)
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
 	
 	#ifdef GENS_DEBUG
-		sprintf(tmp, "<tt>0x%04X: %s</tt>", key, key_name);
+		szprintf(tmp, sizeof(tmp), "<tt>0x%04X: %s</tt>", key, key_name);
 	#else
-		sprintf(tmp, "<tt>%s</tt>", key_name);
+		szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", key_name);
 	#endif
+	
 	gtk_label_set_text(GTK_LABEL(label), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 }
@@ -702,7 +700,7 @@ static void cc_window_show_configuration(int player)
 	
 	// Set the "Configure Controller" frame title.
 	GtkWidget *lblConfigure = gtk_frame_get_label_widget(GTK_FRAME(fraConfigure));
-	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
+	szprintf(tmp, sizeof(tmp), "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
 	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
 	

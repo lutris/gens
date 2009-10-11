@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "libgsft/gsft_strz.h"
+
 // Gens window.
 #include "gens/gens_window.h"
 
@@ -80,9 +82,8 @@ void vdraw_sdl_common_embed(const int w, const int h)
 		
 		// Get the Window ID of the SDL socket.
 		char SDL_WindowID[16];
-		snprintf(SDL_WindowID, sizeof(SDL_WindowID), "%u",
+		szprintf(SDL_WindowID, sizeof(SDL_WindowID), "%u",
 			 (uint32_t)(GDK_WINDOW_XWINDOW(gtk_widget_get_window(gens_window_sdlsock))));
-		SDL_WindowID[sizeof(SDL_WindowID)-1] = 0x00;
 		
 		setenv("SDL_WINDOWID", SDL_WindowID, 1);
 	}

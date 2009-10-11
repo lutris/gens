@@ -74,6 +74,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_file.h"
+#include "libgsft/gsft_strz.h"
 
 // Include this *last* to avoid naming conflicts.
 #include "parse.hpp"
@@ -392,8 +393,7 @@ static void _usage()
 #define TEST_OPTION_STRING(option, strbuf)		\
 if (!strcmp(long_options[option_index].name, option))	\
 {							\
-	strncpy(strbuf, optarg, sizeof(strbuf));	\
-	strbuf[sizeof(strbuf)-1] = 0x00;		\
+	strzcpy(strbuf, optarg, sizeof(strbuf));	\
 	continue;					\
 }
 
@@ -441,8 +441,7 @@ static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 #endif /* GENS_OS_WIN32 */
 	{
 		// Absolute pathname.
-		strncpy(startup->filename, filename, sizeof(startup->filename));
-		startup->filename[sizeof(startup->filename)-1] = 0x00;
+		strzcpy(startup->filename, filename, sizeof(startup->filename));
 	}
 	else
 	{

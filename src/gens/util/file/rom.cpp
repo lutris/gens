@@ -66,6 +66,7 @@ using std::deque;
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
 #include "libgsft/gsft_file.h"
+#include "libgsft/gsft_strz.h"
 
 #include "ui/gens_ui.hpp"
 #include "zip_select/zipsel_dialog.h"
@@ -171,8 +172,7 @@ void ROM::updateRecentROMList(const string& filename,
 void ROM::updateROMDir(const string& filename)
 {
 	string tmpROMDir = File::GetDirFromPath(filename);
-	strncpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
-	Rom_Dir[sizeof(Rom_Dir) - 1] = 0x00;
+	strzcpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
 }
 
 
@@ -258,8 +258,7 @@ void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.
-			strncpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
-			ROM_Filename[sizeof(ROM_Filename)-1] = 0x00;
+			strzcpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
 		}
 	}
 #endif
@@ -575,9 +574,8 @@ unsigned int ROM::loadROM(const string& filename,
 	{
 		// Error opening the file.
 		char msg[512];
-		snprintf(msg, sizeof(msg), "The file '%s' could not be opened.",
+		szprintf(msg, sizeof(msg), "The file '%s' could not be opened.",
 			 File::GetNameFromPath(filename.c_str()).c_str());
-		msg[sizeof(msg)-1] = 0x00;
 		
 #if defined(_WIN32) && (!defined(UNICODE) && !defined(_UNICODE))
 		if (filename.find('?') != string::npos)
@@ -677,8 +675,7 @@ unsigned int ROM::loadROM(const string& filename,
 			{
 				// Unknown error.
 				char err_code[16];
-				snprintf(err_code, sizeof(err_code), "0x%08X", rval);
-				err_code[sizeof(err_code)-1] = 0x00;
+				szprintf(err_code, sizeof(err_code), "0x%08X", rval);
 				
 				GensUI::msgBox("An unknown error occurred while attempting to open this file.\n"
 						"Please report this as a bug to the Gens/GS developers.\n\n"

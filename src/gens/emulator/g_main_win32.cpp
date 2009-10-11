@@ -27,13 +27,14 @@
 #include "g_main.hpp"
 #include "g_main_win32.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
+
 // C++ includes
 #include <list>
 #include <algorithm>
 using std::list;
-
-// Unused Parameter macro.
-#include "libgsft/gsft_unused.h"
 
 #if !defined(GENS_DEBUG)
 // Signal handler.
@@ -113,8 +114,7 @@ void get_default_save_path(char *buf, size_t size)
 	}
 	
 	// Set the default save path.
-	strncpy(buf, GENS_DEFAULT_SAVE_PATH, size);
-	buf[size-1] = 0x00;
+	strzcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
 }
 
 

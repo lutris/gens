@@ -1,6 +1,8 @@
 #ifndef GENS_CD_FILE_H
 #define GENS_CD_FILE_H
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -11,15 +13,16 @@ extern "C" {
 #define TYPE_WAV 4
 
 
-struct _file_track {
+typedef struct _file_track
+{
 	FILE *F;
 	FILE *F_decoded;
 	int Length;
 	int Type;
 	char filename [512];
-};
+} file_track;
 
-extern struct _file_track Tracks[100];
+extern file_track Tracks[100];
 
 extern char cp_buf[2560];
 extern unsigned char Track_Played;

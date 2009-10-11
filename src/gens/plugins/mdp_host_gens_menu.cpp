@@ -20,6 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "mdp_host_gens_menu.hpp"
+
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // C includes.
 #include <string.h>
 
@@ -29,8 +34,6 @@
 #include <list>
 using std::string;
 using std::list;
-
-#include "mdp_host_gens_menu.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -230,7 +233,7 @@ int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id,
 	
 	// Get the menu item text.
 	// TODO: Return an error code if the buffer size isn't large enough.
-	strncpy(text_buf, (*lstIter).text.c_str(), size);
+	strzcpy(text_buf, (*lstIter).text.c_str(), size);
 	
 	// Menu item text copied.
 	return MDP_ERR_OK;

@@ -43,8 +43,9 @@
 // TODO: Eliminate gtk-misc.h.
 #include "gtk-misc.h"
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 
 // Window.
@@ -125,9 +126,8 @@ void about_window_show(void)
 	
 	// Create the version string.
 	char buf[256];
-	snprintf(buf, sizeof(buf), "<b><i>%s</i></b>\n<small>\n</small>%s",
+	szprintf(buf, sizeof(buf), "<b><i>%s</i></b>\n<small>\n</small>%s",
 		 about_window_title, about_window_description);
-	buf[sizeof(buf) - 1] = 0x00;
 	
 	// Version information.
 	GtkWidget *lblVersion = gtk_label_new(buf);

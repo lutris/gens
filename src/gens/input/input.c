@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "libgsft/gsft_strz.h"
 
 // Array of key names.
 const char input_key_names[12][8] =
@@ -209,8 +210,7 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 	if (key == 0)
 	{
 		// 0 == not configured.
-		strncpy(buf, "Not Configured", size);
-		buf[size - 1] = 0x00;
+		strzcpy(buf, "Not Configured", size);
 		return 0;
 	}
 	
@@ -226,15 +226,13 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 			else
 			{
 				// Unknown key.
-				strncpy(buf, "Unknown Key", size);
-				buf[size - 1] = 0x00;
+				strzcpy(buf, "Unknown Key", size);
 				return rval;
 			}
 		}
 		
 		// No backend available. Return an error.
-		strncpy(buf, "Unknown Key", size);
-		buf[size - 1] = 0x00;
+		strzcpy(buf, "Unknown Key", size);
 		return -1;
 	}
 	
@@ -253,29 +251,27 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 			char dir = (INPUT_JOYSTICK_GET_AXIS_DIRECTION(key) == INPUT_JOYSTICK_AXIS_NEGATIVE ? '-' : '+');
 			
 			if (axis < 6)
-				snprintf(buf, size, "Joy %d, Axis %s%c", joy_num, axis_names[axis], dir);
+				szprintf(buf, size, "Joy %d, Axis %s%c", joy_num, axis_names[axis], dir);
 			else
-				snprintf(buf, size, "Joy %d, Axis %d%c", joy_num, axis, dir);
+				szprintf(buf, size, "Joy %d, Axis %d%c", joy_num, axis, dir);
 			break;
 		}
 		
 		case INPUT_JOYSTICK_TYPE_BUTTON:
-			snprintf(buf, size, "Joy %d, Button %d", joy_num,
+			szprintf(buf, size, "Joy %d, Button %d", joy_num,
 				 INPUT_JOYSTICK_GET_BUTTON(key));
 			break;
 		
 		case INPUT_JOYSTICK_TYPE_POVHAT:
-			snprintf(buf, size, "Joy %d, POV %d %s", joy_num,
+			szprintf(buf, size, "Joy %d, POV %d %s", joy_num,
 				 INPUT_JOYSTICK_GET_POVHAT_NUMBER(key),
 				 pov_directions[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)]);
 			break;
 		
 		default:
-			strncpy(buf, "Unknown Joy Key", size);
-			buf[size - 1] = 0x00;
+			strzcpy(buf, "Unknown Joy Key", size);
 			return -1;
 	}
 	
-	buf[size - 1] = 0x00;
 	return 0;
 }

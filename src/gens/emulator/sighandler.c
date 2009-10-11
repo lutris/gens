@@ -28,7 +28,10 @@
 
 #include "macros/log_msg.h"
 #include "macros/git.h"
+
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 // C includes.
 #include <stdlib.h>
@@ -342,10 +345,9 @@ static void gens_sighandler(int signum)
 	if (siginfo)
 	{
 		// Signal information specified.
-		snprintf(siginfo_buf, sizeof(siginfo_buf),
+		szprintf(siginfo_buf, sizeof(siginfo_buf),
 				"%s: %s.\n",
 				siginfo->signame, siginfo->sigdesc);
-		siginfo_buf[sizeof(siginfo_buf)-1] = 0x00;
 	}
 	else
 	{
@@ -372,7 +374,7 @@ static void gens_sighandler(int signum)
 	
 	// Show a message box.
 	char msg_buf[1024];
-	snprintf(msg_buf, sizeof(msg_buf),
+	szprintf(msg_buf, sizeof(msg_buf),
 			"Gens/GS has crashed with Signal %d.\n"
 			"%s: %s.\n"
 #ifdef HAVE_SIGACTION
@@ -394,7 +396,6 @@ static void gens_sighandler(int signum)
 			, siginfo_buf
 #endif
 			);
-	msg_buf[sizeof(msg_buf)-1] = 0x00;
 	
 	log_msgbox(msg_buf, "Gens/GS Error");
 	

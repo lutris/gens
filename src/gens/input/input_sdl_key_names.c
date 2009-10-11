@@ -38,6 +38,9 @@
 
 #include <string.h>
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 /**
  * input_sdl_gdk_to_gens_keyval(): Converts a GDK key value to a Gens key value.
  * @param gdk_key GDK key value.
@@ -307,7 +310,6 @@ int input_sdl_get_key_name(uint16_t key, char* buf, int size)
 	}
 	
 	// Known key.
-	strncpy(buf, key_name, size);
-	buf[size - 1] = 0x00;
+	strzcpy(buf, key_name, size);
 	return 0;
 }

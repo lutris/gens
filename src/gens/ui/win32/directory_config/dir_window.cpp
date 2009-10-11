@@ -60,6 +60,7 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 #include "libgsft/gsft_file.h"
+#include "libgsft/gsft_strz.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
@@ -524,8 +525,7 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	
 	// Set the title of the window.
 	char tmp[128];
-	snprintf(tmp, sizeof(tmp), "Select %s Directory", dir_widget->title.c_str());
-	tmp[sizeof(tmp)-1] = 0x00;
+	szprintf(tmp, sizeof(tmp), "Select %s Directory", dir_widget->title.c_str());
 	
 	// Request a new directory.
 	new_dir = GensUI::selectDir(tmp, dir_buf_abs, dir_window);

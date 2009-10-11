@@ -33,6 +33,8 @@
 using std::string;
 using std::vector;
 
+#include "libgsft/gsft_strz.h"
+
 // Main menu.
 HMENU MainMenu = NULL;
 // Accelerator table for the Gens main menu.
@@ -166,8 +168,7 @@ void gens_menu_parse(const GensMenuItem_t *menu, HMENU container)
 				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
 				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
 					curAccel.key = (menu->accelKey - GMAK_F1) + VK_F1;
-					snprintf(tmpKey, sizeof(tmpKey), "F%d", (menu->accelKey - GMAK_F1 + 1));
-					tmpKey[sizeof(tmpKey)-1] = 0x00;
+					szprintf(tmpKey, sizeof(tmpKey), "F%d", (menu->accelKey - GMAK_F1 + 1));
 					
 					sMenuText += string(tmpKey);
 					break;

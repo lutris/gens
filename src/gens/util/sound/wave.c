@@ -32,6 +32,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "libgsft/gsft_strz.h"
+
 #include "emulator/g_main.hpp"
 #include "libgsft/gsft_byteswap.h"
 #include "gens/gens_window_sync.hpp"
@@ -114,8 +116,7 @@ int wav_dump_start(void)
 	do
 	{
 		num++;
-		snprintf(filename, sizeof(filename), "%s%s_%03d.wav", PathNames.Dump_WAV_Dir, ROM_Filename, num);
-		filename[sizeof(filename)-1] = 0x00;
+		szprintf(filename, sizeof(filename), "%s%s_%03d.wav", PathNames.Dump_WAV_Dir, ROM_Filename, num);
 	} while (!access(filename, F_OK));
 	
 	/* Open the file. */

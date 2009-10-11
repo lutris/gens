@@ -49,6 +49,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_strz.h"
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
@@ -430,8 +431,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	{
 		// No description or name.
 		char tmp[64];
-		snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
-		tmp[sizeof(tmp)-1] = 0x00;
+		szprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
 		pluginName = string(tmp);
 	}
 	
@@ -767,8 +767,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 			pluginDesc += "\n\n";
 		
 		char err_code[32];
-		snprintf(err_code, sizeof(err_code), "0x%08X", -(*errIter).second);
-		err_code[sizeof(err_code)-1] = 0x00;
+		szprintf(err_code, sizeof(err_code), "0x%08X", -(*errIter).second);
 		
 		pluginDesc += "MDP error code: " + string(err_code);
 	}

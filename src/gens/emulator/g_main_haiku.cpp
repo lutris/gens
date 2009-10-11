@@ -44,6 +44,8 @@ using std::list;
 #include "sighandler.h"
 #endif
 
+#include "libgsft/gsft_strz.h"
+
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
 #include "g_md.hpp"
@@ -82,10 +84,7 @@ using std::list;
 void get_default_save_path(char *buf, size_t size)
 {
 	// Prepend the user's home directory to the save path.
-	snprintf(buf, size, "%s%s", getenv("HOME"), GENS_DEFAULT_SAVE_PATH);
-	
-	// Make sure the buffer is null-terminated.
-	buf[size-1] = 0x00;
+	szprintf(buf, size, "%s%s", getenv("HOME"), GENS_DEFAULT_SAVE_PATH);
 	
 	// Make sure the directory exists.
 	// NOTE: 0777 is used to allow for custom umask settings.

@@ -32,6 +32,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "libgsft/gsft_strz.h"
+
 #include "emulator/g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.hpp"
@@ -79,7 +81,7 @@ int gym_dump_start(void)
 	do
 	{
 		num++;
-		snprintf(filename, sizeof(filename), "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Filename, num);
+		szprintf(filename, sizeof(filename), "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Filename, num);
 	} while (!access(filename, F_OK));
 	
 	GYM_File = fopen(filename, "w");

@@ -36,8 +36,9 @@
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_strz.h"
 
 // SegaCD
 #include "emulator/g_mcd.hpp"
@@ -161,11 +162,10 @@ void selcd_window_show(void)
 		if (CD_DriveSpeed[i] < 0)
 			break;
 		else if (CD_DriveSpeed[i] == 0)
-			strncpy(tmpSpeed, "Auto", sizeof(tmpSpeed));
+			strzcpy(tmpSpeed, "Auto", sizeof(tmpSpeed));
 		else
-			snprintf(tmpSpeed, sizeof(tmpSpeed), "%dx", CD_DriveSpeed[i]);
-		
-		tmpSpeed[sizeof(tmpSpeed)-1] = 0x00;
+			szprintf(tmpSpeed, sizeof(tmpSpeed), "%dx", CD_DriveSpeed[i]);
+
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboDriveSpeed), tmpSpeed);
 	}
 	gtk_widget_show(cboDriveSpeed);
@@ -232,10 +232,9 @@ static void selcd_window_init(void)
 		for (int i = -1; i <= 9; i++)
 		{
 			if (i == -1)
-				strncpy(tmpDeviceName, cdrom_prefix[curPrefix], sizeof(tmpDeviceName));
+				strzcpy(tmpDeviceName, cdrom_prefix[curPrefix], sizeof(tmpDeviceName));
 			else
-				snprintf(tmpDeviceName, sizeof(tmpDeviceName), "%s%d", cdrom_prefix[curPrefix], i);
-			tmpDeviceName[sizeof(tmpDeviceName)-1] = 0x00;
+				szprintf(tmpDeviceName, sizeof(tmpDeviceName), "%s%d", cdrom_prefix[curPrefix], i);
 			
 			if (lstat(tmpDeviceName, &fileStat))
 			{
@@ -323,8 +322,7 @@ static int selcd_window_save(void)
 		ASPI_End();
 		restartASPI = true;
 		
-		strncpy(cdromDeviceName, tmpDeviceName, sizeof(cdromDeviceName));
-		cdromDeviceName[sizeof(cdromDeviceName)-1] = 0x00;
+		strzcpy(cdromDeviceName, tmpDeviceName, sizeof(cdromDeviceName));
 	}
 	
 	// Drive speed.

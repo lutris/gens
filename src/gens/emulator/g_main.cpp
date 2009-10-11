@@ -27,6 +27,9 @@
 // Message logging.
 #include "macros/log_msg.h"
 
+// libgsft includes.
+#include "libgsft/gsft_strz.h"
+
 // C includes.
 #include <stdint.h>
 #include <stdio.h>
@@ -185,8 +188,8 @@ int Init_Settings(void)
 	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
 	
 	// Create default language filename.
-	strncpy(PathNames.Language_Path, PathNames.Gens_Path, sizeof(PathNames.Language_Path));
-	strcat(PathNames.Language_Path, "language.dat");
+	szprintf(PathNames.Language_Path, sizeof(PathNames.Language_Path),
+		 "%s%s", PathNames.Gens_Path, "language.dat");
 	
 	// Get the CPU flags.
 	getCPUFlags();
