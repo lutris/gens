@@ -51,6 +51,7 @@ TODO for later:
 - Reimplement "MINIMIZE" for fullscreen.
 - Allow disabling SegaCD and 32X in build to make it easier to port to other platforms.
 - Allow disabling all emulation code to test the UI on other platforms.
+- Update v_effects.cpp::T_veffect_pause_tint() for RGB Color Scaling.
 
 MDP TODO for later:
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
