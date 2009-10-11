@@ -81,6 +81,7 @@ static HWND	lblBrightnessVal;
 
 static HWND	chkGrayscale;
 static HWND	chkInverted;
+static HWND	chkScaleColors;
 
 // Widget creation functions.
 static void	ca_window_create_child_windows(HWND hWnd);
@@ -197,7 +198,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(lblBrightnessVal, fntMain, TRUE);
 	
 	// Center the checkboxes.
-	static const unsigned int chkLeft = (CA_WINDOW_WIDTH-80-8-80+16)/2;
+	static const unsigned int chkLeft = (CA_WINDOW_WIDTH-80-8-80-8-96+16)/2;
 	
 	// "Grayscale" checkbox.
 	chkGrayscale = CreateWindow(WC_BUTTON, TEXT("&Grayscale"),
@@ -212,6 +213,13 @@ static void ca_window_create_child_windows(HWND hWnd)
 				   chkLeft+8+80, 16+32+32, 80, 16,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkInverted, fntMain, TRUE);
+	
+	// "Scale Colors" checkbox.
+	chkScaleColors = CreateWindow(WC_BUTTON, TEXT("&Scale Colors"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					chkLeft+8+80+8+80, 16+32+32, 96, 16,
+					hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkScaleColors, fntMain, TRUE);
 	
 	// Create the dialog buttons.
 	
@@ -287,6 +295,7 @@ static void ca_window_init(void)
 	// Checkboxes.
 	Button_SetCheck(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkInverted, (Invert_Color ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkScaleColors, (Scale_Colors ? BST_CHECKED : BST_UNCHECKED));
 }
 
 
@@ -300,6 +309,7 @@ static void ca_window_save(void)
 	
 	Greyscale = (Button_GetCheck(chkGrayscale) == BST_CHECKED);
 	Invert_Color = (Button_GetCheck(chkInverted) == BST_CHECKED);
+	Scale_Colors = (Button_GetCheck(chkScaleColors) == BST_CHECKED);
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
