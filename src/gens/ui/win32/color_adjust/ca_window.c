@@ -215,7 +215,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(chkInverted, fntMain, TRUE);
 	
 	// "Scale Colors" checkbox.
-	chkScaleColors = CreateWindow(WC_BUTTON, TEXT("&Scale Colors"),
+	chkScaleColors = CreateWindow(WC_BUTTON, TEXT("Scale Co_lors"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					chkLeft+8+80+8+80, 16+32+32, 96, 16,
 					hWnd, NULL, ghInstance, NULL);

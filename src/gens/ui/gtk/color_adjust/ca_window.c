@@ -184,7 +184,7 @@ void ca_window_show(void)
 			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
 	// "Scale Colors" checkbox.
-	chkScaleColors = gtk_check_button_new_with_mnemonic("_Scale Colors");
+	chkScaleColors = gtk_check_button_new_with_mnemonic("Scale Co_lors");
 	gtk_widget_show(chkScaleColors);
 	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkScaleColors, TRUE, FALSE, 0);
 	g_signal_connect((gpointer)chkScaleColors, "toggled",
