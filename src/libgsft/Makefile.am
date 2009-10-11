@@ -20,7 +20,8 @@ noinst_HEADERS = \
 		gsft_fastcall.h \
 		gsft_malloc_align.h \
 		gsft_unused.h \
-		gsft_file.h
+		gsft_file.h \
+		gsft_strz.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
