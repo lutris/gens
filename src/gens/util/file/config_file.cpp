@@ -526,7 +526,7 @@ int Config::load(const string& filename, void* gameActive)
 	Brightness_Level = cfg.getInt("Graphics", "Brightness", 100);
 	Greyscale = cfg.getInt("Graphics", "Greyscale", 0);
 	Invert_Color = cfg.getInt("Graphics", "Invert", 0);
-	Scale_Colors = cfg.getInt("Graphics", "Scale Colors", 0);
+	Scale_Colors = cfg.getInt("Graphics", "Scale Colors", 1);
 	
 	// Video settings.
 	Video.VSync_FS = cfg.getInt("Graphics", "Full Screen VSync", 0) & 1;
