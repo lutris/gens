@@ -261,45 +261,45 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	static const int btnTop = GG_WINDOW_HEIGHT-24-8;
 	
+	// "Deactivate All" button.
+	HWND btnDeactivateAll = CreateWindow(WC_BUTTON, TEXT("Deac&tivate All"),
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+						8, btnTop,
+						91, 24,
+						hWnd, (HMENU)IDC_BTNDEACTIVATEALL, gg_hInstance, NULL);
+	SetWindowFont(btnDeactivateAll, gg_hFont, true);
+	
+	// "Delete" button.
+	HWND btnDelete = CreateWindow(WC_BUTTON, TEXT("&Delete"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					8+91+8, btnTop,
+					75, 24,
+					hWnd, (HMENU)IDC_BTNDELETE, gg_hInstance, NULL);
+	SetWindowFont(btnDelete, gg_hFont, true);
+	
 	// "OK" button.
 	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  8, btnTop,
-				  75, 24,
-				  hWnd, (HMENU)IDOK, gg_hInstance, NULL);
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					GG_WINDOW_WIDTH-(8+75+8+75+8+75), btnTop,
+					75, 24,
+					hWnd, (HMENU)IDOK, gg_hInstance, NULL);
 	SetWindowFont(btnOK, gg_hFont, true);
 	
 	// "Cancel" button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      8+75+8, btnTop,
-				      75, 24,
-				      hWnd, (HMENU)IDCANCEL, gg_hInstance, NULL);
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					GG_WINDOW_WIDTH-(8+75+8+75), btnTop,
+					75, 24,
+					hWnd, (HMENU)IDCANCEL, gg_hInstance, NULL);
 	SetWindowFont(btnCancel, gg_hFont, true);
 	
 	// "Apply" button.
 	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     8+75+8+75+8, btnTop,
-				     75, 24,
-				     hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					GG_WINDOW_WIDTH-(8+75), btnTop,
+					75, 24,
+					hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
 	SetWindowFont(btnApply, gg_hFont, true);
-	
-	// "Delete" button.
-	HWND btnDelete = CreateWindow(WC_BUTTON, TEXT("&Delete"),
-				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      GG_WINDOW_WIDTH-(8+91+8+75), btnTop,
-				      75, 24,
-				      hWnd, (HMENU)IDC_BTNDELETE, gg_hInstance, NULL);
-	SetWindowFont(btnDelete, gg_hFont, true);
-	
-	// "Deactivate All" button.
-	HWND btnDeactivateAll = CreateWindow(WC_BUTTON, TEXT("Deac&tivate All"),
-					     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					     GG_WINDOW_WIDTH-(8+91), btnTop,
-					     91, 24,
-					     hWnd, (HMENU)IDC_BTNDEACTIVATEALL, gg_hInstance, NULL);
-	SetWindowFont(btnDeactivateAll, gg_hFont, true);
 	
 	// Initialize the Game Genie code ListView.
 	gg_window_init();

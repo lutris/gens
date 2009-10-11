@@ -256,16 +256,16 @@ void gg_window_show(void *parent)
 	
 	// Create the dialog buttons.
 	
-	// "Delete" button.
-	gtk_dialog_add_button(GTK_DIALOG(gg_window),
-			      GTK_STOCK_DELETE,
-			      GG_RESPONSE_DELETE);
-	
 	// "Deactivate All" button.
 	GtkWidget *btnDeactivateAll = gtk_dialog_add_button(
 					GTK_DIALOG(gg_window),
 					"Deac_tivate All",
 					GG_RESPONSE_DEACTIVATE_ALL);
+	
+	// "Delete" button.
+	gtk_dialog_add_button(GTK_DIALOG(gg_window),
+			      GTK_STOCK_DELETE,
+			      GG_RESPONSE_DELETE);
 	
 	// Create the icon for the "Deactivate All" button.
 	GtkWidget *btnDeactivateAll_icon = gtk_image_new_from_stock(GTK_STOCK_REMOVE, GTK_ICON_SIZE_BUTTON);
@@ -274,20 +274,21 @@ void gg_window_show(void *parent)
 	
 	// Add the rest of the buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(gg_window),
-			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 			       GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
+			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 			       NULL);
 	
+	/*
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(gg_window),
-						GTK_RESPONSE_OK,
-						GTK_RESPONSE_APPLY,
-						GTK_RESPONSE_CANCEL,
 						GG_RESPONSE_DEACTIVATE_ALL,
 						GG_RESPONSE_DELETE,
+						GTK_RESPONSE_OK,
+						GTK_RESPONSE_CANCEL,
+						GTK_RESPONSE_APPLY,
 						-1);
-#endif
+#endif*/
 	
 	// Initialize the Game Genie code treeview.
 	gg_window_init();
