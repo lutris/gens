@@ -24,6 +24,16 @@
 #include <ctype.h>
 #include <errno.h>
 
+/**
+ * strzcpy(): strncpy() wrapper with automatic NULL termination.
+ * TODO: Port BSD's strlcpy(), since it has optimizations.
+ */
+#define strzcpy(dest, src, n) \
+do { \
+	strncpy(dest, src, n); \
+	dest[n-1] = 0x00; \
+} while (0)
+
 #define CBOB_VERSION_MAJOR 0
 #define CBOB_VERSION_MINOR 1
 #define CBOB_VERSION_REVISION 0
@@ -84,19 +94,17 @@ int main(int argc, char *argv[])
 	if (!slash)
 	{
 		// No path separator found. Copy the entire filename.
-		strncpy(in_filename, argv[1], sizeof(in_filename));
+		strzcpy(in_filename, argv[1], sizeof(in_filename));
 	}
 	else
 	{
 		// Path separator found. Copy the file part only.
-		strncpy(in_filename, slash+1, sizeof(in_filename));
+		strzcpy(in_filename, slash+1, sizeof(in_filename));
 	}
-	in_filename[sizeof(in_filename)-1] = 0x00;
 	
 	// C-symbol version of the filename.
 	char in_filename_symbol[PATH_MAX];
-	strncpy(in_filename_symbol, in_filename, sizeof(in_filename_symbol));
-	in_filename_symbol[sizeof(in_filename_symbol)-1] = 0x00;
+	strzcpy(in_filename_symbol, in_filename, sizeof(in_filename_symbol));
 	
 	// Convert non-alphanumeric characters to underscores.
 	char *n;
@@ -110,8 +118,7 @@ int main(int argc, char *argv[])
 	const char *out_filename_c = argv[2];
 	
 	char out_filename_h[PATH_MAX + 16];
-	strncpy(out_filename_h, out_filename_c, sizeof(out_filename_h));
-	out_filename_h[sizeof(out_filename_h)-1] = 0x00;
+	strzcpy(out_filename_h, out_filename_c, sizeof(out_filename_h));
 	
 	// Change the H output filename's extension.
 	char *h_extpos = strrchr(out_filename_h, '.');
