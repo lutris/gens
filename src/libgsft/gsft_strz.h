@@ -28,6 +28,9 @@
 
 #include <string.h>
 
+// TODO: Add wrappers for _sntprintf() [Win32 TCHAR].
+
+
 /**
  * szprintf(): snprintf() wrapper with automatic NULL termination.
  */
@@ -36,6 +39,7 @@ do { \
 	snprintf(str, size, format, ##__VA_ARGS__); \
 	str[size-1] = 0x00; \
 } while (0)
+
 
 /**
  * vszprintf(): vsnprintf() wrapper with automatic NULL termination.
@@ -46,6 +50,7 @@ do { \
 	str[size-1] = 0x00; \
 } while (0)
 
+
 /**
  * strzcpy(): strncpy() wrapper with automatic NULL termination.
  * TODO: Port BSD's strlcpy(), since it has optimizations.
@@ -55,5 +60,6 @@ do { \
 	strncpy(dest, src, n); \
 	dest[n-1] = 0x00; \
 } while (0)
+
 
 #endif /* __GSFT_STRZ_H */
