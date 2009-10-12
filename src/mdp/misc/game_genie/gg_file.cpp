@@ -40,7 +40,6 @@
 using std::list;
 
 // libgsft includes.
-#include "libgsft/gsft_strtok_r.h"
 #include "libgsft/gsft_strz.h"
 
 // MDP includes.
@@ -129,7 +128,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	
 	// Tokens.
 	char *tokens[4];
-	char *r_ptr;	// Used for strtok_r for reentrancy.
+	char *stringp;	// Used for strsep() for reentrancy.
 	
 	// Game Genie code.
 	gg_code_t gg_code;
@@ -141,10 +140,11 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = gsft_strtok_r(in_line, ":", &r_ptr);	// CPU
-		tokens[1] = gsft_strtok_r(NULL,    ":", &r_ptr);	// Address
-		tokens[2] = gsft_strtok_r(NULL,    ":", &r_ptr);	// Data
-		tokens[3] = gsft_strtok_r(NULL,    "",  &r_ptr);	// Name (optional)
+		stringp = &in_line[0];
+		tokens[0] = strsep(&stringp, ":");	// CPU
+		tokens[1] = strsep(&stringp, ":");	// Address
+		tokens[2] = strsep(&stringp, ":");	// Data
+		tokens[3] = strsep(&stringp, "");	// Name (optional)
 		
 		// Make sure CPU, Address, and Data are not null.
 		if (!tokens[0] || !tokens[1] || !tokens[2])
@@ -274,7 +274,7 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 	
 	// Tokens.
 	char *tokens[2];
-	char *r_ptr;	// Used for strtok_r for reentrancy.
+	char *stringp;	// Used for strsep() for reentrancy.
 	
 	// Game Genie code.
 	gg_code_t gg_code;
@@ -287,8 +287,9 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = gsft_strtok_r(in_line, "\t", &r_ptr);	// Code
-		tokens[1] = gsft_strtok_r(NULL,    "",   &r_ptr);	// Name (optional)
+		stringp = &in_line[0];
+		tokens[0] = strsep(&stringp, "\t");	// Code
+		tokens[1] = strsep(&stringp, "");	// Name (optional)
 		
 		// Make sure at least a code was specified.
 		if (!tokens[0])
