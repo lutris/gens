@@ -678,8 +678,8 @@ AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_FUNCS(strdup, has_strdup=yes, has_strdup=no)
 AM_CONDITIONAL([HAVE_STRDUP], [test x$has_strdup = xyes])
 
-AC_CHECK_FUNCS(strtok_r, has_strtok_r=yes, has_strtok_r=no)
-AM_CONDITIONAL([HAVE_STRTOK_R], [test x$has_strtok_r = xyes])
+AC_CHECK_FUNCS(strsep, has_strsep=yes, has_strsep=no)
+AM_CONDITIONAL([HAVE_STRSEP], [test x$has_strsep = xyes])
 
 AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
