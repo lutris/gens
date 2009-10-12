@@ -26,12 +26,10 @@
 #include <config.h>
 #endif
 
-#include <string.h>
-
 #ifdef HAVE_STRDUP
 
 /* strdup() is defined. */
-#define gsft_strdup(s) strdup(s)
+#include <string.h>
 
 #else /* !HAVE_STRDUP */
 
@@ -39,7 +37,7 @@
 extern "C" {
 #endif
 
-char *gsft_strdup(const char *s);
+char* strdup(const char *s);
 
 #ifdef __cplusplus
 }

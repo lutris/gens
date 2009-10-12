@@ -21,15 +21,9 @@
 
 #include "gsft_strdup.h"
 
-#ifndef HAVE_STRDUP
-
-/* strdup() is not defined. */
-
-char* gsft_strdup(const char *s)
+char* strdup(const char *s)
 {
 	char* tmp = (char*)malloc(strlen(s) + 1);
 	strcpy(tmp, s);
 	return tmp;
 }
-
-#endif /* !HAVE_STRDUPP */
