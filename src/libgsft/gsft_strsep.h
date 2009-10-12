@@ -29,12 +29,12 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_STRSEP_R
+#ifdef HAVE_STRSEP
 
 /* strsep() is defined. */
 #include <string.h>
 
-#else
+#else /* !HAVE_STRSEP */
 
 /* strsep() is not defined. */
 
