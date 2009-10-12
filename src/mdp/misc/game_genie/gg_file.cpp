@@ -41,6 +41,7 @@ using std::list;
 
 // libgsft includes.
 #include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strsep.h"
 
 // MDP includes.
 #include "mdp/mdp_stdint.h"
