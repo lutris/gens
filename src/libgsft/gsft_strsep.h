@@ -29,7 +29,12 @@
 #include <config.h>
 #endif
 
-#ifndef HAVE_STRSEP_R
+#ifdef HAVE_STRSEP_R
+
+/* strsep() is defined. */
+#include <string.h>
+
+#else
 
 /* strsep() is not defined. */
 
@@ -43,6 +48,6 @@ char *strsep(char **stringp, const char *delim);
 }
 #endif
 
-#endif /* !HAVE_STRSEP */
+#endif /* HAVE_STRSEP */
 
 #endif /* __GSFT_STRTOK_R_H */
