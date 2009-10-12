@@ -28,9 +28,9 @@ libgsft_la_SOURCES	+= gsft_strdup.c
 noinst_HEADERS		+= gsft_strdup.h
 endif
 
-if !HAVE_STRTOK_R
-libgsft_la_SOURCES	+= gsft_strtok_r.c
-noinst_HEADERS		+= gsft_strtok_r.h
+if !HAVE_STRSEP
+libgsft_la_SOURCES	+= gsft_strsep.c
+noinst_HEADERS		+= gsft_strsep.h
 endif
 
 # Win32-specific headers.
