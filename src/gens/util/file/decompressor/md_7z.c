@@ -143,7 +143,7 @@ static int decompressor_7z_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		z_entry_cur->filename = (f->Name ? gsft_strdup(f->Name) : NULL);
+		z_entry_cur->filename = (f->Name ? strdup(f->Name) : NULL);
 		z_entry_cur->filesize = f->Size;
 		z_entry_cur->next = NULL;
 		

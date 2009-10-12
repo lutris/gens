@@ -93,7 +93,7 @@ static int decompressor_dummy_get_file_info(FILE *zF, const char* filename, mdp_
 	
 	// Set the elements of the list.
 	z_entry->filesize = filesize;
-	z_entry->filename = (filename ? gsft_strdup(filename) : NULL);
+	z_entry->filename = (filename ? strdup(filename) : NULL);
 	z_entry->next = NULL;
 	
 	// Return the list.

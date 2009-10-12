@@ -46,7 +46,7 @@
 #endif
 #include "util/file/decompressor/md_rar_t.h"
 
-/* gsft_strdup() */
+/* libgsft includes. */
 #include "libgsft/gsft_strdup.h"
 
 /* Array of decompressors. */
@@ -152,7 +152,7 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 	
 	/* Fill the data in the mdp_z_t struct. */
 	z->files	= z_entry_head;
-	z->filename	= gsft_strdup(filename);
+	z->filename	= strdup(filename);
 	z->f		= f;
 	z->data		= (void*)(cmp);		/* Data parameter contains decompressor function pointers. */
 	

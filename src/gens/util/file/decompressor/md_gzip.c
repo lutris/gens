@@ -103,7 +103,7 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	mdp_z_entry_t *z_entry = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 	
 	// Set the elements of the list.
-	z_entry->filename = (filename ? gsft_strdup(filename) : NULL);
+	z_entry->filename = (filename ? strdup(filename) : NULL);
 	z_entry->filesize = filesize;
 	z_entry->next = NULL;
 	

@@ -34,7 +34,7 @@
 using std::string;
 using std::list;
 
-// gsft_strdup()
+// libgsft includes.
 #include "libgsft/gsft_strdup.h"
 
 
@@ -109,17 +109,17 @@ void MDP_Incompat::add(mdp_t *plugin, int err, const string& filename)
 			memset(tmp_mdp_desc, 0x00, sizeof(mdp_desc_t));
 			
 			if (orig_desc->name)
-				tmp_mdp_desc->name = gsft_strdup(orig_desc->name);
+				tmp_mdp_desc->name = strdup(orig_desc->name);
 			if (orig_desc->author_mdp)
-				tmp_mdp_desc->author_mdp = gsft_strdup(orig_desc->author_mdp);
+				tmp_mdp_desc->author_mdp = strdup(orig_desc->author_mdp);
 			if (orig_desc->author_orig)
-				tmp_mdp_desc->author_orig = gsft_strdup(orig_desc->author_orig);
+				tmp_mdp_desc->author_orig = strdup(orig_desc->author_orig);
 			if (orig_desc->description)
-				tmp_mdp_desc->description = gsft_strdup(orig_desc->description);
+				tmp_mdp_desc->description = strdup(orig_desc->description);
 			if (orig_desc->website)
-				tmp_mdp_desc->website = gsft_strdup(orig_desc->website);
+				tmp_mdp_desc->website = strdup(orig_desc->website);
 			if (orig_desc->license)
-				tmp_mdp_desc->license = gsft_strdup(orig_desc->license);
+				tmp_mdp_desc->license = strdup(orig_desc->license);
 			
 			unsigned int *iconLength = const_cast<unsigned int*>(&tmp_mdp_desc->iconLength);
 			*iconLength = orig_desc->iconLength;
