@@ -17,6 +17,7 @@ gens_SOURCES += \
 		util/file/decompressor/popen_wrapper.c \
 		charset/cp1252.cpp \
 		ui/win32/fonts.c \
+		ui/win32/cc6.c \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
@@ -59,6 +60,7 @@ noinst_HEADERS += \
 		plugins/mdp_host_gens_win32.h \
 		charset/cp1252.hpp \
 		ui/win32/fonts.h \
+		ui/win32/cc6.h \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
