@@ -49,7 +49,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"

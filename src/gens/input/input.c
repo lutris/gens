@@ -28,7 +28,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // Array of key names.
 const char input_key_names[12][8] =
@@ -210,7 +212,7 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 	if (key == 0)
 	{
 		// 0 == not configured.
-		strzcpy(buf, "Not Configured", size);
+		strlcpy(buf, "Not Configured", size);
 		return 0;
 	}
 	
@@ -226,13 +228,13 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 			else
 			{
 				// Unknown key.
-				strzcpy(buf, "Unknown Key", size);
+				strlcpy(buf, "Unknown Key", size);
 				return rval;
 			}
 		}
 		
 		// No backend available. Return an error.
-		strzcpy(buf, "Unknown Key", size);
+		strlcpy(buf, "Unknown Key", size);
 		return -1;
 	}
 	
@@ -269,7 +271,7 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 			break;
 		
 		default:
-			strzcpy(buf, "Unknown Joy Key", size);
+			strlcpy(buf, "Unknown Joy Key", size);
 			return -1;
 	}
 	

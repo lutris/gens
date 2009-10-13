@@ -29,7 +29,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // C++ includes
 #include <list>
@@ -114,7 +114,7 @@ void get_default_save_path(char *buf, size_t size)
 	}
 	
 	// Set the default save path.
-	strzcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
+	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
 }
 
 

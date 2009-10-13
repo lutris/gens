@@ -66,7 +66,8 @@ using std::deque;
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
 #include "libgsft/gsft_file.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 #include "ui/gens_ui.hpp"
 #include "zip_select/zipsel_dialog.h"
@@ -172,7 +173,7 @@ void ROM::updateRecentROMList(const string& filename,
 void ROM::updateROMDir(const string& filename)
 {
 	string tmpROMDir = File::GetDirFromPath(filename);
-	strzcpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
+	strlcpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
 }
 
 
@@ -258,7 +259,7 @@ void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.
-			strzcpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
+			strlcpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
 		}
 	}
 #endif

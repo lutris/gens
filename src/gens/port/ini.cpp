@@ -26,7 +26,7 @@
 #include "macros/log_msg.h"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // C includes.
 #include <stdlib.h>
@@ -286,7 +286,7 @@ void INI::getString(const string& section, const string& key, const string& def,
 {
 	string tmp;
 	tmp = getString(section, key, def);
-	strzcpy(buf, tmp.c_str(), size);
+	strlcpy(buf, tmp.c_str(), size);
 }
 
 

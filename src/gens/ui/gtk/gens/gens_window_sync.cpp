@@ -38,7 +38,8 @@ using std::string;
 using std::list;
 using std::deque;
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 // GTK+ includes.
 #include <gtk/gtk.h>

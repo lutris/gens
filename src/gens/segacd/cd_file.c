@@ -14,7 +14,8 @@
 #include "gens_core/mem/mem_s68k.h"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // MP3 support
 #ifdef GENS_MP3
@@ -131,7 +132,7 @@ int Load_ISO(char* buf, const char* iso_name)
 	
 	Cur_LBA = Tracks[0].Length;	// Size in sectors
 	
-	strzcpy(tmp_name, iso_name, sizeof(tmp_name));
+	strlcpy(tmp_name, iso_name, sizeof(tmp_name));
 	
 	for (num_track = 2, i = 0; i < 100; i++)
 	{

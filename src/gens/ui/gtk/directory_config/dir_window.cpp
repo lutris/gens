@@ -51,7 +51,8 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_file.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
@@ -338,7 +339,7 @@ static void dir_window_save(void)
 			char *entry = dir_window_entries[vectDirs[dir].id].entry;
 			
 			// Get the entry text.
-			strzcpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
+			strlcpy(entry, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)),
 				GENS_PATH_MAX);
 			
 			// Make sure the end of the directory has a slash.
@@ -360,7 +361,7 @@ static void dir_window_save(void)
 			// Plugin directory.
 			
 			// Get the entry text.
-			strzcpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)), sizeof(dir_buf));
+			strlcpy(dir_buf, gtk_entry_get_text(GTK_ENTRY(vectDirs[dir].txt)), sizeof(dir_buf));
 			
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.

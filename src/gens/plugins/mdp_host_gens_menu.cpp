@@ -22,9 +22,6 @@
 
 #include "mdp_host_gens_menu.hpp"
 
-// libgsft includes.
-#include "libgsft/gsft_strz.h"
-
 // C includes.
 #include <string.h>
 
@@ -34,6 +31,9 @@
 #include <list>
 using std::string;
 using std::list;
+
+// libgsft includes.
+#include "libgsft/gsft_strlcpy.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -233,7 +233,7 @@ int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id,
 	
 	// Get the menu item text.
 	// TODO: Return an error code if the buffer size isn't large enough.
-	strzcpy(text_buf, (*lstIter).text.c_str(), size);
+	strlcpy(text_buf, (*lstIter).text.c_str(), size);
 	
 	// Menu item text copied.
 	return MDP_ERR_OK;

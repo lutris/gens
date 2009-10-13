@@ -38,7 +38,8 @@
 
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // SegaCD
 #include "emulator/g_mcd.hpp"
@@ -162,7 +163,7 @@ void selcd_window_show(void)
 		if (CD_DriveSpeed[i] < 0)
 			break;
 		else if (CD_DriveSpeed[i] == 0)
-			strzcpy(tmpSpeed, "Auto", sizeof(tmpSpeed));
+			strlcpy(tmpSpeed, "Auto", sizeof(tmpSpeed));
 		else
 			szprintf(tmpSpeed, sizeof(tmpSpeed), "%dx", CD_DriveSpeed[i]);
 
@@ -232,7 +233,7 @@ static void selcd_window_init(void)
 		for (int i = -1; i <= 9; i++)
 		{
 			if (i == -1)
-				strzcpy(tmpDeviceName, cdrom_prefix[curPrefix], sizeof(tmpDeviceName));
+				strlcpy(tmpDeviceName, cdrom_prefix[curPrefix], sizeof(tmpDeviceName));
 			else
 				szprintf(tmpDeviceName, sizeof(tmpDeviceName), "%s%d", cdrom_prefix[curPrefix], i);
 			
@@ -322,7 +323,7 @@ static int selcd_window_save(void)
 		ASPI_End();
 		restartASPI = true;
 		
-		strzcpy(cdromDeviceName, tmpDeviceName, sizeof(cdromDeviceName));
+		strlcpy(cdromDeviceName, tmpDeviceName, sizeof(cdromDeviceName));
 	}
 	
 	// Drive speed.

@@ -25,7 +25,7 @@
 #include <string.h>
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 
 /**
  * input_dinput_get_key_name(): Get a DirectInput key name.
@@ -149,6 +149,6 @@ int input_dinput_get_key_name(uint16_t key, char* buf, int size)
 	}
 	
 	// Known key.
-	strzcpy(buf, key_name, size);
+	strlcpy(buf, key_name, size);
 	return 0;
 }

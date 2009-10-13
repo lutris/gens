@@ -32,7 +32,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"

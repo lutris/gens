@@ -97,7 +97,7 @@ using std::list;
 
 // libgsft includes.
 #include "libgsft/gsft_file.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32

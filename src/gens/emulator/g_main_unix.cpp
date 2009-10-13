@@ -43,7 +43,8 @@ using std::list;
 #include "sighandler.h"
 #endif
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 #include "md_palette.hpp"
 #include "gens_ui.hpp"

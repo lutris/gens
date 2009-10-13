@@ -38,7 +38,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_bool.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 #include "libgsft/gsft_unused.h"
 
 // Main settings.

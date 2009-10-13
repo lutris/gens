@@ -42,7 +42,7 @@
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
 #include "libgsft/gsft_file.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // File management functions.
 #include "util/file/file.hpp"

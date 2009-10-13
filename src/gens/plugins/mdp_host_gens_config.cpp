@@ -24,7 +24,7 @@
 #include "mdp/mdp_error.h"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // C++ includes.
 #include <string>
@@ -59,7 +59,7 @@ int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* d
 		if (!def)
 			out_buf[0] = 0x00;
 		else
-			strzcpy(out_buf, def, size);
+			strlcpy(out_buf, def, size);
 		return MDP_ERR_OK;
 	}
 	
@@ -73,12 +73,12 @@ int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* d
 		if (!def)
 			out_buf[0] = 0x00;
 		else
-			strzcpy(out_buf, def, size);
+			strlcpy(out_buf, def, size);
 		return MDP_ERR_OK;
 	}
 	
 	// Key found.
-	strzcpy(out_buf, (*cfgItem).second.c_str(), size);
+	strlcpy(out_buf, (*cfgItem).second.c_str(), size);
 	return MDP_ERR_OK;
 }
 

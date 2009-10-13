@@ -33,7 +33,8 @@
 using std::string;
 using std::vector;
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 // Main menu.
 HMENU MainMenu = NULL;

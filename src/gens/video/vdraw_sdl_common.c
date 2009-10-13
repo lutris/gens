@@ -30,7 +30,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "libgsft/gsft_strz.h"
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 // Gens window.
 #include "gens/gens_window.h"

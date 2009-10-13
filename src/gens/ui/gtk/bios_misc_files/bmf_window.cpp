@@ -43,7 +43,8 @@ using std::string;
 
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 
 // Window.
@@ -240,7 +241,7 @@ static void bmf_window_save(void)
 			continue;
 		
 		// Save the entry text.
-		strzcpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
+		strlcpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
 	}
 	
 	// Disable the "Apply" button.

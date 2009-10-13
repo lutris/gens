@@ -60,7 +60,7 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 #include "libgsft/gsft_file.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"
