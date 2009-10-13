@@ -41,6 +41,10 @@
  */
 CC6_STATUS_T cc6_check(void)
 {
+	// TODO: Check the version of COMCTL32.DLL currently loaded in memory.
+	// If the program's manifest isn't set up properly, then this will return
+	// CC6_STATUS_V6 on Windows XP or later, but v6.0 won't actually be loaded!
+	
 	static const TCHAR dllFileName[] = TEXT("\\COMCTL32.DLL");
 	
 	TCHAR dllPath[MAX_PATH];
