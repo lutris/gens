@@ -53,18 +53,6 @@ DLL_LOCAL void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_
  */
 DLL_LOCAL void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy);
 
-/**
- * gsft_win32_get_message_font(): Get the message font.
- * @return Main font. (Must be deleted with DeleteFont() when finished.)
- */
-DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_get_message_font(void);
-
-/**
- * gsft_win32_get_title_font(): Get the title font.
- * @return Main font. (Must be deleted with DeleteFont() when finished.)
- */
-DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_get_title_font(void);
-
 #ifdef __cplusplus
 }
 #endif
