@@ -49,25 +49,17 @@
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// Wine's headers don't include BUTTON_IMAGELIST or related macros and constants.
-#ifndef BUTTON_IMAGELIST
+// w32api's headers don't include BUTTON_IMAGELIST or related macros and constants.
+#ifndef BCM_SETIMAGELIST
 typedef struct
 {
 	HIMAGELIST himl;
 	RECT margin;
 	UINT uAlign;
 } BUTTON_IMAGELIST, *PBUTTON_IMAGELIST;
-#endif /* BUTTON_IMAGELIST */
-#ifndef BUTTON_IMAGELIST_ALIGN_LEFT
 #define BUTTON_IMAGELIST_ALIGN_LEFT 0
-#endif
-#ifndef BCM_FIRST
 #define BCM_FIRST 0x1600
-#endif
-#ifndef BCM_SETIMAGELIST
 #define BCM_SETIMAGELIST (BCM_FIRST + 0x0002)
-#endif
-#ifndef Button_SetImageList
 #define Button_SetImageList(hWnd, pbuttonImageList) \
 	SendMessage((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
 #endif
