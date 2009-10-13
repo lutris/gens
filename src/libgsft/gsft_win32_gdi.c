@@ -19,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "gsft_win32.h"
+#include "gsft_win32_gdi.h"
 #include <windowsx.h>
 
 
