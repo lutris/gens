@@ -49,22 +49,6 @@
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
 
-// w32api's headers don't include BUTTON_IMAGELIST or related macros and constants.
-#ifndef BCM_SETIMAGELIST
-typedef struct
-{
-	HIMAGELIST himl;
-	RECT margin;
-	UINT uAlign;
-} BUTTON_IMAGELIST, *PBUTTON_IMAGELIST;
-#define BUTTON_IMAGELIST_ALIGN_LEFT 0
-#define BCM_FIRST 0x1600
-#define BCM_SETIMAGELIST (BCM_FIRST + 0x0002)
-#define Button_SetImageList(hWnd, pbuttonImageList) \
-	SendMessage((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
-#endif
-
-
 // Window.
 HWND ccode_window = NULL;
 static BOOL	ccode_window_child_windows_created = FALSE;
@@ -98,10 +82,6 @@ static void	ccode_window_create_child_windows(HWND hWnd);
 static void	ccode_window_create_lstCountryCodes(HWND container);
 static void	ccode_window_create_up_down_buttons(HWND container);
 
-// Image lists.
-static HIMAGELIST	imglArrowUp = NULL;
-static HIMAGELIST	imglArrowDown = NULL;
-
 // Configuration load/save functions.
 static void	ccode_window_init(void);
 static void	ccode_window_save(void);
@@ -109,6 +89,18 @@ static void	ccode_window_save(void);
 // Callbacks.
 static void	ccode_window_callback_btnUp_clicked(void);
 static void	ccode_window_callback_btnDown_clicked(void);
+
+/** BEGIN: Common Controls v6.0 **/
+
+#include "ui/win32/cc6.h"
+
+// Image lists.
+static HIMAGELIST	imglArrowUp = NULL;
+static HIMAGELIST	imglArrowDown = NULL;
+
+static CC6_STATUS_T	ccode_window_cc6 = CC6_STATUS_UNKNOWN;
+
+/** END: Common Controls v6.0 **/
 
 
 /**
@@ -300,11 +292,14 @@ static void ccode_window_create_up_down_buttons(HWND container)
 				    container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
 	SetWindowFont(btnDown, fntMain, TRUE);
 	
+	// Check the Common Controls v6.0 status.
+	if (ccode_window_cc6 == CC6_STATUS_UNKNOWN)
+		ccode_window_cc6 = cc6_check();
+	
 	// Set the button icons.
-	if (winVersion.dwMajorVersion > 5 ||
-	    (winVersion.dwMajorVersion == 5 && winVersion.dwMinorVersion >= 1))
+	if (ccode_window_cc6 == CC6_STATUS_V6)
 	{
-		// Windows XP or later. Use BUTTON_IMAGELIST and Button_SetImageList().
+		// Common Controls v6.0. Use BUTTON_IMAGELIST and Button_SetImageList().
 		// This ensures that visual styles are applied correctly.
 		
 		// "Up" button image list.
@@ -339,7 +334,7 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	}
 	else
 	{
-		// Windows 2000 or earlier. Use BM_SETIMAGE.
+		// Older version of Common Controls. Use BM_SETIMAGE.
 		SetWindowText(btnUp, TEXT("Up"));
 		SetWindowText(btnDown, TEXT("Down"));
 		SendMessage(btnUp, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoUp);
