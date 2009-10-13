@@ -61,6 +61,7 @@ noinst_HEADERS += \
 libgsft_win32_gdi_la_CFLAGS	= $(libgsft_win32_la_CFLAGS)
 libgsft_win32_gdi_la_CXXFLAGS	= $(libgsft_win32_la_CXXFLAGS)
 libgsft_win32_gdi_la_LDFLAGS	= $(libgsft_win32_la_LDFLAGS)
+libgsft_win32_gdi_la_LIBADD	= -lgdi32
 
 libgsft_win32_gdi_la_SOURCES = \
 		gsft_win32_gdi.c
