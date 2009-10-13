@@ -23,7 +23,7 @@
 #define __GSFT_WIN32_H
 
 #ifndef _WIN32
-#error libgsft/gsft_win32.h should not be #include'd on non-Win32 platforms!
+#error Do not include libgsft/gsft_win32.h on non-Win32 platforms!
 #else
 
 #define WIN32_LEAN_AND_MEAN
