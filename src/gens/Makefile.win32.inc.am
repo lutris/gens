@@ -86,3 +86,7 @@ noinst_HEADERS += \
 endif
 
 gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound
+
+# libgsft Win32 libraries.
+gens_LDADD += $(top_builddir)/src/libgsft/libgsft_win32.la
+gens_DEPENDENCIES += $(top_builddir)/src/libgsft/libgsft_win32.la
