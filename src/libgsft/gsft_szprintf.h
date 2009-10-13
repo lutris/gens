@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common functions.                                              *
- * gsft_strz.h: C string functions with automatic null termination.        *
+ * gsft_szprintf.h: snprintf() functions with automatic null termination.  *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef __GSFT_STRZ_H
-#define __GSFT_STRZ_H
+#ifndef __GSFT_SZPRINTF_H
+#define __GSFT_SZPRINTF_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -51,15 +51,4 @@ do { \
 } while (0)
 
 
-/**
- * strzcpy(): strncpy() wrapper with automatic NULL termination.
- * TODO: Port BSD's strlcpy(), since it has optimizations.
- */
-#define strzcpy(dest, src, n) \
-do { \
-	strncpy(dest, src, n); \
-	dest[n-1] = 0x00; \
-} while (0)
-
-
-#endif /* __GSFT_STRZ_H */
+#endif /* __GSFT_SZPRINTF_H */

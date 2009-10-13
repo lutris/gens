@@ -21,7 +21,8 @@ noinst_HEADERS = \
 		gsft_malloc_align.h \
 		gsft_unused.h \
 		gsft_file.h \
-		gsft_strz.h
+		gsft_szprintf.h \
+		gsft_strlcpy.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
@@ -31,6 +32,14 @@ endif
 if !HAVE_STRSEP
 libgsft_la_SOURCES	+= gsft_strsep.c
 noinst_HEADERS		+= gsft_strsep.h
+endif
+
+if !HAVE_STRLCPY
+libgsft_la_SOURCES	+= strlcpy.c
+endif
+
+if !HAVE_STRLCAT
+libgsft_la_SOURCES	+= strlcat.c
 endif
 
 # Win32-specific headers.

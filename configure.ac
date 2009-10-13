@@ -681,6 +681,13 @@ AM_CONDITIONAL([HAVE_STRDUP], [test x$has_strdup = xyes])
 AC_CHECK_FUNCS(strsep, has_strsep=yes, has_strsep=no)
 AM_CONDITIONAL([HAVE_STRSEP], [test x$has_strsep = xyes])
 
+AC_CHECK_FUNCS(strlcpy, has_strlcat=yes, has_strlcpy=no)
+AM_CONDITIONAL([HAVE_STRLCPY], [test x$has_strlcpy = xyes])
+
+# TODO: Check for BSD semantics. (Solaris has a slightly different implementation.)
+AC_CHECK_FUNCS(strlcat, has_strlcat=yes, has_strlcat=no)
+AM_CONDITIONAL([HAVE_STRLCAT], [test x$has_strlcat = xyes])
+
 AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
 

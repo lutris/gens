@@ -20,7 +20,8 @@
  ***************************************************************************/
 
 #include "gsft_file.h"
-#include "gsft_strz.h"
+#include "gsft_szprintf.h"
+#include "gsft_strlcpy.h"
 
 #include <stdio.h>
 
@@ -40,7 +41,7 @@ void GSFT_FNCALL gsft_file_abs_to_rel(const char *path_abs, const char *path_roo
 	if (strncmp(path_abs, path_root, path_root_len) != 0)
 	{
 		// Root path not found. Copy the absolute path as-is.
-		strzcpy(path_rel, path_abs, path_rel_len);
+		strlcpy(path_rel, path_abs, path_rel_len);
 		return;
 	}
 	
@@ -65,7 +66,7 @@ void GSFT_FNCALL gsft_file_rel_to_abs(const char *path_rel, const char *path_roo
 	if (path_rel[0] != '.' || path_rel[1] != GSFT_DIR_SEP_CHR)
 	{
 		// Not relative. Copy the path as-is.
-		strzcpy(path_abs, path_rel, path_abs_len);
+		strlcpy(path_abs, path_rel, path_abs_len);
 		return;
 	}
 	
