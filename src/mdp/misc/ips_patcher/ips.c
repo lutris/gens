@@ -29,7 +29,8 @@
 #include "ips_file.hpp"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 // MDP includes.
 #include "mdp/mdp_stdint.h"
@@ -131,7 +132,7 @@ static int MDP_FNCALL ips_dir_get(int dir_id, char *out_buf, unsigned int size)
 	if (dir_id != ips_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strzcpy(out_buf, ips_save_path, size);
+	strlcpy(out_buf, ips_save_path, size);
 	return MDP_ERR_OK;
 }
 
@@ -147,6 +148,6 @@ static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf)
 	if (dir_id != ips_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strzcpy(ips_save_path, buf, sizeof(ips_save_path));
+	strlcpy(ips_save_path, buf, sizeof(ips_save_path));
 	return MDP_ERR_OK;
 }

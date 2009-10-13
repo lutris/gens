@@ -27,7 +27,7 @@
 #include <string.h>
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Game Genie characters.
 static const char gg_chars[] =

@@ -27,7 +27,8 @@
 #include <stdlib.h>
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
 
 int main(int argc, char *argv[])
 {
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
 		else
 #endif
 		{
-			strzcpy(dll_filename, argv[i], sizeof(dll_filename));
+			strlcpy(dll_filename, argv[i], sizeof(dll_filename));
 		}
 		
 		if (!plugin_check(dll_filename))

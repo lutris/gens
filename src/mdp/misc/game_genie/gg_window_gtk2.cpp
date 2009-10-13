@@ -37,7 +37,7 @@
 using std::list;
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 #include "gg_window.hpp"
 #include "gg_plugin.h"

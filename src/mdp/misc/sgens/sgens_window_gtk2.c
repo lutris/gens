@@ -45,7 +45,7 @@
 #include "mdp/mdp_mem.h"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Window.
 static GtkWidget *sgens_window = NULL;

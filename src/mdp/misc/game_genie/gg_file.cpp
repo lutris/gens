@@ -40,7 +40,7 @@
 using std::list;
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 #include "libgsft/gsft_strsep.h"
 
 // MDP includes.
@@ -231,7 +231,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 			else
 			{
 				// Copy the name to the gg_code.
-				strzcpy(gg_code.name, tokens[3], sizeof(gg_code.name));
+				strlcpy(gg_code.name, tokens[3], sizeof(gg_code.name));
 			}
 		}
 		else
@@ -313,7 +313,7 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 			ELIMINATE_NEWLINES(tokens[1]);
 			
 			// Copy the name of the code.
-			strzcpy(gg_code.name, tokens[1], sizeof(gg_code.name));
+			strlcpy(gg_code.name, tokens[1], sizeof(gg_code.name));
 		}
 		else
 		{

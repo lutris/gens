@@ -51,7 +51,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Window.
 static HWND	sgens_window = NULL;

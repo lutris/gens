@@ -38,7 +38,7 @@
 #include "mdp/mdp_error.h"
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Window.
 static GtkWidget *ntsc_window = NULL;

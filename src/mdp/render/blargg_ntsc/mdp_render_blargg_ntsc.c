@@ -39,7 +39,7 @@
 #include <errno.h>
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_szprintf.h"
 
 // MDP Host Services.
 const mdp_host_t *ntsc_host_srv = NULL;

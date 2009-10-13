@@ -33,7 +33,7 @@
 using std::string;
 
 // libgsft includes.
-#include "libgsft/gsft_strz.h"
+#include "libgsft/gsft_strlcpy.h"
 
 #include "gg.hpp"
 #include "gg_plugin.h"
@@ -235,7 +235,7 @@ static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size)
 	if (dir_id != gg_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strzcpy(out_buf, gg_save_path, size);
+	strlcpy(out_buf, gg_save_path, size);
 	return MDP_ERR_OK;
 }
 
@@ -251,6 +251,6 @@ static int MDP_FNCALL gg_dir_set(int dir_id, const char *buf)
 	if (dir_id != gg_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;
 	
-	strzcpy(gg_save_path, buf, sizeof(gg_save_path));
+	strlcpy(gg_save_path, buf, sizeof(gg_save_path));
 	return MDP_ERR_OK;
 }
