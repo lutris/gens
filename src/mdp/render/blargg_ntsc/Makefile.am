@@ -39,7 +39,10 @@ endif
 if GENS_UI_WIN32
 mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_win32.c
 #mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_dllmain.c resource.rc
-mdp_render_blargg_ntsc_la_LIBADD	+= -lgdi32
+mdp_render_blargg_ntsc_la_LIBADD	+= \
+		-lgdi32 \
+		$(top_builddir)/src/libgsft/libgsft_win32.la \
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
 #noinst_HEADERS += \
 #		vlopt.ico \
 #		vlopt_dllmain.h \

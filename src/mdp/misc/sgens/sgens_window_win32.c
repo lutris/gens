@@ -51,6 +51,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Window.
@@ -133,7 +134,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	}
 	
 	// Create the font.
-	sgens_hFont = gsft_win32_get_message_font();
+	sgens_hFont = gsft_win32_gdi_get_message_font();
 	
 	// Create the window.
 	sgens_window = CreateWindow(TEXT("mdp_misc_sgens_window"), TEXT("Sonic Gens"),

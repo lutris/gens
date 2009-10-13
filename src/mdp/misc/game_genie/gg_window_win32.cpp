@@ -58,6 +58,7 @@ using std::list;
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // For whatever reason, Wine's headers don't include the ListView_(Set|Get)CheckState macros.
 #ifndef ListView_SetCheckState
@@ -156,8 +157,8 @@ void gg_window_show(void *parent)
 	}
 	
 	// Create the fonts.
-	gg_hFont = gsft_win32_get_message_font();
-	gg_hFont_title = gsft_win32_get_title_font();
+	gg_hFont = gsft_win32_gdi_get_message_font();
+	gg_hFont_title = gsft_win32_gdi_get_title_font();
 	
 	// Create the window.
 	gg_window = CreateWindow(TEXT("gg_window_wndclass"), TEXT("Game Genie"),

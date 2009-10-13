@@ -46,6 +46,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Response ID for the "Reset" button.
 #define VLOPT_RESPONSE_RESET -64
@@ -118,7 +119,7 @@ void vlopt_window_show(void *parent)
 	}
 	
 	// Create the font.
-	vlopt_hfont = gsft_win32_get_message_font();
+	vlopt_hfont = gsft_win32_gdi_get_message_font();
 	
 	// Create the window.
 	vlopt_window = CreateWindow(TEXT("vlopt_window_wndclass"), TEXT("VDP Layer Options"),

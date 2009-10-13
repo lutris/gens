@@ -45,6 +45,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Window.
 static HWND ntsc_window = NULL;
@@ -128,7 +129,7 @@ void ntsc_window_show(void *parent)
 	}
 	
 	// Create the font.
-	ntsc_hFont = gsft_win32_get_message_font();
+	ntsc_hFont = gsft_win32_gdi_get_message_font();
 	
 	// Create the window.
 	ntsc_window = CreateWindow(TEXT("ntsc_window_wndclass"), TEXT("Blargg's NTSC Filter"),

@@ -40,7 +40,10 @@ endif
 
 if GENS_UI_WIN32
 mdp_misc_sgens_la_SOURCES	+= sgens_window_win32.c sgens_dllmain.c resource.rc
-mdp_misc_sgens_la_LIBADD	+= -lgdi32
+mdp_misc_sgens_la_LIBADD	+= \
+		-lgdi32 \
+		$(top_builddir)/src/libgsft/libgsft_win32.la \
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
 noinst_HEADERS += \
 		sgens.ico \
 		sgens_dllmain.h \
