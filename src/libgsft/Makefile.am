@@ -42,10 +42,29 @@ if !HAVE_STRLCAT
 libgsft_la_SOURCES	+= strlcat.c
 endif
 
-# Win32-specific headers.
+# Win32-specific code.
 if GENS_OS_WIN32
-libgsft_la_SOURCES += \
+
+noinst_LTLIBRARIES += libgsft_win32.la libgsft_win32_gdi.la
+
+# General Win32 stuff.
+libgsft_win32_la_CFLAGS		= $(libgsft_la_CFLAGS)
+libgsft_win32_la_CXXFLAGS	= $(libgsft_la_CXXFLAGS)
+libgsft_win32_la_LDFLAGS	= $(libgsft_la_LDFLAGS)
+
+libgsft_win32_la_SOURCES = \
 		gsft_win32.c
 noinst_HEADERS += \
 		gsft_win32.h
+
+# Win32 GDI stuff.
+libgsft_win32_gdi_la_CFLAGS	= $(libgsft_win32_la_CFLAGS)
+libgsft_win32_gdi_la_CXXFLAGS	= $(libgsft_win32_la_CXXFLAGS)
+libgsft_win32_gdi_la_LDFLAGS	= $(libgsft_win32_la_LDFLAGS)
+
+libgsft_win32_gdi_la_SOURCES = \
+		gsft_win32_gdi.c
+noinst_HEADERS += \
+		gsft_win32_gdi.h
+
 endif

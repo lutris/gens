@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common functions.                                              *
- * gsft_win32.h: Win32 convenience functions. (General Stuff)              *
+ * gsft_win32_gdi.h: Win32 convenience functions. (GDI Stuff)              *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
@@ -19,11 +19,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef __GSFT_WIN32_H
-#define __GSFT_WIN32_H
+#ifndef __GSFT_WIN32_GDI_H
+#define __GSFT_WIN32_GDI_H
 
 #ifndef _WIN32
-#error libgsft/gsft_win32.h should not be #include'd on non-Win32 platforms!
+#error libgsft/gsft_win32_gdi.h should not be #include'd on non-Win32 platforms!
 #else
 
 #define WIN32_LEAN_AND_MEAN
@@ -39,31 +39,16 @@ extern "C" {
 #endif
 
 /**
- * gsft_win32_center_on_window(): Center one window on top of another window.
- * @param hWnd_top Window to center on top.
- * @param hWnd_bottom Window to be centered over.
- */
-DLL_LOCAL void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom);
-
-/**
- * gsft_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
- * @param hWnd Window handle.
- * @param cx Requested width.
- * @param cy Requested height.
- */
-DLL_LOCAL void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy);
-
-/**
- * gsft_win32_get_message_font(): Get the message font.
+ * gsft_win32_gdi_get_message_font(): Get the message font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_get_message_font(void);
+DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_gdi_get_message_font(void);
 
 /**
- * gsft_win32_get_title_font(): Get the title font.
+ * gsft_win32_gdi_get_title_font(): Get the title font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_get_title_font(void);
+DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_gdi_get_title_font(void);
 
 #ifdef __cplusplus
 }

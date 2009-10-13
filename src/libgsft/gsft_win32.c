@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common functions.                                              *
- * gsft_win32.h: Win32 convenience functions.                              *
+ * gsft_win32.c: Win32 convenience functions. (General Stuff)              *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
@@ -18,8 +18,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
-
-#ifdef _WIN32
 
 #include "gsft_win32.h"
 #include <windowsx.h>
@@ -144,37 +142,3 @@ void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, cons
 		     rcWindow.bottom - rcWindow.top,
 		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 }
-
-
-/**
- * gsft_win32_get_message_font(): Get the message font.
- * @return Main font. (Must be deleted with DeleteFont() when finished.)
- */
-HFONT GSFT_FNCALL gsft_win32_get_message_font(void)
-{
-	NONCLIENTMETRICS ncm;
-	ncm.cbSize = sizeof(ncm);
-	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
-	
-	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
-}
-
-
-/**
- * gsft_win32_get_title_font(): Get the title font.
- * @return Main font. (Must be deleted with DeleteFont() when finished.)
- */
-HFONT GSFT_FNCALL gsft_win32_get_title_font(void)
-{
-	NONCLIENTMETRICS ncm;
-	ncm.cbSize = sizeof(ncm);
-	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
-	
-	// Title font is the message font with bold and italics.
-	ncm.lfMessageFont.lfItalic = 1;
-	ncm.lfMessageFont.lfWeight = FW_BOLD;
-	
-	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
-}
-
-#endif /* _WIN32 */
