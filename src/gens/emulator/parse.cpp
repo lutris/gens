@@ -448,8 +448,8 @@ static void parse_startup_rom(const char *filename, Gens_StartupInfo_t *startup)
 		// Relative pathname.
 		if (!getcwd(startup->filename, sizeof(startup->filename)))
 			return;
-		strcat(startup->filename, GSFT_DIR_SEP_STR);
-		strcat(startup->filename, filename);
+		strlcat(startup->filename, GSFT_DIR_SEP_STR, sizeof(startup->filename));
+		strlcat(startup->filename, filename, sizeof(startup->filename));
 	}
 	
 	// Set the startup mode.

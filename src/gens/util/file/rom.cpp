@@ -585,10 +585,9 @@ unsigned int ROM::loadROM(const string& filename,
 			// On Win32, this usually means that the specified file
 			// had symbols not representable in the local code page,
 			// and this version of Gens/GS was compiled without Unicode support.
-			strncat(msg, "\n\nThe selected file has Unicode symbols in its filename;\n"
+			strlcat(msg, "\n\nThe selected file has Unicode symbols in its filename;\n"
 				"however, this version of Gens/GS does not have support\n"
 				"for Unicode strings.", sizeof(msg));
-			msg[sizeof(msg)-1] = 0x00;
 		}
 #endif
 		
