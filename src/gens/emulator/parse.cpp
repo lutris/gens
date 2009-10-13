@@ -467,6 +467,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 {
 	int c;
 	int error = 0;
+	int option_index = 0;
 	
 	// Create the startup information struct.
 	Gens_StartupInfo_t *startup = (Gens_StartupInfo_t*)malloc(sizeof(Gens_StartupInfo_t));
@@ -478,8 +479,6 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 	
 	while (1)
 	{
-		int option_index = 0;
-		
 		c = getopt_long(argc, argv, "", long_options, &option_index);
 		if (c == -1)
 			break;
