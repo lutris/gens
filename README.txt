@@ -111,6 +111,23 @@ called "gens.exe".
 
 ================================================================
 
+3.2. Feature Requests
+
+Want a new feature in Gens/GS? Here's a proven method for getting it done.
+
+1. Contact GerbilSoft asking for a new feature.
+
+2. Don't tell him what the new feature is, but claim that Gens/GS is
+   incomplete without it.
+
+3. ?????
+
+4. PROFIT!
+
+If it can work for administrators of popular websites, it can work for you!
+
+================================================================
+
 4. Where are gens.cfg and language.dat stored?
 
 On Linux: ~/.gens/
