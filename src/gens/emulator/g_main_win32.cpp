@@ -103,16 +103,17 @@ void get_default_save_path(char *buf, size_t size)
 	GetModuleFileName(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
 	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path)-1] = 0x00;
 	
-	// Set the current directory.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
-	
-	// Eliminate the filename portion of the pathname. (_tcsrchr() == strrchr())
+	// Remove the filename portion of the pathname. (_tcsrchr() == strrchr())
 	TCHAR *last_backslash = _tcsrchr(PathNames.Gens_EXE_Path, '\\');
 	if (last_backslash)
 	{
 		*(last_backslash + 1) = 0x00;
 	}
 	
+	// Set the current directory.
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	
+	printf("%s\n", PathNames.Gens_EXE_Path);
 	// Set the default save path.
 	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
 }
