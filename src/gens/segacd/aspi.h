@@ -6,10 +6,6 @@
 #ifndef GENS_ASPI_H
 #define GENS_ASPI_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Needed for uint_*.
 #include <stdint.h>
 
@@ -19,6 +15,10 @@ extern "C" {
 #define NOMINMAX
 #endif
 #include <windows.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 // On Windows, pshpack1.h is needed to byte-align structs.
