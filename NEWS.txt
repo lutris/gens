@@ -34,6 +34,25 @@ release of Gens/GS r7.
 
 ================================================================
 
+Changes from r7_pre5 to r7:
+
+Bug Fixes:
+
+* [Win32] Added a workaround for an ASPI-related crash on Windows 98SE.
+
+--------------------------------
+
+Low-Level Code Changes:
+
+* [libgsft] Added an implementation of strsep() and removed the strtok_r()
+  implementation. All Gens/GS code that uses strtok_r() has been switched
+  over to strsep().
+
+* [libgsft] Added the BSD implementations of strlcpy() and strlcat().
+  Most Gens/GS code has been switched over to these functions.
+
+================================================================
+
 Changes from r7_pre4 to r7_pre5 [PREVIEW RELEASE]:
 
 New Features:
