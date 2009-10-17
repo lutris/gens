@@ -203,61 +203,62 @@ void ASPI_Scan_Drives(void)
 {
 	SRB_HaInquiry sh;
 	SRB_GDEVBlock sd;
-#ifdef DEBUG_CD
-	char str[512];
-#endif
 	int i, j, k, maxTgt;
-
+	
 	for(i = 0; i < 8; i++)
 	{
 		DEV_PAR[i][0] = 0;
 		DEV_PAR[i][1] = 0;
 		DEV_PAR[i][2] = 0;
 	}
-
+	
 #ifdef DEBUG_CD
 		fprintf(debug_SCD_file, "Start Scanning :\n");
 #endif
-
-	for(k = 0, i = 0; i < Num_CD_Drive; i++)
+	
+	for (k = 0, i = 0; i < Num_CD_Drive; i++)
 	{
 		memset(&sh, 0, sizeof(sh));
 		sh.SRB_Cmd   = SC_HA_INQUIRY;
 		sh.SRB_HaId  = i;
-
+		
 		pSendASPI32Command((LPSRB) &sh);
-
+		
 		if (sh.SRB_Status != SS_COMP)
-		continue;
-
+			continue;
+		
 		maxTgt = (int) sh.HA_Unique[3];
-
-		if ((maxTgt != 8) && (maxTgt != 16)) maxTgt = 8;
-
+		
+		// TODO: Win98 SE's ASPI driver returns 0 for maxTgt.
+		if (maxTgt != 8 && maxTgt != 16)
+			maxTgt = 8;
+		if (maxTgt > 8)
+			maxTgt = 8;
+		
 #ifdef DEBUG_CD
 		fprintf(debug_SCD_file, "HaID = %d, max target = %d\n", i, maxTgt);
 #endif
-
-		for(j = 0; j < maxTgt; j++)
+		
+		for (j = 0; j < maxTgt; j++)
 		{
 			memset(&sd, 0, sizeof(sd));
 			sd.SRB_Cmd    = SC_GET_DEV_TYPE; 
 			sd.SRB_HaId   = i;
 			sd.SRB_Target = j;
-
+			
 			pSendASPI32Command((LPSRB) &sd);
 			if (sd.SRB_Status == SS_COMP)
 			{
 #ifdef DEBUG_CD
 				fprintf(debug_SCD_file, "Found device at %d:%d\n", i, j);
 #endif
-
+				
 				if (sd.SRB_DeviceType == DTYPE_CDROM)
 				{
 #ifdef DEBUG_CD
 					fprintf(debug_SCD_file, "Accepted %d -> %d:%d\n", i, sd.SRB_HaId, sd.SRB_Target);
 #endif
-
+					
 					DEV_PAR[k][0] = i;
 					DEV_PAR[k][1] = j;
 					DEV_PAR[k][2] = 0;

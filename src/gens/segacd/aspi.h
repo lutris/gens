@@ -402,9 +402,9 @@ typedef struct tagSRB32_GDEVBlock
 	uint8_t  SRB_DeviceType;	/* Target's peripheral device type */
 	uint8_t  SRB_Rsvd1;
 	
-	// TODO: There seems to be an 8-byte overflow here,
+	// TODO: There seems to be a 1 KB overflow here,
 	// which causes a crash with the default Win98SE ASPI driver.
-	uint8_t  reserved[8];
+	uint8_t  reserved[1024];
 } SRB_GDEVBlock, *PSRB_GDEVBlock;
 
 /* SRB - EXECUTE SCSI COMMAND - SC_EXEC_SCSI_CMD */
