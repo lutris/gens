@@ -21,11 +21,7 @@
 #include "cd_aspi.hpp"
 #include "gens_core/mem/mem_s68k.h"
 
-
 static HINSTANCE hASPI_DLL = NULL;               // Handle to DLL
-DWORD (*Get_ASPI_Info)(void);
-DWORD (*Get_ASPI_Version)(void);
-DWORD (*Send_ASPI_Command)(LPSRB);
 int ASPI_Command_Running;
 int DEV_PAR[8][3];
 unsigned int Current_LBA;
@@ -33,6 +29,11 @@ unsigned char Buf_Stat[256];
 SRB_ExecSCSICmd se;
 TOC toc;
 
+// Function pointers.
+#define MAKE_FUNCPTR(f) static typeof(f) * p##f = NULL;
+MAKE_FUNCPTR(SendASPI32Command);
+MAKE_FUNCPTR(GetASPI32SupportInfo);
+MAKE_FUNCPTR(GetASPI32DLLVersion);
 
 // External variables
 int ASPI_Initialized = 0;	// If ASPI is initialized, this is set.
@@ -40,14 +41,11 @@ int cdromSpeed;			// Speed of the CD-ROM drive. (TODO: Is this really necessary?
 int Num_CD_Drive;		// Number of CD-ROM drives detected. (TODO: Is this correct?)
 int cdromDeviceID;		// CD-ROM device ID
 
-
 // for CDC functions
-
 int Sectors_In_Cache = 0;
 int Read_Complete = 1;
 unsigned char Buf_Read[2366 * 64];
 SRB_ExecSCSICmd sread;
-
 
 // WNASPI32.dll version numbers
 static const unsigned int WNASPI32_VERSION_WIN98SE		= 0x00000001;
@@ -69,9 +67,9 @@ int ASPI_Init(void)
 	memset(Buf_Read, 0x00, sizeof(Buf_Read));
 	
 	// Clear the ASPI pointers.
-	Get_ASPI_Info = NULL;
-	Get_ASPI_Version = NULL;
-	Send_ASPI_Command = NULL;
+	pGetASPI32SupportInfo = NULL;
+	pGetASPI32DLLVersion = NULL;
+	pSendASPI32Command = NULL;
 	
 	// Attempt to load the ASPI DLL.
 	ASPI_Initialized = 0;
@@ -79,12 +77,12 @@ int ASPI_Init(void)
 	if (hASPI_DLL)
 	{
 		// ASPI loaded.
-		Get_ASPI_Info = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32SupportInfo");
-		Get_ASPI_Version = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
-		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
+		pGetASPI32SupportInfo = (typeof(pGetASPI32SupportInfo))GetProcAddress(hASPI_DLL, "GetASPI32SupportInfo");
+		pGetASPI32DLLVersion = (typeof(pGetASPI32DLLVersion))(DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
+		pSendASPI32Command = (typeof(pSendASPI32Command))(DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
 	}
 	
-	if (!Get_ASPI_Info || !Get_ASPI_Version || !Send_ASPI_Command)
+	if (!pGetASPI32SupportInfo || !pGetASPI32DLLVersion || !pSendASPI32Command)
 	{
 		if (hASPI_DLL)
 		{
@@ -92,9 +90,9 @@ int ASPI_Init(void)
 			hASPI_DLL = NULL;
 		}
 		
-		Get_ASPI_Info = NULL;
-		Get_ASPI_Version = NULL;
-		Send_ASPI_Command = NULL;
+		pGetASPI32SupportInfo = NULL;
+		pGetASPI32DLLVersion = NULL;
+		pSendASPI32Command = NULL;
 		
 		// MessageBox(NULL, "Error loading WNASPI32.DLL\nCD device will not be supported", "ASPI error", MB_ICONSTOP);
 #ifdef DEBUG_CD
@@ -103,7 +101,7 @@ int ASPI_Init(void)
 		return 0;
 	}
 	
-	ASPI_Status = Get_ASPI_Info();
+	ASPI_Status = pGetASPI32SupportInfo();
 	
 	switch (HIBYTE(ASPI_Status))
 	{
@@ -170,9 +168,9 @@ int ASPI_End(void)
 #endif
 	}
 
-	Get_ASPI_Info = NULL;
-	Get_ASPI_Version = NULL;
-	Send_ASPI_Command = NULL;
+	pGetASPI32SupportInfo = NULL;
+	pGetASPI32DLLVersion = NULL;
+	pSendASPI32Command = NULL;
 	Num_CD_Drive = 0;
 
 	return 1;
@@ -227,7 +225,7 @@ void ASPI_Scan_Drives(void)
 		sh.SRB_Cmd   = SC_HA_INQUIRY;
 		sh.SRB_HaId  = i;
 
-		Send_ASPI_Command((LPSRB) &sh);
+		pSendASPI32Command((LPSRB) &sh);
 
 		if (sh.SRB_Status != SS_COMP)
 		continue;
@@ -247,7 +245,7 @@ void ASPI_Scan_Drives(void)
 			sd.SRB_HaId   = i;
 			sd.SRB_Target = j;
 
-			Send_ASPI_Command((LPSRB) &sd);
+			pSendASPI32Command((LPSRB) &sd);
 			if (sd.SRB_Status == SS_COMP)
 			{
 #ifdef DEBUG_CD
@@ -299,7 +297,7 @@ int ASPI_Get_Drive_Info(int dev, unsigned char *Inf)
 	s.CDBByte[0]     = SCSI_INQUIRY;
 	s.CDBByte[4]     = 100;
 
-	Send_ASPI_Command((LPSRB) &s);
+	pSendASPI32Command((LPSRB) &s);
 
 	while (s.SRB_Status == SS_PENDING) Sleep(1);
 
@@ -339,7 +337,7 @@ int ASPI_Set_Timeout(int sec)
 	s.SRB_Flags      = SRB_DIR_OUT;
 	s.SRB_Timeout    = sec * 2;
 
-	Send_ASPI_Command((LPSRB) &s);
+	pSendASPI32Command((LPSRB) &s);
 
 	while (s.SRB_Status == SS_PENDING) Sleep(1);
 
@@ -373,7 +371,7 @@ int ASPI_Test_Unit_Ready(int timeout)
 
 		s.CDBByte[0]     = SCSI_TST_U_RDY;
 
-		Send_ASPI_Command((LPSRB) &s);
+		pSendASPI32Command((LPSRB) &s);
 
 		while (s.SRB_Status == SS_PENDING)
 		{
@@ -422,7 +420,7 @@ int ASPI_Set_CD_Speed(int rate, int wait)
 	s.CDBByte[2]     = rate >> 8;
 	s.CDBByte[3]     = rate & 0xFF;
 
-	Send_ASPI_Command((LPSRB) &s);
+	pSendASPI32Command((LPSRB) &s);
 
 	if (wait == 0) return 0;
 	
@@ -461,7 +459,7 @@ int ASPI_Lock(int flock)
 	s.CDBByte[0]     = SCSI_MED_REMOVL;
 	s.CDBByte[4]     = flock & 1;
 
-	Send_ASPI_Command((LPSRB) &s);
+	pSendASPI32Command((LPSRB) &s);
 
 	while (s.SRB_Status == SS_PENDING) Sleep(1);
 
@@ -512,12 +510,12 @@ int ASPI_Star_Stop_Unit(int op, int imm, int async, int (*PostProc) (struct tagS
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -597,12 +595,12 @@ int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struc
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -654,12 +652,12 @@ int ASPI_Mechanism_State(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -729,12 +727,12 @@ int ASPI_Play_CD_MSF(_msf *start, _msf *end, int async, int (*PostProc) (struct 
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -782,12 +780,12 @@ int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd 
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -838,12 +836,12 @@ int ASPI_Pause_Resume(int resume, int async, int (*PostProc) (struct tagSRB32_Ex
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -897,12 +895,12 @@ int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -973,12 +971,12 @@ int ASPI_Read_CD_LBA(int adr, int length, unsigned char sector, unsigned char fl
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -1043,12 +1041,12 @@ int ASPI_Read_One_CD_LBA(int adr, unsigned char flag, unsigned char sub_chan, in
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -1136,12 +1134,12 @@ int ASPI_Read_CD_MSF(_msf *start, _msf *end, unsigned char sector, unsigned char
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -1239,12 +1237,12 @@ int ASPI_Read_One_CD_MSF(_msf *start, unsigned char flag, unsigned char sub_chan
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return PostProc(s);
 	}
@@ -1332,12 +1330,12 @@ int ASPI_Get_Position(int async, void (*PostProc) (struct tagSRB32_ExecSCSICmd))
 	if (async && IsAsyncAllowed())
 	{
 		CDD_Complete = 0;
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		return 0;
 	}
 	else
 	{
-		Send_ASPI_Command((LPSRB) s);
+		pSendASPI32Command((LPSRB) s);
 		while (s->SRB_Status == SS_PENDING) Sleep(1);
 		return *PostProc((LPSRB) s);
 	}
@@ -2059,7 +2057,7 @@ void ASPI_Read_One_LBA_CDC(void)
     
 		Read_Complete = 0;
 
-		Send_ASPI_Command((LPSRB) &sread);
+		pSendASPI32Command((LPSRB) &sread);
 	}
 
 	// directly transfert data from the cache

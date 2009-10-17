@@ -526,6 +526,11 @@ typedef union tagSRB32
 #include "poppack.h"
 #endif /* GENS_OS_WIN32 */
 
+/* Function declarations. */
+extern DWORD __cdecl SendASPI32Command(PSRB);
+extern DWORD __cdecl GetASPI32SupportInfo(void);
+extern DWORD __cdecl GetASPI32DLLVersion(void);
+
 #ifdef __cplusplus
 }
 #endif
