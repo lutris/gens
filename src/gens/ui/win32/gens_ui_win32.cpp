@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
@@ -71,9 +70,6 @@
 #include "select_cdrom/selcd_window.hpp"
 #include "country_code/ccode_window.h"
 #include "plugin_manager/pmgr_window.hpp"
-#if !defined(GENS_WIN32_CONSOLE)
-#include "debug_console/debug_console.h"
-#endif
 #include "about/about_window.hpp"
 
 // Plugins.
@@ -283,9 +279,6 @@ void GensUI::update(void)
 #endif
 		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
 		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)) ||
-#if !defined(GENS_WIN32_CONSOLE)
-		    (debug_console && IsDialogMessage(debug_console, &msg)) ||
-#endif
 		    (about_window && IsDialogMessage(about_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.

@@ -111,13 +111,11 @@ void log_msgbox(const char* msg, const char* title);
  * @param ... Parameters.
  */
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
-#include "debug_console/debug_console.h"
 #define DBG_WIN_LOG(channel, level, msg, ...) \
 do { \
 	char log_msg[512]; \
 	snprintf(log_msg, sizeof(log_msg), "%s:%d:%s(): " msg "\r\n", #channel, level, __func__, ##__VA_ARGS__); \
 	log_msg[sizeof(log_msg)-1] = 0x00; \
-	debug_console_log(log_msg); \
 } while (0)
 #else
 #define DBG_WIN_LOG(channel, level, msg, ...)

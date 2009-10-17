@@ -40,11 +40,6 @@ gens_SOURCES += \
 		ui/win32/select_cdrom/selcd_window.cpp
 endif
 
-if !GENS_WIN32_CONSOLE
-gens_SOURCES += \
-		ui/win32/debug_console/debug_console.c
-endif
-
 noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
 		port/argc_argv.h \
@@ -80,11 +75,6 @@ noinst_HEADERS += \
                 segacd/cd_aspi.hpp \
 		segacd/aspi.h \
 		ui/win32/select_cdrom/selcd_window.hpp
-endif
-
-if !GENS_WIN32_CONSOLE
-noinst_HEADERS += \
-		ui/win32/debug_console/debug_console.h
 endif
 
 gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound
