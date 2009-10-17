@@ -6,10 +6,6 @@
 #ifndef GENS_ASPI_H
 #define GENS_ASPI_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,8 +13,16 @@ extern "C" {
 // Needed for uint_*.
 #include <stdint.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
 // On Windows, pshpack1.h is needed to byte-align structs.
-#ifdef GENS_OS_WIN32
+#ifdef _WIN32
 #include "pshpack1.h"
 #endif /* GENS_OS_WIN32 */
 
@@ -522,14 +526,16 @@ typedef union tagSRB32
 
 // On Windows, pshpack1.h is needed to byte-pack structs.
 // poppack.h turns off pshpack1.h, since byte-packing is only needed for the ASPI structs.
-#ifdef GENS_OS_WIN32
+#ifdef _WIN32
 #include "poppack.h"
 #endif /* GENS_OS_WIN32 */
 
-/* Function declarations. */
+/* Win32 ASPI function declarations. */
+#ifdef _WIN32
 extern DWORD __cdecl SendASPI32Command(PSRB);
 extern DWORD __cdecl GetASPI32SupportInfo(void);
 extern DWORD __cdecl GetASPI32DLLVersion(void);
+#endif
 
 #ifdef __cplusplus
 }
