@@ -41,6 +41,12 @@ using std::list;
 #include "sighandler.h"
 #endif
 
+#if !defined(GENS_WIN32_CONSOLE)
+// Win32 I/O functions. (Required for console allocation.)
+#include <io.h>
+#include <fcntl.h>
+#endif
+
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
 #include "g_md.hpp"
@@ -61,9 +67,6 @@ using std::list;
 
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
-#if !defined(GENS_WIN32_CONSOLE)
-#include "debug_console/debug_console.h"
-#endif
 
 // Win32 instance
 HINSTANCE ghInstance = NULL;
@@ -113,7 +116,6 @@ void get_default_save_path(char *buf, size_t size)
 	// Set the current directory.
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 	
-	printf("%s\n", PathNames.Gens_EXE_Path);
 	// Set the default save path.
 	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
 }
@@ -135,22 +137,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	
-#if !defined(GENS_DEBUG)
-	// Install the signal handler.
-	gens_sighandler_init();
-#endif
-	
 	// Initialize the PRNG.
 	Init_PRNG();
 	
 	// Initialize fonts.
 	fonts_init();
 	
-	// Create the debug window.
-#if !defined(GENS_WIN32_CONSOLE)
-	debug_console_create();
-#endif
-		
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	gens_window_init_hWnd();
@@ -201,11 +193,30 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	//initializeConsoleRomsView();
 	
 #if !defined(GENS_WIN32_CONSOLE)
-	// Check if the debug window should be shown.
 	if (startup->enable_debug_console)
-		ShowWindow(debug_console, nCmdShow);
-	else
-		debug_console_close();
+	{
+		// Allocate a console.
+		// Example code from http://justcheckingonall.wordpress.com/2008/08/29/console-window-win32-app/
+		AllocConsole();
+		
+		HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+		int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
+		FILE *hf_out = _fdopen(hCrt, "w");
+		setvbuf(hf_out, NULL, _IONBF, 1);
+		*stdout = *hf_out;
+		*stderr = *hf_out;
+		
+		HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
+		hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
+		FILE *hf_in = _fdopen(hCrt, "r");
+		setvbuf(hf_in, NULL, _IONBF, 128);
+		*stdin = *hf_in;
+		
+#if !defined(GENS_DEBUG)
+		// Install the signal handler.
+		gens_sighandler_init();
+#endif
+	}
 #endif
 	
 	// Initialize the video backend.
@@ -251,12 +262,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	End_All();
 	DestroyWindow(gens_window);
-	
-#if !defined(GENS_WIN32_CONSOLE)
-	// Close the Debug window.
-	if (debug_console)
-		debug_console_close();
-#endif
 	
 	// Delete the fonts.
 	fonts_end();
