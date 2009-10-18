@@ -42,6 +42,14 @@ Bug Fixes:
 
 --------------------------------
 
+Miscellaneous:
+
+* [Win32] The custom debug console activated with "--debug" on the release
+  build has been replaced with a standard Win32 console, which is created
+  after initial startup.
+
+--------------------------------
+
 Low-Level Code Changes:
 
 * [libgsft] Added an implementation of strsep() and removed the strtok_r()
@@ -109,6 +117,15 @@ Miscellaneous:
 ================================================================
 
 Changes from r7_pre3 to r7_pre4 [PREVIEW RELEASE]:
+
+New Features:
+
+* [Win32] The release build of Gens/GS for Win32 has the standard Win32
+  console disabled. A new Gens/GS-specific debug console has been added for
+  the release build. This console can be enabled by specifying "--debug" on
+  the command line.
+
+--------------------------------
 
 Bug Fixes:
 
