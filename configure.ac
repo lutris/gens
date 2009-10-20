@@ -22,6 +22,14 @@ AM_INIT_AUTOMAKE([1.10])
 # Disable the Fortran check.
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 
+# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
+if test "$CFLAGS" = "-g -O2"; then
+	CFLAGS=""
+fi
+if test "$CXXFLAGS" = "-g -O2"; then
+	CXXFLAGS=""
+fi
+
 # Check for programs.
 AM_PROG_AS
 AC_PROG_CXX
@@ -38,14 +46,6 @@ AC_PROG_LIBTOOL
 
 # Enable C99.
 AC_PROG_CC_C99
-
-# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
-if test "$CFLAGS" = "-g -O2"; then
-	CFLAGS=""
-fi
-if test "$CXXFLAGS" = "-g -O2"; then
-	CXXFLAGS=""
-fi
 
 # Check operating system.
 nasm_debug=""
@@ -634,16 +634,74 @@ else
 	cflags_win32=""
 fi
 
-# Enable -Wall and -Wextra on gcc only.
+# gcc CFLAGS check function.
+# References:
+# - http://www.nabble.com/Compiler-characteristics-td25316247.html
+# - http://www.nongnu.org/autoconf-archive/ax_cflags_gcc_option.html
+AC_DEFUN([GSFT_CFLAGS_GCC_OPTION], [
+	AS_VAR_PUSHDEF([FLAGS], [CFLAGS])
+	AS_VAR_PUSHDEF([VAR], [gsft_cv_cflags_gcc_option_$1])
+	AC_CACHE_CHECK(
+		[whether $CC accepts $1], VAR,
+		[
+			VAR="no, unknown"
+			AC_LANG_SAVE
+			AC_LANG_C
+			ac_save_[]FLAGS="$[]FLAGS"
+			FLAGS="$1"
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], VAR=yes, VAR=no)
+			FLAGS="$ac_save_[]FLAGS"
+			AC_LANG_RESTORE
+		]
+		);
+	
+	if test x$VAR = xyes; then
+		$2="$$2 $1"
+	fi
+	AS_VAR_POPDEF([VAR])
+	AS_VAR_POPDEF([FLAGS])
+])
+
+# g++ CXXFLAGS check function.
+# References:
+# - http://www.nabble.com/Compiler-characteristics-td25316247.html
+# - http://www.nongnu.org/autoconf-archive/ax_cflags_gcc_option.html
+AC_DEFUN([GSFT_CXXFLAGS_GCC_OPTION], [
+	AS_VAR_PUSHDEF([FLAGS], [CXXFLAGS])
+	AS_VAR_PUSHDEF([VAR], [gsft_cv_cxxflags_gcc_option_$1])
+	AC_CACHE_CHECK(
+		[whether $CXX accepts $1], VAR,
+		[
+			VAR="no, unknown"
+			AC_LANG_SAVE
+			AC_LANG_CPLUSPLUS
+			ac_save_[]FLAGS="$[]FLAGS"
+			FLAGS="$1"
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], VAR=yes, VAR=no)
+			FLAGS="$ac_save_[]FLAGS"
+			AC_LANG_RESTORE
+		]
+		)
+	
+	if test x$VAR = xyes; then
+		$2="$$2 $1"
+	fi
+	AS_VAR_POPDEF([VAR])
+	AS_VAR_POPDEF([FLAGS])
+])
+
+# Check if the compiler supports various warning flags.
 if test "x$GCC" = "xyes"; then
-	cflags_warnings="-Wall -Wextra"
-else
-	cflags_warnings=""
+	GSFT_CFLAGS_GCC_OPTION(-Wall, AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION(-Wall, AM_CXXFLAGS)
+	
+	GSFT_CFLAGS_GCC_OPTION(-Wextra, AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION(-Wextra, AM_CXXFLAGS)
 fi
 
-AM_CFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings} ${cflags_win32}"
-AM_CXXFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings} ${cflags_win32} ${cxxflags_visibility}"
-AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
+AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
+AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
+AM_LDFLAGS="${AM_LDFLAGS} ${ldflags_as_needed} ${ldflags_win32}"
 
 # Check for clock_gettime.
 AC_CHECK_LIB(rt, clock_gettime, has_librt=yes, has_librt=no)
