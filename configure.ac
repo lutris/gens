@@ -601,19 +601,6 @@ AC_LANG(C)
 # Miscellaneous
 ###
 
-# Check if the linker supports --as-needed.
-AC_MSG_CHECKING(if the linker supports --as-needed)
-as_needed=`$LD --help 2>&1 | grep as-needed`
-if test "x$as_needed" != "x"; then
-	# --as-needed is supported.
-	AC_MSG_RESULT(yes)
-	ldflags_as_needed="-Wl,--as-needed"
-else
-	# --as-needed is not supported.
-	AC_MSG_RESULT(no)
-	ldflags_as_needed=""
-fi
-
 # Windows-specific options.
 if test x$os = xwin32; then
 	# Check if the Windows console should be enabled.
@@ -690,14 +677,45 @@ AC_DEFUN([GSFT_CXXFLAGS_GCC_OPTION], [
 	AS_VAR_POPDEF([FLAGS])
 ])
 
+# gcc LDFLAGS check function.
+# References:
+# - http://www.nabble.com/Compiler-characteristics-td25316247.html
+# - http://www.nongnu.org/autoconf-archive/ax_cflags_gcc_option.html
+AC_DEFUN([GSFT_LDFLAGS_GCC_OPTION], [
+	AS_VAR_PUSHDEF([FLAGS], [LDFLAGS])
+	AS_VAR_PUSHDEF([VAR], [gsft_cv_ldflags_gcc_option_$1])
+	AC_CACHE_CHECK(
+		[whether $CC accepts $1], VAR,
+		[
+			VAR="no, unknown"
+			AC_LANG_SAVE
+			AC_LANG_C
+			ac_save_LDFLAGS="$LDFLAGS"
+			LDFLAGS="$1"
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], VAR=yes, VAR=no)
+			LDFLAGS="$ac_save_LDFLAGS"
+			AC_LANG_RESTORE
+		]
+		);
+	
+	if test x$VAR = xyes; then
+		$2="$$2 $1"
+	fi
+	AS_VAR_POPDEF([VAR])
+	AS_VAR_POPDEF([FLAGS])
+])
+
 # Check if the compiler supports various warning flags.
 if test "x$GCC" = "xyes"; then
-	GSFT_CFLAGS_GCC_OPTION(-Wall, AM_CFLAGS)
-	GSFT_CXXFLAGS_GCC_OPTION(-Wall, AM_CXXFLAGS)
+	GSFT_CFLAGS_GCC_OPTION([-Wall], AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION([-Wall], AM_CXXFLAGS)
 	
-	GSFT_CFLAGS_GCC_OPTION(-Wextra, AM_CFLAGS)
-	GSFT_CXXFLAGS_GCC_OPTION(-Wextra, AM_CXXFLAGS)
+	GSFT_CFLAGS_GCC_OPTION([-Wextra], AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION([-Wextra], AM_CXXFLAGS)
 fi
+
+# Check if the linker supports --as-needed.
+GSFT_LDFLAGS_GCC_OPTION([-Wl,--as-needed], AM_LDFLAGS)
 
 AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
 AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
