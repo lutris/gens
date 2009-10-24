@@ -354,8 +354,8 @@ int Reset_CD(char *buf, const char *iso_name)
 {
 	// TODO: Return an error code if an error occurred.
 	
-	memset(CD_Audio_Buffer_L, 0, 4096 * 4);
-	memset(CD_Audio_Buffer_R, 0, 4096 * 4);
+	memset(CD_Audio_Buffer_L, 0x00, sizeof(CD_Audio_Buffer_L));
+	memset(CD_Audio_Buffer_R, 0x00, sizeof(CD_Audio_Buffer_R));
 	
 #ifdef GENS_CDROM
 	if (iso_name == NULL)
@@ -1141,8 +1141,8 @@ void Write_CD_Audio(short *Buf, int rate, int channel, int length)
 	if (CD_Audio_Starting)
 	{
 		CD_Audio_Starting = 0;
-		memset(CD_Audio_Buffer_L, 0, 4096 * 4);
-		memset(CD_Audio_Buffer_R, 0, 4096 * 4);
+		memset(CD_Audio_Buffer_L, 0x00, sizeof(CD_Audio_Buffer_L));
+		memset(CD_Audio_Buffer_R, 0x00, sizeof(CD_Audio_Buffer_R));
 		CD_Audio_Buffer_Write_Pos = (CD_Audio_Buffer_Read_Pos + 2000) & 0xFFF;
 	}
 	
