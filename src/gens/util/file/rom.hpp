@@ -107,6 +107,7 @@ class ROM
 {
 	public:
 		static void updateCDROMName(const unsigned char *cdromHeader, bool overseas);
+		static void fillROMInfo(ROM_t *rom);
 		
 		static int getROM(void);
 		static int openROM(const std::string& filename, std::string z_filename = "");
@@ -141,7 +142,6 @@ class ROM
 		static void updateROMDir(const std::string& filename);
 		static void updateROMName(const char* filename);
 		static void deinterleaveSMD(void);
-		static void fillROMInfo(ROM_t *rom);
 		static unsigned short calcChecksum(void);
 	
 	private:

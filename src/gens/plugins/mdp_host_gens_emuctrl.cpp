@@ -29,9 +29,14 @@
 // Byteswapping macros.
 #include "libgsft/gsft_byteswap.h"
 
+#include "gens_core/vdp/vdp_io.h"
+
 // Gens functions.
 #include "emulator/options.hpp"
 #include "util/file/rom.hpp"
+#include "util/file/save.hpp"
+
+static int mdp_host_emulator_control_reload_info(void) throw();
 
 
 /**
@@ -62,8 +67,7 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 			return -MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED;
 		
 		case MDP_EMUCTRL_RELOAD_INFO:
-			// TODO
-			return -MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED;
+			return mdp_host_emulator_control_reload_info();
 		
 		case MDP_EMUCTRL_UNKNOWN:
 		default:
@@ -71,5 +75,39 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 			return -MDP_ERR_EMUCTRL_INVALID_FUNCTION;
 	}
 	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * mdp_host_emulator_control_reload_info(): Reload ROM information.
+ * @return MDP error code.
+ */
+static int mdp_host_emulator_control_reload_info(void) throw()
+{
+	// Save SRAM or BRAM, depending on what's loaded.
+	if (!SegaCD_Started)
+		Savestate::SaveSRAM();
+	else
+		Savestate::SaveBRAM();
+	
+	// Reload the ROM header.
+	ROM::fillROMInfo(Game);
+	
+	// Reload SRAM or BRAM, depending on what's loaded.
+	if (!SegaCD_Started)
+		Savestate::LoadSRAM();
+	else
+		Savestate::LoadBRAM();
+	
+	// Reinitialize the title bar.
+	if (Genesis_Started)
+		Options::setGameName(0);
+	else if (SegaCD_Started)
+		Options::setGameName(1);
+	else if (_32X_Started)
+		Options::setGameName(2);
+	
+	// Done.
 	return MDP_ERR_OK;
 }
