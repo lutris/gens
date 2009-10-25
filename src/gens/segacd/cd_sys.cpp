@@ -118,7 +118,7 @@ static inline bool checkCDPresent(void)
 }
 
 
-void MSB2DWORD(unsigned int *d, unsigned char *b)
+void MSB2DWORD(unsigned int *d, const unsigned char *b)
 {
 	*d = (b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24));
 }
