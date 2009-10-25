@@ -627,14 +627,14 @@ int ASPI_Mechanism_State(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd
 		PostProc = ASPI_Mechanism_State_COMP;
 
 	memset(s, 0, sizeof(s_loc));
-	memset(Buf_Stat, 0, 0x100);
+	memset(Buf_Stat, 0x00, sizeof(Buf_Stat));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
 	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
 	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
 	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
-	s->SRB_BufLen     = 0x100;
+	s->SRB_BufLen     = sizeof(Buf_Stat);
 	s->SRB_BufPointer = Buf_Stat;
 	s->SRB_SenseLen   = SENSE_LEN;
 	s->SRB_CDBLen     = 12;

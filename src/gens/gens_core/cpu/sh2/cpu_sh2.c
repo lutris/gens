@@ -170,9 +170,9 @@ void MSH2_Reset(void)
 {
 	SH2_Reset(&M_SH2, 0);
 	
-	memset(_32X_Comm, 0, 0x10);
-	memset(_32X_FIFO_A, 0, 4 * 2);
-	memset(_32X_FIFO_B, 0, 4 * 2);
+	memset(_32X_Comm, 0x00, sizeof(_32X_Comm));
+	memset(_32X_FIFO_A, 0x00, sizeof(_32X_FIFO_A));
+	memset(_32X_FIFO_B, 0x00, sizeof(_32X_FIFO_B));
 	_32X_ADEN = 0;
 	_32X_FM = 0;
 	_32X_RV = 0;

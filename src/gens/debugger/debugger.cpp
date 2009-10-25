@@ -466,7 +466,7 @@ static void Refresh_Z80_Inst(void)
 	
 	for (unsigned int i = 1; i < 14; i++)
 	{
-		z80dis((unsigned char*)Ram_Z80, (unsigned int*)&PC, Dbg_Out_Str);
+		z80dis((unsigned char*)Ram_Z80, (unsigned int*)&PC, Dbg_Out_Str, sizeof(Dbg_Out_Str));
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }

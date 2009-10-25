@@ -80,8 +80,8 @@ int Init_32X(ROM_t* MD_ROM)
 	{
 		// External firmware file opened.
 		fread(&_32X_Genesis_Rom[0], 1, sizeof(_32X_Genesis_Rom), f);
-		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(_32X_Genesis_Rom));
 		fclose(f);
+		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(_32X_Genesis_Rom));
 	}
 	else
 	{
@@ -97,8 +97,8 @@ int Init_32X(ROM_t* MD_ROM)
 	{
 		// External firmware file opened.
 		fread(&_32X_MSH2_Rom[0], 1, sizeof(_32X_MSH2_Rom), f);
-		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(_32X_MSH2_Rom));
 		fclose(f);
+		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(_32X_MSH2_Rom));
 	}
 	else
 	{
@@ -114,8 +114,8 @@ int Init_32X(ROM_t* MD_ROM)
 	{
 		// External firmware file opened.
 		fread(&_32X_SSH2_Rom[0], 1, sizeof(_32X_SSH2_Rom), f);
-		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(_32X_SSH2_Rom));
 		fclose(f);
+		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(_32X_SSH2_Rom));
 	}
 	else
 	{

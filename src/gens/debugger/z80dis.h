@@ -33,8 +33,7 @@ extern "C" {
 
 #ifdef GENS_DEBUGGER
 
-int z80dis(unsigned char *buf, unsigned int *Counter, char str[128]);
-
+int z80dis(unsigned char *buf, unsigned int *Counter, char *str, int size);
 
 /* The Z80 logging function uses the FASTCALL calling convention. */
 #include "libgsft/gsft_fastcall.h"

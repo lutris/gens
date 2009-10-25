@@ -191,7 +191,7 @@ void M68K_Reset(int System_ID)
 {
 	// TODO: This is not 64-bit clean!
 	
-	memset(Ram_68k, 0, 64 * 1024);
+	memset(Ram_68k, 0x00, sizeof(Ram_68k));
 	
 	M68K_Fetch[0].lowaddr = 0x000000;
 	M68K_Fetch[0].highaddr = Rom_Size - 1;

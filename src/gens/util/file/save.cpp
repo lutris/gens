@@ -89,11 +89,7 @@
 
 #ifdef GENS_MP3
 // Gens Rerecording
-// fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
-extern int fatal_mp3_error;	// cdda_mp3.c
-
-// Various MP3 stuff, needed for Gens Rerecording
-extern unsigned int Current_OUT_Pos, Current_OUT_Size;	// cdda_mp3.c
+#include "segacd/cdda_mp3.h"
 #endif /* GENS_MP3 */
 
 extern char preloaded_tracks [100], played_tracks_linear [101]; // added for synchronous MP3 code
@@ -665,8 +661,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE1_vdp_reg_dma_length);
 		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE2_vdp_reg_dma_length);
-		//ImportDataAuto(VRam, data, offset, 65536);
-		memcpy(&CRam, &md_save_v6.cram, 512);
+		//ImportDataAuto(VRam, data, offset, sizeof(VRam));
+		memcpy(&CRam, &md_save_v6.cram, sizeof(CRam));
 		//ImportDataAuto(VSRam, data, offset, 64);
 		memcpy(&H_Counter_Table, &md_save_v6.h_counter_table, sizeof(H_Counter_Table));
 		//ImportDataAuto(Spr_Link, data, offset, 4*256);
@@ -1217,7 +1213,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.gen_version		= cpu_to_le32(Gen_Version);
 	
 	// TODO: Is this supposed to be 16-bit byteswapped?
-	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, 512 * 2);
+	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(H_Counter_Table));
 	
 	// VDP registers.
 	uint32_t *reg = (uint32_t*)&VDP_Reg;
@@ -2037,7 +2033,7 @@ int Savestate::LoadSRAM(void)
 {
 	FILE* SRAM_File = 0;
 	
-	memset(SRAM, 0, 64 * 1024);
+	memset(SRAM, 0x00, sizeof(SRAM));
 	
 #ifdef GENS_OS_WIN32
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
@@ -2049,7 +2045,7 @@ int Savestate::LoadSRAM(void)
 	if ((SRAM_File = fopen(filename.c_str(), "rb")) == 0)
 		return 0;
 	
-	fread(SRAM, 64 * 1024, 1, SRAM_File);
+	fread(SRAM, sizeof(SRAM), 1, SRAM_File);
 	fclose(SRAM_File);
 	
 	string msg = "SRAM loaded from " + filename;
@@ -2127,12 +2123,12 @@ void Savestate::FormatSegaCD_BRAM(unsigned char *buf)
 void Savestate::FormatSegaCD_BackupRAM(void)
 {
 	// SegaCD internal BRAM.
-	memset(Ram_Backup, 0, 8 * 1024);
+	memset(Ram_Backup, 0x00, sizeof(Ram_Backup));
 	FormatSegaCD_BRAM(&Ram_Backup[0x1FC0]);
 	
 	// SegaCD cartridge memory.
 	// TODO: Format the cartridge memory.
-	memset(Ram_Backup_Ex, 0, 64 * 1024);
+	memset(Ram_Backup_Ex, 0x00, sizeof(Ram_Backup_Ex));
 }
 
 
@@ -2169,7 +2165,7 @@ int Savestate::LoadBRAM(void)
 	if ((BRAM_File = fopen(filename.c_str(), "rb")) == 0)
 		return 0;
 	
-	fread(Ram_Backup, 8 * 1024, 1, BRAM_File);
+	fread(Ram_Backup, sizeof(Ram_Backup), 1, BRAM_File);
 	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
 	fclose(BRAM_File);
 	

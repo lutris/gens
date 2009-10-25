@@ -16,11 +16,13 @@ unsigned int Current_IN_Pos;
 unsigned int Current_OUT_Pos;
 unsigned int Current_OUT_Size;
 
-char buf_out[8 * 1024];
+static char buf_out[8 * 1024];
 
-int freqs_mp3[9] = { 44100, 48000, 32000,
-  22050, 24000, 16000,
-  11025, 12000, 8000
+static int freqs_mp3[9] =
+{
+	44100, 48000, 32000,
+	22050, 24000, 16000,
+	11025, 12000, 8000
 };
 
 
@@ -32,28 +34,24 @@ int fatal_mp3_error = 0;
 
 // TODO: Finish porting the async decoding patch.
 // _file_track, Tracks[]
-extern char played_tracks_linear [101];
+extern char played_tracks_linear[101];
 
 
-int
-MP3_Init (void)
+int MP3_Init(void)
 {
-  InitMP3 (&mp);
-
-  MP3_Reset ();
-
-  return 0;
+	InitMP3(&mp);
+	MP3_Reset();
+	return 0;
 }
 
 
-void
-MP3_Reset (void)
+void MP3_Reset(void)
 {
-  Current_IN_Pos = 0;
-  Current_OUT_Pos = 0;
-  Current_OUT_Size = 0;
-
-  memset (buf_out, 0, 8 * 1024);
+	Current_IN_Pos = 0;
+	Current_OUT_Pos = 0;
+	Current_OUT_Size = 0;
+	
+	memset(buf_out, 0x00, sizeof(buf_out));
 }
 
 

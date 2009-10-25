@@ -130,7 +130,7 @@ section .bss align=64
 	
 	global _Ram_Backup
 	_Ram_Backup:
-		resb 64 * 1024
+		resb 8 * 1024
 	
 	alignb 16
 	

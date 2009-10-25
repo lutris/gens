@@ -70,7 +70,7 @@ void PCM_Reset(void)
 	int i;
 	
 	// Clear the PCM memory.
-	memset(Ram_PCM, 0, 64 * 1024);
+	memset(Ram_PCM, 0x00, sizeof(Ram_PCM));
 	
 	PCM_Chip.Enable = 0;
 	

@@ -27,6 +27,10 @@
 
 #include "gens_core/mem/mem_z80.h"
 
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_strlcpy.h"
+
 static const char Mnemonics[256][16] =
 {
 	"NOP", "LD BC,#h", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,*h", "RLCA",
@@ -174,12 +178,13 @@ static const char MnemonicsXX[256][16] =
 
 /**
  * z80dis(): Disassemble Z80 code.
- * @param buf ???
+ * @param buf Z80 code to disassemble.
  * @param Counter ???
- * @param str ???
+ * @param str Disassembled Z80 code.
+ * @param size Size of str.
  * @return ???
  */
-int z80dis(unsigned char *buf, unsigned int *Counter, char str[128])
+int z80dis(unsigned char *buf, unsigned int *Counter, char *str, int size)
 {
 	char S[80], T[80], U[80], *P, *R;
 	int I, J;
@@ -187,12 +192,12 @@ int z80dis(unsigned char *buf, unsigned int *Counter, char str[128])
 	if ((I = buf[*Counter]) < 0)
 		return (0);
 	
-	memset(S, 0, 80);
-	memset(T, 0, 80);
-	memset(U, 0, 80);
-	memset(str, 0, 128);
+	memset(S, 0x00, sizeof(S));
+	memset(T, 0x00, sizeof(T));
+	memset(U, 0x00, sizeof(U));
+	memset(str, 0x00, size);
 	
-	sprintf(str, "%.4X: %.2X", (*Counter)++, I);
+	szprintf(str, size, "%.4X: %.2X", (*Counter)++, I);
 	
 	switch (I)
 	{
@@ -295,11 +300,17 @@ int z80dis(unsigned char *buf, unsigned int *Counter, char str[128])
 	else
 		strcpy(T, S);
 	
-	strcat(str, U);
-	while (strlen(str) < 18)
-		strcat(str, " ");
-	strcat(str, T);
-	strcat(str, "\n");
+	strlcat(str, U, size);
+	if (size >= 19)
+	{
+		// Pad the field to 18 characters.
+		int n;
+		for (n = strlen(str); n <= 17; n++)
+			str[n] = ' ';
+		str[18] = 0x00;
+	}
+	strlcat(str, T, size);
+	strlcat(str, "\n", size);
 	
 	return 1;
 }
@@ -319,7 +330,7 @@ int FASTCALL z80log(unsigned int PC)
 	if (F == NULL)
 		F = fopen("z80.txt", "wb");
 	
-	z80dis(Ram_Z80, &nPC, ch);
+	z80dis(Ram_Z80, &nPC, ch, sizeof(ch));
 	fwrite(ch, 1, strlen(ch), F);
 	
 	return 0;

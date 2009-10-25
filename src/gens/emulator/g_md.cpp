@@ -152,22 +152,25 @@ void Init_Genesis_Bios(void)
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
+	// Clear the TMSS firmware buffer.
+	memset(&Genesis_Rom[0], 0x00, sizeof(Genesis_Rom));
+	
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_MD_TMSS;
 	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
-		fread(&Genesis_Rom[0], 1, 2 * 1024, f);
-		be16_to_cpu_array(&Genesis_Rom[0], 2 * 1024);
+		size_t n = fread(&Genesis_Rom[0], 1, sizeof(Genesis_Rom), f);
 		fclose(f);
+		be16_to_cpu_array(&Genesis_Rom[0], n);
+		Rom_Size = n;
 	}
 	else
 	{
-		// No Genesis BIOS. Clear the Genesis ROM buffer.
-		memset(Genesis_Rom, 0, 2 * 1024);
+		// No Genesis TMSS ROM.
+		Rom_Size = sizeof(Genesis_Rom);
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_TMSS;
 	
-	Rom_Size = 2 * 1024;
-	memcpy(Rom_Data, Genesis_Rom, 2 * 1024);
+	memcpy(Rom_Data, Genesis_Rom, Rom_Size);
 	Game_Mode = 0;
 	CPU_Mode = 0;
 	VDP_Num_Vis_Lines = 224;

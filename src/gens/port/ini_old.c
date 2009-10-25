@@ -117,8 +117,8 @@ int GetPrivateProfileInt(const char *section, const char *var,
 	char defstr[10];
 	int res;
 	
-	memset(get, 0, 10);
-	memset(defstr, 0, 10);
+	memset(get, 0x00, sizeof(get));
+	memset(defstr, 0x00, sizeof(defstr));
 	
 	if (!filename)
 		return def;

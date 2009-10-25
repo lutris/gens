@@ -30,7 +30,7 @@ extern "C" {
 extern unsigned char Ram_68k[64 * 1024];
 extern unsigned char Rom_Data[6 * 1024 * 1024];
 extern unsigned char SRAM[64 * 1024];
-extern unsigned char Ram_Backup_Ex[64 * 1024];
+extern unsigned char Ram_Backup_Ex[64 * 1024];	// Sega CD
 extern unsigned char Genesis_Rom[2 * 1024];
 
 extern unsigned int M68K_Read_Byte_Table[0x20];

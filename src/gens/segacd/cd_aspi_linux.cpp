@@ -154,7 +154,7 @@ void ASPI_Reset_Drive(char *buf)
 	else
 		ASPI_Read_CD_LBA(0, 1, 0, 0, 0, 0, NULL);
 	
-	memcpy (buf, &Buf_Read[0x100], 0x200);
+	memcpy(buf, &Buf_Read[0x100], 0x200);
 	CDD_Complete = 1;
 }
 

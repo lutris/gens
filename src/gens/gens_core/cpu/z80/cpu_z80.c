@@ -11,7 +11,7 @@
  */
 void Z80_Reset(void)
 {
-	memset(Ram_Z80, 0, 8 * 1024);
+	memset(Ram_Z80, 0x00, sizeof(Ram_Z80));
 	
 	//Bank_Z80 = 0x000000;
 	Bank_Z80 = 0xFF8000;
