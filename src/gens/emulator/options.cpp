@@ -30,13 +30,11 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <math.h>
 
 // C++ includes.
 #include <list>
 using std::list;
-
-// Macros.
-#include "macros/math_m.h"
 
 #include "g_main.hpp"
 #include "options.hpp"
@@ -260,14 +258,14 @@ void Options::setCountry(const int newCountry)
 			break;
 	}
 	
-	// TODO: Combine this with gens.cpp:Set_Clock_Freq().
+	// TODO: Combine this with gens.cpp::Set_Clock_Freq().
 	if (CPU_Mode)
 	{
-		CPL_Z80 = roundDouble((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = roundDouble((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+		CPL_Z80 = (int)rint((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = (int)rint((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_MSH2 = (int)rint(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
 					(double)MSH2_Speed) / 100.0);
-		CPL_SSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+		CPL_SSH2 = (int)rint(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
 					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 312;
@@ -279,11 +277,11 @@ void Options::setCountry(const int newCountry)
 	}
 	else
 	{
-		CPL_Z80 = roundDouble((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = roundDouble((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 = roundDouble(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+		CPL_Z80 = (int)rint((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = (int)rint((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_MSH2 = (int)rint(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
 					(double)MSH2_Speed) / 100.0);
-		CPL_SSH2 = roundDouble(((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+		CPL_SSH2 = (int)rint(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
 					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 262;
