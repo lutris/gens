@@ -103,20 +103,17 @@ static inline void T_Recalculate_Palettes(void)
 	
 	const int contrast = Contrast_Level;
 	
-	int mdColorMask, mdComponentScale;
+	int mdComponentScale;
 	switch (ColorScaleMethod)
 	{
 		case COLSCALE_RAW:
-			mdColorMask = 0x0EEE;
 			mdComponentScale = 0;
 			break;
 		case COLSCALE_FULL:
-			mdColorMask = 0x0EEE;
 			mdComponentScale = 0xE;
 			break;
 		case COLSCALE_FULL_HS:
 		default:
-			mdColorMask = 0x0FFF;
 			mdComponentScale = 0xF;
 			break;
 	}
@@ -125,7 +122,7 @@ static inline void T_Recalculate_Palettes(void)
 	for (unsigned int i = 0x0000; i < 0x1000; i++)
 	{
 		// Mask off the LSB of each MD color component.
-		unsigned int color = (i & mdColorMask);
+		unsigned int color = (i & 0x0FFF);
 		
 		r = (color & 0xF) << (RBits - 4);
 		g = ((color >> 4) & 0x0F) << (GBits - 4);
