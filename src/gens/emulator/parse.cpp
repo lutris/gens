@@ -514,7 +514,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_GREYSCALE], Greyscale);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_INVERT], Invert_Color);
-		TEST_OPTION_ENABLE(optBarg_str[OPTB_SCALE], Scale_Colors);
+		//TEST_OPTION_ENABLE(optBarg_str[OPTB_SCALE], Scale_Colors);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_SPRITELIMIT], Sprite_Over);
 		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_FRAMESKIP].option, Frame_Skip);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_Z80], Z80_State);

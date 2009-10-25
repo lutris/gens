@@ -239,7 +239,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Brightness", Brightness_Level);
 	cfg.writeInt("Graphics", "Greyscale", Greyscale & 1);
 	cfg.writeInt("Graphics", "Invert", Invert_Color & 1);
-	cfg.writeInt("Graphics", "Scale Colors", Scale_Colors & 1);
+	cfg.writeInt("Graphics", "Color Scale Method", (int)ColorScaleMethod);
 	
 	// Video settings
 	cfg.writeBool("Graphics", "Full Screen", vdraw_get_fullscreen());
@@ -524,7 +524,7 @@ int Config::load(const string& filename, void* gameActive)
 	Brightness_Level = cfg.getInt("Graphics", "Brightness", 100);
 	Greyscale = cfg.getInt("Graphics", "Greyscale", 0);
 	Invert_Color = cfg.getInt("Graphics", "Invert", 0);
-	Scale_Colors = cfg.getInt("Graphics", "Scale Colors", 1);
+	ColorScaleMethod = (ColorScaleMethod_t)cfg.getInt("Graphics", "Color Scale Method", COLSCALE_FULL_HS);
 	
 	// Video settings.
 	Video.VSync_FS = cfg.getInt("Graphics", "Full Screen VSync", 0) & 1;

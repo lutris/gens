@@ -36,7 +36,7 @@ int Contrast_Level;
 int Brightness_Level;
 int Greyscale;
 int Invert_Color;
-int Scale_Colors;	// If set, scales colors to full RGB.
+ColorScaleMethod_t ColorScaleMethod;
 
 
 /**
@@ -102,23 +102,41 @@ static inline void T_Recalculate_Palettes(void)
 	const int brightness_B = (brightness * (BMask+1)) / 100;
 	
 	const int contrast = Contrast_Level;
-
+	
+	int mdColorMask, mdComponentScale;
+	switch (ColorScaleMethod)
+	{
+		case COLSCALE_RAW:
+			mdColorMask = 0x0EEE;
+			mdComponentScale = 0;
+			break;
+		case COLSCALE_FULL:
+			mdColorMask = 0x0EEE;
+			mdComponentScale = 0xE;
+			break;
+		case COLSCALE_FULL_HS:
+		default:
+			mdColorMask = 0x0FFF;
+			mdComponentScale = 0xF;
+			break;
+	}
+	
 	// Calculate the MD palette.
 	for (unsigned int i = 0x0000; i < 0x1000; i++)
 	{
 		// Mask off the LSB of each MD color component.
-		unsigned int color = (i & 0x0EEE);
+		unsigned int color = (i & mdColorMask);
 		
 		r = (color & 0xF) << (RBits - 4);
 		g = ((color >> 4) & 0x0F) << (GBits - 4);
 		b = ((color >> 8) & 0x0F) << (BBits - 4);
 		
 		// Scale the colors to full RGB.
-		if (Scale_Colors)
+		if (ColorScaleMethod != COLSCALE_RAW)
 		{
-			r = (r * RMask) / (0xE << (RBits - 4));
-			g = (g * GMask) / (0xE << (GBits - 4));
-			b = (b * BMask) / (0xE << (BBits - 4));
+			r = (r * RMask) / (mdComponentScale << (RBits - 4));
+			g = (g * GMask) / (mdComponentScale << (GBits - 4));
+			b = (b * BMask) / (mdComponentScale << (BBits - 4));
 		}
 		
 		// Adjust brightness.
@@ -151,7 +169,7 @@ static inline void T_Recalculate_Palettes(void)
 		b = ((i >> 10) & 0x1F) << (BBits - 5);
 		
 		// Scale the colors to full RGB.
-		if (Scale_Colors)
+		if (ColorScaleMethod != COLSCALE_RAW)
 		{
 			r = (r * RMask) / (0x1F << (RBits - 5));
 			g = (g * GMask) / (0x1F << (GBits - 5));

@@ -31,7 +31,15 @@ extern int Contrast_Level;
 extern int Brightness_Level;
 extern int Greyscale;
 extern int Invert_Color;
-extern int Scale_Colors;
+
+typedef enum _ColorScaleMethod_t
+{
+	COLSCALE_RAW = 0,	// Raw colors: 0xEEE -> 0xE0E0E0
+	COLSCALE_FULL = 1,	// Full colors: 0xEEE -> 0xFFFFFF
+	COLSCALE_FULL_HS = 2,	// Full colors with Highlight/Shadow: 0xEEE -> 0xEEEEEE for highlight
+} ColorScaleMethod_t;
+
+extern ColorScaleMethod_t ColorScaleMethod;
 
 void Recalculate_Palettes(void);
 

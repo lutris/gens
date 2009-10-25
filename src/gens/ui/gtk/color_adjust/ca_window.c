@@ -238,7 +238,7 @@ static void ca_window_init(void)
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkGrayscale), Greyscale);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInverted), Invert_Color);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScaleColors), Scale_Colors);
+	//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScaleColors), Scale_Colors);
 	
 	// Disable the "Apply" button initially.
 	gtk_widget_set_sensitive(btnApply, FALSE);
@@ -255,7 +255,7 @@ static void ca_window_save(void)
 	
 	Greyscale = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkGrayscale));
 	Invert_Color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkInverted));
-	Scale_Colors = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkScaleColors));
+	//Scale_Colors = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkScaleColors));
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();

@@ -37,12 +37,11 @@ uint32_t Palette32[0x1000];
 /**
  * T_VDP_Update_Palette(): VDP palette update function.
  * @param hs If true, updates highlight/shadow.
- * @param mask Color mask.
  * @param MD_palette MD color palette.
  * @param palette Full color palette.
  */
 template<bool hs, typename pixel>
-static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pixel *palette)
+static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 {
 	if (VDP_Layers & VDP_LAYER_PALETTE_LOCK)
 		return;
@@ -56,21 +55,17 @@ static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pix
 	// Color mask. Depends on VDP register 0, bit 2 (Palette Select).
 	// If set, allows full MD palette.
 	// If clear, only allows the LSB of each color component.
-	const uint16_t color_mask = (VDP_Reg.Set1 & 0x04) ? 0x0FFF : 0x0222;
+	const uint16_t color_mask = (VDP_Reg.Set1 & 0x04) ? 0x0EEE : 0x0222;
 	
 	// Update all 64 colors.
 	for (int i = 62; i >= 0; i -= 2)
 	{
-		pixel color1 = cram_16[i];
-		pixel color2 = cram_16[i + 1];
-		
-		// Mask the color using the color_mask.
-		color1 &= color_mask;
-		color2 &= color_mask;
+		uint16_t color1_raw = cram_16[i] & color_mask;
+		uint16_t color2_raw = cram_16[i + 1] & color_mask;
 		
 		// Get the palette color.
-		color1 = palette[color1];
-		color2 = palette[color2];
+		pixel color1 = palette[color1_raw];
+		pixel color2 = palette[color2_raw];
 		
 		// Set the new color.
 		MD_palette[i]     = color1;
@@ -79,43 +74,42 @@ static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pix
 		if (hs)
 		{
 			// Update the highlight and shadow colors.
+			// References:
+			// - http://www.tehskeen.com/forums/showpost.php?p=71308&postcount=1077
+			// - http://forums.sonicretro.org/index.php?showtopic=17905
 			
-			// Normal color.
+			// Normal color. (xxx0)
 			MD_palette[i + 192]	= color1;
 			MD_palette[i + 1 + 192]	= color2;
 			
-			// Shadow color.
-			color1 = (color1 >> 1) & mask;
-			color2 = (color2 >> 1) & mask;
-			MD_palette[i + 64]	= color1;
-			MD_palette[i + 1 + 64]	= color2;
+			color1_raw >>= 1;
+			color2_raw >>= 1;
 			
-			// Highlight color.
-			color1 += mask;
-			color2 += mask;
-			MD_palette[i + 128]	= color1;
-			MD_palette[i + 1 + 128]	= color2;
+			// Shadow color. (0xxx)
+			MD_palette[i + 64]	= palette[color1_raw];
+			MD_palette[i + 1 + 64]	= palette[color2_raw];
+			
+			// Highlight color. (1xxx)
+			MD_palette[i + 128]	= palette[0x888 | color1_raw];
+			MD_palette[i + 1 + 128]	= palette[0x888 | color2_raw];
 		}
 	}
 	
 	// Update the background color.
-	pixel color_bg = MD_palette[VDP_Reg.BG_Color & 0x3F];
-	MD_palette[0] = color_bg;
+	MD_palette[0] = MD_palette[VDP_Reg.BG_Color & 0x3F];
 	
 	if (hs)
 	{
 		// Update the background color for highlight and shadow.
 		
 		// Normal color.
-		MD_palette[192] = color_bg;
+		MD_palette[192] = MD_palette[VDP_Reg.BG_Color & 0x3F];
 		
 		// Shadow color.
-		color_bg = (color_bg >> 1) & mask;
-		MD_palette[64] = color_bg;
+		MD_palette[64] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 64];
 		
 		// Highlight color.
-		color_bg += mask;
-		MD_palette[128] = color_bg;
+		MD_palette[128] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 128];
 	}
 }
 
@@ -125,9 +119,8 @@ static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pix
  */
 void VDP_Update_Palette(void)
 {
-	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_VDP_Update_Palette<false>(mask16, MD_Palette, Palette);
-	T_VDP_Update_Palette<false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	T_VDP_Update_Palette<false>(MD_Palette, Palette);
+	T_VDP_Update_Palette<false>(MD_Palette32, Palette32);
 }
 
 /**
@@ -135,7 +128,6 @@ void VDP_Update_Palette(void)
  */
 void VDP_Update_Palette_HS(void)
 {
-	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_VDP_Update_Palette<true>(mask16, MD_Palette, Palette);
-	T_VDP_Update_Palette<true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	T_VDP_Update_Palette<true>(MD_Palette, Palette);
+	T_VDP_Update_Palette<true>(MD_Palette32, Palette32);
 }
