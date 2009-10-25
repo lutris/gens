@@ -51,7 +51,7 @@ using std::string;
 // MDP Host Services.
 const mdp_host_t *gg_host_srv = NULL;
 
-static int gg_menuItemID = 0;
+static int gg_menuItemID = -1;
 
 // ROM size.
 int gg_mdp_rom_md_size = 0;
@@ -140,10 +140,17 @@ int MDP_FNCALL gg_end(void)
 	
 	// If a directory was registered, unregister it.
 	if (gg_dir_id >= 0)
+	{
 		gg_host_srv->dir_unregister(&mdp, gg_dir_id);
+		gg_dir_id = -1;
+	}
 	
 	// Remove the menu item.
-	gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
+	if (gg_menuItemID >= 0)
+	{
+		gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
+		gg_menuItemID = -1;
+	}
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

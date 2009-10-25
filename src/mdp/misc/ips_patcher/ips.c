@@ -90,7 +90,10 @@ int MDP_FNCALL ips_end(void)
 	
 	// If a directory was registered, unregister it.
 	if (ips_dir_id >= 0)
+	{
 		ips_host_srv->dir_unregister(&mdp, ips_dir_id);
+		ips_dir_id = -1;
+	}
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

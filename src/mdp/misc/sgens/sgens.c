@@ -36,7 +36,7 @@
 
 // MDP Host Services.
 const mdp_host_t *sgens_host_srv = NULL;
-static int sgens_menuItemID = 0;
+static int sgens_menuItemID = -1;
 
 // Current ROM type.
 SGENS_ROM_TYPE sgens_current_rom_type = SGENS_ROM_TYPE_NONE;
@@ -98,7 +98,11 @@ int MDP_FNCALL sgens_end(void)
 	sgens_window_close();
 	
 	// Remove the menu item.
-	sgens_host_srv->menu_item_remove(&mdp, sgens_menuItemID);
+	if (sgens_menuItemID >= 0)
+	{
+		sgens_host_srv->menu_item_remove(&mdp, sgens_menuItemID);
+		sgens_menuItemID = -1;
+	}
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

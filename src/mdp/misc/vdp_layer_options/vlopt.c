@@ -37,7 +37,7 @@
 
 // MDP Host Services.
 const mdp_host_t *vlopt_host_srv = NULL;
-static int vlopt_menuItemID = 0;
+static int vlopt_menuItemID = -1;
 
 
 static int MDP_FNCALL vlopt_menu_handler(int menu_item_id);
@@ -100,7 +100,11 @@ int MDP_FNCALL vlopt_end(void)
 	vlopt_window_close();
 	
 	// Remove the menu item.
-	vlopt_host_srv->menu_item_remove(&mdp, vlopt_menuItemID);
+	if (vlopt_menuItemID >= 0)
+	{
+		vlopt_host_srv->menu_item_remove(&mdp, vlopt_menuItemID);
+		vlopt_menuItemID = -1;
+	}
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

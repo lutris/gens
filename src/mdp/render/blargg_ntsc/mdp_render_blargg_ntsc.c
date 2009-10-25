@@ -43,7 +43,7 @@
 
 // MDP Host Services.
 const mdp_host_t *ntsc_host_srv = NULL;
-static int ntsc_menuItemID = 0;
+static int ntsc_menuItemID = -1;
 
 static int MDP_FNCALL ntsc_menu_handler(int menu_item_id);
 static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info);
@@ -71,11 +71,6 @@ int MDP_FNCALL mdp_render_blargg_ntsc_init(const mdp_host_t *host_srv)
 	
 	// Create a menu item.
 	ntsc_menuItemID = ntsc_host_srv->menu_item_add(&mdp, &ntsc_menu_handler, 0, "Blargg's &NTSC Filter");
-	if (ntsc_menuItemID < 0)
-	{
-		// Error creating the menu item.
-		ntsc_menuItemID = 0;
-	}
 	
 	// Register configuration load/save events.
 	ntsc_host_srv->event_register(&mdp, MDP_EVENT_LOAD_CONFIG, ntsc_event_handler);
@@ -100,10 +95,10 @@ int MDP_FNCALL mdp_render_blargg_ntsc_end(void)
 	ntsc_host_srv->event_unregister(&mdp, MDP_EVENT_SAVE_CONFIG, ntsc_event_handler);
 	
 	// Remove the menu item.
-	if (ntsc_menuItemID != 0)
+	if (ntsc_menuItemID >= 0)
 	{
 		ntsc_host_srv->menu_item_remove(&mdp, ntsc_menuItemID);
-		ntsc_menuItemID = 0;
+		ntsc_menuItemID = -1;
 	}
 	
 	// Unregister the renderer.
