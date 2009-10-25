@@ -232,7 +232,6 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_32x_32bit.h \
 		macros/git.h \
 		macros/log_msg.h \
-		macros/math_m.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
