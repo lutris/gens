@@ -96,7 +96,10 @@ static int mdp_host_emulator_control_reload_info(void) throw()
 	
 	// Reload SRAM or BRAM, depending on what's loaded.
 	if (!SegaCD_Started)
+	{
+		Init_Genesis_SRAM(Game);
 		Savestate::LoadSRAM();
+	}
 	else
 		Savestate::LoadBRAM();
 	
