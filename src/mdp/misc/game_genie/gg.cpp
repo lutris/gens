@@ -109,7 +109,6 @@ int MDP_FNCALL gg_init(const mdp_host_t *host_srv)
 	
 	// Create a menu item.
 	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &gg_menu_handler, 0, "&Game Genie");
-	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
 	
 	// Set the Game Genie directory to the default save path initially.
 	gg_host_srv->dir_get_default_save_path(gg_save_path, sizeof(gg_save_path));
