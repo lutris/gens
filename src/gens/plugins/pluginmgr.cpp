@@ -119,11 +119,6 @@ mapDirItems PluginMgr::tblDirectories;
  */
 mapPluginConfig PluginMgr::tblPluginConfig;
 
-/**
- * UUID map.
- */
-mapUUID PluginMgr::tblUUID;
-
 
 /**
  * init(): Initialize the plugin system.
@@ -187,26 +182,24 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 	}
 	
 	// Check for a duplicated UUID.
-	// TODO: This doesn't work correctly, since UUIDs can have NULLs.
-	char sUUID[17];
-	memcpy(sUUID, plugin->uuid, sizeof(sUUID)-1);
-	sUUID[16] = 0x00;
-	
-	mapUUID::iterator uuidIter = tblUUID.find(string(sUUID));
-	if (uuidIter != tblUUID.end())
+	for (list<mdp_t*>::iterator iterMDP = lstMDP.begin();
+	     iterMDP != lstMDP.end(); iterMDP++)
 	{
-		// Duplicated UUID.
-		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"%s: Duplicated UUID. (uuid == %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x)",
-			File::GetNameFromPath(filename).c_str(),
-			plugin->uuid[0], plugin->uuid[1], plugin->uuid[2], plugin->uuid[3],
-			plugin->uuid[4], plugin->uuid[5],
-			plugin->uuid[6], plugin->uuid[7],
-			plugin->uuid[8], plugin->uuid[9],
-			plugin->uuid[10], plugin->uuid[11], plugin->uuid[12], plugin->uuid[13], plugin->uuid[14], plugin->uuid[15]);
-		
-		Incompat.add(plugin, -MDP_ERR_DUPLICATE_UUID, filename);
-		return false;
+		if (memcmp((*iterMDP)->uuid, plugin->uuid, sizeof(plugin->uuid)) == 0)
+		{
+			// Duplicated UUID.
+			LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+				"%s: Duplicated UUID. (uuid == %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x)",
+				File::GetNameFromPath(filename).c_str(),
+				plugin->uuid[0], plugin->uuid[1], plugin->uuid[2], plugin->uuid[3],
+				plugin->uuid[4], plugin->uuid[5],
+				plugin->uuid[6], plugin->uuid[7],
+				plugin->uuid[8], plugin->uuid[9],
+				plugin->uuid[10], plugin->uuid[11], plugin->uuid[12], plugin->uuid[13], plugin->uuid[14], plugin->uuid[15]);
+			
+			Incompat.add(plugin, -MDP_ERR_DUPLICATE_UUID, filename);
+			return false;
+		}
 	}
 	
 	// Check required CPU flags.
@@ -245,9 +238,6 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 	
 	// Add the plugin to the list of plugins.
 	lstMDP.push_back(plugin);
-	
-	// Add the UUID to the UUID map.
-	tblUUID.insert(pairUUID(string(sUUID), plugin));
 	
 	// Plugin loaded.
 	return true;
