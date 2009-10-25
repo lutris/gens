@@ -33,6 +33,7 @@
 
 // Gens functions.
 #include "emulator/options.hpp"
+#include "emulator/g_md.hpp"
 #include "util/file/rom.hpp"
 #include "util/file/save.hpp"
 
