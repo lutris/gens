@@ -84,9 +84,9 @@ static void CDC_Reset(void)
 	
 	// Reseting CDC
 	
-	// NOTE: This code was originally only clearing ((16 * 1024 * 32) + 2352) bytes.
-	// sizeof(CDC.Buffer) == ((32 * 1024 * 32) + 2352)
-	memset(CDC.Buffer, 0x00, sizeof(CDC.Buffer));
+	// NOTE: Clearing sizeof(CDC.Buffer) bytes ((32 * 1024 * 2) + 2352) breaks SegaCD!
+	// This must only clear ((16 * 1024 * 2) + 2352) bytes.
+	memset(CDC.Buffer, 0x00, ((16 * 1024 * 2) + 2352));
 	CDC_Update_Header();
 	
 	CDC.COMIN = 0;
