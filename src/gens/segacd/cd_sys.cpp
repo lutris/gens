@@ -118,38 +118,28 @@ static inline bool checkCDPresent(void)
 }
 
 
-
-void
-MSB2DWORD (unsigned int *d, unsigned char *b)
+void MSB2DWORD(unsigned int *d, unsigned char *b)
 {
-  unsigned int retVal;
-
-  retVal = (unsigned int) b[0];
-  retVal = (retVal << 8) + (unsigned int) b[1];
-  retVal = (retVal << 8) + (unsigned int) b[2];
-  retVal = (retVal << 8) + (unsigned int) b[3];
-
-  *d = retVal;
+	*d = (b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24));
 }
 
 
-int
-MSF_to_LBA (_msf * MSF)
+int MSF_to_LBA(const _msf* MSF)
 {
-  return (MSF->M * 60 * 75) + (MSF->S * 75) + MSF->F - 150;
+	return (MSF->M * 60 * 75) + (MSF->S * 75) + MSF->F - 150;
 }
 
 
-void
-LBA_to_MSF (int lba, _msf * MSF)
+void LBA_to_MSF(int lba, _msf* MSF)
 {
-  if (lba < -150)
-    lba = 0;
-  else
-    lba += 150;
-  MSF->M = lba / (60 * 75);
-  MSF->S = (lba / 75) % 60;
-  MSF->F = lba % 75;
+	if (lba < -150)
+		lba = 0;
+	else
+		lba += 150;
+	
+	MSF->M = lba / (60 * 75);
+	MSF->S = (lba / 75) % 60;
+	MSF->F = lba % 75;
 }
 
 

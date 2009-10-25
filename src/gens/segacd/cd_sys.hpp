@@ -94,7 +94,7 @@ extern _scd SCD;
 
 
 void MSB2DWORD(unsigned int *d, unsigned char *b);
-int MSF_to_LBA(_msf *MSF);
+int MSF_to_LBA(const _msf *MSF);
 void LBA_to_MSF(int lba, _msf *MSF);
 unsigned int MSF_to_Track(_msf *MSF);
 unsigned int LBA_to_Track(int lba);
