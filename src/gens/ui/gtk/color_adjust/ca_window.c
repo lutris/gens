@@ -53,7 +53,7 @@ static GtkWidget	*sldContrast;
 static GtkWidget	*sldBrightness;
 static GtkWidget	*chkGrayscale;
 static GtkWidget	*chkInverted;
-static GtkWidget	*chkScaleColors;
+static GtkWidget	*cboColorScaleMethod;
 static GtkWidget	*btnCancel, *btnApply, *btnSave;
 
 // Color adjustment load/save functions.
@@ -183,12 +183,28 @@ void ca_window_show(void)
 	g_signal_connect((gpointer)chkInverted, "toggled",
 			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
-	// "Scale Colors" checkbox.
-	chkScaleColors = gtk_check_button_new_with_mnemonic("Scale Co_lors");
-	gtk_widget_show(chkScaleColors);
-	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkScaleColors, TRUE, FALSE, 0);
-	g_signal_connect((gpointer)chkScaleColors, "toggled",
-			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
+	// Create an HBox for the "Color Scale Method".
+	GtkWidget *hboxColorScaleMethod = gtk_hbox_new(FALSE, 4);
+	gtk_widget_show(hboxColorScaleMethod);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxColorScaleMethod, TRUE, FALSE, 0);
+	
+	// Create a label for the "Color Scale Method".
+	GtkWidget *lblColorScaleMethod = gtk_label_new_with_mnemonic("Color Sca_le Method:");
+	gtk_widget_show(lblColorScaleMethod);
+	gtk_box_pack_start(GTK_BOX(hboxColorScaleMethod), lblColorScaleMethod, TRUE, FALSE, 0);
+	
+	// Create the "Color Scale Method" dropdown.
+	cboColorScaleMethod = gtk_combo_box_new_text();
+	gtk_widget_show(cboColorScaleMethod);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(lblColorScaleMethod), cboColorScaleMethod);
+	gtk_box_pack_start(GTK_BOX(hboxColorScaleMethod), cboColorScaleMethod, TRUE, FALSE, 0);
+	g_signal_connect((gpointer)cboColorScaleMethod, "changed",
+			  G_CALLBACK(ca_window_callback_widget_changed), NULL);
+	
+	// Add the items to the "Color Scale Method" dropdown.
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboColorScaleMethod), "Raw");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboColorScaleMethod), "Full");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboColorScaleMethod), "Full with S/H");
 	
 	// Create the dialog buttons.
 	btnApply  = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
@@ -238,7 +254,7 @@ static void ca_window_init(void)
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkGrayscale), Greyscale);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInverted), Invert_Color);
-	//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScaleColors), Scale_Colors);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboColorScaleMethod), (int)ColorScaleMethod);
 	
 	// Disable the "Apply" button initially.
 	gtk_widget_set_sensitive(btnApply, FALSE);
@@ -255,7 +271,7 @@ static void ca_window_save(void)
 	
 	Greyscale = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkGrayscale));
 	Invert_Color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkInverted));
-	//Scale_Colors = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkScaleColors));
+	ColorScaleMethod = (ColorScaleMethod_t)gtk_combo_box_get_active(GTK_COMBO_BOX(cboColorScaleMethod));
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
