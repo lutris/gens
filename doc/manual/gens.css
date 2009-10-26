@@ -76,3 +76,8 @@ pre.code
 	background-color: silver;
 	font-family: monospace;
 }
+
+.note
+{
+	font-weight: bold;
+}

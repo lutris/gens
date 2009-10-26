@@ -81,25 +81,59 @@
 </table>
 
 <p>
-<span class='option'>Color Scaling</span>: Enables RGB Color Scaling. This
-option scales the maximum color components for each system to the maximum
-color output for the current color depth, resulting in a brighter image.
-For instance, an MD color value <span class='value'>0xEEE</span> would
-normally get converted to <span class='value'>#E0E0E0</span> with RGB Color
-Scaling disabled, but with RGB Color Scaling enabled, it gets converted to
-<span class='value'>#FFFFFF</span>. This is more accurate to how the original
-system works: an MD color value <span class='value'>0xEEE</span> tells the
-VDP to output full brightness on all three color channels.
+<span class='option'>Color Scaling Method</span>: Determines the color scaling
+method to be used.
+</p>
+
+<p>
+&quot;Raw&quot; color scaling simply shifts each color
+color component into their correct positions. For instance, an MD color value
+of <span class='value'>0xEEE</span> would be converted to <span class='value'>0xE0E0E0</span>.
+</p>
+
+<p>
+&quot;Full&quot; expands the palette such that maximum brightness on the MD
+(<span class='value'>0xEEE</span>) is converted ot maximum brightness for the
+current color depth (e.g. <span class='value'>0xFFFFFF</span> for 32-bit).
+</p>
+
+<p>
+&quot;Full with S/H&quot; takes the MD's Shadow and Highlight features into
+account when scaling colors. An MD color value of <span class='value'>0xEEE</span>
+would be converted to <span class='value'>0xEEEEEE</span> if both shadow and
+highlight are disabled; <span class='value'>0x777777</span> if shadow is enabled;
+and <span class='value'>0xFFFFFF</span> if highlight is enabled. This is
+probably the most accurate scaling method available in Gens/GS.
+</p>
+
+<p>
+<span class='note'>NOTE:</span> If any scaling methods (other than &quot;Raw&quot;)
+are enabled, then you must use 32-bit color in order to get accurate screenshots
+in Gens/GS r7 due to the way the screenshot function is written. This may be fixed
+in a future version.
 </p>
 
 <table align='center'>
 	<tr>
-		<th>Original</th>
-		<th>RGB Color Scaling</th>
+		<th>
+			Raw<br>
+			<span class='value'>0xEEE</span> → <span class='value'>0xE0E0E0</span>
+		</th>
+		<th>
+			Full<br>
+			<span class='value'>0xEEE</span> → <span class='value'>0xFFFFFF</span>
+		</th>
+		<th>
+			Full with S/H<br>
+			[normal] <span class='value'>0xEEE</span> → <span class='value'>0xEEEEEE</span><br>
+			[shadow] <span class='value'>0xEEE</span> → <span class='value'>0x777777</span><br>
+			[highlight] <span class='value'>0xEEE</span> → <span class='value'>0xFFFFFF</span><br>
+		</th>
 	</th>
 	<tr>
-		<td><img src="images/dialog-ca/ca-noscale.png" width="320" height="224"></td>
-		<td><img src="images/dialog-ca/ca-original.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-scale-raw.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-scale-full.png" width="320" height="224"></td>
+		<td><img src="images/dialog-ca/ca-scale-full-sh.png" width="320" height="224"></td>
 	</tr>
 </table>
 
