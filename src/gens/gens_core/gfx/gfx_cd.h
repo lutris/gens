@@ -18,7 +18,7 @@ extern struct
 	int Rotation_Running;
 } Rot_Comp;
 
-extern int Table_Rot_Time[4 * 4 * 4];
+extern const int Table_Rot_Time[4 * 4 * 4];
 
 // GENS Rerecording [GENS Savestate v7]
 extern int Stamp_Map_Adr, Buffer_Adr, Vector_Adr, Jmp_Adr, Float_Part, Draw_Speed;
