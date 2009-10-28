@@ -21,29 +21,7 @@
 ;
 ;***********************************************************************************
 
-
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define __PLATFORM_WINDOWS
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define __PLATFORM_WINDOWS
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 
 ;**************************
@@ -114,28 +92,12 @@ section .bss align=64
 	%include "sh2_context.inc"
 	
 section .text align=64
-	
-; External symbol redefines for ELF.
-%ifdef __OBJ_ELF
-	%define	_SH2_Interrupt_Internal		SH2_Interrupt_Internal
-%endif
 
-extern _SH2_Interrupt_Internal
-
-; Symbol redefines for ELF.
-%ifdef __OBJ_ELF
-	%define	_SH2_Read_Byte		SH2_Read_Byte
-	%define	_SH2_Read_Word		SH2_Read_Word
-	%define	_SH2_Read_Long		SH2_Read_Long
-	
-	%define	_SH2_Write_Byte		SH2_Write_Byte
-	%define	_SH2_Write_Word		SH2_Write_Word
-	%define	_SH2_Write_Long		SH2_Write_Long
-%endif
+extern SYM(SH2_Interrupt_Internal)
 
 ; UINT8 SH2_Read_Byte(SH2_CONTEXT *SH2, UINT32 adr)
-global _SH2_Read_Byte
-_SH2_Read_Byte:
+global SYM(SH2_Read_Byte)
+SYM(SH2_Read_Byte):
 	push	ecx
 	push	edx
 	push	ebp
@@ -155,8 +117,8 @@ _SH2_Read_Byte:
 align 32
 
 ; UINT16 SH2_Read_Word(SH2_CONTEXT *SH2, UINT32 adr)
-global _SH2_Read_Word
-_SH2_Read_Word:
+global SYM(SH2_Read_Word)
+SYM(SH2_Read_Word):
 	push	ecx
 	push	edx
 	push	ebp
@@ -176,8 +138,8 @@ _SH2_Read_Word:
 align 32
 
 ; UINT32 SH2_Read_Long(SH2_CONTEXT *SH2, UINT32 adr)
-global _SH2_Read_Long
-_SH2_Read_Long:
+global SYM(SH2_Read_Long)
+SYM(SH2_Read_Long):
 	push	ecx
 	push	edx
 	push	ebp
@@ -197,8 +159,8 @@ _SH2_Read_Long:
 align 32
 
 ; void SH2_Write_Byte(SH2_CONTEXT *SH2, UINT32 adr, UINT8 data)
-global _SH2_Write_Byte
-_SH2_Write_Byte:
+global SYM(SH2_Write_Byte)
+SYM(SH2_Write_Byte):
 	push	ecx
 	push	edx
 	push	ebp
@@ -219,8 +181,8 @@ _SH2_Write_Byte:
 align 32
 
 ; void SH2_Write_Word(SH2_CONTEXT *SH2, UINT32 adr, UINT16 data)
-global _SH2_Write_Word
-_SH2_Write_Word:
+global SYM(SH2_Write_Word)
+SYM(SH2_Write_Word):
 	push	ecx
 	push	edx
 	push	ebp
@@ -242,8 +204,8 @@ align 32
 
 ; void SH2_Write_Long(SH2_CONTEXT *SH2, UINT32 adr, UINT32 data)
 
-global _SH2_Write_Long
-_SH2_Write_Long:
+global SYM(SH2_Write_Long)
+SYM(SH2_Write_Long):
 	push	ecx
 	push	edx
 	push	ebp
@@ -2260,7 +2222,7 @@ align 16
 	mov	dl, [ebp + SH2.IPDMA]
 	mov	ecx, ebp
 	FUNC_CALL_IN
-	call	_SH2_Interrupt_Internal
+	call	SYM(SH2_Interrupt_Internal)
 	FUNC_CALL_OUT
 	mov	al, bl
 
@@ -2811,7 +2773,7 @@ align 16
 	mov	dl, [ebp + SH2.IPDMA]
 	mov	ecx, ebp
 	FUNC_CALL_IN
-	call	_SH2_Interrupt_Internal
+	call	SYM(SH2_Interrupt_Internal)
 	FUNC_CALL_OUT
 	mov	al, bl
 
