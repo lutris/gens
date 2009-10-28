@@ -168,7 +168,7 @@ void input_sdl_event_key_down(int key)
 			if (allow_gtk_hotkeys && IS_KMOD_SHIFT(mod))
 			{
 				audio_clear_sound_buffer();
-				ImageUtil::screenShot();
+				ImageUtil::ScreenShot();
 			}
 			else if (IS_KMOD_CTRL(mod))
 			{

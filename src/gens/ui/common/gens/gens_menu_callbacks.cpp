@@ -447,7 +447,7 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		
 		case IDM_GRAPHICS_SCREENSHOT:
 			audio_clear_sound_buffer();
-			ImageUtil::screenShot();
+			ImageUtil::ScreenShot();
 			break;
 		
 		default:

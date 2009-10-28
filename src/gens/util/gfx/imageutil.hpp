@@ -68,18 +68,18 @@ class ImageUtil
 		static const ImageFormat DefaultImageFormat = IMAGEFORMAT_BMP;
 #endif /* GENS_PNG */
 		
-		static int writeImage(const char* filename, const ImageFormat format,
+		static int WriteImage(const char* filename, const ImageFormat format,
 					const int w, const int h, const int pitch,
 					const void *screen, const int bpp,
 					const AlphaChannel alpha = ALPHACHANNEL_NONE);
 		
-		static int screenShot(void);
+		static int ScreenShot(void);
 	
 	protected:
-		static int writeBMP(FILE *fImg, const int w, const int h, const int pitch,
+		static int WriteBMP(FILE *fImg, const int w, const int h, const int pitch,
 					const void *screen, const int bpp);
 		
-		static int writePNG(FILE *fImg, const int w, const int h, const int pitch,
+		static int WritePNG(FILE *fImg, const int w, const int h, const int pitch,
 					const void *screen, const int bpp,
 					const AlphaChannel alpha = ALPHACHANNEL_NONE);
 	

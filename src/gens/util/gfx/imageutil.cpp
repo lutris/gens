@@ -117,8 +117,9 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
 	}
 }
 
+
 /**
- * writeBMP(): Write a BMP image.
+ * WriteBMP(): Write a BMP image.
  * @param fImg File handle to save the image to.
  * @param w Width of the image.
  * @param h Height of the image.
@@ -127,7 +128,7 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
  * @param bpp Bits per pixel.
  * @return 0 on success; non-zero on error.
  */
-int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
+int ImageUtil::WriteBMP(FILE *fImg, const int w, const int h, const int pitch,
 			const void *screen, const int bpp)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
@@ -264,8 +265,9 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 	return 0;
 }
 
+
 /**
- * writePNG(): Write a PNG image.
+ * WritePNG(): Write a PNG image.
  * @param fImg File handle to save the image to.
  * @param w Width of the image.
  * @param h Height of the image.
@@ -275,7 +277,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
  * @param alpha Alpha channel specification. (32-bit color only.)
  * @return 0 on success; non-zero on error.
  */
-int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
+int ImageUtil::WritePNG(FILE *fImg, const int w, const int h, const int pitch,
 			const void *screen, const int bpp, const AlphaChannel alpha)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
@@ -417,7 +419,19 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 #endif /* GENS_PNG */
 
 
-int ImageUtil::writeImage(const char* filename, const ImageFormat format,
+/**
+ * WriteImage(): Write an image.
+ * @param filename Filename to write to.
+ * @param format Image format.
+ * @param w Width of the image.
+ * @param h Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
+ * @param screen Pointer to screen buffer.
+ * @param bpp Bits per pixel.
+ * @param alpha Alpha channel specification. (32-bit color only.)
+ * @return 0 on success; non-zero on error.
+ */
+int ImageUtil::WriteImage(const char* filename, const ImageFormat format,
 			  const int w, const int h, const int pitch,
 			  const void *screen, const int bpp, const AlphaChannel alpha)
 {
@@ -437,12 +451,12 @@ int ImageUtil::writeImage(const char* filename, const ImageFormat format,
 #ifdef GENS_PNG
 	if (format == IMAGEFORMAT_PNG)
 	{
-		rval = writePNG(fImg, w, h, pitch, screen, bpp, alpha);
+		rval = WritePNG(fImg, w, h, pitch, screen, bpp, alpha);
 	}
 	else
 #endif /* GENS_PNG */
 	{
-		rval = writeBMP(fImg, w, h, pitch, screen, bpp);
+		rval = WriteBMP(fImg, w, h, pitch, screen, bpp);
 	}
 	
 	fclose(fImg);
@@ -451,10 +465,10 @@ int ImageUtil::writeImage(const char* filename, const ImageFormat format,
 
 
 /**
- * screenShot(): Convenience function to take a screenshot of the game.
+ * ScreenShot(): Convenience function to take a screenshot of the game.
  * @return 0 on success; non-zero on error.
  */
-int ImageUtil::screenShot(void)
+int ImageUtil::ScreenShot(void)
 {
 	// If no game is running, don't do anything.
 	if (!Game)
@@ -503,10 +517,10 @@ int ImageUtil::screenShot(void)
 		screen = (void*)(&MD_Screen32[8]);
 	
 	// Attempt to save the screenshot.
-	int rval = writeImage(filename, fmt, w, h, 336, screen, bppMD);
+	int rval = WriteImage(filename, fmt, w, h, 336, screen, bppMD);
 	
 	if (!rval)
-		vdraw_text_printf(1500, "Screen shot %d saved", num);
+		vdraw_text_printf(1500, "Screen shot %d saved.", num);
 	
 	return rval;
 }
