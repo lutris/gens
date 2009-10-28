@@ -25,6 +25,7 @@
 // libpng DLL handle.
 static void *dll_png = NULL;
 
+#define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
 MAKE_FUNCPTR(png_set_read_fn);
 MAKE_FUNCPTR(png_get_valid);
 MAKE_FUNCPTR(png_create_read_struct);

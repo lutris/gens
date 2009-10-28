@@ -184,9 +184,11 @@ gens_SOURCES += \
 endif
 
 if GENS_PNG
+if !GENS_PNG_INTERNAL
 gens_SOURCES += \
 		dll/dll_png.c
-endif
+endif # !GENS_PNG_INTERNAL
+endif # GENS_PNG
 
 if GENS_ZLIB
 gens_SOURCES += \
