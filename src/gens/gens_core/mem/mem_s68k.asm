@@ -1,26 +1,26 @@
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
+;
+; Gens: Sub 68000 memory management.
+;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
 
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
-
-extern _Write_To_68K_Space
-extern _Read_To_68K_Space
+%include "nasm_x86.inc"
 
 section .bss align=64
 	
@@ -36,127 +36,75 @@ section .bss align=64
 	extern Rot_Comp.Reg_64
 	extern Rot_Comp.Reg_66
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_PCM_Chip		PCM_Chip
-		%define	_Ram_PCM		Ram_PCM
-		%define	_CD_Timer_Counter	CD_Timer_Counter
-	%endif
+	extern SYM(PCM_Chip)
+	extern SYM(Ram_PCM)
 	
-	extern _PCM_Chip
-	extern _Ram_PCM
+	%define PCM_Chip_Enable		SYM(PCM_Chip) + (1 * 4)
+	%define PCM_Cur_Chan		SYM(PCM_Chip) + (2 * 4)
+	%define PCM_Chip_Bank		SYM(PCM_Chip) + (3 * 4)
 	
-	%define PCM_Chip_Enable		_PCM_Chip + (1 * 4)
-	%define PCM_Cur_Chan		_PCM_Chip + (2 * 4)
-	%define PCM_Chip_Bank		_PCM_Chip + (3 * 4)
-	
-	%define PCM_Chan_ENV		_PCM_Chip + (4 * 4)
-	%define PCM_Chan_PAN		_PCM_Chip + (5 * 4)
-	%define PCM_Chan_MUL_L		_PCM_Chip + (6 * 4)
-	%define PCM_Chan_MUL_R		_PCM_Chip + (7 * 4)
-	%define PCM_Chan_St_Addr	_PCM_Chip + (8 * 4)
-	%define PCM_Chan_Loop_Addr	_PCM_Chip + (9 * 4)
-	%define PCM_Chan_Addr		_PCM_Chip + (10 * 4)
-	%define PCM_Chan_Step		_PCM_Chip + (11 * 4)
-	%define PCM_Chan_Step_B		_PCM_Chip + (12 * 4)
-	%define PCM_Chan_Enable		_PCM_Chip + (13 * 4)
-	%define PCM_Chan_Data		_PCM_Chip + (14 * 4)
+	%define PCM_Chan_ENV		SYM(PCM_Chip) + (4 * 4)
+	%define PCM_Chan_PAN		SYM(PCM_Chip) + (5 * 4)
+	%define PCM_Chan_MUL_L		SYM(PCM_Chip) + (6 * 4)
+	%define PCM_Chan_MUL_R		SYM(PCM_Chip) + (7 * 4)
+	%define PCM_Chan_St_Addr	SYM(PCM_Chip) + (8 * 4)
+	%define PCM_Chan_Loop_Addr	SYM(PCM_Chip) + (9 * 4)
+	%define PCM_Chan_Addr		SYM(PCM_Chip) + (10 * 4)
+	%define PCM_Chan_Step		SYM(PCM_Chip) + (11 * 4)
+	%define PCM_Chan_Step_B		SYM(PCM_Chip) + (12 * 4)
+	%define PCM_Chan_Enable		SYM(PCM_Chip) + (13 * 4)
+	%define PCM_Chan_Data		SYM(PCM_Chip) + (14 * 4)
 	
 	%define PCM_Channel		(11 * 4)
 	%define PCM_STEP_SHIFT		11
 	
-	; Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Ram_Prg		Ram_Prg
-		%define	_Ram_Word_2M		Ram_Word_2M
-		%define	_Ram_Word_1M		Ram_Word_1M
-		%define	_Cell_Conv_Tab		Cell_Conv_Tab
-		%define	_Ram_Backup		Ram_Backup
-		
-		%define	_COMM			COMM
-		%define	_COMM.Flag		COMM.Flag
-		%define	_COMM.Command		COMM.Command
-		%define	_COMM.Status		COMM.Status
-		
-		%define	_CDD			CDD
-		%define	_CDD.Fader		CDD.Fader
-		%define	_CDD.Control		CDD.Control
-		%define	_CDD.Cur_Comm		CDD.Cur_Comm
-		%define	_CDD.Rcv_Status		CDD.Rcv_Status
-		%define	_CDD.Trans_Comm		CDD.Trans_Comm
-		%define	_CDD.Status		CDD.Status
-		%define	_CDD.Minute		CDD.Minute
-		%define	_CDD.Seconde		CDD.Seconde
-		%define	_CDD.Frame		CDD.Frame
-		%define	_CDD.Ext		CDD.Ext
-		
-		%define	_CDC			CDC
-		%define	_CDC.RS0		CDC.RS0
-		%define	_CDC.RS1		CDC.RS1
-		%define	_CDC.Host_Data		CDC.Host_Data
-		%define	_CDC.DMA_Adr		CDC.DMA_Adr
-		%define	_CDC.Stop_Watch		CDC.Stop_Watch
-		
-		%define	_LED_Status		LED_Status
-		%define	_S68K_Mem_WP		S68K_Mem_WP
-		%define	_S68K_Mem_PM		S68K_Mem_PM
-		%define	_Ram_Word_State		Ram_Word_State
-		%define	_Init_Timer_INT3	Init_Timer_INT3
-		%define	_Timer_INT3		Timer_INT3
-		%define	_Timer_Step		Timer_Step
-		%define	_Int_Mask_S68K		Int_Mask_S68K
-		%define	_Font_COLOR		Font_COLOR
-		%define	_Font_BITS		Font_BITS
-		%define	_CD_Access_Timer	CD_Access_Timer
-	%endif
-	
 	alignb 64
 	
-	global _Ram_Prg
-	_Ram_Prg:
+	global SYM(Ram_Prg)
+	SYM(Ram_Prg):
 		resb 512 * 1024
 	
-	global _Ram_Word_2M
-	_Ram_Word_2M:
+	global SYM(Ram_Word_2M)
+	SYM(Ram_Word_2M):
 		resb 256 * 1024
 	
-	global _Ram_Word_1M
-	_Ram_Word_1M:
+	global SYM(Ram_Word_1M)
+	SYM(Ram_Word_1M):
 		resb 256 * 1024
 	
-	global _Cell_Conv_Tab
-	_Cell_Conv_Tab:
+	global SYM(Cell_Conv_Tab)
+	SYM(Cell_Conv_Tab):
 		resw 64 * 1024
 	
-	global _Ram_Backup
-	_Ram_Backup:
+	global SYM(Ram_Backup)
+	SYM(Ram_Backup):
 		resb 8 * 1024
 	
 	alignb 16
 	
-	global _COMM
-	global _COMM.Flag
-	global _COMM.Command
-	global _COMM.Status
-	_COMM:
+	global SYM(COMM)
+	global SYM(COMM.Flag)
+	global SYM(COMM.Command)
+	global SYM(COMM.Status)
+	SYM(COMM):
 		.Flag:		resd 1
 		.Command:	resw 8
 		.Status:	resw 8
 	
 	alignb 16
 	
-	global _CDD
-	global _CDD.Fader
-	global _CDD.Control
-	global _CDD.Cur_Comm
-	global _CDD.Rcv_Status
-	global _CDD.Trans_Comm
-	global _CDD.Status
-	global _CDD.Minute
-	global _CDD.Seconde
-	global _CDD.Frame
-	global _CDD.Ext
-	_CDD:
+	global SYM(CDD)
+	global SYM(CDD.Fader)
+	global SYM(CDD.Control)
+	global SYM(CDD.Cur_Comm)
+	global SYM(CDD.Rcv_Status)
+	global SYM(CDD.Trans_Comm)
+	global SYM(CDD.Status)
+	global SYM(CDD.Minute)
+	global SYM(CDD.Seconde)
+	global SYM(CDD.Frame)
+	global SYM(CDD.Ext)
+	SYM(CDD):
 		.Fader:		resd 1
 		.Control:	resd 1
 		.Cur_Comm:	resd 1
@@ -170,13 +118,13 @@ section .bss align=64
 	
 	alignb 16
 	
-	global _CDC
-	global _CDC.RS0
-	global _CDC.RS1
-	global _CDC.Host_Data
-	global _CDC.DMA_Adr
-	global _CDC.Stop_Watch
-	_CDC:
+	global SYM(CDC)
+	global SYM(CDC.RS0)
+	global SYM(CDC.RS1)
+	global SYM(CDC.Host_Data)
+	global SYM(CDC.DMA_Adr)
+	global SYM(CDC.Stop_Watch)
+	SYM(CDC):
 		.RS0:		resd 1
 		.RS1:		resd 1
 		.Host_Data:	resd 1
@@ -197,62 +145,57 @@ section .bss align=64
 	
 	alignb 16
 	
-	global _LED_Status
-	_LED_Status:
+	global SYM(LED_Status)
+	SYM(LED_Status):
 		resd 1
 	
-	global _S68K_Mem_WP
-	_S68K_Mem_WP:
+	global SYM(S68K_Mem_WP)
+	SYM(S68K_Mem_WP):
 		resd 1
 	
-	global _S68K_Mem_PM
-	_S68K_Mem_PM:
+	global SYM(S68K_Mem_PM)
+	SYM(S68K_Mem_PM):
 		resd 1
 	
-	global _Ram_Word_State
-	_Ram_Word_State:
+	global SYM(Ram_Word_State)
+	SYM(Ram_Word_State):
 		resd 1
 	
-	global _Init_Timer_INT3
-	_Init_Timer_INT3:
+	global SYM(Init_Timer_INT3)
+	SYM(Init_Timer_INT3):
 		resd 1
 	
-	global _Timer_INT3
-	_Timer_INT3:
+	global SYM(Timer_INT3)
+	SYM(Timer_INT3):
 		resd 1
 	
-	global _Timer_Step
-	_Timer_Step:
+	global SYM(Timer_Step)
+	SYM(Timer_Step):
 		resd 1
 	
-	global _Int_Mask_S68K
-	_Int_Mask_S68K:
+	global SYM(Int_Mask_S68K)
+	SYM(Int_Mask_S68K):
 		resd 1
 	
-	global _Font_COLOR
-	_Font_COLOR:
+	global SYM(Font_COLOR)
+	SYM(Font_COLOR):
 		resd 1
 	
-	global _Font_BITS
-	_Font_BITS:
+	global SYM(Font_BITS)
+	SYM(Font_BITS):
 		resd 1
 	
-	global _CD_Access_Timer
-	_CD_Access_Timer:
+	global SYM(CD_Access_Timer)
+	SYM(CD_Access_Timer):
 		resd 1
 	
 section .data align=64
 	
-	extern _CD_Timer_Counter
-	extern _CDD_Complete
+	extern SYM(CD_Timer_Counter)
+	extern SYM(CDD)_Complete
 	
-	; Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Memory_Control_Status	Memory_Control_Status
-	%endif
-	
-	global _Memory_Control_Status
-	_Memory_Control_Status:
+	global SYM(Memory_Control_Status)
+	SYM(Memory_Control_Status):
 		db 1, 2, 4 + 0, 5 + 0
 	
 ;	S68K_Read_Byte_Table:
@@ -332,14 +275,9 @@ section .text align=64
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_PCM_Write_Reg		PCM_Write_Reg
-		%define _CDC_Read_Reg		CDC_Read_Reg
-		%define _CDC_Write_Reg		CDC_Write_Reg
-		%define _CDD_Processing		CDD_Processing
-		%define _CDD_Import_Command	CDD_Import_Command
 		%define _SCD_Read_Byte		SCD_Read_Byte
 		%define _SCD_Read_Word		SCD_Read_Word
 		%define _Check_CD_Command	Check_CD_Command
-		%define _Read_CDC_Host_SUB	Read_CDC_Host_SUB
 		%define _MS68K_Set_Word_Ram	MS68K_Set_Word_Ram
 	%endif
 	
@@ -347,14 +285,14 @@ section .text align=64
 	extern _PCM_Write_Reg
 	extern Calcul_Rot_Comp
 	extern Update_Rot
-	extern _CDC_Read_Reg
-	extern _CDC_Write_Reg
-	extern _CDD_Processing
-	extern _CDD_Import_Command
+	extern SYM(CDC_Read_Reg)
+	extern SYM(CDC_Write_Reg)
+	extern SYM(CDD_Processing)
+	extern SYM(CDD_Import_Command)
 	extern _SCD_Read_Byte
 	extern _SCD_Read_Word
 	extern _Check_CD_Command
-	extern _Read_CDC_Host_SUB
+	extern SYM(Read_CDC_Host_SUB)
 	extern _MS68K_Set_Word_Ram
 	
 	; Symbol redefines for ELF.
@@ -367,6 +305,9 @@ section .text align=64
 		%define	_Update_SegaCD_Timer	Update_SegaCD_Timer
 	%endif
 	
+	extern SYM(Write_To_68K_Space)
+	extern SYM(Read_To_68K_Space)
+
 ;***************** Read Byte *****************
 	
 	align 64
@@ -386,14 +327,14 @@ section .text align=64
 		ja	short .Word_RAM
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Prg + ebx]
+		mov	al, [SYM(Ram_Prg) + ebx]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Word_RAM:
-		mov	eax, [_Ram_Word_State]
+		mov	eax, [SYM(Ram_Word_State)]
 		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
@@ -411,7 +352,7 @@ section .text align=64
 		ja	short .bad
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_2M + ebx - 0x080000]
+		mov	al, [SYM(Ram_Word_2M) + ebx - 0x080000]
 		pop	ebx
 		ret
 	
@@ -424,7 +365,7 @@ section .text align=64
 		ja	short .bad
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x0C0000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x0C0000]
 		pop	ebx
 		ret
 	
@@ -435,7 +376,7 @@ section .text align=64
 		jnc	short .Even_Pix_0
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
 		and	al, 0xF
 		ret
@@ -451,7 +392,7 @@ section .text align=64
 	
 	.Even_Pix_0:
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
 		shr	al, 4
 		ret
@@ -465,7 +406,7 @@ section .text align=64
 		ja	short .bad
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x0C0000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -476,7 +417,7 @@ section .text align=64
 		jnc	short .Even_Pix_1
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
 		and	al, 0xF
 		ret
@@ -485,7 +426,7 @@ section .text align=64
 	
 	.Even_Pix_1:
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
 		shr	al, 4
 		ret
@@ -501,7 +442,7 @@ section .text align=64
 	.Backup:
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		mov	al, [_Ram_Backup + ebx]
+		mov	al, [SYM(Ram_Backup) + ebx]
 		pop	ebx
 		ret
 	
@@ -577,7 +518,7 @@ section .text align=64
 	align 16
 	
 	.Reg_Reset_H:
-		mov	al, [_LED_Status]
+		mov	al, [SYM(LED_Status)]
 		pop	ebx
 		ret
 	
@@ -591,31 +532,31 @@ section .text align=64
 	align 4
 	
 	.Reg_Memory_Mode_H:
-		mov	al, [_S68K_Mem_WP]
+		mov	al, [SYM(S68K_Mem_WP)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Memory_Mode_L:
-		mov	ebx, [_Ram_Word_State]
-		mov	al, [_S68K_Mem_PM]
+		mov	ebx, [SYM(Ram_Word_State)]
+		mov	al, [SYM(S68K_Mem_PM)]
 		and	ebx, 0x3
-		or	al, [_Memory_Control_Status + ebx]
+		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Mode_H:
-		mov	al, [_CDC.RS0 + 1]
+		mov	al, [SYM(CDC.RS0) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Mode_L:
-		mov	al, [_CDC.RS0]
+		mov	al, [SYM(CDC.RS0)]
 		pop	ebx
 		ret
 	
@@ -629,7 +570,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_RS1_L:
-		call	_CDC_Read_Reg
+		call	SYM(CDC_Read_Reg)
 		pop	ebx
 		ret
 	
@@ -650,42 +591,42 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_DMA_Adr_H:
-		mov	al, [_CDC.DMA_Adr + 1]
+		mov	al, [SYM(CDC.DMA_Adr) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_DMA_Adr_L:
-		mov	al, [_CDC.DMA_Adr]
+		mov	al, [SYM(CDC.DMA_Adr)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch_H:
-		mov	al, [_CDC.Stop_Watch + 3]
+		mov	al, [SYM(CDC.Stop_Watch) + 3]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch_L:
-		mov	al, [_CDC.Stop_Watch + 2]
+		mov	al, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag_H:
-		mov	al, [_COMM.Flag + 1]
+		mov	al, [SYM(COMM.Flag) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag_L:
-		mov	al, [_COMM.Flag]
+		mov	al, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -708,7 +649,7 @@ section .text align=64
 	.Reg_Com_Data7_H:
 	.Reg_Com_Data7_L:
 		xor	ebx, 1
-		mov	al, [_COMM.Command + ebx - 0x10]
+		mov	al, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -731,7 +672,7 @@ section .text align=64
 	.Reg_Com_Stat7_H:
 	.Reg_Com_Stat7_L:
 		xor	ebx, 1
-		mov	al, [_COMM.Status + ebx - 0x20]
+		mov	al, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -745,7 +686,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Timer_L:
-		mov	al, [_Timer_INT3 + 2]
+		mov	al, [SYM(Timer_INT3) + 2]
 		pop	ebx
 		ret
 	
@@ -759,14 +700,14 @@ section .text align=64
 	align 4
 	
 	.Reg_Int_Mask_L:
-		mov	al, [_Int_Mask_S68K]
+		mov	al, [SYM(Int_Mask_S68K)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CD_Fader_H:
-		mov	al, [_CDD.Fader + 1]
+		mov	al, [SYM(CDD.Fader) + 1]
 		and	al, 0x80
 		pop	ebx
 		ret
@@ -781,14 +722,14 @@ section .text align=64
 	align 4
 	
 	.Reg_CDD_Ctrl_H:
-		mov	al, [_CDD.Control + 1]
+		mov	al, [SYM(CDD.Control) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDD_Ctrl_L:
-		mov	al, [_CDD.Control]
+		mov	al, [SYM(CDD.Control)]
 		pop	ebx
 		ret
 	
@@ -805,7 +746,7 @@ section .text align=64
 	.Reg_CDD_Com4_H:
 	.Reg_CDD_Com4_L:
 		xor	ebx, 1
-		mov	al, [_CDD.Rcv_Status + ebx - 0x38]
+		mov	al, [SYM(CDD.Rcv_Status) + ebx - 0x38]
 		pop	ebx
 		ret
 	
@@ -829,8 +770,8 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Color_L:
-		mov	ah, [_Font_COLOR + 2]
-		mov	al, [_Font_COLOR]
+		mov	ah, [SYM(Font_COLOR) + 2]
+		mov	al, [SYM(Font_COLOR)]
 		shl	ah, 4
 		pop	ebx
 		or	al, ah
@@ -839,14 +780,14 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit_H:
-		mov	al, [_Font_BITS + 1]
+		mov	al, [SYM(Font_BITS) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Font_Bit_L:
-		mov	al, [_Font_BITS]
+		mov	al, [SYM(Font_BITS)]
 		pop	ebx
 		ret
 	
@@ -854,13 +795,13 @@ section .text align=64
 	
 	.Reg_Font_Data0_H:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x80
+		test	byte [SYM(Font_BITS) + 1], 0x80
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x40
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x40
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -868,13 +809,13 @@ section .text align=64
 	
 	.Reg_Font_Data0_L:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x20
+		test	byte [SYM(Font_BITS) + 1], 0x20
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x10
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x10
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -882,13 +823,13 @@ section .text align=64
 	
 	.Reg_Font_Data1_H:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x8
+		test	byte [SYM(Font_BITS) + 1], 0x8
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x4
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x4
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -896,13 +837,13 @@ section .text align=64
 	
 	.Reg_Font_Data1_L:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x2
+		test	byte [SYM(Font_BITS) + 1], 0x2
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x1
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x1
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -910,13 +851,13 @@ section .text align=64
 	
 	.Reg_Font_Data2_H:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x80
+		test	byte [SYM(Font_BITS)], 0x80
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x40
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x40
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -924,13 +865,13 @@ section .text align=64
 	
 	.Reg_Font_Data2_L:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x20
+		test	byte [SYM(Font_BITS)], 0x20
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x10
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x10
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -938,13 +879,13 @@ section .text align=64
 	
 	.Reg_Font_Data3_H:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x8
+		test	byte [SYM(Font_BITS)], 0x8
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x4
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x4
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -952,13 +893,13 @@ section .text align=64
 	
 	.Reg_Font_Data3_L:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x2
+		test	byte [SYM(Font_BITS)], 0x2
 		setnz	bl
-		mov	al, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x1
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x1
 		setnz	bl
 		shl	al, 4
-		or	al, [_Font_COLOR + ebx * 2]
+		or	al, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -1266,9 +1207,9 @@ section .text align=64
 		shr	ebx, 1
 		and	ebx, 0xFFF
 		add	ebx, [PCM_Chip_Bank]
-		mov	al, [_Ram_PCM + ebx]
+		mov	al, [SYM(Ram_PCM) + ebx]
 		pop	ebx
-		;and	al, [PCM_Chip_Enable]
+		;and	al, [SYM(PCM_Chip_Enable)]
 		ret
 	
 ;***************** Read Word *****************
@@ -1289,14 +1230,14 @@ section .text align=64
 		cmp	ebx, 0x07FFFF
 		ja	short .Word_RAM
 		
-		mov	ax, [_Ram_Prg + ebx]
+		mov	ax, [SYM(Ram_Prg) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Word_RAM:
-		mov	eax, [_Ram_Word_State]
+		mov	eax, [SYM(Ram_Word_State)]
 		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
@@ -1313,7 +1254,7 @@ section .text align=64
 		cmp	ebx, 0x0BFFFF
 		ja 	short .bad
 		
-		mov	ax, [_Ram_Word_2M + ebx - 0x080000]
+		mov	ax, [SYM(Ram_Word_2M) + ebx - 0x080000]
 		pop	ebx
 		ret
 	
@@ -1325,7 +1266,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		mov	ax, [_Ram_Word_1M + ebx - 0x0C0000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x0C0000]
 		pop	ebx
 		ret
 	
@@ -1334,7 +1275,7 @@ section .text align=64
 	.Dot_Img_0:
 		shr	ebx, 1
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
 		mov	ah, al
 		and	al, 0xF
@@ -1356,7 +1297,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		mov	ax, [_Ram_Word_1M + ebx - 0x0C0000 + 0x20000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -1365,7 +1306,7 @@ section .text align=64
 	.Dot_Img_1:
 		shr	ebx, 1
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
 		mov	ah, al
 		and	al, 0xF
@@ -1382,7 +1323,7 @@ section .text align=64
 		
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		mov	ax, [_Ram_Backup + ebx]
+		mov	ax, [SYM(Ram_Backup) + ebx]
 		pop	ebx
 		ret
 	
@@ -1431,7 +1372,7 @@ section .text align=64
 	align 16
 	
 	.Reg_Reset:
-		mov	ah, [_LED_Status]
+		mov	ah, [SYM(LED_Status)]
 		mov	al, 1
 		pop	ebx
 		ret
@@ -1439,25 +1380,25 @@ section .text align=64
 	align 4
 	
 	.Reg_Memory_Mode:
-		mov	ebx, [_Ram_Word_State]
-		mov	al, [_S68K_Mem_PM]
+		mov	ebx, [SYM(Ram_Word_State)]
+		mov	al, [SYM(S68K_Mem_PM)]
 		and	ebx, 0x3
-		mov	ah, [_S68K_Mem_WP]
-		or	al, [_Memory_Control_Status + ebx]
+		mov	ah, [SYM(S68K_Mem_WP)]
+		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Mode:
-		mov	ax, [_CDC.RS0]
+		mov	ax, [SYM(CDC.RS0)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_RS1:
-		call	_CDC_Read_Reg
+		call	SYM(CDC_Read_Reg)
 		mov	ah, 0
 		pop	ebx
 		ret
@@ -1465,28 +1406,28 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_Host_Data:
-		call	_Read_CDC_Host_SUB
+		call	SYM(Read_CDC_Host_SUB)
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_DMA_Adr:
-		mov	ax, [_CDC.DMA_Adr]
+		mov	ax, [SYM(CDC.DMA_Adr)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch:
-		mov	ax, [_CDC.Stop_Watch + 2]
+		mov	ax, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag:
-		mov	ax, [_COMM.Flag]
+		mov	ax, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -1500,7 +1441,7 @@ section .text align=64
 	.Reg_Com_Data5:
 	.Reg_Com_Data6:
 	.Reg_Com_Data7:
-		mov	ax, [_COMM.Command + ebx - 0x10]
+		mov	ax, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -1514,28 +1455,28 @@ section .text align=64
 	.Reg_Com_Stat5:
 	.Reg_Com_Stat6:
 	.Reg_Com_Stat7:
-		mov	ax, [_COMM.Status + ebx - 0x20]
+		mov	ax, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Timer:
-		mov	ax, [_Timer_INT3 + 2]
+		mov	ax, [SYM(Timer_INT3) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Int_Mask:
-		mov	ax, [_Int_Mask_S68K]
+		mov	ax, [SYM(Int_Mask_S68K)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CD_Fader:
-		mov	ax, [_CDD.Fader]
+		mov	ax, [SYM(CDD.Fader)]
 		and	ax, 0X8000
 		pop	ebx
 		ret
@@ -1543,7 +1484,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDD_Ctrl:
-		mov	ax, [_CDD.Control]
+		mov	ax, [SYM(CDD.Control)]
 		pop	ebx
 		ret
 	
@@ -1554,7 +1495,7 @@ section .text align=64
 	.Reg_CDD_Com2:
 	.Reg_CDD_Com3:
 	.Reg_CDD_Com4:
-		mov	ax, [_CDD.Rcv_Status + ebx - 0x38]
+		mov	ax, [SYM(CDD.Rcv_Status) + ebx - 0x38]
 		pop	ebx
 		ret
 	
@@ -1572,8 +1513,8 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Color:
-		mov	ah, [_Font_COLOR + 2]
-		mov	al, [_Font_COLOR]
+		mov	ah, [SYM(Font_COLOR) + 2]
+		mov	al, [SYM(Font_COLOR)]
 		shl	ah, 4
 		pop	ebx
 		or	al, ah
@@ -1583,7 +1524,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit:
-		mov	ax, [_Font_BITS]
+		mov	ax, [SYM(Font_BITS)]
 		pop	ebx
 		ret
 	
@@ -1591,21 +1532,21 @@ section .text align=64
 	
 	.Reg_Font_Data0:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x80
+		test	byte [SYM(Font_BITS) + 1], 0x80
 		setnz	bl
-		mov	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x40
-		setnz	bl
-		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x20
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x40
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x10
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x20
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x10
+		setnz	bl
+		shl	ax, 4
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -1613,21 +1554,21 @@ section .text align=64
 	
 	.Reg_Font_Data1:
 		xor	ebx, ebx
-		test	byte [_Font_BITS + 1], 0x8
+		test	byte [SYM(Font_BITS) + 1], 0x8
 		setnz	bl
-		mov	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x4
-		setnz	bl
-		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x2
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x4
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS + 1], 0x1
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x2
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS) + 1], 0x1
+		setnz	bl
+		shl	ax, 4
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -1635,21 +1576,21 @@ section .text align=64
 	
 	.Reg_Font_Data2:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x80
+		test	byte [SYM(Font_BITS)], 0x80
 		setnz	bl
-		mov	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x40
-		setnz	bl
-		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x20
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x40
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x10
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x20
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x10
+		setnz	bl
+		shl	ax, 4
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -1657,21 +1598,21 @@ section .text align=64
 	
 	.Reg_Font_Data3:
 		xor	ebx, ebx
-		test	byte [_Font_BITS], 0x8
+		test	byte [SYM(Font_BITS)], 0x8
 		setnz	bl
-		mov	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x4
-		setnz	bl
-		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x2
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x4
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
-		test	byte [_Font_BITS], 0x1
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x2
 		setnz	bl
 		shl	ax, 4
-		or	ax, [_Font_COLOR + ebx * 2]
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
+		test	byte [SYM(Font_BITS)], 0x1
+		setnz	bl
+		shl	ax, 4
+		or	ax, [SYM(Font_COLOR) + ebx * 2]
 		pop	ebx
 		ret
 	
@@ -1931,10 +1872,10 @@ section .text align=64
 		shr	ebx, 1
 		and	ebx, 0xFFF
 		add	ebx, [PCM_Chip_Bank]
-		mov	al, [_Ram_PCM + ebx]
+		mov	al, [SYM(Ram_PCM) + ebx]
 		pop	ebx
 		xor	ah, ah
-		;and	al, [PCM_Chip_Enable]
+		;and	al, [SYM(PCM_Chip_Enable)]
 		ret
 	
 ;***************** Write Byte *****************
@@ -1955,7 +1896,7 @@ section .text align=64
 		
 	.Data_Memory:
 		cmp	ebx, 0x07FFFF
-		mov	ecx, [_S68K_Mem_WP]
+		mov	ecx, [SYM(S68K_Mem_WP)]
 		ja	short .Word_RAM
 		
 		shl	ecx, 8
@@ -1963,7 +1904,7 @@ section .text align=64
 		cmp	ecx, ebx
 		ja	short .write_protected
 		
-		mov	[_Ram_Prg + ebx], al
+		mov	[SYM(Ram_Prg) + ebx], al
 		
 	.write_protected:
 		pop	ecx
@@ -1973,7 +1914,7 @@ section .text align=64
 	align 4
 	
 	.Word_RAM:
-		mov	ecx, [_Ram_Word_State]
+		mov	ecx, [SYM(Ram_Word_State)]
 		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
@@ -1991,7 +1932,7 @@ section .text align=64
 		ja	short .bad3
 		
 		xor	ebx, 1
-		mov	[_Ram_Word_2M + ebx - 0x080000], al
+		mov	[SYM(Ram_Word_2M) + ebx - 0x080000], al
 		
 	.bad3:
 		pop	ecx
@@ -2007,7 +1948,7 @@ section .text align=64
 		ja	short .bad3
 		
 		xor	ebx, 1
-		mov	[_Ram_Word_1M + ebx - 0x0C0000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2019,18 +1960,18 @@ section .text align=64
 		jnc	short .Even_Pix_0
 		
 		xor	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Odd_0_Under
 		ja	short .Dot_Odd_0_Over
 	
 	align 16
 	
 	.Dot_Odd_0_Norm:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		and	al, 0x0F
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2038,14 +1979,14 @@ section .text align=64
 	align 16
 	
 	.Dot_Odd_0_Under:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		and	al, 0x0F
 		test	cl, 0x0F
 		jnz	short .End_Dot_Odd_0
 		
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 	
 	.End_Dot_Odd_0:
 		pop	ecx
@@ -2058,10 +1999,10 @@ section .text align=64
 		and	al, 0x0F
 		jz	short .End_Dot_Odd_0
 		
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2070,18 +2011,18 @@ section .text align=64
 	
 	.Even_Pix_0:
 		xor	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Even_0_Under
 		ja	short .Dot_Even_0_Over
 	
 	align 16
 	
 	.Dot_Even_0_Norm:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		shl	al, 4
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2089,14 +2030,14 @@ section .text align=64
 	align 16
 	
 	.Dot_Even_0_Under:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		shl	al, 4
 		test	cl, 0xF0
 		jnz	short .End_Dot_Even_0
 		
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 	
 	.End_Dot_Even_0:
 		pop	ecx
@@ -2109,10 +2050,10 @@ section .text align=64
 		shl	al, 4
 		jz	short .End_Dot_Even_0
 		
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2133,7 +2074,7 @@ section .text align=64
 		ja	short .bad
 		
 		xor	ebx, 1
-		mov	[_Ram_Word_1M + ebx - 0x0C0000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2145,18 +2086,18 @@ section .text align=64
 		jnc	short .Even_Pix_1
 		
 		xor	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Odd_1_Under
 		ja	short .Dot_Odd_1_Over
 	
 	align 16
 	
 	.Dot_Odd_1_Norm:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		and	al, 0x0F
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2164,14 +2105,14 @@ section .text align=64
 	align 16
 	
 	.Dot_Odd_1_Under:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		and	al, 0x0F
 		test	cl, 0x0F
 		jnz	short .End_Dot_Odd_1
 		
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 	
 	.End_Dot_Odd_1:
 		pop	ecx
@@ -2184,10 +2125,10 @@ section .text align=64
 		and	al, 0x0F
 		jz	short .End_Dot_Odd_1
 		
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		and	cl, 0xF0
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2196,18 +2137,18 @@ section .text align=64
 	
 	.Even_Pix_1:
 		xor	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Even_1_Under
 		ja	short .Dot_Even_1_Over
 	
 	align 16
 	
 	.Dot_Even_1_Norm:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		shl	al, 4
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2215,14 +2156,14 @@ section .text align=64
 	align 16
 	
 	.Dot_Even_1_Under:
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		shl	al, 4
 		test	cl, 0xF0
 		jnz	short .End_Dot_Even_1
 		
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 	
 	.End_Dot_Even_1:
 		pop	ecx
@@ -2235,10 +2176,10 @@ section .text align=64
 		shl	al, 4
 		jz	short .End_Dot_Even_1
 		
-		mov	cl, [_Ram_Word_1M + ebx - 0x040000 + 0x20000]
+		mov	cl, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		and	cl, 0x0F
 		or	al, cl
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2253,7 +2194,7 @@ section .text align=64
 		
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		mov	[_Ram_Backup + ebx], al
+		mov	[SYM(Ram_Backup) + ebx], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2286,11 +2227,11 @@ section .text align=64
 		;cmp	ebx, 0xFF3FFF
 		;ja	short .bad2
 		
-		;and	al, [PCM_Chip_Enable]
+		;and	al, [SYM(PCM_Chip_Enable)]
 		shr	ebx, 1
 		mov	ecx, [PCM_Chip_Bank]
 		and	ebx, 0xFFF
-		mov	[_Ram_PCM + ebx + ecx], al
+		mov	[SYM(Ram_PCM) + ebx + ecx], al
 		
 		pop ecx
 		pop ebx
@@ -2367,7 +2308,7 @@ section .text align=64
 	align 16
 	
 	.Reg_Reset_H:
-		mov	[_LED_Status], al
+		mov	[SYM(LED_Status)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2393,7 +2334,7 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
@@ -2404,13 +2345,13 @@ section .text align=64
 	
 	.Mode_2M:
 		and	bl, 0x18
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 		test	al, 1
-		mov	[_S68K_Mem_PM], bl
+		mov	[SYM(S68K_Mem_PM)], bl
 		jz	short .No_RET
 		
-		test	byte [_Ram_Word_State], 2
-		mov	byte [_Ram_Word_State], 0
+		test	byte [SYM(Ram_Word_State)], 2
+		mov	byte [SYM(Ram_Word_State)], 0
 		jz	short .Already_In_2M_0
 		
 		call	_Swap_1M_To_2M
@@ -2424,13 +2365,13 @@ section .text align=64
 	align 4
 	
 	.No_RET:
-		mov	al, [_Ram_Word_State]
+		mov	al, [SYM(Ram_Word_State)]
 		test	al, 2						; we are switching to 2MB mode ?
 		jz	short .Already_in_2M
 		
 		and	al, 1
-		and	word [_Memory_Control_Status + 0], 0xFDFE	; RET & DMNA bit = 0
-		mov	[_Ram_Word_State], al
+		and	word [SYM(Memory_Control_Status) + 0], 0xFDFE	; RET & DMNA bit = 0
+		mov	[SYM(Ram_Word_State)], al
 		
 		call _Swap_1M_To_2M
 	
@@ -2446,15 +2387,15 @@ section .text align=64
 		and	al, 1
 		and	bl, 0x18
 		mov	ah, al
-		mov	bh, [_Ram_Word_State]
+		mov	bh, [SYM(Ram_Word_State)]
 		add	al, 2
-		mov	[_S68K_Mem_PM], bl
+		mov	[SYM(S68K_Mem_PM)], bl
 		xor	ah, bh
 		test	bh, 2
-		mov	[_Ram_Word_State], al
+		mov	[SYM(Ram_Word_State)], al
 		jnz	short .Already_In_1M
 		
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 		call	_Swap_2M_To_1M
 		call	_MS68K_Set_Word_Ram
 		pop	ecx
@@ -2467,7 +2408,7 @@ section .text align=64
 		test	ah, 1
 		jz	short .No_Bank_Change
 		
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 	
 	.No_Bank_Change:
 		call	_MS68K_Set_Word_Ram
@@ -2478,12 +2419,12 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_Mode_H:
-		mov	cl, [_CDC.RS0 + 1]
+		mov	cl, [SYM(CDC.RS0) + 1]
 		and	al, 0x07
 		and	cl, 0xC0
-		mov	dword [_CDC.DMA_Adr], 0
+		mov	dword [SYM(CDC.DMA_Adr)], 0
 		or	al, cl
-		mov	[_CDC.RS0 + 1], al
+		mov	[SYM(CDC.RS0) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2492,7 +2433,7 @@ section .text align=64
 	
 	.Reg_CDC_Mode_L:
 		and	al, 0xF
-		mov	[_CDC.RS0], al
+		mov	[SYM(CDC.RS0)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2508,7 +2449,7 @@ section .text align=64
 	
 	.Reg_CDC_RS1_L:
 		push	eax
-		call	_CDC_Write_Reg
+		call	SYM(CDC_Write_Reg)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -2525,7 +2466,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_DMA_Adr_H:
-		mov	[_CDC.DMA_Adr + 1], al
+		mov	[SYM(CDC.DMA_Adr) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2533,7 +2474,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_DMA_Adr_L:
-		mov	[_CDC.DMA_Adr], al
+		mov	[SYM(CDC.DMA_Adr)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2541,7 +2482,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Stopwatch_H:
-		mov	dword [_CDC.Stop_Watch], 0
+		mov	dword [SYM(CDC.Stop_Watch)], 0
 		pop	ecx
 		pop	ebx
 		ret
@@ -2549,7 +2490,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Stopwatch_L:
-		mov	dword [_CDC.Stop_Watch], 0
+		mov	dword [SYM(CDC.Stop_Watch)], 0
 		pop	ecx
 		pop	ebx
 		ret
@@ -2561,13 +2502,13 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
 		
 		ror	al, 1			; Dragons lair
-		mov	byte [_COMM.Flag], al
+		mov	byte [SYM(COMM.Flag)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2579,12 +2520,12 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Flag], al
+		mov	[SYM(COMM.Flag)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2633,13 +2574,13 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
 		
 		xor	ebx, 1
-		mov	[_COMM.Status + ebx - 0x20], al
+		mov	[SYM(COMM.Status) + ebx - 0x20], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2658,8 +2599,8 @@ section .text align=64
 		pop	ecx
 		shl	eax, 16
 		pop	ebx
-		mov	[_Init_Timer_INT3], eax
-		mov	[_Timer_INT3], eax
+		mov	[SYM(Init_Timer_INT3)], eax
+		mov	[SYM(Timer_INT3)], eax
 		ret
 	
 	align 4
@@ -2674,13 +2615,13 @@ section .text align=64
 	.Reg_Int_Mask_L:
 		test	al, 0x10
 		jz	short .CDD_Halted_0
-		test	byte [_CDD.Control], 0x4
+		test	byte [SYM(CDD.Control)], 0x4
 		jz	short .CDD_Halted_0
-		test	byte [_Int_Mask_S68K], 0x10
+		test	byte [SYM(Int_Mask_S68K)], 0x10
 		jnz	short .CDD_Halted_0
 		
-		mov	[_Int_Mask_S68K], al
-		call	_CDD_Processing
+		mov	[SYM(Int_Mask_S68K)], al
+		call	SYM(CDD_Processing)
 		pop	ecx
 		pop	ebx
 		ret
@@ -2688,7 +2629,7 @@ section .text align=64
 	align 4
 	
 	.CDD_Halted_0:
-		mov	[_Int_Mask_S68K], al
+		mov	[SYM(Int_Mask_S68K)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2707,15 +2648,15 @@ section .text align=64
 	.Reg_CDD_Ctrl_L:
 		and	al, 0x4
 		jz	short .CDD_Halted_1
-		test	byte [_CDD.Control], 0x4
+		test	byte [SYM(CDD.Control)], 0x4
 		jnz	short .CDD_Halted_1
-		test	byte [_Int_Mask_S68K], 0x10
+		test	byte [SYM(Int_Mask_S68K)], 0x10
 		jz	short .CDD_Halted_1
 		
-		call _CDD_Processing
+		call SYM(CDD_Processing)
 	
 	.CDD_Halted_1:
-		or	[_CDD.Control], al
+		or	[SYM(CDD.Control)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2748,7 +2689,7 @@ section .text align=64
 	.Reg_CDD_Com8_L:
 	.Reg_CDD_Com9_H:
 		xor	ebx, 1
-		mov	[_CDD.Trans_Comm + ebx - 0x42], al
+		mov	[SYM(CDD.Trans_Comm) + ebx - 0x42], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2756,9 +2697,9 @@ section .text align=64
 	align 4
 	
 	.Reg_CDD_Com9_L:
-		mov	[_CDD.Trans_Comm + 0x8], al
+		mov	[SYM(CDD.Trans_Comm) + 0x8], al
 		pushad
-		call	_CDD_Import_Command
+		call	SYM(CDD_Import_Command)
 		popad
 		pop	ecx
 		pop	ebx
@@ -2777,8 +2718,8 @@ section .text align=64
 		mov	ah, al
 		and	al, 0x0F
 		shr	ah, 4
-		mov	[_Font_COLOR], al
-		mov	[_Font_COLOR + 2], ah
+		mov	[SYM(Font_COLOR)], al
+		mov	[SYM(Font_COLOR) + 2], ah
 		pop	ecx
 		pop	ebx
 		ret
@@ -2786,7 +2727,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit_H:
-		mov	[_Font_BITS + 1], al
+		mov	[SYM(Font_BITS) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2794,7 +2735,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit_L:
-		mov	[_Font_BITS], al
+		mov	[SYM(Font_BITS)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2941,14 +2882,14 @@ section .text align=64
 		
 	.Data_Memory:
 		cmp	ebx, 0x07FFFF
-		mov	ecx, [_S68K_Mem_WP]
+		mov	ecx, [SYM(S68K_Mem_WP)]
 		ja	short .Word_RAM
 		
 		shl	ecx, 8
 		cmp	ecx, ebx
 		ja	short .write_protected
 		
-		mov	[_Ram_Prg + ebx], ax
+		mov	[SYM(Ram_Prg) + ebx], ax
 	
 	.write_protected:
 		pop	ecx
@@ -2958,7 +2899,7 @@ section .text align=64
 	align 4
 	
 	.Word_RAM:
-		mov	ecx, [_Ram_Word_State]
+		mov	ecx, [SYM(Ram_Word_State)]
 		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
@@ -2975,7 +2916,7 @@ section .text align=64
 		cmp	ebx, 0x0BFFFF
 		ja	short .bad3
 		
-		mov	[_Ram_Word_2M + ebx - 0x080000], ax
+		mov	[SYM(Ram_Word_2M) + ebx - 0x080000], ax
 	
 	.bad3:
 		pop	ecx
@@ -2990,7 +2931,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad3
 		
-		mov	[_Ram_Word_1M + ebx - 0x0C0000], ax
+		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2999,7 +2940,7 @@ section .text align=64
 	
 	.Dot_Img_0:
 		shr	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_0_Under
 		ja	short .Dot_0_Over
 	
@@ -3010,7 +2951,7 @@ section .text align=64
 		shl	ah, 4
 		xor	ebx, 1
 		or	al, ah
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3022,10 +2963,10 @@ section .text align=64
 		shl	ah, 4
 		xor	ebx, 1
 		or	al, ah
-		test	byte [_Ram_Word_1M + ebx - 0x040000], 0xFF
+		test	byte [SYM(Ram_Word_1M) + ebx - 0x040000], 0xFF
 		jnz	.End_Dot_0
 		
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 	
 	.End_Dot_0:
 		pop	ecx
@@ -3043,7 +2984,7 @@ section .text align=64
 		
 		xor	ebx, 1
 		or	al, ah
-		mov	[_Ram_Word_1M + ebx - 0x040000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3056,7 +2997,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		mov	[_Ram_Word_1M + ebx - 0x0C0000 + 0x20000], ax
+		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3065,7 +3006,7 @@ section .text align=64
 	
 	.Dot_Img_1:
 		shr	ebx, 1
-		cmp	byte [_S68K_Mem_PM], 0x08
+		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_1_Under
 		ja	short .Dot_1_Over
 	
@@ -3076,7 +3017,7 @@ section .text align=64
 		shl	ah, 4
 		xor	ebx, 1
 		or	al, ah
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3088,10 +3029,10 @@ section .text align=64
 		shl	ah, 4
 		xor	ebx, 1
 		or	al, ah
-		test	byte [_Ram_Word_1M + ebx - 0x040000 + 0x20000], 0xFF
+		test	byte [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], 0xFF
 		jnz	.End_Dot_1
 		
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 	
 	.End_Dot_1:
 		pop	ecx
@@ -3109,7 +3050,7 @@ section .text align=64
 		
 		xor	ebx, 1
 		or	al, ah
-		mov	[_Ram_Word_1M + ebx - 0x040000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3132,7 +3073,7 @@ section .text align=64
 		
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		mov	[_Ram_Backup + ebx], ax
+		mov	[SYM(Ram_Backup) + ebx], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3164,11 +3105,11 @@ section .text align=64
 		;cmp	ebx, 0xFF3FFF
 		;ja	short .bad
 		
-		;and	al, [PCM_Chip_Enable]
+		;and	al, [SYM(PCM_Chip_Enable)]
 		shr	ebx, 1
 		mov	ecx, [PCM_Chip_Bank]
 		and	ebx, 0xFFF
-		mov	[_Ram_PCM + ebx + ecx], al
+		mov	[SYM(Ram_PCM) + ebx + ecx], al
 		
 		pop	ecx
 		pop	ebx
@@ -3220,7 +3161,7 @@ section .text align=64
 	
 	.Reg_Reset:
 		and	ah, 3
-		mov	[_LED_Status], ah
+		mov	[SYM(LED_Status)], ah
 		pop	ecx
 		pop	ebx
 		ret
@@ -3232,7 +3173,7 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
@@ -3243,13 +3184,13 @@ section .text align=64
 	
 	.Mode_2M:
 		and	bl, 0x18
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 		test	al, 1
-		mov	[_S68K_Mem_PM], bl
+		mov	[SYM(S68K_Mem_PM)], bl
 		jz	short .No_RET
 		
-		test	byte [_Ram_Word_State], 2
-		mov	byte [_Ram_Word_State], 0
+		test	byte [SYM(Ram_Word_State)], 2
+		mov	byte [SYM(Ram_Word_State)], 0
 		jz	short .Already_In_2M_0
 		
 		call	_Swap_1M_To_2M
@@ -3263,13 +3204,13 @@ section .text align=64
 	align 16
 	
 	.No_RET:
-		mov	al, [_Ram_Word_State]
+		mov	al, [SYM(Ram_Word_State)]
 		test	al, 2						; we are switching to 2MB mode ?
 		jz	short .Already_in_2M
 		
 		and	al, 1
-		and	word [_Memory_Control_Status + 0], 0xFDFE	; RET & DMNA bit = 0
-		mov	[_Ram_Word_State], al
+		and	word [SYM(Memory_Control_Status) + 0], 0xFDFE	; RET & DMNA bit = 0
+		mov	[SYM(Ram_Word_State)], al
 		
 		call	_Swap_1M_To_2M
 	
@@ -3285,15 +3226,15 @@ section .text align=64
 		and	al, 1
 		and	bl, 0x18
 		mov	ah, al
-		mov	bh, [_Ram_Word_State]
+		mov	bh, [SYM(Ram_Word_State)]
 		add	al, 2
-		mov	[_S68K_Mem_PM], bl
+		mov	[SYM(S68K_Mem_PM)], bl
 		xor	ah, bh
 		test	bh, 2
-		mov	[_Ram_Word_State], al
+		mov	[SYM(Ram_Word_State)], al
 		jnz	short .Already_In_1M
 		
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 		call	_Swap_2M_To_1M
 		call	_MS68K_Set_Word_Ram
 		pop	ecx
@@ -3306,7 +3247,7 @@ section .text align=64
 		test	ah, 1
 		jz	short .No_Bank_Change
 		
-		and	word [_Memory_Control_Status + 2], 0xFDFD	; DMNA bit = 0
+		and	word [SYM(Memory_Control_Status) + 2], 0xFDFD	; DMNA bit = 0
 	
 	.No_Bank_Change:
 		call	_MS68K_Set_Word_Ram
@@ -3317,12 +3258,12 @@ section .text align=64
 	align 16
 	
 	.Reg_CDC_Mode:
-		mov	cx, [_CDC.RS0]
+		mov	cx, [SYM(CDC.RS0)]
 		and	ax, 0x070F
 		and	cx, 0xC000
-		mov	dword [_CDC.DMA_Adr], 0
+		mov	dword [SYM(CDC.DMA_Adr)], 0
 		or	ax, cx
-		mov	[_CDC.RS0], ax
+		mov	[SYM(CDC.RS0)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3331,7 +3272,7 @@ section .text align=64
 	
 	.Reg_CDC_RS1:
 		push	eax
-		call	_CDC_Write_Reg
+		call	SYM(CDC_Write_Reg)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -3347,7 +3288,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_DMA_Adr:
-		mov	[_CDC.DMA_Adr], ax
+		mov	[SYM(CDC.DMA_Adr)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3355,7 +3296,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Stopwatch:
-		mov	dword [_CDC.Stop_Watch], 0
+		mov	dword [SYM(CDC.Stop_Watch)], 0
 		pop	ecx
 		pop	ebx
 		ret
@@ -3367,12 +3308,12 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Flag], al
+		mov	[SYM(COMM.Flag)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3405,12 +3346,12 @@ section .text align=64
 		;push	eax
 		;push	ebx
 		;add	dword [esp], 0xFF8000
-		;call	_Write_To_68K_Space
+		;call	SYM(Write_To_68K_Space)
 		;pop	ebx
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Status + ebx - 0x20], ax
+		mov	[SYM(COMM.Status) + ebx - 0x20], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3422,8 +3363,8 @@ section .text align=64
 		pop	ecx
 		shl	eax, 16
 		pop	ebx
-		mov	[_Init_Timer_INT3], eax
-		mov	[_Timer_INT3], eax
+		mov	[SYM(Init_Timer_INT3)], eax
+		mov	[SYM(Timer_INT3)], eax
 		ret
 	
 	align 4
@@ -3431,13 +3372,13 @@ section .text align=64
 	.Reg_Int_Mask:
 		test	al, 0x10
 		jz	short .CDD_Halted_0
-		test	byte [_CDD.Control], 0x4
+		test	byte [SYM(CDD.Control)], 0x4
 		jz	short .CDD_Halted_0
-		test	byte [_Int_Mask_S68K], 0x10
+		test	byte [SYM(Int_Mask_S68K)], 0x10
 		jnz	short .CDD_Halted_0
 		
-		mov	[_Int_Mask_S68K], al
-		call	_CDD_Processing
+		mov	[SYM(Int_Mask_S68K)], al
+		call	SYM(CDD_Processing)
 		pop	ecx
 		pop	ebx
 		ret
@@ -3445,7 +3386,7 @@ section .text align=64
 	align 4
 	
 	.CDD_Halted_0:
-		mov	[_Int_Mask_S68K], al
+		mov	[SYM(Int_Mask_S68K)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3454,7 +3395,7 @@ section .text align=64
 	
 	.Reg_CD_Fader:
 		and	ax, 0x7FFE
-		mov	[_CDD.Fader], ax
+		mov	[SYM(CDD.Fader)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3464,15 +3405,15 @@ section .text align=64
 	.Reg_CDD_Ctrl:
 		and	al, 0x4
 		jz	short .CDD_Halted_1
-		test	byte [_CDD.Control], 0x4
+		test	byte [SYM(CDD.Control)], 0x4
 		jnz	short .CDD_Halted_1
-		test	byte [_Int_Mask_S68K], 0x10
+		test	byte [SYM(Int_Mask_S68K)], 0x10
 		jz	short .CDD_Halted_1
 		
-		call _CDD_Processing
+		call SYM(CDD_Processing)
 	
 	.CDD_Halted_1:
-		or	[_CDD.Control], al
+		or	[SYM(CDD.Control)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -3494,7 +3435,7 @@ section .text align=64
 	.Reg_CDD_Com6:
 	.Reg_CDD_Com7:
 	.Reg_CDD_Com8:
-		mov	[_CDD.Trans_Comm + ebx - 0x42], ax
+		mov	[SYM(CDD.Trans_Comm) + ebx - 0x42], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3502,9 +3443,9 @@ section .text align=64
 	align 4
 	
 	.Reg_CDD_Com9:
-		mov	[_CDD.Trans_Comm + 0x8], ax
+		mov	[SYM(CDD.Trans_Comm) + 0x8], ax
 		pushad
-		call	_CDD_Import_Command
+		call	SYM(CDD_Import_Command)
 		popad
 		pop	ecx
 		pop	ebx
@@ -3516,8 +3457,8 @@ section .text align=64
 		mov	ah, al
 		and	al, 0x0F
 		shr	ah, 4
-		mov	[_Font_COLOR], al
-		mov	[_Font_COLOR + 2], ah
+		mov	[SYM(Font_COLOR)], al
+		mov	[SYM(Font_COLOR) + 2], ah
 		pop	ecx
 		pop	ebx
 		ret
@@ -3525,7 +3466,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit:
-		mov	[_Font_BITS], ax
+		mov	[SYM(Font_BITS)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3637,21 +3578,21 @@ section .text align=64
 		push	ebx
 		push	ecx
 		
-		mov	eax, [_CDC.Stop_Watch]
-		mov	ebx, [_Timer_INT3]
-		add	eax, [_Timer_Step]
-		mov	cx, [_CD_Timer_Counter]
+		mov	eax, [SYM(CDC.Stop_Watch)]
+		mov	ebx, [SYM(Timer_INT3)]
+		add	eax, [SYM(Timer_Step)]
+		mov	cx, [SYM(CD_Timer_Counter)]
 		and	eax, 0xFFFFFFF
 		add	cx, 10
-		mov	[_CDC.Stop_Watch], eax
-		mov	eax, [_Init_Timer_INT3]
+		mov	[SYM(CDC.Stop_Watch)], eax
+		mov	eax, [SYM(Init_Timer_INT3)]
 		test	eax, eax
 		jz	short .No_INT3
 		
-		sub	ebx, [_Timer_Step]
+		sub	ebx, [SYM(Timer_Step)]
 		jae	short .No_INT3
 		
-		test byte [_Int_Mask_S68K], 0x8
+		test byte [SYM(Int_Mask_S68K)], 0x8
 		jz short .No_INT3
 		
 		push	dword -1
@@ -3662,28 +3603,28 @@ section .text align=64
 		
 	.No_INT3:
 		and	ebx, 0xFFFFFF
-		cmp	cx, [_CD_Access_Timer]		; 209.6 * 10 = 75 th of a second
-		mov	[_Timer_INT3], ebx
+		cmp	cx, [SYM(CD_Access_Timer)]		; 209.6 * 10 = 75 th of a second
+		mov	[SYM(Timer_INT3)], ebx
 		jb	short .No_CD_Check
 		
-		sub	cx, [_CD_Access_Timer]
+		sub	cx, [SYM(CD_Access_Timer)]
 		push	ecx
 		call	_Check_CD_Command
 		pop	ecx
 	
 	.No_CD_Check:
-		mov	[_CD_Timer_Counter], cx
+		mov	[SYM(CD_Timer_Counter)], cx
 		test	dword [Rot_Comp.Reg_58], 0x8000
 		jz	short .GFX_Terminated
 		
 		call	Update_Rot
 	
 	.GFX_Terminated:
-		mov	eax, [_Memory_Control_Status]
+		mov	eax, [SYM(Memory_Control_Status)]
 		pop	ecx
 		or	eax, 0x00000201			; RET & DMNA bit mode 2M = 1
 		pop	ebx
-		mov	[_Memory_Control_Status], eax
+		mov	[SYM(Memory_Control_Status)], eax
 		ret
 	
 	align 64
@@ -3696,8 +3637,8 @@ section .text align=64
 		push	edi
 		push	esi
 		
-		mov	esi, _Ram_Word_2M
-		mov	edi, _Ram_Word_1M
+		mov	esi, SYM(Ram_Word_2M)
+		mov	edi, SYM(Ram_Word_1M)
 		mov	ecx, 256 * 1024 / 4
 		jmp	short .Loop
 	
@@ -3728,8 +3669,8 @@ section .text align=64
 		push	edi
 		push	esi
 		
-		mov	esi, _Ram_Word_1M
-		mov	edi, _Ram_Word_2M
+		mov	esi, SYM(Ram_Word_1M)
+		mov	edi, SYM(Ram_Word_2M)
 		mov	ecx, 256 * 1024 / 4
 		jmp	short .Loop
 	

@@ -20,61 +20,25 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 section .data align=64
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_MD_Screen		MD_Screen
-		%define	_MD_Palette		MD_Palette
-		%define	_MD_Screen32		MD_Screen32
-		%define	_MD_Palette32		MD_Palette32
-		
-		%define _bppMD			bppMD
-	%endif
-	
-	extern _MD_Screen
-	extern _MD_Palette
-	extern _MD_Screen32
-	extern _MD_Palette32
+	extern SYM(MD_Screen)
+	extern SYM(MD_Palette)
+	extern SYM(MD_Screen32)
+	extern SYM(MD_Palette32)
 	
 	; MD bpp
-	extern _bppMD
+	extern SYM(bppMD)
 	
 section .text align=64
-
-; Symbol redefines for ELF.
-%ifdef __OBJ_ELF
-	%define _Cell_8x8_Dump		Cell_8x8_Dump
-	%define _Cell_16x16_Dump	Cell_16x16_Dump
-	%define _Cell_32x32_Dump	Cell_32x32_Dump
-%endif
 
 %macro AFF_PIXEL 2
 	mov	eax, ebx				; eax = data pixels
 	shr	eax, %2					; keep the first
 	and	eax, 0xF
-	mov	ax, [_MD_Palette + eax * 2 + ebp]	; conversion 8->16 bits palette
+	mov	ax, [SYM(MD_Palette) + eax * 2 + ebp]	; conversion 8->16 bits palette
 	mov	[edi + (%1 * 2)], ax			; write the pixel to Dest
 %endmacro
 
@@ -83,14 +47,14 @@ section .text align=64
 	mov	eax, ebx				; eax = data pixels
 	shr	eax, %2					; keep the first
 	and	eax, 0xF
-	mov	eax, [_MD_Palette32 + eax * 4 + ebp]	; conversion 8->32 bits palette
+	mov	eax, [SYM(MD_Palette32) + eax * 4 + ebp]	; conversion 8->32 bits palette
 	mov	[edi + (%1 * 4)], eax			; write the pixel to Dest
 %endmacro
 
 
 ;void Cell_8x8_Dump(unsigned char *Adr, int Palette)
-global _Cell_8x8_Dump
-_Cell_8x8_Dump:
+global SYM(Cell_8x8_Dump)
+SYM(Cell_8x8_Dump):
 	
 	push ebx
 	push ecx
@@ -105,11 +69,11 @@ _Cell_8x8_Dump:
 	mov	esi, [esp + 28]				; esi = Address
 	
 	; Check if 32-bit color is in use.
-	cmp	byte [_bppMD], 32
+	cmp	byte [SYM(bppMD)], 32
 	je	._32BIT
 	
 	shl	ebp, 5					; ebp = palette number * 32
-	lea	edi, [_MD_Screen + 6780]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen) + 6780]		; edi = MD_Screen + copy offset
 
 .Loop_EDX:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -147,7 +111,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 6
-	lea	edi, [_MD_Screen32 + 13560]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen32) + 13560]		; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -193,8 +157,8 @@ align 16
 align 64
 
 ;void Cell_16x16_Dump(unsigned char *Adr, int Palette)
-global _Cell_16x16_Dump
-_Cell_16x16_Dump:
+global SYM(Cell_16x16_Dump)
+SYM(Cell_16x16_Dump):
 	
 	push	ebx
 	push	ecx
@@ -210,10 +174,10 @@ _Cell_16x16_Dump:
 	shl	ebp, 5					; ebp = palette_number * 32
 	
 	; Check if 32-bit color is in use.
-	cmp	byte [_bppMD], 32
+	cmp	byte [SYM(bppMD)], 32
 	je	._32BIT
 	
-	lea	edi, [_MD_Screen	+ 6780]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen)	+ 6780]		; edi = MD_Screen + copy offset
 
 .Loop_EDX:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -282,7 +246,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 1
-	lea	edi, [_MD_Screen32 + 13560]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen32) + 13560]		; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -359,8 +323,8 @@ align 16
 align 64
 
 ;void Cell_32x32_Dump(unsigned char *Adr, int Palette)
-global _Cell_32x32_Dump
-_Cell_32x32_Dump:
+global SYM(Cell_32x32_Dump)
+SYM(Cell_32x32_Dump):
 	
 	push	ebx
 	push	ecx
@@ -376,10 +340,10 @@ _Cell_32x32_Dump:
 	mov	esi, [esp + 28]				; esi = Address
 	
 	; Check if 32-bit color is in use.
-	cmp	byte [_bppMD], 32
+	cmp	byte [SYM(bppMD)], 32
 	je	._32BIT
 	
-	lea	edi, [_MD_Screen	+ 6780]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen)	+ 6780]		; edi = MD_Screen + copy offset
 
 .Loop_EDX:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -417,7 +381,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 1
-	lea	edi, [_MD_Screen32 + 13560 ]		; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen32) + 13560 ]		; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row

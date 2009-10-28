@@ -1,27 +1,26 @@
 ;
 ; Gens: VDP Rendering functions.
 ;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 HIGH_B		equ 0x80
 SHAD_B		equ 0x40
@@ -39,15 +38,8 @@ NOSHAD_D	equ 0xBFBFBFBF
 
 section .data align=64
 	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_TAB336		TAB336
-		%define	_TAB320		TAB320
-		%define	_VDP_Layers	VDP_Layers
-	%endif
-	
-	global _TAB336
-	_TAB336:
+	global SYM(TAB336)
+	SYM(TAB336):
 	%assign i 0
 	%rep 240
 		dd (i * 336)
@@ -56,8 +48,8 @@ section .data align=64
 	
 	align 32
 	
-	global _TAB320
-	_TAB320:
+	global SYM(TAB320)
+	SYM(TAB320):
 	%assign i 0
 	%rep 240
 		dd (i * 336)
@@ -98,93 +90,46 @@ section .data align=64
 						VDP_LAYER_SPRITE_HIGH
 	
 	; VDP_Layers: Active layers and layer settings.
-	global _VDP_Layers
-	_VDP_Layers:
+	global SYM(VDP_Layers)
+	SYM(VDP_Layers):
 		dd VDP_LAYER_DEFAULT
 	
 section .bss align=64
 	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_VRam			VRam
-		%define	_CRam			CRam
-		%define	_VSRam			VSRam
-		%define	_VDP_Reg		VDP_Reg
-		
-		%define	_ScrA_Addr		ScrA_Addr
-		%define	_ScrB_Addr		ScrB_Addr
-		%define	_Win_Addr		Win_Addr
-		%define	_Spr_Addr		Spr_Addr
-		%define	_H_Scroll_Addr		H_Scroll_Addr
-		%define	_H_Cell			H_Cell
-		%define	_H_Win_Mul		H_Win_Mul
-		%define	_H_Pix			H_Pix
-		%define	_H_Pix_Begin		H_Pix_Begin
-		
-		%define _H_Scroll_Mask		H_Scroll_Mask
-		%define	_H_Scroll_CMul		H_Scroll_CMul
-		%define	_H_Scroll_CMask		H_Scroll_CMask
-		%define	_V_Scroll_CMask		V_Scroll_CMask
-		%define	_V_Scroll_MMask		V_Scroll_MMask
-		
-		%define	_Win_X_Pos		Win_X_Pos
-		%define	_Win_Y_Pos		Win_Y_Pos
-		
-		%define	_VDP_Status		VDP_Status
-		%define	_VDP_Current_Line	VDP_Current_Line
-		%define	_CRam_Flag		CRam_Flag
-		%define	_VRam_Flag		VRam_Flag
-		
-		%define	_bppMD			bppMD
-	%endif
+	extern SYM(VRam)
+	extern SYM(CRam)
+	extern SYM(VSRam)
+	extern SYM(VDP_Reg)
 	
-	extern _VRam
-	extern _CRam
-	extern _VSRam
-	extern _VDP_Reg
+	extern SYM(ScrA_Addr)
+	extern SYM(ScrB_Addr)
+	extern SYM(Win_Addr)
+	extern SYM(Spr_Addr)
+	extern SYM(H_Scroll_Addr)
+	extern SYM(H_Cell)
+	extern SYM(H_Win_Mul)
+	extern SYM(H_Pix)
+	extern SYM(H_Pix_Begin)
 	
-	extern _ScrA_Addr
-	extern _ScrB_Addr
-	extern _Win_Addr
-	extern _Spr_Addr
-	extern _H_Scroll_Addr
-	extern _H_Cell
-	extern _H_Win_Mul
-	extern _H_Pix
-	extern _H_Pix_Begin
+	extern SYM(H_Scroll_Mask)
+	extern SYM(H_Scroll_CMul)
+	extern SYM(H_Scroll_CMask)
+	extern SYM(V_Scroll_CMask)
+	extern SYM(V_Scroll_MMask)
 	
-	extern _H_Scroll_Mask
-	extern _H_Scroll_CMul
-	extern _H_Scroll_CMask
-	extern _V_Scroll_CMask
-	extern _V_Scroll_MMask
+	extern SYM(Win_X_Pos)
+	extern SYM(Win_Y_Pos)
 	
-	extern _Win_X_Pos
-	extern _Win_Y_Pos
+	extern SYM(VDP_Status)
+	extern SYM(VDP_Current_Line)
+	extern SYM(CRam_Flag)
+	extern SYM(VRam_Flag)
 	
-	extern _VDP_Status
-	extern _VDP_Current_Line
-	extern _CRam_Flag
-	extern _VRam_Flag
-	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	__32X_VDP_Ram			_32X_VDP_Ram
-		
-		%define	__32X_VDP			_32X_VDP
-		%define __32X_VDP.Mode			_32X_VDP.Mode
-		%define __32X_VDP.State			_32X_VDP.State
-		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
-		%define __32X_VDP.AF_St			_32X_VDP.AF_St
-		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
-		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
-	%endif
-	
-	extern __32X_VDP_Ram
-	extern __32X_VDP
+	extern SYM(_32X_VDP_Ram)
+	extern SYM(_32X_VDP)
 	
 	; MD bpp
-	extern _bppMD
+	extern SYM(bppMD)
 	
 	struc vx
 		.Mode:		resd 1
@@ -194,52 +139,40 @@ section .bss align=64
 		.AF_Len:	resd 1
 	endstruc
 	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_MD_Screen		MD_Screen
-		%define	_MD_Palette		MD_Palette
-		%define	_MD_Screen32		MD_Screen32
-		%define	_MD_Palette32		MD_Palette32
-		%define	_Sprite_Struct		Sprite_Struct
-		%define	_Sprite_Visible		Sprite_Visible
-		%define	__32X_Rend_Mode		_32X_Rend_Mode
-		%define	_Sprite_Over		Sprite_Over
-	%endif
-	
 	; MD screen buffer (16-bit)
 	alignb 16
 		resw (320 + 32)
-	global _MD_Screen
-	_MD_Screen:
+	global SYM(MD_Screen)
+	SYM(MD_Screen):
 		resw (336 * 240)
 		resw (320 + 32)
 	
 	; MD active palette (16-bit)
 	alignb 16
-	global _MD_Palette
-	_MD_Palette:
+	global SYM(MD_Palette)
+	SYM(MD_Palette):
 		resw 0x100
 	
 	; MD screen buffer (32-bit)
 	alignb 16
 		resd (320 + 32)
-	global _MD_Screen32
-	_MD_Screen32:
+	global SYM(MD_Screen32)
+	SYM(MD_Screen32):
 		resd (336 * 240)
 		resd (320 + 32)
 	
 	; MD active palette (32-bit)
 	alignb 16
-	global _MD_Palette32
-	_MD_Palette32:
+	global SYM(MD_Palette32)
+	SYM(MD_Palette32)
 		resd 0x100
 	
-	global _Sprite_Struct
-	_Sprite_Struct:
+	global SYM(Sprite_Struct)
+	SYM(Sprite_Struct):
 		resd (0x100 * 8)
 	
-	global _Sprite_Visible
-	_Sprite_Visible:
+	global SYM(Sprite_Visible)
+	SYM(Sprite_Visible):
 		resd 0x100
 	
 	Data_Spr:
@@ -267,28 +200,19 @@ section .bss align=64
 	
 	; _32X_Rend_Mode is used for the 32X 32-bit color C macros.
 	; See g_32x_32bit.h
-	global __32X_Rend_Mode
-	__32X_Rend_Mode:
+	global SYM(_32X_Rend_Mode)
+	SYM(_32X_Rend_Mode):
 		resd 1
 	
-	; _Sprite_Over: If set, enforces the sprite limit.
-	global _Sprite_Over
-	_Sprite_Over:
+	; SYM(Sprite_Over): If set, enforces the sprite limit.
+	global SYM(Sprite_Over)
+	SYM(Sprite_Over):
 		resd 1
 	
 section .text align=64
-
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_Render_Line		Render_Line
-		%define	_Render_Line_32X	Render_Line_32X
-		
-		%define	_VDP_Update_Palette	VDP_Update_Palette
-		%define	_VDP_Update_Palette_HS	VDP_Update_Palette_HS
-	%endif
 	
-	extern _VDP_Update_Palette
-	extern _VDP_Update_Palette_HS
+	extern SYM(VDP_Update_Palette)
+	extern SYM(VDP_Update_Palette_HS)
 	
 ;****************************************
 
@@ -301,10 +225,10 @@ section .text align=64
 
 %macro GET_X_OFFSET 1
 	
-	mov	eax, [_VDP_Current_Line]
-	mov	ebx, [_H_Scroll_Addr]		; ebx points to the H-Scroll data
+	mov	eax, [SYM(VDP_Current_Line)]
+	mov	ebx, [SYM(H_Scroll_Addr)]		; ebx points to the H-Scroll data
 	mov	edi, eax
-	and	eax, [_H_Scroll_Mask]
+	and	eax, [SYM(H_Scroll_Mask)]
 	
 %if %1 > 0
 	mov	esi, [ebx + eax * 4]		; X Cell offset
@@ -331,12 +255,12 @@ section .text align=64
 	mov	eax, [Data_Misc.Cell]		; Current cell for the V Scroll
 	test	eax, 0xFF81			; outside the limits of the VRAM? Then don't change...
 	jnz	short %%End
-	mov	edi, [_VDP_Current_Line]	; edi = line number
+	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
 	
 %if %1 > 0
-	mov	eax, [_VSRam + eax * 2 + 0]
+	mov	eax, [SYM(VSRam) + eax * 2 + 0]
 %else
-	mov	ax, [_VSRam + eax * 2 + 2]
+	mov	ax, [SYM(VSRam) + eax * 2 + 2]
 %endif
 	
 %if %2 > 0
@@ -347,7 +271,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 %%End
@@ -368,16 +292,16 @@ section .text align=64
 
 %macro GET_PATTERN_INFO 1
 	
-	mov	cl, [_H_Scroll_CMul]
+	mov	cl, [SYM(H_Scroll_CMul)]
 	mov	eax, edi			; eax = V Cell Offset
 	mov	edx, esi			; edx = H Cell Offset
 	
 	shl	eax, cl				; eax = V Cell Offset * H Width
 	
 %if %1 > 0
-	mov	ebx, [_ScrA_Addr]
+	mov	ebx, [SYM(ScrA_Addr)]
 %else
-	mov	ebx, [_ScrB_Addr]
+	mov	ebx, [SYM(ScrB_Addr)]
 %endif
 	
 	add	edx, eax			; edx = (V Offset / 8) * H Width + (H Offset / 8)
@@ -423,9 +347,9 @@ section .text align=64
 %%No_V_Flip
 	
 %if %1 > 0
-	mov	ebx, [_VRam + ecx + ebx * 8]		; ebx = Line of the pattern = Pattern Data (interlaced)
+	mov	ebx, [SYM(VRam) + ecx + ebx * 8]		; ebx = Line of the pattern = Pattern Data (interlaced)
 %else
-	mov	ebx, [_VRam + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
+	mov	ebx, [SYM(VRam) + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
 %endif
 	
 %endmacro
@@ -439,7 +363,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT 1
 	
-	mov	ebp, [_Spr_Addr]
+	mov	ebp, [SYM(Spr_Addr)]
 	xor	edi, edi				; edi = 0
 	mov	esi, ebp				; esi point on the table of sprite data
 	jmp	short %%Loop
@@ -460,23 +384,23 @@ section .text align=64
 		sub	eax, 0x80				; eax = Pos Y correct
 		sub	ecx, 0x80				; ecx = Pos X correct
 		shr	dh, 2					; dh = Size X - 1
-		mov	[_Sprite_Struct + edi + 4], eax		; store Pos Y
+		mov	[SYM(Sprite_Struct) + edi + 4], eax		; store Pos Y
 		inc	dh					; dh = Size X
-		mov	[_Sprite_Struct + edi + 0], ecx		; store Pos X
+		mov	[SYM(Sprite_Struct) + edi + 0], ecx		; store Pos X
 		mov	bl, dh					; bl = Size X
-		mov	[_Sprite_Struct + edi + 8], dh		; store Size X
+		mov	[SYM(Sprite_Struct) + edi + 8], dh		; store Size X
 		and	ebx, byte 7				; ebx = Size X
-		mov	[_Sprite_Struct + edi + 12], dl		; store Size Y - 1
+		mov	[SYM(Sprite_Struct) + edi + 12], dl		; store Size Y - 1
 		and	edx, byte 3				; edx = Size Y - 1
 		lea	ecx, [ecx + ebx * 8 - 1]		; ecx = Pos X Max
 		lea	eax, [eax + edx * 8 + 7]		; eax = Pos Y Max
 		mov	bl, [ebp + (3 ^ 1)]			; bl = Pointer towards next the sprite
-		mov	[_Sprite_Struct + edi + 16], ecx	; store Pos X Max
+		mov	[SYM(Sprite_Struct) + edi + 16], ecx	; store Pos X Max
 		mov	dx, [ebp + 4]				; dx = 1st tile of the sprite
-		mov	[_Sprite_Struct + edi + 20], eax	; store Pos Y Max
+		mov	[SYM(Sprite_Struct) + edi + 20], eax	; store Pos Y Max
 		add	edi, byte (8 * 4)			; advance to the next sprite structure
 		and	ebx, byte 0x7F				; clear the highest order bit.
-		mov	[_Sprite_Struct + edi - 32 + 24], dx	; store the first tile of the sprite
+		mov	[SYM(Sprite_Struct) + edi - 32 + 24], dx	; store the first tile of the sprite
 		jz	short %%End				; if the next pointer is 0, end
 		lea	ebp, [esi + ebx * 8]			; ebp Pointer towards next the sprite
 		
@@ -485,7 +409,7 @@ section .text align=64
 		jae	short %%End
 		
 		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [_VDP_Reg + 12 * 4], 1
+		test	byte [SYM(VDP_Reg) + 12 * 4], 1
 		jz	short %%H32
 		
 %%H40:
@@ -510,7 +434,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT_PARTIAL 0
 	
-	mov	ebp, [_Spr_Addr]
+	mov	ebp, [SYM(Spr_Addr)]
 ;	xor	eax, eax
 	xor	ebx, ebx
 	xor	edi, edi				; edi = 0
@@ -525,13 +449,13 @@ section .text align=64
 		mov	cx, [ebp + 6]				; cx = Pos X
 		mov	dx, [ebp + 4]				; dx = 1st tile of the sprite
 		and	ecx, 0x1FF
-		mov	[_Sprite_Struct + edi + 24], dx		; store the 1st tile of the sprite
+		mov	[SYM(Sprite_Struct) + edi + 24], dx		; store the 1st tile of the sprite
 		sub	ecx, 0x80				; ecx = Pos X correct
 		and	eax, 0x0C
-		mov	[_Sprite_Struct + edi + 0], ecx		; store Pos X
+		mov	[SYM(Sprite_Struct) + edi + 0], ecx		; store Pos X
 		lea	ecx, [ecx + eax * 2 + 7]		; ecx = Pos X Max
 		and	bl, 0x7F				; clear the highest order bit.
-		mov	[_Sprite_Struct + edi + 16], ecx	; store Pos X Max
+		mov	[SYM(Sprite_Struct) + edi + 16], ecx	; store Pos X Max
 		jz	short %%End				; if the next pointer is 0, end
 		
 		add	edi, byte (8 * 4)			; advance to the next sprite structure
@@ -542,7 +466,7 @@ section .text align=64
 		jae	short %%End
 		
 		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [_VDP_Reg + 12 * 4], 1
+		test	byte [SYM(VDP_Reg) + 12 * 4], 1
 		jz	short %%H32
 		
 %%H40:
@@ -573,31 +497,31 @@ section .text align=64
 	
 	xor	edi, edi
 %if %1 > 0
-	mov	ecx, [_H_Cell]
+	mov	ecx, [SYM(H_Cell)]
 %endif
 	xor	ax, ax				; used for masking
-	mov	ebx, [_H_Pix]
+	mov	ebx, [SYM(H_Pix)]
 	xor	esi, esi
-	mov	edx, [_VDP_Current_Line]
+	mov	edx, [SYM(VDP_Current_Line)]
 	jmp	short %%Loop_1
 	
 	align 16
 	
 %%Loop_1
-		cmp	[_Sprite_Struct + edi + 4], edx		; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
 		jg	short %%Out_Line_1
-		cmp	[_Sprite_Struct + edi + 20], edx	; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
 		jl	short %%Out_Line_1
 		
 %if %1 > 0
-		sub	ecx, [_Sprite_Struct + edi + 8]
+		sub	ecx, [SYM(Sprite_Struct) + edi + 8]
 %endif
-		cmp	[_Sprite_Struct + edi + 0], ebx		; one tests if the sprite is not outside of the screen
+		cmp	[SYM(Sprite_Struct) + edi + 0], ebx		; one tests if the sprite is not outside of the screen
 		jge	short %%Out_Line_1_2
-		cmp	dword [_Sprite_Struct + edi + 16], 0	; one tests if the sprite is not outside of the screen
+		cmp	dword [SYM(Sprite_Struct) + edi + 16], 0	; one tests if the sprite is not outside of the screen
 		jl	short %%Out_Line_1_2
 		
-		mov	[_Sprite_Visible + esi], edi
+		mov	[SYM(Sprite_Visible) + esi], edi
 		add	esi, byte 4
 		
 %%Out_Line_1_2
@@ -619,24 +543,24 @@ section .text align=64
 	align 16
 	
 %%Loop_2
-		cmp	[_Sprite_Struct + edi + 4], edx		; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
 		jg	short %%Out_Line_2
-		cmp	[_Sprite_Struct + edi + 20], edx	; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
 		jl	short %%Out_Line_2
 		
 %%Loop_2_First
-		cmp	dword [_Sprite_Struct + edi + 0], -128	; is the sprite is a mask?
+		cmp	dword [SYM(Sprite_Struct) + edi + 0], -128	; is the sprite is a mask?
 		je	short %%End				; next sprites are masked
 		
 %if %1 > 0
-		sub	ecx, [_Sprite_Struct + edi + 8]
+		sub	ecx, [SYM(Sprite_Struct) + edi + 8]
 %endif
-		cmp	[_Sprite_Struct + edi + 0], ebx		; one tests if the sprite is not outside of the screen
+		cmp	[SYM(Sprite_Struct) + edi + 0], ebx		; one tests if the sprite is not outside of the screen
 		jge	short %%Out_Line_2
-		cmp	dword [_Sprite_Struct + edi + 16], 0	; one tests if the sprite is not outside of the screen
+		cmp	dword [SYM(Sprite_Struct) + edi + 16], 0	; one tests if the sprite is not outside of the screen
 		jl	short %%Out_Line_2
 		
-		mov	[_Sprite_Visible + esi], edi
+		mov	[SYM(Sprite_Visible) + esi], edi
 		add	esi, byte 4
 
 %%Out_Line_2
@@ -659,12 +583,12 @@ section .text align=64
 	align 16
 	
 	%%Loop_3
-		cmp	[_Sprite_Struct + edi + 4], edx		; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
 		jg	short %%Out_Line_3
-		cmp	[_Sprite_Struct + edi + 20], edx	; one tests if the sprite is on the current line
+		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
 		jl	short %%Out_Line_3
 
-		or 	byte [_VDP_Status], 0x40
+		or 	byte [SYM(VDP_Status)], 0x40
 		jmp	short %%End
 		
 %%Out_Line_3
@@ -702,11 +626,11 @@ section .text align=64
 	
 %if %4 > 0
 	%if %5 > 0
-		mov	cl, [_MD_Screen + ebp * 2 + (%1 * 2) + 1]
+		mov	cl, [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 1]
 		test	cl, PRIO_B
 		jnz	short %%Trans
 	%else
-		test	byte [_MD_Screen + ebp * 2 + (%1 * 2) + 1], PRIO_B
+		test	byte [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 1], PRIO_B
 		jnz	short %%Trans
 	%endif
 %endif
@@ -731,7 +655,7 @@ section .text align=64
 	%endif
 %endif
 	
-	mov	[_MD_Screen + ebp * 2 + (%1 * 2)], al	; set the pixel
+	mov	[SYM(MD_Screen) + ebp * 2 + (%1 * 2)], al	; set the pixel
 	
 %%Trans
 
@@ -761,7 +685,7 @@ section .text align=64
 %endif
 	
 	lea	eax, [eax + edx + PRIO_W]
-	mov	[_MD_Screen + ebp * 2 + (%1 * 2)], ax
+	mov	[SYM(MD_Screen) + ebp * 2 + (%1 * 2)], ax
 	
 %%Trans
 
@@ -787,14 +711,14 @@ section .text align=64
 	and	eax, %2
 	jz	short %%Trans
 
-	mov	cl, [_MD_Screen + ebp * 2 + (%1 * 2) + 16 + 1]
+	mov	cl, [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 16 + 1]
 	test	cl, (PRIO_B + SPR_B - %4)
 	jz	short %%Affich
 	
 %%Prio
 	or	ch, cl
 %if %4 < 1
-	or	byte [_MD_Screen + ebp * 2 + (%1 * 2) + 16 + 1], SPR_B
+	or	byte [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 16 + 1], SPR_B
 %endif
 	jmp	%%Trans
 	
@@ -820,11 +744,11 @@ section .text align=64
 	ja	short %%Shadow
 	
 %%Highlight
-	or	word [_MD_Screen + ebp * 2 + (%1 * 2) + 16], HIGH_W
+	or	word [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 16], HIGH_W
 	jmp	short %%Trans
 	
 %%Shadow
-	or	word [_MD_Screen + ebp * 2 + (%1 * 2) + 16], SHAD_W
+	or	word [SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 16], SHAD_W
 	jmp	short %%Trans
 
 %%Normal
@@ -832,7 +756,7 @@ section .text align=64
 	
 %endif
 	
-	mov	[_MD_Screen + ebp * 2 + (%1 * 2) + 16], ax
+	mov	[SYM(MD_Screen) + ebp * 2 + (%1 * 2) + 16], ax
 	
 %%Trans
 
@@ -853,23 +777,23 @@ section .text align=64
 
 %if %1 < 1
 	%if %2 > 0
-		mov	dword [_MD_Screen + ebp * 2 +  0], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 +  4], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 +  8], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 + 12], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  0], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  4], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  8], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 + 12], SHAD_D
 	%else
-		mov	dword [_MD_Screen + ebp * 2 +  0], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 +  4], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  0], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  4], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  8], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 + 12], 0x00000000
 	%endif
 	
 	; If ScrollB Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_LOW
 	jz	near %%Full_Trans
 %else
 	; If ScrollA Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -904,23 +828,23 @@ section .text align=64
 
 %if %1 < 1
 	%if %2 > 0
-		mov	dword [_MD_Screen + ebp * 2 +  0], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 +  4], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 +  8], SHAD_D
-		mov	dword [_MD_Screen + ebp * 2 + 12], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  0], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  4], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  8], SHAD_D
+		mov	dword [SYM(MD_Screen) + ebp * 2 + 12], SHAD_D
 	%else
-		mov	dword [_MD_Screen + ebp * 2 +  0], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 +  4], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
-		mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  0], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  4], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 +  8], 0x00000000
+		mov	dword [SYM(MD_Screen) + ebp * 2 + 12], 0x00000000
 	%endif
 	
 	; If ScrollB Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_LOW
 	jz	near %%Full_Trans
 %else
 	; If ScrollA Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -953,39 +877,39 @@ section .text align=64
 %macro PUTLINE_P1 2
 
 %if %1 < 1
-	mov	dword [_MD_Screen + ebp * 2 +  0], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 +  4], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  0], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  4], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  8], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 + 12], 0x00000000
 	
 	; If ScrollB High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_HIGH
 	jz	near %%Full_Trans
 %else
 	; If ScrollA High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_HIGH
 	jz	near %%Full_Trans
 	
 	%if %2 > 0
 		; Faster on most CPUs (because of pairable instructions)
-		mov	eax, [_MD_Screen + ebp * 2 +  0]
-		mov	ecx, [_MD_Screen + ebp * 2 +  4]
+		mov	eax, [SYM(MD_Screen) + ebp * 2 +  0]
+		mov	ecx, [SYM(MD_Screen) + ebp * 2 +  4]
 		and	eax, NOSHAD_D
 		and	ecx, NOSHAD_D
-		mov	[_MD_Screen + ebp * 2 +  0], eax
-		mov	[_MD_Screen + ebp * 2 +  4], ecx
-		mov	eax, [_MD_Screen + ebp * 2 +  8]
-		mov	ecx, [_MD_Screen + ebp * 2 + 12]
+		mov	[SYM(MD_Screen) + ebp * 2 +  0], eax
+		mov	[SYM(MD_Screen) + ebp * 2 +  4], ecx
+		mov	eax, [SYM(MD_Screen) + ebp * 2 +  8]
+		mov	ecx, [SYM(MD_Screen) + ebp * 2 + 12]
 		and	eax, NOSHAD_D
 		and	ecx, NOSHAD_D
-		mov	[_MD_Screen + ebp * 2 +  8], eax
-		mov	[_MD_Screen + ebp * 2 + 12], ecx
+		mov	[SYM(MD_Screen) + ebp * 2 +  8], eax
+		mov	[SYM(MD_Screen) + ebp * 2 + 12], ecx
 		
 		; Faster on K6 CPU
-		;and	dword [_MD_Screen + ebp * 2 +  0], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 +  4], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 +  8], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 + 12], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  0], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  4], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  8], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 + 12], NOSHAD_D
 	%endif
 %endif
 	
@@ -1018,39 +942,39 @@ section .text align=64
 %macro PUTLINE_FLIP_P1 2
 
 %if %1 < 1
-	mov	dword [_MD_Screen + ebp * 2 +  0], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 +  4], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
-	mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  0], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  4], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 +  8], 0x00000000
+	mov	dword [SYM(MD_Screen) + ebp * 2 + 12], 0x00000000
 	
 	; If ScrollB High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_HIGH
 	jz	near %%Full_Trans
 %else
 	; If ScrollA High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_HIGH
 	jz	near %%Full_Trans
 	
 	%if %2 > 0
 		; Faster on most CPUs (because of pairable instructions)
-		mov	eax, [_MD_Screen + ebp * 2 +  0]
-		mov	ecx, [_MD_Screen + ebp * 2 +  4]
+		mov	eax, [SYM(MD_Screen) + ebp * 2 +  0]
+		mov	ecx, [SYM(MD_Screen) + ebp * 2 +  4]
 		and	eax, NOSHAD_D
 		and	ecx, NOSHAD_D
-		mov	[_MD_Screen + ebp * 2 +  0], eax
-		mov	[_MD_Screen + ebp * 2 +  4], ecx
-		mov	eax, [_MD_Screen + ebp * 2 +  8]
-		mov	ecx, [_MD_Screen + ebp * 2 + 12]
+		mov	[SYM(MD_Screen) + ebp * 2 +  0], eax
+		mov	[SYM(MD_Screen) + ebp * 2 +  4], ecx
+		mov	eax, [SYM(MD_Screen) + ebp * 2 +  8]
+		mov	ecx, [SYM(MD_Screen) + ebp * 2 + 12]
 		and	eax, NOSHAD_D
 		and	ecx, NOSHAD_D
-		mov	[_MD_Screen + ebp * 2 +  8], eax
-		mov	[_MD_Screen + ebp * 2 + 12], ecx
+		mov	[SYM(MD_Screen) + ebp * 2 +  8], eax
+		mov	[SYM(MD_Screen) + ebp * 2 + 12], ecx
 
 		; Faster on K6 CPU
-		;and	dword [_MD_Screen + ebp * 2 +  0], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 +  4], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 +  8], NOSHAD_D
-		;and	dword [_MD_Screen + ebp * 2 + 12], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  0], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  4], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 +  8], NOSHAD_D
+		;and	dword [SYM(MD_Screen) + ebp * 2 + 12], NOSHAD_D
 	%endif
 %endif
 	
@@ -1085,11 +1009,11 @@ section .text align=64
 	
 %if %1 > 0
 	; If Sprite High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_HIGH
 	jz	near %%Full_Trans
 %else
 	; If Sprite Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -1107,7 +1031,7 @@ section .text align=64
 	
 	and	ch, 0x20
 	sub	ebp, [esp]
-	or	byte [_VDP_Status], ch
+	or	byte [SYM(VDP_Status)], ch
 	
 %%Full_Trans
 
@@ -1128,11 +1052,11 @@ section .text align=64
 	
 %if %1 > 0
 	; If Sprite High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_HIGH
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_HIGH
 	jz	near %%Full_Trans
 %else
 	; If Sprite Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_LOW
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -1150,7 +1074,7 @@ section .text align=64
 	
 	and	ch, 0x20
 	sub	ebp, [esp]
-	or	byte [_VDP_Status], ch
+	or	byte [SYM(VDP_Status)], ch
 	
 %%Full_Trans
 
@@ -1177,15 +1101,15 @@ section .text align=64
 	shr	esi, 3				; esi = current cell
 	add	ebp, eax			; ebp updated for clipping
 	mov	ebx, esi
-	and	esi, [_H_Scroll_CMask]		; prevent H Cell Offset from overflowing
+	and	esi, [SYM(H_Scroll_CMask)]		; prevent H Cell Offset from overflowing
 	and	ebx, byte 1
-	mov	eax, [_H_Cell]
+	mov	eax, [SYM(H_Cell)]
 	sub	ebx, byte 2			; start with cell -2 or -1 (for V Scroll)
 	mov	[Data_Misc.X], eax		; number of cells to post
 	mov	[Data_Misc.Cell], ebx		; Current cell for the V Scroll
 	
-	mov	edi, [_VDP_Current_Line]	; edi = line number
-	mov	eax, [_VSRam + 2]
+	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
+	mov	eax, [SYM(VSRam) + 2]
 	
 %if %1 > 0
 	shr	eax, 1				; divide Y scroll in 2 if interlaced
@@ -1195,7 +1119,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop
@@ -1214,7 +1138,7 @@ section .text align=64
 		GET_PATTERN_DATA %1, 0
 		
 		; Check for swapped Scroll B priority.
-		test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_SWAP
+		test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_SWAP
 		jz	short %%No_Swap_ScrollB_Priority
 		xor	ax, 0x8000
 		
@@ -1260,7 +1184,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [_H_Scroll_CMask]		; prevent H Offset from overflowing
+		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
 		dec	byte [Data_Misc.X]		; decrement number of cells to treat
 		jns	near %%Loop
 		
@@ -1280,18 +1204,18 @@ section .text align=64
 
 %macro RENDER_LINE_SCROLL_A_WIN 3
 	
-	mov	eax, [_VDP_Current_Line]
-	mov	cl, [_VDP_Reg + 18 * 4]
+	mov	eax, [SYM(VDP_Current_Line)]
+	mov	cl, [SYM(VDP_Reg) + 18 * 4]
 	shr	eax, 3
-	mov	ebx, [_H_Cell]
+	mov	ebx, [SYM(H_Cell)]
 	shr	cl, 7				; cl = 1 si window at bottom
-	cmp	eax, [_Win_Y_Pos]
+	cmp	eax, [SYM(Win_Y_Pos)]
 	setae	ch				; ch = 1 si current line >= pos Y window
 	xor	cl, ch				; cl = 0 si line window sinon line Scroll A
 	jz	near %%Full_Win
 	
-	test	byte [_VDP_Reg + 17 * 4], 0x80
-	mov	edx, [_Win_X_Pos]
+	test	byte [SYM(VDP_Reg) + 17 * 4], 0x80
+	mov	edx, [SYM(Win_X_Pos)]
 	jz	short %%Win_Left
 	
 %%Win_Right
@@ -1334,20 +1258,20 @@ section .text align=64
 	and	ecx, byte 1
 	lea	eax, [eax + ebx * 8]		; clipping + window clip
 	sub	ecx, byte 2			; on démarre au cell -2 ou -1 (pour le V Scroll)
-	and	esi, [_H_Scroll_CMask]		; on empeche H Cell Offset de deborder
+	and	esi, [SYM(H_Scroll_CMask)]		; on empeche H Cell Offset de deborder
 	add	ebp, eax			; ebp mis à jour pour clipping + window clip
 	add	ebx, ecx			; ebx = Cell courant pour le V Scroll
 	
-	mov	edi, [_VDP_Current_Line]	; edi = line number
+	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
 	mov	[Data_Misc.Cell], ebx		; Cell courant pour le V Scroll
 	jns	short %%Not_First_Cell
 	
-	mov	eax, [_VSRam + 0]
+	mov	eax, [SYM(VSRam) + 0]
 	jmp	short %%First_VScroll_OK
 	
 %%Not_First_Cell
-	and	ebx, [_V_Scroll_MMask]
-	mov	eax, [_VSRam + ebx * 2]
+	and	ebx, [SYM(V_Scroll_MMask)]
+	mov	eax, [SYM(VSRam) + ebx * 2]
 	
 %%First_VScroll_OK
 	
@@ -1359,7 +1283,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop_SCA
@@ -1378,7 +1302,7 @@ section .text align=64
 		GET_PATTERN_DATA %1, 0
 		
 		; Check for swapped Scroll A priority.
-		test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
+		test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_SWAP
 		jz	short %%No_Swap_ScrollA_Priority_1
 		xor	ax, 0x8000
 		
@@ -1422,7 +1346,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [_H_Scroll_CMask]		; prevent H Offset from overflowing
+		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
 		dec	byte [Data_Misc.Length_A]	; decrement number of cells to treat for Scroll A
 		jns	near %%Loop_SCA
 
@@ -1436,7 +1360,7 @@ section .text align=64
 	GET_PATTERN_DATA %1, 0
 	
 	; Check for swapped Scroll A priority.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
+	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_SWAP
 	jz	short %%No_Swap_ScrollA_Priority_2
 	xor	ax, 0x8000
 	
@@ -1498,12 +1422,12 @@ section .text align=64
 	mov	edi, [Data_Misc.Length_W]		; edi = # of cells to render
 	
 %%Window_Initialised
-	mov	edx, [_VDP_Current_Line]
-	mov	cl, [_H_Win_Mul]
+	mov	edx, [SYM(VDP_Current_Line)]
+	mov	cl, [SYM(H_Win_Mul)]
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
 	shr	edx, 3					; edx = Line / 8
-	mov	eax, [_Win_Addr]
+	mov	eax, [SYM(Win_Addr)]
 	shl	edx, cl
 	lea	ebp, [ebp + esi * 8 + 8]		; no clipping for the window, return directly to the first pixel
 	lea	eax, [eax + edx * 2]			; eax point on the pattern data for the window
@@ -1575,7 +1499,7 @@ section .text align=64
 
 %macro RENDER_LINE_SPR 2
 	
-	test	dword [_Sprite_Over], 1
+	test	dword [SYM(Sprite_Over)], 1
 	jz	near %%No_Sprite_Over
 	
 %%Sprite_Over
@@ -1599,16 +1523,16 @@ section .text align=64
 	align 16
 	
 %%Sprite_Loop
-		mov	edx, [_VDP_Current_Line]
+		mov	edx, [SYM(VDP_Current_Line)]
 %%First_Loop
-		mov	edi, [_Sprite_Visible + edi]
-		mov	eax, [_Sprite_Struct + edi + 24]		; eax = CellInfo of the sprite
-		sub	edx, [_Sprite_Struct + edi + 4]			; edx = Line - Y Pos (Y Offset)
+		mov	edi, [SYM(Sprite_Visible) + edi]
+		mov	eax, [SYM(Sprite_Struct) + edi + 24]		; eax = CellInfo of the sprite
+		sub	edx, [SYM(Sprite_Struct) + edi + 4]			; edx = Line - Y Pos (Y Offset)
 		mov	ebx, eax					; ebx = CellInfo
 		mov	esi, eax					; esi = CellInfo
 		
 		; Check for swapped sprite priority.
-		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_SWAP
+		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_SWAP
 		jz	short %%No_Swap_Sprite_Priority
 		xor	ax, 0x8000
 		
@@ -1620,7 +1544,7 @@ section .text align=64
 		and	esi, 0x7FF				; esi = number of the first pattern of the sprite
 		mov	[Data_Misc.Palette], ebx		; store the palette number * 64 in Palette
 		and	edx, 0xF8				; one erases the 3 least significant bits = Num Pattern * 8
-		mov	ebx, [_Sprite_Struct + edi + 12]	; ebx = Size Y
+		mov	ebx, [SYM(Sprite_Struct) + edi + 12]	; ebx = Size Y
 		and	ecx, byte 7				; ecx = (Y Offset & 7) = Line of the current pattern
 %if %1 > 0
 		shl	ebx, 6					; ebx = Size Y * 64
@@ -1669,8 +1593,8 @@ section .text align=64
 		jz	near %%No_H_Flip
 			
 	%%H_Flip
-		mov	ebx, [_Sprite_Struct + edi + 0]
-		mov	ebp, [_Sprite_Struct + edi + 16]	; position for X
+		mov	ebx, [SYM(Sprite_Struct) + edi + 0]
+		mov	ebp, [SYM(Sprite_Struct) + edi + 16]	; position for X
 		cmp	ebx, -7					; test for the minimum edge of the sprite
 		mov	edi, [Data_Misc.Next_Cell]
 		jg	short %%Spr_X_Min_Norm
@@ -1690,11 +1614,11 @@ section .text align=64
 			add	esi, edi			; one goes on next the pattern (mem)
 			
 	%%Spr_Test_X_Max
-			cmp	ebp, [_H_Pix]
+			cmp	ebp, [SYM(H_Pix)]
 			jge	%%Spr_Test_X_Max_Loop
 		
 		; Check if sprites should always be on top.
-		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_ALWAYSONTOP
+		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_ALWAYSONTOP
 		jnz	near %%H_Flip_P1
 		
 		test	eax, 0x8000				; test the priority
@@ -1705,7 +1629,7 @@ section .text align=64
 		
 	%%H_Flip_P0
 	%%H_Flip_P0_Loop
-			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE_FLIP 0, %2		; one posts the line of the sprite pattern
 			
 			sub	ebp, byte 8			; one posts the previous pattern
@@ -1718,7 +1642,7 @@ section .text align=64
 		
 	%%H_Flip_P1
 	%%H_Flip_P1_Loop
-			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE_FLIP 1, %2		; one posts the line of the sprite pattern
 			
 			sub	ebp, byte 8			; one posts the previous pattern
@@ -1730,9 +1654,9 @@ section .text align=64
 		align 16
 		
 	%%No_H_Flip
-		mov	ebx, [_Sprite_Struct + edi + 16]
-		mov	ecx, [_H_Pix]
-		mov	ebp, [_Sprite_Struct + edi + 0]		; position the pointer ebp
+		mov	ebx, [SYM(Sprite_Struct) + edi + 16]
+		mov	ecx, [SYM(H_Pix)]
+		mov	ebp, [SYM(Sprite_Struct) + edi + 0]		; position the pointer ebp
 		cmp	ebx, ecx				; test for the maximum edge of the sprite
 		mov	edi, [Data_Misc.Next_Cell]
 		jl	%%Spr_X_Max_Norm
@@ -1756,7 +1680,7 @@ section .text align=64
 			jl	%%Spr_Test_X_Min_Loop
 		
 		; Check if sprites should always be on top.
-		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_ALWAYSONTOP
+		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_ALWAYSONTOP
 		jnz	near %%No_H_Flip_P1
 		
 		test	ax, 0x8000				; test the priority
@@ -1767,7 +1691,7 @@ section .text align=64
 		
 	%%No_H_Flip_P0
 	%%No_H_Flip_P0_Loop
-			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE 0, %2			; one posts the line of the sprite pattern 
 			
 			add	ebp, byte 8			; one posts the previous pattern
@@ -1780,7 +1704,7 @@ section .text align=64
 		
 	%%No_H_Flip_P1
 	%%No_H_Flip_P1_Loop
-			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE 1, %2			; on affiche la ligne du pattern sprite
 			
 			add	ebp, byte 8			; one posts the previous pattern
@@ -1812,7 +1736,7 @@ section .text align=64
 
 %macro RENDER_LINE 2
 	
-	test	dword [_VDP_Reg + 11 * 4], 4
+	test	dword [SYM(VDP_Reg) + 11 * 4], 4
 	jz	near %%Full_VScroll
 	
 %%Cell_VScroll
@@ -1832,19 +1756,19 @@ section .text align=64
 
 ; *******************************************************
 	
-	global _Render_Line
-	_Render_Line:
+	global SYM(Render_Line)
+	SYM(Render_Line):
 		
 		pushad
 		
-		mov	ebx, [_VDP_Current_Line]
+		mov	ebx, [SYM(VDP_Current_Line)]
 		xor	eax, eax
-		mov	edi, [_TAB336 + ebx * 4]
-		test	dword [_VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
+		mov	edi, [SYM(TAB336) + ebx * 4]
+		test	dword [SYM(VDP_Reg) + 1 * 4], 0x40		; test if the VDP is active
 		push	edi					; we need this value later
 		jnz	short .VDP_Enable			; if not, nothing is posted
 		
-		test	byte [_VDP_Reg + 12 * 4], 0x08
+		test	byte [SYM(VDP_Reg) + 12 * 4], 0x08
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -1853,18 +1777,18 @@ section .text align=64
 		mov	eax, 0x40404040
 		
 	.No_Shadow:
-		lea	edi, [_MD_Screen + edi * 2 + 8 * 2]
+		lea	edi, [SYM(MD_Screen) + edi * 2 + 8 * 2]
 		rep	stosd
 		jmp	.VDP_OK
 		
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [_VRam_Flag]
-		mov	eax, [_VDP_Reg + 12 * 4]
+		mov	ebx, [SYM(VRam_Flag)]
+		mov	eax, [SYM(VDP_Reg) + 12 * 4]
 		and	ebx, byte 3
 		and	eax, byte 4
-		mov	byte [_VRam_Flag], 0
+		mov	byte [SYM(VRam_Flag)], 0
 		jmp	[.Table_Sprite_Struct + ebx * 8 + eax]
 	
 	align 16
@@ -1898,7 +1822,7 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		mov	eax, [_VDP_Reg + 12 * 4]
+		mov	eax, [SYM(VDP_Reg) + 12 * 4]
 		and	eax, byte 0xC
 		jmp	[.Table_Render_Line + eax]
 	
@@ -1937,36 +1861,36 @@ section .text align=64
 	align 16
 	
 	.VDP_OK:
-		test	byte [_CRam_Flag], 1		; teste si la palette a etait modifiee
+		test	byte [SYM(CRam_Flag)], 1		; teste si la palette a etait modifiee
 		jz	short .Palette_OK		; si oui
 		
-		test	byte [_VDP_Reg + 12 * 4], 8
+		test	byte [SYM(VDP_Reg) + 12 * 4], 8
 		jnz	short .Palette_HS
 		
-		call	_VDP_Update_Palette
+		call	SYM(VDP_Update_Palette)
 		jmp	short .Palette_OK
 	
 	align 16
 		
 	.Palette_HS:
-		call	_VDP_Update_Palette_HS
+		call	SYM(VDP_Update_Palette_HS)
 
 	align 16
 	
 	.Palette_OK:
-		cmp	byte [_bppMD], 32	; check if this is 32-bit color
+		cmp	byte [SYM(bppMD)], 32	; check if this is 32-bit color
 		jne	short .Render16
 		
 	.Render32: ; 32-bit color
 		mov	ecx, 160
-		mov	eax, [_H_Pix_Begin]
+		mov	eax, [SYM(H_Pix_Begin)]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
-		lea	edx, [_MD_Screen + edi * 2 + 8 * 2]
+		lea	edx, [SYM(MD_Screen) + edi * 2 + 8 * 2]
 		shr	ecx, 1
-		lea	edi, [_MD_Screen32 + edi * 4 + 8 * 4]
-		mov	esi, _MD_Palette32
+		lea	edi, [SYM(MD_Screen32) + edi * 4 + 8 * 4]
+		mov	esi, SYM(MD_Palette32)
 	
 	align 16
 	
@@ -1993,13 +1917,13 @@ section .text align=64
 	
 	.Render16: ; 15-bit/16-bit color
 		mov	ecx, 160
-		mov	eax, [_H_Pix_Begin]
+		mov	eax, [SYM(H_Pix_Begin)]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
-		lea	edi, [_MD_Screen + edi * 2 + 8 * 2]
+		lea	edi, [SYM(MD_Screen) + edi * 2 + 8 * 2]
 		shr	ecx, 1
-		mov	esi, _MD_Palette
+		mov	esi, SYM(MD_Palette)
 		jmp	short .Genesis_Loop16
 	
 	align 16
@@ -2044,19 +1968,19 @@ section .text align=64
 
 ; *******************************************************
 
-	global _Render_Line_32X
-	_Render_Line_32X:
+	global SYM(Render_Line_32X)
+	SYM(Render_Line_32X):
 		
 		pushad
 		
-		mov	ebx, [_VDP_Current_Line]
+		mov	ebx, [SYM(VDP_Current_Line)]
 		xor	eax, eax
-		mov	edi, [_TAB336 + ebx * 4]
-		test	dword [_VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
+		mov	edi, [SYM(TAB336) + ebx * 4]
+		test	dword [SYM(VDP_Reg) + 1 * 4], 0x40		; test if the VDP is active
 		push	edi					; we need this value later
 		jnz	short .VDP_Enable			; if not, nothing is posted
 			
-		test	byte [_VDP_Reg + 12 * 4], 0x08
+		test	byte [SYM(VDP_Reg) + 12 * 4], 0x08
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -2065,17 +1989,17 @@ section .text align=64
 		mov	eax, 0x40404040
 		
 	.No_Shadow:
-		lea	edi, [_MD_Screen + edi * 2 + 8 * 2]
+		lea	edi, [SYM(MD_Screen) + edi * 2 + 8 * 2]
 		rep	stosd
 		jmp	.VDP_OK
 		
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [_VRam_Flag]
+		mov	ebx, [SYM(VRam_Flag)]
 		xor	eax, eax
 		and	ebx, byte 3
-		mov	[_VRam_Flag], eax
+		mov	[SYM(VRam_Flag)], eax
 		jmp	[.Table_Sprite_Struct + ebx * 4]
 	
 	align 16
@@ -2100,50 +2024,50 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		test	byte [_VDP_Reg + 12 * 4], 0x8	; no interlace in 32X mode
+		test	byte [SYM(VDP_Reg) + 12 * 4], 0x8	; no interlace in 32X mode
 		jnz	near .HS
 	
 	.NHS:
 			RENDER_LINE 0, 0
-			test	byte [_CRam_Flag], 1		; test if palette was modified
+			test	byte [SYM(CRam_Flag)], 1		; test if palette was modified
 			jz	near .VDP_OK
-			call	_VDP_Update_Palette
+			call	SYM(VDP_Update_Palette)
 			jmp	near .VDP_OK
 	
 	align 16
 
 	.HS:
 			RENDER_LINE 0, 1
-			test	byte [_CRam_Flag], 1		; test if palette was modified
+			test	byte [SYM(CRam_Flag)], 1		; test if palette was modified
 			jz	short .VDP_OK
-			call	_VDP_Update_Palette_HS
+			call	SYM(VDP_Update_Palette_HS)
 	
 	align 16
 	
 	.VDP_OK:
-		mov	eax, [_H_Pix_Begin]
+		mov	eax, [SYM(H_Pix_Begin)]
 		mov	edi, [esp]
 		add	esp, byte 4
-		mov	esi, [__32X_VDP + vx.State]
-		mov	eax, [__32X_VDP + vx.Mode]
+		mov	esi, [SYM(_32X_VDP) + vx.State]
+		mov	eax, [SYM(_32X_VDP) + vx.Mode]
 		and	esi, byte 1
 		mov	edx, eax
 		shl	esi, 17
 		mov	ebp, eax
 		shr	edx, 3
-		mov	ebx, [_VDP_Current_Line]
+		mov	ebx, [SYM(VDP_Current_Line)]
 		shr	ebp, 11
 		and	eax, byte 3
 		and	edx, byte 0x10
 		and	ebp, byte 0x20
-		mov	bx, [__32X_VDP_Ram + esi + ebx * 2]
+		mov	bx, [SYM(_32X_VDP_Ram) + esi + ebx * 2]
 		or	edx, ebp
-		lea	esi, [__32X_VDP_Ram + esi + ebx * 2]
+		lea	esi, [SYM(_32X_VDP_Ram) + esi + ebx * 2]
 		
 		; Set the 32X render mode for the 32-bit color C macros.
 		shr	edx, 2
-		mov	[__32X_Rend_Mode], eax
-		or	[__32X_Rend_Mode], dl
+		mov	[SYM(_32X_Rend_Mode)], eax
+		or	[SYM(_32X_Rend_Mode)], dl
 		shl	edx, 2
 		
 		; 32X line rendering is now done via g_32x_32bit.c.

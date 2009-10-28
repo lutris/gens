@@ -1,79 +1,51 @@
 ;
 ; Gens: 32X VDP functions.
 ;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 section .bss align=64
 	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	__32X_VDP			_32X_VDP
-		%define __32X_VDP.Mode			_32X_VDP.Mode
-		%define __32X_VDP.State			_32X_VDP.State
-		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
-		%define __32X_VDP.AF_St			_32X_VDP.AF_St
-		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
-		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
-	%endif
-	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	__32X_VDP_Ram			_32X_VDP_Ram
-		%define __32X_VDP_CRam			_32X_VDP_CRam
-		
-		%define	__32X_Palette_16B		_32X_Palette_16B
-		%define	__32X_Palette_32B		_32X_Palette_32B
-		
-		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
-		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
-		
-		%define	_MD_Screen			MD_Screen
-		%define	_MD_Screen32			MD_Screen32
-		%define	_bppMD				bppMD
-	%endif
-	
-	extern _MD_Screen
-	extern _MD_Screen32
+	extern SYM(MD_Screen)
+	extern SYM(MD_Screen32)
 	
 	; MD bpp
-	extern _bppMD
+	extern SYM(bppMD)
 	
 	; VDP RAM and CRam.
-	extern __32X_VDP_Ram
-	extern __32X_VDP_CRam
+	extern SYM(_32X_VDP_Ram)
+	extern SYM(_32X_VDP_CRam)
 	
 	; Full 32X palettes.
-	extern __32X_Palette_16B
-	extern __32X_Palette_32B
+	extern SYM(_32X_Palette_16B)
+	extern SYM(_32X_Palette_32B)
 	
 	; Adjusted CRam.
-	extern __32X_VDP_CRam_Adjusted
-	extern __32X_VDP_CRam_Adjusted32
+	extern SYM(_32X_VDP_CRam_Adjusted)
+	extern SYM(_32X_VDP_CRam_Adjusted32)
 	
 	alignb 32
 	
-	global __32X_VDP
-	__32X_VDP:
+	global SYM(_32X_VDP)
+	SYM(_32X_VDP):
 		.Mode:		resd 1
 		.State:		resd 1
 		.AF_Data:	resd 1
@@ -83,14 +55,9 @@ section .bss align=64
 	
 section .text align=64
 	
-	; Symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	__32X_VDP_Draw		_32X_VDP_Draw
-	%endif
-	
 	; void _32X_VDP_Draw(int FB_Num)
-	global __32X_VDP_Draw
-	__32X_VDP_Draw:
+	global SYM(_32X_VDP_Draw)
+	SYM(_32X_VDP_Draw):
 		
 		; FB_Num is stored in eax.
 		; No frame pointer is used in this function.
@@ -100,21 +67,21 @@ section .text align=64
 		and	eax, byte 1
 		shl	eax, 17
 		xor	ebp, ebp
-		lea	esi, [eax + __32X_VDP_Ram]
+		lea	esi, [eax + SYM(_32X_VDP_Ram)]
 		xor	ebx, ebx
-		lea	esi, [eax + __32X_VDP_Ram]
+		lea	esi, [eax + SYM(_32X_VDP_Ram)]
 		
 		; Check if 32-bit color mode is enabled.
 		; If 32-bit is enabled, do 32-bit drawing.
-		cmp	byte [_bppMD], 32
+		cmp	byte [SYM(bppMD)], 32
 		je	near ._32BIT
 	
 	; 16-bit color
 	._16BIT:
-		lea	edi, [_MD_Screen + 8 * 2]
+		lea	edi, [SYM(MD_Screen) + 8 * 2]
 	
 	.Loop_Y:
-		mov	eax, [__32X_VDP.Mode]
+		mov	eax, [SYM(_32X_VDP.Mode)]
 		mov	bx, [esi + ebp * 2]
 		and	eax, byte 3
 		mov	ecx, 160
@@ -131,8 +98,8 @@ section .text align=64
 	._32X_Draw_M10_P:
 			movzx	eax, word [esi + ebx * 2 + 0]
 			movzx	edx, word [esi + ebx * 2 + 2]
-			mov	ax, [__32X_Palette_16B + eax * 2]
-			mov	dx, [__32X_Palette_16B + edx * 2]
+			mov	ax, [SYM(_32X_Palette_16B) + eax * 2]
+			mov	dx, [SYM(_32X_Palette_16B) + edx * 2]
 			mov	[edi + 0], ax
 			mov	[edi + 2], dx
 			add	bx, byte 2
@@ -152,8 +119,8 @@ section .text align=64
 	._32X_Draw_M01_P:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	edx, byte [esi + ebx * 2 + 1]
-			mov	ax, [__32X_VDP_CRam_Adjusted + eax * 2]
-			mov	dx, [__32X_VDP_CRam_Adjusted + edx * 2]
+			mov	ax, [SYM(_32X_VDP_CRam_Adjusted) + eax * 2]
+			mov	dx, [SYM(_32X_VDP_CRam_Adjusted) + edx * 2]
 			mov	[edi + 2], ax
 			mov	[edi + 0], dx
 			inc	bx
@@ -174,7 +141,7 @@ section .text align=64
 	._32X_Draw_M11_Loop:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	ecx, byte [esi + ebx * 2 + 1]
-			mov	ax, [__32X_VDP_CRam_Adjusted + eax * 2]
+			mov	ax, [SYM(_32X_VDP_CRam_Adjusted) + eax * 2]
 			inc	ecx
 			inc	bx
 			sub	edx, ecx
@@ -194,17 +161,17 @@ section .text align=64
 		cmp	ebp, 220
 		jb	near .Loop_Y
 		
-		lea	edi, [_MD_Screen + 8 * 2 + 336 * 2 * 220]
+		lea	edi, [SYM(MD_Screen) + 8 * 2 + 336 * 2 * 220]
 		xor	eax, eax
 		mov	ecx, 128
 	
 	.Palette_Loop:
-			mov	dx, [__32X_VDP_CRam_Adjusted + eax * 2]
+			mov	dx, [SYM(_32X_VDP_CRam_Adjusted) + eax * 2]
 			mov	[edi + 0], dx
 			mov	[edi + 2], dx
 			mov	[edi + 336 * 2 + 0], dx
 			mov	[edi + 336 * 2 + 2], dx
-			mov	dx, [__32X_VDP_CRam_Adjusted + eax * 2 + 128 * 2]
+			mov	dx, [SYM(_32X_VDP_CRam_Adjusted) + eax * 2 + 128 * 2]
 			mov	[edi + 336 * 4 + 0], dx
 			mov	[edi + 336 * 4 + 2], dx
 			mov	[edi + 336 * 6 + 0], dx
@@ -219,10 +186,10 @@ section .text align=64
 	
 	; 32-bit color
 	._32BIT:
-		lea	edi, [_MD_Screen32 + 8 * 4]
+		lea	edi, [SYM(MD_Screen32) + 8 * 4]
 
 	.Loop_Y32:
-		mov	eax, [__32X_VDP.Mode]
+		mov	eax, [SYM(_32X_VDP.Mode)]
 		mov	bx, [esi + ebp * 2]
 		and	eax, byte 3
 		mov	ecx, 160
@@ -239,8 +206,8 @@ section .text align=64
 	._32X_Draw_M10_P32:
 			movzx	eax, word [esi + ebx * 2 + 0]
 			movzx	edx, word [esi + ebx * 2 + 2]
-			mov	eax, [__32X_Palette_32B + eax * 4]
-			mov	edx, [__32X_Palette_32B + edx * 4]
+			mov	eax, [SYM(_32X_Palette_32B) + eax * 4]
+			mov	edx, [SYM(_32X_Palette_32B) + edx * 4]
 			mov	[edi + 0], eax
 			mov	[edi + 4], edx
 			add	bx, byte 2
@@ -260,8 +227,8 @@ section .text align=64
 	._32X_Draw_M01_P32:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	edx, byte [esi + ebx * 2 + 1]
-			mov	eax, [__32X_VDP_CRam_Adjusted32 + eax * 4]
-			mov	edx, [__32X_VDP_CRam_Adjusted32 + edx * 4]
+			mov	eax, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + edx * 4]
 			mov	[edi + 4], eax
 			mov	[edi + 0], edx
 			inc	bx
@@ -282,7 +249,7 @@ section .text align=64
 	._32X_Draw_M11_Loop32:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	ecx, byte [esi + ebx * 2 + 1]
-			mov	eax, [__32X_VDP_CRam_Adjusted32 + eax * 4]
+			mov	eax, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
 			inc	ecx
 			inc	bx
 			sub	edx, ecx
@@ -302,17 +269,17 @@ section .text align=64
 		cmp	ebp, 220
 		jb	near .Loop_Y32
 		
-		lea	edi, [_MD_Screen32 + 8 * 4 + 336 * 4 * 220]
+		lea	edi, [SYM(MD_Screen32) + 8 * 4 + 336 * 4 * 220]
 		xor	eax, eax
 		mov	ecx, 128
 	
 	.Palette_Loop32:
-			mov	edx, [__32X_VDP_CRam_Adjusted32 + eax * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
 			mov	[edi + 0], edx
 			mov	[edi + 4], edx
 			mov	[edi + 336 * 4 + 0], edx
 			mov	[edi + 336 * 4 + 4], edx
-			mov	edx, [__32X_VDP_CRam_Adjusted32 + eax * 4 + 128 * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4 + 128 * 4]
 			mov	[edi + 336 * 8 + 0], edx
 			mov	[edi + 336 * 8 + 4], edx
 			mov	[edi + 336 * 12 + 0], edx

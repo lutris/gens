@@ -1,181 +1,107 @@
+;
+; Gens: Main 68000 memory management. (SegaCD)
+;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
+
 %include "nasmhead.inc"
-
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_SEGACD 32
 
 section .bss align=64
 	
-	; External symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_Ram_Prg		Ram_Prg
-		%define	_Ram_Word_2M		Ram_Word_2M
-		%define	_Ram_Word_1M		Ram_Word_1M
-		%define	_Ram_Word_State		Ram_Word_State
-		%define	_S68K_Mem_WP		S68K_Mem_WP
-		%define	_Int_Mask_S68K		Int_Mask_S68K
-	%endif
+	extern SYM(Ram_Prg)
+	extern SYM(Ram_Word_2M)
+	extern SYM(Ram_Word_1M)
+	extern SYM(Ram_Word_State)
 	
-	extern _Ram_Prg
-	extern _Ram_Word_2M
-	extern _Ram_Word_1M
-	extern _Ram_Word_State
+	extern SYM(S68K_Mem_WP)
+	extern SYM(Int_Mask_S68K)
 	
-	extern _S68K_Mem_WP
-	extern _Int_Mask_S68K
+	extern SYM(COMM.Flag)
+	extern SYM(COMM.Command)
+	extern SYM(COMM.Status)
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_COMM			COMM
-		%define	_COMM.Flag		COMM.Flag
-		%define	_COMM.Command		COMM.Command
-		%define	_COMM.Status		COMM.Status
-		
-		%define	_CDC			CDC
-		%define	_CDC.RS0		CDC.RS0
-		%define	_CDC.RS1		CDC.RS1
-		%define	_CDC.Host_Data		CDC.Host_Data
-		%define	_CDC.DMA_Adr		CDC.DMA_Adr
-		%define	_CDC.Stop_Watch		CDC.Stop_Watch
-	%endif
-	
-	extern _COMM.Flag
-	extern _COMM.Command
-	extern _COMM.Status
-	
-	extern _CDC.RS0
-	extern _CDC.RS1
-	extern _CDC.Host_Data
-	extern _CDC.DMA_Adr
-	extern _CDC.Stop_Watch
-	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_M_Z80	M_Z80
-		%define _Z80_State		Z80_State
-		%define _Last_BUS_REQ_Cnt	Last_BUS_REQ_Cnt
-		%define _Last_BUS_REQ_St	Last_BUS_REQ_St
-		
-		%define _Game_Mode		Game_Mode
-		%define _CPU_Mode		CPU_Mode
-		%define _Gen_Version		Gen_Version
-		
-		%define _Z80_M68K_Cycle_Tab	Z80_M68K_Cycle_Tab
-		%define _Rom_Data		Rom_Data
-		%define _Bank_M68K		Bank_M68K
-		%define _Fake_Fetch		Fake_Fetch
-		
-		%define _Cycles_M68K		Cycles_M68K
-		%define _Cycles_Z80		Cycles_Z80
-	%endif
+	extern SYM(CDC.RS0)
+	extern SYM(CDC.RS1)
+	extern SYM(CDC.Host_Data)
+	extern SYM(CDC.DMA_Adr)
+	extern SYM(CDC.Stop_Watch)
 	
 	; Z80 state.
 	Z80_STATE_ENABLED	equ (1 << 0)
 	Z80_STATE_BUSREQ	equ (1 << 1)
 	Z80_STATE_RESET		equ (1 << 2)
 	
-	extern _M_Z80
-	extern _Z80_State
-	extern _Last_BUS_REQ_Cnt
-	extern _Last_BUS_REQ_St
+	extern SYM(M_Z80)
+	extern SYM(Z80_State)
+	extern SYM(Last_BUS_REQ_Cnt)
+	extern SYM(Last_BUS_REQ_St)
 	
-	extern _Game_Mode
-	extern _CPU_Mode
-	extern _Gen_Version
+	extern SYM(Game_Mode)
+	extern SYM(CPU_Mode)
+	extern SYM(Gen_Version)
 	
-	extern _Z80_M68K_Cycle_Tab
-	extern _Rom_Data
-	extern _Bank_M68K
-	extern _Fake_Fetch
+	extern SYM(Z80_M68K_Cycle_Tab)
+	extern SYM(Rom_Data)
+	extern SYM(Bank_M68K)
+	extern SYM(Fake_Fetch)
 	
-	extern _Cycles_M68K
-	extern _Cycles_Z80
+	extern SYM(Cycles_M68K)
+	extern SYM(Cycles_Z80)
 	
-	; Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define _BRAM_Ex_State		BRAM_Ex_State
-		%define _BRAM_Ex_Size		BRAM_Ex_Size
-		
-		%define _S68K_State		S68K_State
-		%define _CPL_S68K		CPL_S68K
-		%define _Cycles_S68K		Cycles_S68K
-		
-		%define _Ram_Backup_Ex		Ram_Backup_Ex
-	%endif
-	
-	global _BRAM_Ex_State
-	_BRAM_Ex_State:
+	global SYM(BRAM_Ex_State)
+	SYM(BRAM_Ex_State):
 		resd 1
-	global _BRAM_Ex_Size
-	_BRAM_Ex_Size:
+	global SYM(BRAM_Ex_Size)
+	SYM(BRAM_Ex_Size):
 		resd 1
 	
-	global _S68K_State
-	_S68K_State:
+	global SYM(S68K_State)
+	SYM(S68K_State):
 		resd 1
-	global _CPL_S68K
-	_CPL_S68K:
+	global SYM(CPL_S68K)
+	SYM(CPL_S68K):
 		resd 1
-	global _Cycles_S68K
-	_Cycles_S68K:
+	global SYM(Cycles_S68K)
+	SYM(Cycles_S68K):
 		resd 1
 	
-	global _Ram_Backup_Ex
-	_Ram_Backup_Ex:
+	global SYM(Ram_Backup_Ex)
+	SYM(Ram_Backup_Ex):
 		resb 64 * 1024
 	
 section .data align=64
 	
-	; External symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_Memory_Control_Status	Memory_Control_Status
-		%define	_Cell_Conv_Tab		Cell_Conv_Tab
-	%endif
+	extern SYM(Memory_Control_Status)
+	extern SYM(Cell_Conv_Tab)
 	
-	extern _Memory_Control_Status
-	extern _Cell_Conv_Tab
+	extern SYM(Controller_1_Counter)
+	extern SYM(Controller_1_Delay)
+	extern SYM(Controller_1_State)
+	extern SYM(Controller_1_COM)
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Controller_1_Counter	Controller_1_Counter
-		%define	_Controller_1_Delay	Controller_1_Delay
-		%define	_Controller_1_State	Controller_1_State
-		%define	_Controller_1_COM	Controller_1_COM
-		
-		%define	_Controller_2_Counter	Controller_2_Counter
-		%define	_Controller_2_Delay	Controller_2_Delay
-		%define	_Controller_2_State	Controller_2_State
-		%define	_Controller_2_COM	Controller_2_COM
-	%endif
-	
-	extern _Controller_1_Counter
-	extern _Controller_1_Delay
-	extern _Controller_1_State
-	extern _Controller_1_COM
-	
-	extern _Controller_2_Counter
-	extern _Controller_2_Delay
-	extern _Controller_2_State
-	extern _Controller_2_COM
+	extern SYM(Controller_2_Counter)
+	extern SYM(Controller_2_Delay)
+	extern SYM(Controller_2_State)
+	extern SYM(Controller_2_COM)
 	
 section .rodata align=64
 	; Sega CD Default Jump Table
@@ -286,28 +212,8 @@ section .rodata align=64
 	
 section .text align=64
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Z80_ReadB_Table	Z80_ReadB_Table
-		%define	_Z80_WriteB_Table	Z80_WriteB_Table
-		
-		%define _MS68K_Set_Word_Ram	MS68K_Set_Word_Ram
-		%define _M68K_Set_Prg_Ram	M68K_Set_Prg_Ram
-		%define _mdZ80_reset		mdZ80_reset
-		%define _mdZ80_set_odo		mdZ80_set_odo
-		
-		%define _YM2612_Reset		YM2612_Reset
-		
-		%define _Read_CDC_Host_MAIN	Read_CDC_Host_MAIN
-		
-		%define _RD_Controller_1	RD_Controller_1
-		%define _RD_Controller_2	RD_Controller_2
-		%define _WR_Controller_1	WR_Controller_1
-		%define _WR_Controller_2	WR_Controller_2
-	%endif
-	
-	extern _Z80_ReadB_Table
-	extern _Z80_WriteB_Table
+	extern SYM(Z80_ReadB_Table)
+	extern SYM(Z80_WriteB_Table)
 	
 	extern M68K_Read_Byte_Bad
 	extern M68K_Read_Byte_VDP
@@ -321,24 +227,24 @@ section .text align=64
 	extern M68K_Write_Word_VDP
 	extern M68K_Write_Word_Ram
 	
-	extern _MS68K_Set_Word_Ram
-	extern _M68K_Set_Prg_Ram
+	extern SYM(MS68K_Set_Word_Ram)
+	extern SYM(M68K_Set_Prg_Ram)
 	
-	extern _main68k_readOdometer
-	extern _sub68k_reset
-	extern _sub68k_interrupt
-	extern _mdZ80_reset
+	extern SYM(main68k_readOdometer)
+	extern SYM(sub68k_reset)
+	extern SYM(sub68k_interrupt)
+	extern SYM(mdZ80_reset)
 	extern z80_Exec
-	extern _mdZ80_set_odo
+	extern SYM(mdZ80_set_odo)
 	
-	extern _YM2612_Reset
+	extern SYM(YM2612_Reset)
 	
-	extern _Read_CDC_Host_MAIN
+	extern SYM(Read_CDC_Host_MAIN)
 	
-	extern _RD_Controller_1
-	extern _RD_Controller_2 
-	extern _WR_Controller_1
-	extern _WR_Controller_2
+	extern SYM(RD_Controller_1)
+	extern SYM(RD_Controller_2) 
+	extern SYM(WR_Controller_1)
+	extern SYM(WR_Controller_2)
 	
 	; SegaCD extended Read Byte
 	; *******************************************
@@ -350,7 +256,7 @@ section .text align=64
 		ja	short .Bank_RAM
 		
 		xor	ebx, 1
-		mov	al, [_Rom_Data + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -360,12 +266,12 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	near M68K_Read_Byte_Bad
 		
-		add	ebx, [_Bank_M68K]
-		cmp	byte [_S68K_State], 1		; BUS available ?
+		add	ebx, [SYM(Bank_M68K)]
+		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Prg + ebx - 0x20000]		
+		mov	al, [SYM(Ram_Prg) + ebx - 0x20000]		
 		pop	ebx
 		ret
 	
@@ -373,7 +279,7 @@ section .text align=64
 	
 	M68K_Read_Byte_WRam:
 		cmp	ebx, 0x23FFFF
-		mov	eax, [_Ram_Word_State]
+		mov	eax, [SYM(Ram_Word_State)]
 		ja	short .bad
 		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
@@ -389,7 +295,7 @@ section .text align=64
 	
 	.Word_Ram_2M:
 		xor	ebx, 1
-		mov	al, [_Ram_Word_2M + ebx - 0x200000]
+		mov	al, [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -400,7 +306,7 @@ section .text align=64
 		ja	short .Cell_Arranged_0
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x200000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -411,7 +317,7 @@ section .text align=64
 		ja	short .Cell_Arranged_1
 		
 		xor	ebx, 1
-		mov	al, [_Ram_Word_1M + ebx - 0x200000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -427,10 +333,10 @@ section .text align=64
 	.Cell_Arranged_0:
 		shr	ebx, 1
 		mov	eax, 0
-		mov	bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
 		and	ebx, 0xFFFF
-		mov	al, [_Ram_Word_1M + ebx * 2 + eax]
+		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax]
 		pop	ebx
 		ret
 	
@@ -439,10 +345,10 @@ section .text align=64
 	.Cell_Arranged_1:
 		shr	ebx, 1
 		mov	eax, 0
-		mov	bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
 		and	ebx, 0xFFFF
-		mov	al, [_Ram_Word_1M + ebx * 2 + eax + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax + 0x20000]
 		pop	ebx
 		ret
 	
@@ -453,7 +359,7 @@ section .text align=64
 		mov	al, 0
 		jne	short .bad
 		
-		mov	al, [_BRAM_Ex_Size]
+		mov	al, [SYM(BRAM_Ex_Size)]
 		
 	.bad:
 		pop	ebx
@@ -466,12 +372,12 @@ section .text align=64
 		mov	al, 0
 		ja	short .bad
 		
-		test	word [_BRAM_Ex_State], 0x100
+		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	al, [_Ram_Backup_Ex + ebx]
+		mov	al, [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -484,7 +390,7 @@ section .text align=64
 		mov	al, 0
 		jne	short .bad
 		
-		mov	al, [_BRAM_Ex_State]
+		mov	al, [SYM(BRAM_Ex_State)]
 	
 	.bad:
 		pop	ebx
@@ -496,7 +402,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	ecx
@@ -505,7 +411,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[_Z80_ReadB_Table + ebx]
+		call	[SYM(Z80_ReadB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -517,16 +423,16 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], Z80_STATE_BUSREQ
+		test	byte [SYM(Z80_State)], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
-		call	_main68k_readOdometer
-		sub	eax, [_Last_BUS_REQ_Cnt]
+		call	SYM(main68k_readOdometer)
+		sub	eax, [SYM(Last_BUS_REQ_Cnt)]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [_Last_BUS_REQ_St]
+		mov	al, [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -570,39 +476,39 @@ section .text align=64
 	align 8
 	
 	.MD_Spec:
-		mov	al, [_Game_Mode]
+		mov	al, [SYM(Game_Mode)]
 		add	al, al
-		or	al, [_CPU_Mode]
+		or	al, [SYM(CPU_Mode)]
 		shl	al, 6
 		pop	ebx
-		or	al, [_Gen_Version]
+		or	al, [SYM(Gen_Version)]
 		ret
 	
 	align 8
 	
 	.Pad_1:
-		call	_RD_Controller_1
+		call	SYM(RD_Controller_1)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Pad_2:
-		call	_RD_Controller_2
+		call	SYM(RD_Controller_2)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_1:
-		mov	al, [_Controller_1_COM]
+		mov	al, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	al, [_Controller_2_COM]
+		mov	al, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -636,14 +542,14 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl_L:
-		mov	al, [_S68K_State]
+		mov	al, [SYM(S68K_State)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.S68K_Ctrl_H:
-		mov	al, [_Int_Mask_S68K]
+		mov	al, [SYM(Int_Mask_S68K)]
 		and	al, 4
 		shl	al, 5
 		pop	ebx
@@ -652,25 +558,25 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl_L:
-		mov	eax, [_Bank_M68K]
-		mov	ebx, [_Ram_Word_State]
+		mov	eax, [SYM(Bank_M68K)]
+		mov	ebx, [SYM(Ram_Word_State)]
 		shr	eax, 11
 		and	ebx, 3
-		or	al, [_Memory_Control_Status + ebx]
+		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Memory_Ctrl_H:
-		mov	al, [_S68K_Mem_WP]
+		mov	al, [SYM(S68K_Mem_WP)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Mode_H:
-		mov	al, [_CDC.RS0 + 1]
+		mov	al, [SYM(CDC.RS0) + 1]
 		pop	ebx
 		ret
 	
@@ -684,14 +590,14 @@ section .text align=64
 	align 4
 	
 	.HINT_Vector_H:
-		mov	al, [_Rom_Data + 0x73]
+		mov	al, [SYM(Rom_Data) + 0x73]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.HINT_Vector_L:
-		mov	al, [_Rom_Data + 0x72]
+		mov	al, [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
@@ -719,28 +625,28 @@ section .text align=64
 	align 4
 	
 	.Stop_Watch_H:
-		mov	al, [_CDC.Stop_Watch + 3]
+		mov	al, [SYM(CDC.Stop_Watch) + 3]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Stop_Watch_L:
-		mov	al, [_CDC.Stop_Watch + 2]
+		mov	al, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_H:
-		mov	al, [_COMM.Flag + 1]
+		mov	al, [SYM(COMM.Flag) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_L:
-		mov	al, [_COMM.Flag]
+		mov	al, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -763,7 +669,7 @@ section .text align=64
 	.Com_D7_H:
 	.Com_D7_L:
 		xor	ebx, 1
-		mov	al, [_COMM.Command + ebx - 0x10]
+		mov	al, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -786,7 +692,7 @@ section .text align=64
 	.Com_S7_H:
 	.Com_S7_L:
 		xor	ebx, 1
-		mov	al, [_COMM.Status + ebx - 0x20]
+		mov	al, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -799,7 +705,7 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		mov	ax, [_Rom_Data + ebx]
+		mov	ax, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -809,11 +715,11 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	near M68K_Read_Word_Bad
 		
-		add	ebx, [_Bank_M68K]
-		cmp	byte [_S68K_State], 1		; BUS available ?
+		add	ebx, [SYM(Bank_M68K)]
+		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
-		mov	ax, [_Ram_Prg + ebx - 0x20000]
+		mov	ax, [SYM(Ram_Prg) + ebx - 0x20000]
 		pop	ebx
 		ret
 	
@@ -821,7 +727,7 @@ section .text align=64
 	
 	M68K_Read_Word_WRam:
 		cmp	ebx, 0x23FFFF
-		mov	eax, [_Ram_Word_State]
+		mov	eax, [SYM(Ram_Word_State)]
 		ja	short .bad
 		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
@@ -836,7 +742,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		mov	ax, [_Ram_Word_2M + ebx - 0x200000]
+		mov	ax, [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -846,7 +752,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		mov	ax, [_Ram_Word_1M + ebx - 0x200000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -856,7 +762,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		mov	ax, [_Ram_Word_1M + ebx - 0x200000 + 0x20000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -871,8 +777,8 @@ section .text align=64
 	
 	.Cell_Arranged_0:
 		xor	eax, eax
-		mov	ax, [_Cell_Conv_Tab + ebx - 0x220000]
-		mov	ax, [_Ram_Word_1M + eax * 2]
+		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	ax, [SYM(Ram_Word_1M) + eax * 2]
 		pop	ebx
 		ret
 	
@@ -880,8 +786,8 @@ section .text align=64
 	
 	.Cell_Arranged_1:
 		xor	eax, eax
-		mov	ax, [_Cell_Conv_Tab + ebx - 0x220000]
-		mov	ax, [_Ram_Word_1M + eax * 2 + 0x20000]
+		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	ax, [SYM(Ram_Word_1M) + eax * 2 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -892,7 +798,7 @@ section .text align=64
 		mov	ax, 0
 		jne	short .bad
 		
-		mov	ax, [_BRAM_Ex_Size]
+		mov	ax, [SYM(BRAM_Ex_Size)]
 	
 	.bad:
 		pop	ebx
@@ -905,12 +811,12 @@ section .text align=64
 		mov	ax, 0
 		ja	short .bad
 		
-		test	word [_BRAM_Ex_State], 0x100
+		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	ax, [_Ram_Backup_Ex + ebx]
+		mov	ax, [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -924,7 +830,7 @@ section .text align=64
 		jne	short .bad
 		
 		xor	ah, ah
-		mov	al, [_BRAM_Ex_State]
+		mov	al, [SYM(BRAM_Ex_State)]
 		
 	.bad:
 		pop	ebx
@@ -936,7 +842,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	ecx
@@ -945,7 +851,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[_Z80_ReadB_Table + ebx]
+		call	[SYM(Z80_ReadB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -957,41 +863,41 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], Z80_STATE_BUSREQ
+		test	byte [SYM(Z80_State)], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
-		call	_main68k_readOdometer
-		sub	eax, [_Last_BUS_REQ_Cnt]
+		call	SYM(main68k_readOdometer)
+		sub	eax, [SYM(Last_BUS_REQ_Cnt)]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [_Fake_Fetch]
-		mov	ah, [_Last_BUS_REQ_St]
+		mov	al, [SYM(Fake_Fetch)]
+		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		or	ah, 0x80
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.bus_taken:
-		mov	al, [_Fake_Fetch]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
 	
 	.z80_on:
-		mov	al, [_Fake_Fetch]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
@@ -1012,39 +918,39 @@ section .text align=64
 	align 8
 	
 	.MD_Spec:
-		mov	ax, [_Game_Mode]
+		mov	ax, [SYM(Game_Mode)]
 		add	ax, ax
-		or	ax, [_CPU_Mode]
+		or	ax, [SYM(CPU_Mode)]
 		shl	ax, 6
 		pop	ebx
-		or	ax, [_Gen_Version]		; on recupere les infos hardware de la machine
+		or	ax, [SYM(Gen_Version)]		; on recupere les infos hardware de la machine
 		ret
 	
 	align 8
 	
 	.Pad_1:
-		call	_RD_Controller_1
+		call	SYM(RD_Controller_1)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Pad_2:
-		call	_RD_Controller_2
+		call	SYM(RD_Controller_2)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_1:
-		mov	ax, [_Controller_1_COM]
+		mov	ax, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	ax, [_Controller_2_COM]
+		mov	ax, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -1079,8 +985,8 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl:
-		mov	ah, [_Int_Mask_S68K]
-		mov	al, [_S68K_State]
+		mov	ah, [SYM(Int_Mask_S68K)]
+		mov	al, [SYM(S68K_State)]
 		and	ah, 4
 		shl	ah, 5
 		pop	ebx
@@ -1089,19 +995,19 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl:
-		mov	eax, [_Bank_M68K]
-		mov	ebx, [_Ram_Word_State]
+		mov	eax, [SYM(Bank_M68K)]
+		mov	ebx, [SYM(Ram_Word_State)]
 		shr	eax, 11
 		and	ebx, 3
-		mov	ah, [_S68K_Mem_WP]
-		or	al, [_Memory_Control_Status + ebx]
+		mov	ah, [SYM(S68K_Mem_WP)]
+		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CDC_Mode:
-		mov	ah, [_CDC.RS0 + 1]
+		mov	ah, [SYM(CDC.RS0) + 1]
 		mov	al, 0
 		pop	ebx
 		ret
@@ -1109,14 +1015,14 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector:
-		mov	ax, [_Rom_Data + 0x72]
+		mov	ax, [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CDC_Host_Data:
-		call	_Read_CDC_Host_MAIN
+		call	SYM(Read_CDC_Host_MAIN)
 		pop	ebx
 		ret
 	
@@ -1130,14 +1036,14 @@ section .text align=64
 	align 8
 	
 	.Stop_Watch:
-		mov	ax, [_CDC.Stop_Watch + 2]
+		mov	ax, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Com_Flag:
-		mov	ax, [_COMM.Flag]
+		mov	ax, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -1151,7 +1057,7 @@ section .text align=64
 	.Com_D5:
 	.Com_D6:
 	.Com_D7:
-		mov	ax, [_COMM.Command + ebx - 0x10]
+		mov	ax, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -1165,7 +1071,7 @@ section .text align=64
 	.Com_S5:
 	.Com_S6:
 	.Com_S7:
-		mov	ax, [_COMM.Status + ebx - 0x20]
+		mov	ax, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -1180,12 +1086,12 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	short .bad
 		
-		add	ebx, [_Bank_M68K]
-		cmp	byte [_S68K_State], 1		; BUS available ?
+		add	ebx, [SYM(Bank_M68K)]
+		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	short .bad
 		
 		xor	ebx, 1
-		mov	[_Ram_Prg + ebx - 0x20000], al
+		mov	[SYM(Ram_Prg) + ebx - 0x20000], al
 	
 	.bad:
 		pop	ecx
@@ -1196,7 +1102,7 @@ section .text align=64
 	
 	M68K_Write_Byte_WRam:
 		cmp	ebx, 0x23FFFF
-		mov	ecx, [_Ram_Word_State]
+		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
 		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
@@ -1212,7 +1118,7 @@ section .text align=64
 	
 	.Word_Ram_2M:
 		xor	ebx, 1
-		mov	[_Ram_Word_2M + ebx - 0x200000], al
+		mov	[SYM(Ram_Word_2M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1223,7 +1129,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		xor	ebx, 1
-		mov	[_Ram_Word_1M + ebx - 0x200000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1235,7 +1141,7 @@ section .text align=64
 		ja	short .Cell_Arranged_1
 		
 		xor	ebx, 1
-		mov	[_Ram_Word_1M + ebx - 0x200000 + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1252,10 +1158,10 @@ section .text align=64
 	.Cell_Arranged_0:
 		shr	ebx, 1
 		mov	ecx, 0
-		mov	bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
 		and	ebx, 0xFFFF
-		mov	[_Ram_Word_1M + ebx * 2 + ecx], al
+		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1265,10 +1171,10 @@ section .text align=64
 	.Cell_Arranged_1:
 		shr	ebx, 1
 		mov	ecx, 0
-		mov	bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
 		and	ebx, 0xFFFF
-		mov	[_Ram_Word_1M + ebx * 2 + ecx + 0x20000], al
+		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx + 0x20000], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1279,12 +1185,12 @@ section .text align=64
 		cmp	ebx, 0x61FFFF
 		ja	short .bad
 		
-		cmp	word [_BRAM_Ex_State], 0x101
+		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	[_Ram_Backup_Ex + ebx], al
+		mov	[SYM(Ram_Backup_Ex) + ebx], al
 	
 	.bad:
 		pop	ecx
@@ -1297,7 +1203,7 @@ section .text align=64
 		cmp	ebx, 0x7FFFFF
 		jne	short .bad
 		
-		mov	[_BRAM_Ex_State], al
+		mov	[SYM(BRAM_Ex_State)], al
 	
 	.bad:
 		pop	ecx
@@ -1310,7 +1216,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	short .bad
 		
 		push	edx
@@ -1319,7 +1225,7 @@ section .text align=64
 		and	ecx, 0x7FFF
 		shr	ebx, 10
 		mov	edx, eax
-		call	[_Z80_WriteB_Table + ebx]
+		call	[SYM(Z80_WriteB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1339,12 +1245,12 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	ah, [_Z80_State]
-		mov	dword [_Controller_1_Counter], ecx
+		mov	ah, [SYM(Z80_State)]
+		mov	dword [SYM(Controller_1_Counter)], ecx
 		test	al, 1	; TODO: Should this be ah, Z80_STATE_ENABLED ?
-		mov	dword [_Controller_1_Delay], ecx
-		mov	dword [_Controller_2_Counter], ecx
-		mov	dword [_Controller_2_Delay], ecx
+		mov	dword [SYM(Controller_1_Delay)], ecx
+		mov	dword [SYM(Controller_2_Counter)], ecx
+		mov	dword [SYM(Controller_2_Delay)], ecx
 		jnz	short .deactivated
 		
 		test	ah, Z80_STATE_BUSREQ
@@ -1352,17 +1258,17 @@ section .text align=64
 		
 		or	ah, Z80_STATE_BUSREQ
 		push	edx
-		mov	[_Z80_State], ah
-		mov	ebx, [_Cycles_M68K]
-		call	_main68k_readOdometer
+		mov	[SYM(Z80_State)], ah
+		mov	ebx, [SYM(Cycles_M68K)]
+		call	SYM(main68k_readOdometer)
 		sub	ebx, eax
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
-		push	_M_Z80
-		call	_mdZ80_set_odo
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_set_odo)
 		add	esp, 8
 		pop	edx
 	
@@ -1374,21 +1280,21 @@ section .text align=64
 	align 16
 	
 	.deactivated:
-		call	_main68k_readOdometer
-		mov	cl, [_Z80_State]
-		mov	[_Last_BUS_REQ_Cnt], eax
+		call	SYM(main68k_readOdometer)
+		mov	cl, [SYM(Z80_State)]
+		mov	[SYM(Last_BUS_REQ_Cnt)], eax
 		test	cl, Z80_STATE_BUSREQ
-		setnz	[_Last_BUS_REQ_St]
+		setnz	[SYM(Last_BUS_REQ_St)]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [_Cycles_M68K]
+		mov	ebx, [SYM(Cycles_M68K)]
 		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
-		mov	[_Z80_State], cl
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
+		mov	[SYM(Z80_State)], cl
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
+		mov	ecx, SYM(M_Z80)
 		sub	edx, ebx
 		call	z80_Exec
 		pop	edx
@@ -1409,19 +1315,19 @@ section .text align=64
 		
 		push	edx
 		
-		push	_M_Z80
-		call	_mdZ80_reset
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_reset)
 		add	esp, 4
 		
-		or	byte [_Z80_State], Z80_STATE_RESET
-		call	_YM2612_Reset
+		or	byte [SYM(Z80_State)], Z80_STATE_RESET
+		call	SYM(YM2612_Reset)
 		pop	edx
 		pop	ecx
 		pop	ebx
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~Z80_STATE_RESET
+		and	byte [SYM(Z80_State)], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
@@ -1445,7 +1351,7 @@ section .text align=64
 	
 	.Pad_1:
 		push	eax
-		call	_WR_Controller_1
+		call	SYM(WR_Controller_1)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -1455,7 +1361,7 @@ section .text align=64
 	
 	.Pad_2:
 		push	eax
-		call	_WR_Controller_2
+		call	SYM(WR_Controller_2)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -1464,7 +1370,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	[_Controller_1_COM], al
+		mov	[SYM(Controller_1_COM)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1472,7 +1378,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_2:
-		mov	[_Controller_2_COM], al
+		mov	[SYM(Controller_2_COM)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1509,18 +1415,18 @@ section .text align=64
 	.S68K_Ctrl_L:
 		test	al, 1
 		jz	short .S68K_Reseting
-		test	byte [_S68K_State], 1
+		test	byte [SYM(S68K_State)], 1
 		jnz	short .S68K_Already_Running
 	
 	.S68K_Restart:
 		push	eax
-		call	_sub68k_reset
+		call	SYM(sub68k_reset)
 		pop	eax
 	
 	.S68K_Reseting:
 	.S68K_Already_Running:
 		and	al, 3
-		mov	[_S68K_State], al
+		mov	[SYM(S68K_State)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1530,12 +1436,12 @@ section .text align=64
 	.S68K_Ctrl_H:
 		test	al, 0x1
 		jz	.No_Process_INT2
-		test	byte [_Int_Mask_S68K], 0x4
+		test	byte [SYM(Int_Mask_S68K)], 0x4
 		jz	.No_Process_INT2
 		
 		push	dword -1
 		push	dword 2
-		call	_sub68k_interrupt
+		call	SYM(sub68k_interrupt)
 		add	esp, 8
 	
 	.No_Process_INT2:
@@ -1558,20 +1464,20 @@ section .text align=64
 		mov	ebx, eax
 		shr	eax, 1
 		and	ebx, 0xC0
-		test	byte [_Ram_Word_State], 0x2
+		test	byte [SYM(Ram_Word_State)], 0x2
 		jnz	short .Mode_1M
 	
 	.Mode_2M:
 		shl	ebx, 11
 		test	al, 1
-		mov	[_Bank_M68K], ebx
+		mov	[SYM(Bank_M68K)], ebx
 		jz	short .No_DMNA
 		
-		mov	byte [_Ram_Word_State], 1
-		call	_MS68K_Set_Word_Ram
+		mov	byte [SYM(Ram_Word_State)], 1
+		call	SYM(MS68K_Set_Word_Ram)
 	
 	.No_DMNA:
-		call	_M68K_Set_Prg_Ram
+		call	SYM(M68K_Set_Prg_Ram)
 		pop	ecx
 		pop	ebx
 		ret
@@ -1583,11 +1489,11 @@ section .text align=64
 		test	al, 1
 		jnz	short .no_swap
 		
-		or	word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
+		or	word [SYM(Memory_Control_Status) + 2], 0x0202		; DMNA bit = 1
 	
 	.no_swap:
-		mov	[_Bank_M68K], ebx
-		call	_M68K_Set_Prg_Ram
+		mov	[SYM(Bank_M68K)], ebx
+		call	SYM(M68K_Set_Prg_Ram)
 		pop	ecx
 		pop	ebx
 		ret
@@ -1595,7 +1501,7 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl_H:
-		mov	[_S68K_Mem_WP], al
+		mov	[SYM(S68K_Mem_WP)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1611,7 +1517,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector_H:
-		mov	[_Rom_Data + 0x73], al
+		mov	[SYM(Rom_Data) + 0x73], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1619,7 +1525,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector_L:
-		mov	[_Rom_Data + 0x72], al
+		mov	[SYM(Rom_Data) + 0x72], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1647,7 +1553,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Flag + 1], al
+		mov	[SYM(COMM.Flag) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1665,7 +1571,7 @@ section .text align=64
 		;popad
 		
 		rol	al, 1
-		mov	byte [_COMM.Flag + 1], al
+		mov	byte [SYM(COMM.Flag) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1698,7 +1604,7 @@ section .text align=64
 		;popad
 		
 		xor	ebx, 1
-		mov	[_COMM.Command + ebx - 0x10], al
+		mov	[SYM(COMM.Command) + ebx - 0x10], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1736,11 +1642,11 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	short .bad
 		
-		add	ebx, [_Bank_M68K]
-		cmp	byte [_S68K_State], 1		; BUS available ?
+		add	ebx, [SYM(Bank_M68K)]
+		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	short .bad
 		
-		mov	[_Ram_Prg + ebx - 0x20000], ax
+		mov	[SYM(Ram_Prg) + ebx - 0x20000], ax
 		
 	.bad:
 		pop	ecx
@@ -1751,7 +1657,7 @@ section .text align=64
 	
 	M68K_Write_Word_WRam:
 		cmp	ebx, 0x23FFFF
-		mov	ecx, [_Ram_Word_State]
+		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
 		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
@@ -1765,7 +1671,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		mov	[_Ram_Word_2M + ebx - 0x200000], ax
+		mov	[SYM(Ram_Word_2M) + ebx - 0x200000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -1776,7 +1682,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		mov	[_Ram_Word_1M + ebx - 0x200000], ax
+		mov	[SYM(Ram_Word_1M) + ebx - 0x200000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -1787,7 +1693,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		mov	[_Ram_Word_1M + ebx  - 0x200000 + 0x20000], ax
+		mov	[SYM(Ram_Word_1M) + ebx  - 0x200000 + 0x20000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -1802,20 +1708,20 @@ section .text align=64
 	align 16
 	
 	.Cell_Arranged_0:
-		mov	bx, [_Cell_Conv_Tab + ebx - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
 		and	ebx, 0xFFFF
 		pop	ecx
-		mov	[_Ram_Word_1M + ebx * 2], ax
+		mov	[SYM(Ram_Word_1M) + ebx * 2], ax
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Cell_Arranged_1:
-		mov	bx, [_Cell_Conv_Tab + ebx - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
 		and	ebx, 0xFFFF
 		pop	ecx
-		mov	[_Ram_Word_1M + ebx * 2 + 0x20000], ax
+		mov	[SYM(Ram_Word_1M) + ebx * 2 + 0x20000], ax
 		pop	ebx
 		ret
 	
@@ -1825,12 +1731,12 @@ section .text align=64
 		cmp	ebx, 0x61FFFF
 		ja	short .bad
 		
-		cmp	word [_BRAM_Ex_State], 0x101
+		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		and	ebx, 0x1FFFE
 		shr	ebx, 1
-		mov	[_Ram_Backup_Ex + ebx], ax
+		mov	[SYM(Ram_Backup_Ex) + ebx], ax
 		
 	.bad:
 		pop	ecx
@@ -1843,7 +1749,7 @@ section .text align=64
 		cmp	ebx, 0x7FFFFE
 		jne	short .bad
 		
-		mov	[_BRAM_Ex_State], al
+		mov	[SYM(BRAM_Ex_State)], al
 		
 	.bad:
 		pop	ecx
@@ -1856,17 +1762,17 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	edx
 		mov	ecx, ebx
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
-		mov	dh, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
+		mov	dh, al		; Potential bug: SYM(Z80_WriteB_Table) uses FASTCALL; this overwrites the "data" parameter.
 		shr	ebx, 10
-		mov	dl, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
-		call	[_Z80_WriteB_Table + ebx]
+		mov	dl, al		; Potential bug: SYM(Z80_WriteB_Table) uses FASTCALL; this overwrites the "data" parameter.
+		call	[SYM(Z80_WriteB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1879,12 +1785,12 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	al, [_Z80_State]
-		mov	dword [_Controller_1_Counter], ecx
+		mov	al, [SYM(Z80_State)]
+		mov	dword [SYM(Controller_1_Counter)], ecx
 		test	ah, 1	; TODO: Should this be al, Z80_STATE_ENABLED ?
-		mov	dword [_Controller_1_Delay], ecx
-		mov	dword [_Controller_2_Counter], ecx
-		mov	dword [_Controller_2_Delay], ecx
+		mov	dword [SYM(Controller_1_Delay)], ecx
+		mov	dword [SYM(Controller_2_Counter)], ecx
+		mov	dword [SYM(Controller_2_Delay)], ecx
 		jnz	short .deactivated
 		
 		test	al, Z80_STATE_BUSREQ
@@ -1892,17 +1798,17 @@ section .text align=64
 		
 		or	al, Z80_STATE_BUSREQ
 		push	edx
-		mov	[_Z80_State], al
-		mov	ebx, [_Cycles_M68K]
-		call	_main68k_readOdometer
+		mov	[SYM(Z80_State)], al
+		mov	ebx, [SYM(Cycles_M68K)]
+		call	SYM(main68k_readOdometer)
 		sub	ebx, eax
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
-		push	_M_Z80
-		call	_mdZ80_set_odo
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_set_odo)
 		add	esp, 8
 		pop	edx
 	
@@ -1914,21 +1820,21 @@ section .text align=64
 	align 16
 	
 	.deactivated:
-		call	_main68k_readOdometer
-		mov	cl, [_Z80_State]
-		mov	[_Last_BUS_REQ_Cnt], eax
+		call	SYM(main68k_readOdometer)
+		mov	cl, [SYM(Z80_State)]
+		mov	[SYM(Last_BUS_REQ_Cnt)], eax
 		test	cl, Z80_STATE_BUSREQ
-		setnz	[_Last_BUS_REQ_St]
+		setnz	[SYM(Last_BUS_REQ_St)]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [_Cycles_M68K]
+		mov	ebx, [SYM(Cycles_M68K)]
 		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
-		mov	[_Z80_State], cl
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
+		mov	[SYM(Z80_State)], cl
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
+		mov	ecx, SYM(M_Z80)
 		sub	edx, ebx
 		call	z80_Exec
 		pop	edx
@@ -1949,19 +1855,19 @@ section .text align=64
 		
 		push	edx
 		
-		push	_M_Z80
-		call	_mdZ80_reset
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_reset)
 		add	esp, 4
 		
-		or	byte [_Z80_State], Z80_STATE_RESET
-		call	_YM2612_Reset
+		or	byte [SYM(Z80_State)], Z80_STATE_RESET
+		call	SYM(YM2612_Reset)
 		pop	edx
 		pop	ecx
 		pop	ebx
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~Z80_STATE_RESET
+		and	byte [SYM(Z80_State)], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
@@ -1985,7 +1891,7 @@ section .text align=64
 	
 	.Pad_1:
 		push	eax
-		call	_WR_Controller_1
+		call	SYM(WR_Controller_1)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -1995,7 +1901,7 @@ section .text align=64
 	
 	.Pad_2:
 		push	eax
-		call	_WR_Controller_2
+		call	SYM(WR_Controller_2)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -2004,7 +1910,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	[_Controller_1_COM], ax
+		mov	[SYM(Controller_1_COM)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2012,7 +1918,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_2:
-		mov	[_Controller_2_COM], ax
+		mov	[SYM(Controller_2_COM)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2050,26 +1956,26 @@ section .text align=64
 	.S68K_Ctrl:
 		test	al, 1
 		jz	short .S68K_Reseting
-		test	byte [_S68K_State], 1
+		test	byte [SYM(S68K_State)], 1
 		jnz	short .S68K_Already_Running
 	
 	.S68K_Restart:
 		push	eax
-		call	_sub68k_reset
+		call	SYM(sub68k_reset)
 		pop 	ax
 	
 	.S68K_Reseting:
 	.S68K_Already_Running:
 		and	al, 3
 		test	ah, 1
-		mov	[_S68K_State], al
+		mov	[SYM(S68K_State)], al
 		jz	short .No_Process_INT2
-		test	byte [_Int_Mask_S68K], 0x4
+		test	byte [SYM(Int_Mask_S68K)], 0x4
 		jz	short .No_Process_INT2
 		
 		push	dword -1
 		push	dword 2
-		call	_sub68k_interrupt
+		call	SYM(sub68k_interrupt)
 		add	esp, 8
 	
 	.No_Process_INT2:
@@ -2089,24 +1995,24 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		mov	[_S68K_Mem_WP], ah
+		mov	[SYM(S68K_Mem_WP)], ah
 		mov	ebx, eax
 		shr	eax, 1
 		and	ebx, 0xC0
-		test	byte [_Ram_Word_State], 0x2
+		test	byte [SYM(Ram_Word_State)], 0x2
 		jnz	short .Mode_1M
 	
 	.Mode_2M:
 		shl	ebx, 11
 		test	al, 1
-		mov	[_Bank_M68K], ebx
+		mov	[SYM(Bank_M68K)], ebx
 		jz	short .No_DMNA
 		
-		mov	byte [_Ram_Word_State], 1
-		call	_MS68K_Set_Word_Ram
+		mov	byte [SYM(Ram_Word_State)], 1
+		call	SYM(MS68K_Set_Word_Ram)
 	
 	.No_DMNA:
-		call	_M68K_Set_Prg_Ram
+		call	SYM(M68K_Set_Prg_Ram)
 		pop	ecx
 		pop	ebx
 		ret
@@ -2118,11 +2024,11 @@ section .text align=64
 		test	al, 1
 		jnz	short .no_swap
 		
-		or	word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
+		or	word [SYM(Memory_Control_Status) + 2], 0x0202		; DMNA bit = 1
 	
 	.no_swap:
-		mov	[_Bank_M68K], ebx
-		call	_M68K_Set_Prg_Ram
+		mov	[SYM(Bank_M68K)], ebx
+		call	SYM(M68K_Set_Prg_Ram)
 		pop	ecx
 		pop	ebx
 		ret
@@ -2137,7 +2043,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector:
-		mov	[_Rom_Data + 0x72], ax
+		mov	[SYM(Rom_Data) + 0x72], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2163,7 +2069,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Flag + 1], ah
+		mov	[SYM(COMM.Flag) + 1], ah
 		pop	ecx
 		pop	ebx
 		ret
@@ -2187,7 +2093,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		mov	[_COMM.Command + ebx - 0x10], ax
+		mov	[SYM(COMM.Command) + ebx - 0x10], ax
 		pop	ecx
 		pop	ebx
 		ret

@@ -1,25 +1,27 @@
+;
+; Gens: SegaCD graphics functions.
+;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
+
 %include "nasmhead.inc"
-
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 ; macro MAKE_IMAGE_PIXEL
 ; construit un pixel de l'image destination (rotation/compression)
@@ -89,7 +91,7 @@
 			xor edi, 0x2800					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -105,7 +107,7 @@
 			xor edi, 0x2800					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -127,7 +129,7 @@
 			xor edi, 0x2800					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -144,7 +146,7 @@
 			xor edi, 0x2800					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -165,7 +167,7 @@
 			xor edi, 0x1000					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -181,7 +183,7 @@
 			xor edi, 0x1000					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -203,7 +205,7 @@
 			xor edi, 0x2800					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -220,7 +222,7 @@
 			xor edi, 0x2800					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -241,7 +243,7 @@
 			xor edi, 0x1000					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -257,7 +259,7 @@
 			xor edi, 0x1000					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -277,7 +279,7 @@
 			add eax, ebx
 			xor edi, 0x1000					; because byte swapped & flipped
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -292,7 +294,7 @@
 			add eax, ebx
 			xor edi, 0x1000					; because byte swapped & flipped
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc near %%Finish
 			shr bl, 4
 			jmp %%Finish
@@ -313,7 +315,7 @@
 			xor edi, 0x2800					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc short %%Finish
 			shr bl, 4
 			jmp short %%Finish
@@ -329,7 +331,7 @@
 			xor edi, 0x2800					; because byte swapped & flipped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc short %%Finish
 			shr bl, 4
 			jmp short %%Finish
@@ -349,7 +351,7 @@
 			xor edi, 0x1000					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc short %%Finish
 			shr bl, 4
 			jmp short %%Finish
@@ -364,7 +366,7 @@
 			xor edi, 0x1000					; because byte swapped
 			add eax, ebx
 			shr edi, 12
-			mov bl, [_Ram_Word_2M + edi + eax]	; pixel source
+			mov bl, [SYM(Ram_Word_2M) + edi + eax]	; pixel source
 			jc short %%Finish
 			shr bl, 4
 			jmp short %%Finish
@@ -519,7 +521,7 @@
 		shl ebx, 2
 		and ecx, 0xFFF8
 		mov [XD], eax
-		lea ecx, [_Ram_Word_2M + ecx * 4 + ebx]
+		lea ecx, [SYM(Ram_Word_2M) + ecx * 4 + ebx]
 		mov eax, [Rot_Comp.Reg_62]
 		mov [Buffer_Adr], ecx
 		and eax, 0x01FF
@@ -554,25 +556,18 @@
 
 section .bss align=64
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Ram_Word_2M		Ram_Word_2M
-		%define	_Ram_Word_State		Ram_Word_State
-		%define	_S68K_Mem_PM		S68K_Mem_PM
-		%define	_Int_Mask_S68K		Int_Mask_S68K
-	%endif
-	
-	extern _Ram_Word_2M
-	extern _Ram_Word_State
-	extern _S68K_Mem_PM
-	extern _Int_Mask_S68K
+	extern SYM(Ram_Word_2M)
+	extern SYM(Ram_Word_State)
+	extern SYM(S68K_Mem_PM)
+	extern SYM(Int_Mask_S68K)
 	
 ;	DECL Table_Rot_Time
 ;		resd 64
 
 	DECL Rot_Comp
 	DECL Rot_Comp.Reg_58
-	Stamp_Size	resd 1
+	Stamp_Size:
+		resd 1
 	DECL Rot_Comp.Reg_5A
 		resd 1
 	DECL Rot_Comp.Reg_5C
@@ -584,7 +579,8 @@ section .bss align=64
 	DECL Rot_Comp.Reg_62
 		resd 1
 	DECL Rot_Comp.Reg_64
-	V_Dot		resd 1
+	V_Dot:
+		resd 1
 	DECL Rot_Comp.Reg_66
 		resd 1
 	DECL Rotation_Running
@@ -672,7 +668,7 @@ section .text align=64
 		push ebx
 		push ecx
 
-		cmp byte [_Ram_Word_State], 1
+		cmp byte [SYM(Ram_Word_State)], 1
 		ja near .End
 
 		mov eax, [Rot_Comp.Reg_5C]
@@ -683,10 +679,10 @@ section .text align=64
 		mov [XD_Mul], eax
 
 		mov eax, [Rot_Comp.Reg_5E]
-		or ebx, [_S68K_Mem_PM]
+		or ebx, [SYM(S68K_Mem_PM)]
 		and eax, 0xFFF8
 		mov ecx, [Rot_Comp.Reg_60]
-		lea eax, [_Ram_Word_2M + eax * 4]
+		lea eax, [SYM(Ram_Word_2M) + eax * 4]
 		shr ecx, 3
 		mov [Buffer_Adr], eax
 
@@ -700,7 +696,7 @@ section .text align=64
 		and ecx, 0xFFFE
 		shr eax, 3
 
-		lea ecx, [_Ram_Word_2M + ecx * 4]
+		lea ecx, [SYM(Ram_Word_2M) + ecx * 4]
 		mov ebx, [Table_Jump_Rot + ebx * 4]
 		mov [Vector_Adr], ecx
 		mov [Jmp_Adr], ebx						; we save the jump address (for later use)
@@ -719,7 +715,7 @@ section .text align=64
 		jnz short .Dot_32
 
 		and eax, 0xFF80
-		lea eax, [_Ram_Word_2M + eax * 4]
+		lea eax, [SYM(Ram_Word_2M) + eax * 4]
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
@@ -727,7 +723,7 @@ section .text align=64
 
 	.Dot_32
 		and eax, 0xFFE0
-		lea eax, [_Ram_Word_2M + eax * 4]
+		lea eax, [SYM(Ram_Word_2M) + eax * 4]
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
@@ -737,7 +733,7 @@ section .text align=64
 		test ecx, 0x2
 		jnz short .Scr_16_Dot_32
 
-		lea eax, [_Ram_Word_2M + 0x20000]
+		lea eax, [SYM(Ram_Word_2M) + 0x20000]
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
@@ -745,7 +741,7 @@ section .text align=64
 
 	.Scr_16_Dot_32
 		and eax, 0xE000
-		lea eax, [_Ram_Word_2M + eax * 4]
+		lea eax, [SYM(Ram_Word_2M) + eax * 4]
 		mov [Stamp_Map_Adr], eax
 
 	align 4
@@ -767,7 +763,7 @@ section .text align=64
 		jnz short .GFX_Not_Completed
 
 		and dword [Stamp_Size], 0x7FFF
-		test byte [_Int_Mask_S68K], 0x02
+		test byte [SYM(Int_Mask_S68K)], 0x02
 		mov dword [Rot_Comp.Reg_64], 0			; GFX Completed
 		jz short .INT1_OFF_0
 
@@ -997,7 +993,7 @@ section .text align=64
 
 	GFX_Completed
 		and dword [Stamp_Size], 0x7FFF
-		test byte [_Int_Mask_S68K], 0x02
+		test byte [SYM(Int_Mask_S68K)], 0x02
 		mov dword [Rot_Comp.Reg_64], 0			; GFX Completed
 
 		jz short .INT1_OFF

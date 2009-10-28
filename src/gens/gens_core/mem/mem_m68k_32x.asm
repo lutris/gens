@@ -1,53 +1,42 @@
+;
+; Gens: Main 68000 memory management. (32X)
+;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
+
 %include "nasmhead.inc"
-
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_GENESIS 16
 %define PWM_BUF_SIZE 4
 
 section .bss align=64
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Controller_1_Counter	Controller_1_Counter
-		%define	_Controller_1_Delay	Controller_1_Delay
-		%define	_Controller_1_State	Controller_1_State
-		%define	_Controller_1_COM	Controller_1_COM
-		
-		%define	_Controller_2_Counter	Controller_2_Counter
-		%define	_Controller_2_Delay	Controller_2_Delay
-		%define	_Controller_2_State	Controller_2_State
-		%define	_Controller_2_COM	Controller_2_COM
-	%endif
+	extern SYM(Controller_1_Counter)
+	extern SYM(Controller_1_Delay)
+	extern SYM(Controller_1_State)
+	extern SYM(Controller_1_COM)
 	
-	extern _Controller_1_Counter
-	extern _Controller_1_Delay
-	extern _Controller_1_State
-	extern _Controller_1_COM
-	
-	extern _Controller_2_Counter
-	extern _Controller_2_Delay
-	extern _Controller_2_State
-	extern _Controller_2_COM
+	extern SYM(Controller_2_Counter)
+	extern SYM(Controller_2_Delay)
+	extern SYM(Controller_2_State)
+	extern SYM(Controller_2_COM)
 	
 	extern M_SH2
 	extern S_SH2
@@ -69,129 +58,60 @@ section .bss align=64
 	extern _32X_MINT
 	extern _32X_SINT
 	
-	; External Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	__32X_Palette_16B		_32X_Palette_16B
-		%define	__32X_Palette_32B		_32X_Palette_32B
-		
-		%define	__32X_VDP_Ram			_32X_VDP_Ram
-		%define __32X_VDP_CRam			_32X_VDP_CRam
-		
-		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
-		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
-		
-		%define	__32X_VDP			_32X_VDP
-		%define __32X_VDP.Mode			_32X_VDP.Mode
-		%define __32X_VDP.State			_32X_VDP.State
-		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
-		%define __32X_VDP.AF_St			_32X_VDP.AF_St
-		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
-		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
-	%endif
+	extern SYM(_32X_Palette_16B)
+	extern SYM(_32X_Palette_32B)
+	extern SYM(_32X_VDP_CRam_Adjusted)
+	extern SYM(_32X_VDP_CRam_Adjusted32)
+	extern SYM(_32X_VDP_Ram)
+	extern SYM(_32X_VDP_CRam)
+	extern SYM(_32X_VDP)
 	
-	extern __32X_Palette_16B
-	extern __32X_Palette_32B
-	extern __32X_VDP_CRam_Adjusted
-	extern __32X_VDP_CRam_Adjusted32
-	extern __32X_VDP_Ram
-	extern __32X_VDP_CRam
-	extern __32X_VDP
+	extern SYM(PWM_FIFO_R)
+	extern SYM(PWM_FIFO_L)
+	extern SYM(PWM_FULL_TAB)
+	extern SYM(PWM_RP_R)
+	extern SYM(PWM_WP_R)
+	extern SYM(PWM_RP_L)
+	extern SYM(PWM_WP_L)
+	extern SYM(PWM_Mode)
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define _PWM_FIFO_R PWM_FIFO_R
-		%define _PWM_FIFO_L PWM_FIFO_L
-		%define _PWM_FULL_TAB PWM_FULL_TAB
-		%define _PWM_RP_R PWM_RP_R
-		%define _PWM_WP_R PWM_WP_R
-		%define _PWM_RP_L PWM_RP_L
-		%define _PWM_WP_L PWM_WP_L
-		%define _PWM_Mode PWM_Mode
-	%endif
-
-	extern _PWM_FIFO_R
-	extern _PWM_FIFO_L
-	extern _PWM_FULL_TAB
-	extern _PWM_RP_R
-	extern _PWM_WP_R
-	extern _PWM_RP_L
-	extern _PWM_WP_L
-	extern _PWM_Mode
-	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define _PWM_Cycle_Tmp		PWM_Cycle_Tmp
-		%define _PWM_Int_Tmp		PWM_Int_Tmp
-		%define _PWM_FIFO_L_Tmp		PWM_FIFO_L_Tmp
-		%define _PWM_FIFO_R_Tmp		PWM_FIFO_R_Tmp
-	%endif
-
-	extern _PWM_Cycle_Tmp
-	extern _PWM_Int_Tmp
-	extern _PWM_FIFO_L_Tmp
-	extern _PWM_FIFO_R_Tmp
-	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_M_Z80			M_Z80
-		%define _Z80_State		Z80_State
-		%define _Last_BUS_REQ_Cnt	Last_BUS_REQ_Cnt
-		%define _Last_BUS_REQ_St	Last_BUS_REQ_St
-		
-		%define _Z80_M68K_Cycle_Tab	Z80_M68K_Cycle_Tab
-		%define _Rom_Data		Rom_Data
-		%define _Bank_M68K		Bank_M68K
-		%define _Fake_Fetch		Fake_Fetch
-		
-		%define _Game_Mode		Game_Mode
-		%define _CPU_Mode		CPU_Mode
-		%define _Gen_Version		Gen_Version
-		
-		%define _Cycles_M68K		Cycles_M68K
-		%define _Cycles_Z80		Cycles_Z80
-		
-		%define _SRAM_ON		SRAM_ON
-		%define _SRAM_Write		SRAM_Write
-	%endif
+	extern SYM(PWM_Cycle_Tmp)
+	extern SYM(PWM_Int_Tmp)
+	extern SYM(PWM_FIFO_L_Tmp)
+	extern SYM(PWM_FIFO_R_Tmp)
 	
 	; Z80 state.
 	Z80_STATE_ENABLED	equ (1 << 0)
 	Z80_STATE_BUSREQ	equ (1 << 1)
 	Z80_STATE_RESET		equ (1 << 2)
 	
-	extern _M_Z80
-	extern _Z80_State
-	extern _Last_BUS_REQ_Cnt
-	extern _Last_BUS_REQ_St
+	extern SYM(M_Z80)
+	extern SYM(Z80_State)
+	extern SYM(Last_BUS_REQ_Cnt)
+	extern SYM(Last_BUS_REQ_St)
 	
-	extern _Game_Mode
-	extern _CPU_Mode
-	extern _Gen_Version
+	extern SYM(Game_Mode)
+	extern SYM(CPU_Mode)
+	extern SYM(Gen_Version)
 	
-	extern _Z80_M68K_Cycle_Tab
-	extern _Rom_Data
-	extern _Bank_M68K
-	extern _Fake_Fetch
+	extern SYM(Z80_M68K_Cycle_Tab)
+	extern SYM(Rom_Data)
+	extern SYM(Bank_M68K)
+	extern SYM(Fake_Fetch)
 	
-	extern _Cycles_M68K
-	extern _Cycles_Z80
+	extern SYM(Cycles_M68K)
+	extern SYM(Cycles_Z80)
 	
-	extern _SRAM_ON
-	extern _SRAM_Write
-	
-	; Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define __32X_Genesis_Rom	_32X_Genesis_Rom
-		%define _Bank_SH2		Bank_SH2
-	%endif
+	extern SYM(SRAM_ON)
+	extern SYM(SRAM_Write)
 	
 	; 32X MC68000 firmware
-	global __32X_Genesis_Rom
-	__32X_Genesis_Rom:
+	global SYM(_32X_Genesis_Rom)
+	SYM(_32X_Genesis_Rom):
 		resb 1024
 	
-	global _Bank_SH2
-	_Bank_SH2:
+	global SYM(Bank_SH2)
+	SYM(Bank_SH2):
 		resd 1
 	
 	struc vx
@@ -325,30 +245,8 @@ section .rodata align=64
 	
 section .text align=64
 	
-	; External symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define _Z80_ReadB_Table		Z80_ReadB_Table
-		%define _Z80_WriteB_Table		Z80_WriteB_Table
-		
-		%define _mdZ80_reset			mdZ80_reset
-		%define _mdZ80_set_odo			mdZ80_set_odo
-		
-		%define _RD_Controller_1		RD_Controller_1
-		%define _RD_Controller_2		RD_Controller_2
-		%define _WR_Controller_1		WR_Controller_1
-		%define _WR_Controller_2		WR_Controller_2
-		
-		%define _YM2612_Reset			YM2612_Reset
-		
-		%define _M68K_32X_Mode			M68K_32X_Mode
-		%define _M68K_Set_32X_Rom_Bank		M68K_Set_32X_Rom_Bank
-		%define __32X_Set_FB			_32X_Set_FB
-		
-		%define _PWM_Set_Cycle			PWM_Set_Cycle
-	%endif
-	
-	extern _Z80_ReadB_Table
-	extern _Z80_WriteB_Table
+	extern SYM(Z80_ReadB_Table)
+	extern SYM(Z80_WriteB_Table)
 	
 	extern M68K_Read_Byte_Rom0
 	extern M68K_Read_Byte_Rom1
@@ -384,27 +282,27 @@ section .text align=64
 	extern M68K_Write_Word_VDP
 	extern M68K_Write_Word_Ram
 	
-	extern _main68k_readOdometer
-	extern _mdZ80_reset
+	extern SYM(main68k_readOdometer)
+	extern SYM(mdZ80_reset)
 	extern z80_Exec
-	extern _mdZ80_set_odo
+	extern SYM(mdZ80_set_odo)
 	
 	extern SH2_Reset
 	extern SH2_Interrupt
 	extern SH2_DMA0_Request
 	
-	extern _YM2612_Reset
+	extern SYM(YM2612_Reset)
 	
-	extern _RD_Controller_1
-	extern _RD_Controller_2 
-	extern _WR_Controller_1
-	extern _WR_Controller_2
+	extern SYM(RD_Controller_1)
+	extern SYM(RD_Controller_2)
+	extern SYM(WR_Controller_1)
+	extern SYM(WR_Controller_2)
 	
-	extern _M68K_32X_Mode
-	extern _M68K_Set_32X_Rom_Bank
-	extern __32X_Set_FB
+	extern SYM(M68K_32X_Mode)
+	extern SYM(M68K_Set_32X_Rom_Bank)
+	extern SYM(_32X_Set_FB)
 	
-	extern _PWM_Set_Cycle
+	extern SYM(PWM_Set_Cycle)
 	
 	; 32X extended Read Byte
 	; *******************************************
@@ -414,7 +312,7 @@ section .text align=64
 	M68K_Read_Byte_Bios_32X:
 		and	ebx, 0x3FF
 		xor	ebx, byte 1
-		mov	al, [__32X_Genesis_Rom + ebx]
+		mov	al, [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -425,7 +323,7 @@ section .text align=64
 		jae	short .Rom
 		
 		xor	ebx, byte 1
-		mov	al, [__32X_Genesis_Rom + ebx]
+		mov	al, [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -433,7 +331,7 @@ section .text align=64
 	
 	.Rom:
 		xor	ebx, byte 1
-		mov	al, [_Rom_Data + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -443,7 +341,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	short .bad
 		
 		push	ecx
@@ -452,7 +350,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[_Z80_ReadB_Table + ebx]
+		call	[SYM(Z80_ReadB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -471,16 +369,16 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], Z80_STATE_BUSREQ
+		test	byte [SYM(Z80_State)], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
-		call 	_main68k_readOdometer
-		sub	eax, [_Last_BUS_REQ_Cnt]
+		call 	SYM(main68k_readOdometer)
+		sub	eax, [SYM(Last_BUS_REQ_Cnt)]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		mov	al, [_Last_BUS_REQ_St]
+		mov	al, [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -531,25 +429,25 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
-		mov	al, [_Game_Mode]
+		mov	al, [SYM(Game_Mode)]
 		add	al, al
-		or	al, [_CPU_Mode]
+		or	al, [SYM(CPU_Mode)]
 		shl	al, 6
 		pop	ebx
-		or	al, [_Gen_Version]
+		or	al, [SYM(Gen_Version)]
 		ret
 	
 	align 8
 	
 	.Pad_1:
-		call	_RD_Controller_1
+		call	SYM(RD_Controller_1)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Pad_2:
-		call	_RD_Controller_2
+		call	SYM(RD_Controller_2)
 		pop	ebx
 		ret
 	
@@ -563,14 +461,14 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	al, [_Controller_1_COM]
+		mov	al, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	al, [_Controller_2_COM]
+		mov	al, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -643,7 +541,7 @@ section .text align=64
 	align 8
 	
 	._32X_Bank:
-		mov	al, [_Bank_SH2]
+		mov	al, [SYM(Bank_SH2)]
 		pop	ebx
 		ret
 	
@@ -669,55 +567,55 @@ section .text align=64
 	align 8
 	
 	._32X_PWM_Cont_H:
-		mov	al, [_PWM_Mode + 1]
+		mov	al, [SYM(PWM_Mode) + 1]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cont_L:
-		mov	al, [_PWM_Mode + 0]
+		mov	al, [SYM(PWM_Mode) + 0]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cycle_H:
-		mov	al, [_PWM_Cycle_Tmp + 1]
+		mov	al, [SYM(PWM_Cycle_Tmp) + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_PWM_Cycle_L:
-		mov	al, [_PWM_Cycle_Tmp + 0]
+		mov	al, [SYM(PWM_Cycle_Tmp) + 0]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_L:
-		mov	ebx, [_PWM_RP_L]
-		mov	eax, [_PWM_WP_L]
-		mov	al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_L)]
+		mov	eax, [SYM(PWM_WP_L)]
+		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_R:
-		mov	ebx, [_PWM_RP_R]
-		mov	eax, [_PWM_WP_R]
-		mov	al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_R)]
+		mov	eax, [SYM(PWM_WP_R)]
+		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_C:
-		mov	ebx, [_PWM_RP_L]
-		mov	eax, [_PWM_WP_L]
-		mov	al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_L)]
+		mov	eax, [SYM(PWM_WP_L)]
+		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
@@ -743,72 +641,72 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode_H:
-		mov	al, [__32X_VDP + vx.Mode + 1]
+		mov	al, [SYM(_32X_VDP) + vx.Mode + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_Mode_L:
-		mov	al, [__32X_VDP + vx.Mode + 0]
+		mov	al, [SYM(_32X_VDP) + vx.Mode + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_Shift:
-		mov	al, [__32X_VDP + vx.Mode + 2]
+		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Len_L:
-		mov	al, [__32X_VDP + vx.AF_Len + 0]
+		mov	al, [SYM(_32X_VDP) + vx.AF_Len + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_St_H:
-		mov	al, [__32X_VDP + vx.AF_St + 1]
+		mov	al, [SYM(_32X_VDP) + vx.AF_St + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_St_L:
-		mov	al, [__32X_VDP + vx.AF_St + 0]
+		mov	al, [SYM(_32X_VDP) + vx.AF_St + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data_H:
-		mov	al, [__32X_VDP + vx.AF_Data + 1]
+		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data_L:
-		mov	al, [__32X_VDP + vx.AF_Data + 0]
+		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_State_H:
-		mov	al, [__32X_VDP + vx.State + 1]
+		mov	al, [SYM(_32X_VDP) + vx.State + 1]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_State_L:
-		mov	al, [__32X_VDP + vx.State]
+		mov	al, [SYM(_32X_VDP) + vx.State]
 		xor	al, 2
-		mov	[__32X_VDP + vx.State], al
+		mov	[SYM(_32X_VDP) + vx.State], al
 		pop	ebx
 		ret
 	
@@ -824,7 +722,7 @@ section .text align=64
 	DECL M68K_Read_Byte_32X_FB0
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
-		mov	al, [__32X_VDP_Ram + ebx]
+		mov	al, [SYM(_32X_VDP_Ram) + ebx]
 		pop	ebx
 		ret
 	
@@ -833,7 +731,7 @@ section .text align=64
 	DECL M68K_Read_Byte_32X_FB1
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
-		mov	al, [__32X_VDP_Ram + ebx + 0x20000]
+		mov	al, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
 		pop	ebx
 		ret
 	
@@ -844,7 +742,7 @@ section .text align=64
 	
 	M68K_Read_Word_Bios_32X:
 		and	ebx, 0xFE
-		mov	ax, [__32X_Genesis_Rom + ebx]
+		mov	ax, [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -854,14 +752,14 @@ section .text align=64
 		cmp	ebx, 0x100
 		jae	short .Rom
 		
-		mov	ax, [__32X_Genesis_Rom + ebx]
+		mov	ax, [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Rom:
-		mov	ax, [_Rom_Data + ebx]
+		mov	ax, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -871,7 +769,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	ecx
@@ -880,7 +778,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[_Z80_ReadB_Table + ebx]
+		call	[SYM(Z80_ReadB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -892,41 +790,41 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [_Z80_State], Z80_STATE_BUSREQ
+		test	byte [SYM(Z80_State)], Z80_STATE_BUSREQ
 		jnz	short .z80_on
 	
 	.z80_off:
-		call	_main68k_readOdometer
-		sub	eax, [_Last_BUS_REQ_Cnt]
+		call	SYM(main68k_readOdometer)
+		sub	eax, [SYM(Last_BUS_REQ_Cnt)]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 
-		mov	al, [_Fake_Fetch]
-		mov	ah, [_Last_BUS_REQ_St]
+		mov	al, [SYM(Fake_Fetch)]
+		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		add	ah, 0x80
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.bus_taken:
-		mov	al, [_Fake_Fetch]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
 	
 	.z80_on:
-		mov	al, [_Fake_Fetch]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
-		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[SYM(Fake_Fetch)], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
@@ -961,25 +859,25 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
-		mov	eax, [_Game_Mode]
+		mov	eax, [SYM(Game_Mode)]
 		add	eax, eax
-		or	eax, [_CPU_Mode]
+		or	eax, [SYM(CPU_Mode)]
 		shl	eax, 6
 		pop	ebx
-		or	eax, [_Gen_Version]		; on recupere les infos hardware de la machine
+		or	eax, [SYM(Gen_Version)]		; on recupere les infos hardware de la machine
 		ret
 	
 	align 8
 	
 	.Pad_1:
-		call	_RD_Controller_1
+		call	SYM(RD_Controller_1)
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Pad_2:
-		call	_RD_Controller_2
+		call	SYM(RD_Controller_2)
 		pop	ebx
 		ret
 	
@@ -1000,14 +898,14 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	eax, [_Controller_1_COM]
+		mov	eax, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	eax, [_Controller_2_COM]
+		mov	eax, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -1066,7 +964,7 @@ section .text align=64
 	align 16
 	
 	._32X_Bank:
-		mov	al, [_Bank_SH2]
+		mov	al, [SYM(Bank_SH2)]
 		xor	ah, ah
 		pop	ebx
 		ret
@@ -1136,41 +1034,41 @@ section .text align=64
 	align 8
 	
 	._32X_PWM_Cont:
-		mov	ax, [_PWM_Mode]
+		mov	ax, [SYM(PWM_Mode)]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cycle:
-		mov	ax, [_PWM_Cycle_Tmp]
+		mov	ax, [SYM(PWM_Cycle_Tmp)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_L:
-		mov	ebx, [_PWM_RP_L]
-		mov	eax, [_PWM_WP_L]
-		mov	 ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_L)]
+		mov	eax, [SYM(PWM_WP_L)]
+		mov	 ah, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_R:
-		mov	ebx, [_PWM_RP_R]
-		mov	eax, [_PWM_WP_R]
-		mov	ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_R)]
+		mov	eax, [SYM(PWM_WP_R)]
+		mov	ah, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_PWM_Pulse_C:
-		mov	ebx, [_PWM_RP_L]
-		mov	eax, [_PWM_WP_L]
-		mov	ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
+		mov	ebx, [SYM(PWM_RP_L)]
+		mov	eax, [SYM(PWM_WP_L)]
+		mov	ah, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
@@ -1195,14 +1093,14 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode:
-		mov	ax, [__32X_VDP + vx.Mode]
+		mov	ax, [SYM(_32X_VDP) + vx.Mode]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_Shift:
-		mov	al, [__32X_VDP + vx.Mode + 2]
+		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
 		xor	ah, ah
 		pop	ebx
 		ret
@@ -1210,7 +1108,7 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_AF_Len:
-		mov	al, [__32X_VDP + vx.AF_Len]
+		mov	al, [SYM(_32X_VDP) + vx.AF_Len]
 		xor	ah, ah
 		pop	ebx
 		ret
@@ -1218,23 +1116,23 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_AF_St:
-		mov	ax, [__32X_VDP + vx.AF_St]
+		mov	ax, [SYM(_32X_VDP) + vx.AF_St]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data:
-		mov	ax, [__32X_VDP + vx.AF_Data]
+		mov	ax, [SYM(_32X_VDP) + vx.AF_Data]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_State:
-		mov	ax, [__32X_VDP + vx.State]
+		mov	ax, [SYM(_32X_VDP) + vx.State]
 		xor	ax, byte 2
-		mov	[__32X_VDP + vx.State], ax
+		mov	[SYM(_32X_VDP) + vx.State], ax
 		pop	ebx
 		ret
 	
@@ -1251,7 +1149,7 @@ section .text align=64
 		cmp	ebx, 0xA15400
 		jae	short ._32X_bad
 		
-		mov	ax, [__32X_VDP_CRam + ebx - 0xA15200]
+		mov	ax, [SYM(_32X_VDP_CRam) + ebx - 0xA15200]
 		pop	ebx
 		ret
 	
@@ -1259,7 +1157,7 @@ section .text align=64
 	
 	DECL M68K_Read_Word_32X_FB0
 		and	ebx, 0x1FFFE
-		mov	ax, [__32X_VDP_Ram + ebx]
+		mov	ax, [SYM(_32X_VDP_Ram) + ebx]
 		pop	ebx
 		ret
 	
@@ -1267,7 +1165,7 @@ section .text align=64
 	
 	DECL M68K_Read_Word_32X_FB1
 		and	ebx, 0x1FFFE
-		mov	ax, [__32X_VDP_Ram + ebx + 0x20000]
+		mov	ax, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
 		pop	ebx
 		ret
 	
@@ -1280,7 +1178,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	short .bad
 		
 		push	edx
@@ -1289,7 +1187,7 @@ section .text align=64
 		and	ecx, 0x7FFF
 		shr	ebx, 10
 		mov	edx, eax
-		call	[_Z80_WriteB_Table + ebx]
+		call	[SYM(Z80_WriteB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1309,12 +1207,12 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	ah, [_Z80_State]
-		mov	dword [_Controller_1_Counter], ecx
+		mov	ah, [SYM(Z80_State)]
+		mov	dword [SYM(Controller_1_Counter)], ecx
 		test	al, 1	; TODO: Should this be ah, Z80_STATE_ENABLED ?
-		mov	dword [_Controller_1_Delay], ecx
-		mov	dword [_Controller_2_Counter], ecx
-		mov	dword [_Controller_2_Delay], ecx
+		mov	dword [SYM(Controller_1_Delay)], ecx
+		mov	dword [SYM(Controller_2_Counter)], ecx
+		mov	dword [SYM(Controller_2_Delay)], ecx
 		jnz	short .deactivated
 		
 		test	ah, Z80_STATE_BUSREQ
@@ -1322,17 +1220,17 @@ section .text align=64
 		
 		or	ah, Z80_STATE_BUSREQ
 		push	edx
-		mov	[_Z80_State], ah
-		mov	ebx, [_Cycles_M68K]
-		call	_main68k_readOdometer
+		mov	[SYM(Z80_State)], ah
+		mov	ebx, [SYM(Cycles_M68K)]
+		call	SYM(main68k_readOdometer)
 		sub	ebx, eax
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
-		push	_M_Z80
-		call	_mdZ80_set_odo
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_set_odo)
 		add	esp, 8
 		pop	edx
 	
@@ -1344,21 +1242,21 @@ section .text align=64
 	align 16
 	
 	.deactivated:
-		call	_main68k_readOdometer
-		mov	cl, [_Z80_State]
-		mov	[_Last_BUS_REQ_Cnt], eax
+		call	SYM(main68k_readOdometer)
+		mov	cl, [SYM(Z80_State)]
+		mov	[SYM(Last_BUS_REQ_Cnt)], eax
 		test	cl, Z80_STATE_BUSREQ
-		setnz	[_Last_BUS_REQ_St]
+		setnz	[SYM(Last_BUS_REQ_St)]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [_Cycles_M68K]
+		mov	ebx, [SYM(Cycles_M68K)]
 		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
-		mov	[_Z80_State], cl
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
+		mov	[SYM(Z80_State)], cl
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
+		mov	ecx, SYM(M_Z80)
 		sub	edx, ebx
 		call	z80_Exec
 		pop	edx
@@ -1379,19 +1277,19 @@ section .text align=64
 		
 		push	edx
 		
-		push	_M_Z80
-		call	_mdZ80_reset
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_reset)
 		add	esp, 4
 		
-		or	byte [_Z80_State], Z80_STATE_RESET
-		call	_YM2612_Reset
+		or	byte [SYM(Z80_State)], Z80_STATE_RESET
+		call	SYM(YM2612_Reset)
 		pop	edx
 		pop	ecx
 		pop	ebx
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~Z80_STATE_RESET
+		and	byte [SYM(Z80_State)], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
@@ -1421,7 +1319,7 @@ section .text align=64
 	
 	.Pad_1:
 		push	eax
-		call	_WR_Controller_1
+		call	SYM(WR_Controller_1)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1431,7 +1329,7 @@ section .text align=64
 	
 	.Pad_2:
 		push	eax
-		call	_WR_Controller_2
+		call	SYM(WR_Controller_2)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1440,7 +1338,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	[_Controller_1_COM], al
+		mov	[SYM(Controller_1_COM)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1448,7 +1346,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_2:
-		mov	[_Controller_2_COM], al
+		mov	[SYM(Controller_2_COM)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1477,9 +1375,9 @@ section .text align=64
 	
 	.bank_0:
 		test	al, 1
-		setnz	[_SRAM_ON]
+		setnz	[SYM(SRAM_ON)]
 		test	al, 2
-		setz	[_SRAM_Write]
+		setz	[SYM(SRAM_Write)]
 		pop	ecx
 		pop	ebx
 		ret
@@ -1536,7 +1434,7 @@ section .text align=64
 		xor	ah, al
 		pop	ebx
 		mov	[_32X_FM], al
-		jnz	near __32X_Set_FB
+		jnz	near SYM(_32X_Set_FB)
 		ret
 	
 	align 16
@@ -1565,7 +1463,7 @@ section .text align=64
 		jz	short .no_32X_change
 		
 		mov	[_32X_ADEN], bl
-		call	_M68K_32X_Mode
+		call	SYM(M68K_32X_Mode)
 	
 	.no_32X_change:
 		pop	ecx
@@ -1607,8 +1505,8 @@ section .text align=64
 	
 	._32X_Bank:
 		and	al, 3
-		mov	[_Bank_SH2], al
-		call	_M68K_Set_32X_Rom_Bank
+		mov	[SYM(Bank_SH2)], al
+		call	SYM(M68K_Set_32X_Rom_Bank)
 		pop	ecx
 		pop	ebx
 		ret
@@ -1625,7 +1523,7 @@ section .text align=64
 		jz	short .RV_not_changed
 		
 		mov	[_32X_RV], al
-		call	_M68K_32X_Mode
+		call	SYM(M68K_32X_Mode)
 	
 	.RV_not_changed:
 		cmp	bx, 0x0004
@@ -1654,7 +1552,7 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Cont_L:
-		mov	[_PWM_Mode + 0], al
+		mov	[SYM(PWM_Mode) + 0], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1662,11 +1560,11 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Cycle_H:
-		mov	cl, [_PWM_Cycle_Tmp + 0]
-		mov	[_PWM_Cycle_Tmp + 1], al
+		mov	cl, [SYM(PWM_Cycle_Tmp) + 0]
+		mov	[SYM(PWM_Cycle_Tmp) + 1], al
 		mov	ch, al
 		push	ecx
-		call	_PWM_Set_Cycle
+		call	SYM(PWM_Set_Cycle)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -1675,11 +1573,11 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Cycle_L:
-		mov	ch, [_PWM_Cycle_Tmp + 1]
-		mov	[_PWM_Cycle_Tmp + 0], al
+		mov	ch, [SYM(PWM_Cycle_Tmp) + 1]
+		mov	[SYM(PWM_Cycle_Tmp) + 0], al
 		mov	cl, al
 		push	ecx
-		call	_PWM_Set_Cycle
+		call	SYM(PWM_Set_Cycle)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -1688,7 +1586,7 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_L_H:
-		mov	[_PWM_FIFO_L_Tmp + 1], al
+		mov	[SYM(PWM_FIFO_L_Tmp) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1696,16 +1594,16 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_L_L:
-		mov	ecx, [_PWM_RP_L]
-		mov	ebx, [_PWM_WP_L]
-		mov	ah, [_PWM_FIFO_L_Tmp + 1]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_L)]
+		mov	ebx, [SYM(PWM_WP_L)]
+		mov	ah, [SYM(PWM_FIFO_L_Tmp) + 1]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_L_full
 		
-		mov	[_PWM_FIFO_L + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_L) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_L], ebx
+		mov	[SYM(PWM_WP_L)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -1720,7 +1618,7 @@ section .text align=64
 	align 8
 	
 	._32X_PWM_Pulse_R_H:
-		mov	[_PWM_FIFO_R_Tmp + 1], al
+		mov	[SYM(PWM_FIFO_R_Tmp) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1728,16 +1626,16 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_R_L:
-		mov	ecx, [_PWM_RP_R]
-		mov	ebx, [_PWM_WP_R]
-		mov	ah, [_PWM_FIFO_R_Tmp + 1]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_R)]
+		mov	ebx, [SYM(PWM_WP_R)]
+		mov	ah, [SYM(PWM_FIFO_R_Tmp) + 1]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_R_full
 		
-		mov	[_PWM_FIFO_R + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_R) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_R], ebx
+		mov	[SYM(PWM_WP_R)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -1752,7 +1650,7 @@ section .text align=64
 	align 8
 	
 	._32X_PWM_Pulse_C_H:
-		mov	[_PWM_FIFO_L_Tmp + 1], al
+		mov	[SYM(PWM_FIFO_L_Tmp) + 1], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1760,18 +1658,18 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_C_L:
-		mov	ecx, [_PWM_RP_L]
-		mov	ebx, [_PWM_WP_L]
-		mov	ah, [_PWM_FIFO_L_Tmp + 1]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_L)]
+		mov	ebx, [SYM(PWM_WP_L)]
+		mov	ah, [SYM(PWM_FIFO_L_Tmp) + 1]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_C_full
 		
-		mov	[_PWM_FIFO_L + ebx * 2], ax
-		mov	[_PWM_FIFO_R + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_L) + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_R) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_L], ebx
-		mov	[_PWM_WP_R], ebx
+		mov	[SYM(PWM_WP_L)], ebx
+		mov	[SYM(PWM_WP_R)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -1813,7 +1711,7 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode:
-		mov	[__32X_VDP + vx.Mode], al
+		mov	[SYM(_32X_VDP) + vx.Mode], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1821,7 +1719,7 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_Shift:
-		mov	[__32X_VDP + vx.Mode + 2], al
+		mov	[SYM(_32X_VDP) + vx.Mode + 2], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1829,7 +1727,7 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_AF_Len:
-		mov	[__32X_VDP + vx.AF_Len], al
+		mov	[SYM(_32X_VDP) + vx.AF_Len], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1837,18 +1735,18 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_State:
-		mov	bh, [__32X_VDP + vx.Mode + 0]
-		mov	bl, [__32X_VDP + vx.State + 1]
+		mov	bh, [SYM(_32X_VDP) + vx.Mode + 0]
+		mov	bl, [SYM(_32X_VDP) + vx.State + 1]
 		test	bh, 3
-		mov	[__32X_VDP + vx.State + 2], al
+		mov	[SYM(_32X_VDP) + vx.State + 2], al
 		jz	short ._32X_VDP_blank
 		
 		test	bl, bl
 		jns	short ._32X_VDP_State_nvb
 	
 	._32X_VDP_blank:
-		mov	[__32X_VDP + vx.State + 0], al
-		call	__32X_Set_FB
+		mov	[SYM(_32X_VDP) + vx.State + 0], al
+		call	SYM(_32X_Set_FB)
 	
 	._32X_VDP_State_nvb:
 		pop	ecx
@@ -1870,7 +1768,7 @@ section .text align=64
 		jz	short .blank
 		
 		xor	ebx, byte 1
-		mov	[__32X_VDP_Ram + ebx], al
+		mov	[SYM(_32X_VDP_Ram) + ebx], al
 	
 	.blank:
 		pop	ecx
@@ -1885,7 +1783,7 @@ section .text align=64
 		jz	short .blank
 		
 		xor	ebx, byte 1
-		mov	[__32X_VDP_Ram + ebx + 0x20000], al
+		mov	[SYM(_32X_VDP_Ram) + ebx + 0x20000], al
 	
 	.blank:
 		pop	ecx
@@ -1901,17 +1799,17 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [_Z80_State], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
+		test	byte [SYM(Z80_State)], (Z80_STATE_BUSREQ | Z80_STATE_RESET)
 		jnz	near .bad
 		
 		push	edx
 		mov	ecx, ebx
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
-		mov	dh, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
+		mov	dh, al		; Potential bug: SYM(Z80_WriteB_Table) uses FASTCALL; this overwrites the "data" parameter.
 		shr	ebx, 10
-		mov	dl, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
-		call	[_Z80_WriteB_Table + ebx]
+		mov	dl, al		; Potential bug: SYM(Z80_WriteB_Table) uses FASTCALL; this overwrites the "data" parameter.
+		call	[SYM(Z80_WriteB_Table) + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1924,12 +1822,12 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	al, [_Z80_State]
-		mov	dword [_Controller_1_Counter], ecx
+		mov	al, [SYM(Z80_State)]
+		mov	dword [SYM(Controller_1_Counter)], ecx
 		test	ah, 1	; TODO: Should this be al, Z80_STATE_ENABLED ?
-		mov	dword [_Controller_1_Delay], ecx
-		mov	dword [_Controller_2_Counter], ecx
-		mov	dword [_Controller_2_Delay], ecx
+		mov	dword [SYM(Controller_1_Delay)], ecx
+		mov	dword [SYM(Controller_2_Counter)], ecx
+		mov	dword [SYM(Controller_2_Delay)], ecx
 		jnz	short .deactivated
 		
 		test	al, Z80_STATE_BUSREQ
@@ -1937,17 +1835,17 @@ section .text align=64
 		
 		or	al, Z80_STATE_BUSREQ
 		push	edx
-		mov	[_Z80_State], al
-		mov	ebx, [_Cycles_M68K]
-		call	_main68k_readOdometer
+		mov	[SYM(Z80_State)], al
+		mov	ebx, [SYM(Cycles_M68K)]
+		call	SYM(main68k_readOdometer)
 		sub	ebx, eax
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
-		push	_M_Z80
-		call	_mdZ80_set_odo
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_set_odo)
 		add	esp, 8
 		pop	edx
 	
@@ -1959,21 +1857,21 @@ section .text align=64
 	align 16
 	
 	.deactivated:
-		call	_main68k_readOdometer
-		mov	cl, [_Z80_State]
-		mov	[_Last_BUS_REQ_Cnt], eax
+		call	SYM(main68k_readOdometer)
+		mov	cl, [SYM(Z80_State)]
+		mov	[SYM(Last_BUS_REQ_Cnt)], eax
 		test	cl, Z80_STATE_BUSREQ
-		setnz	[_Last_BUS_REQ_St]
+		setnz	[SYM(Last_BUS_REQ_St)]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [_Cycles_M68K]
+		mov	ebx, [SYM(Cycles_M68K)]
 		and	cl, ~Z80_STATE_BUSREQ
 		sub	ebx, eax
-		mov	[_Z80_State], cl
-		mov	edx, [_Cycles_Z80]
-		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
+		mov	[SYM(Z80_State)], cl
+		mov	edx, [SYM(Cycles_Z80)]
+		mov	ebx, [SYM(Z80_M68K_Cycle_Tab) + ebx * 4]
+		mov	ecx, SYM(M_Z80)
 		sub	edx, ebx
 		call	z80_Exec
 		pop	edx
@@ -1994,19 +1892,19 @@ section .text align=64
 		
 		push	edx
 		
-		push	_M_Z80
-		call	_mdZ80_reset
+		push	SYM(M_Z80)
+		call	SYM(mdZ80_reset)
 		add	esp, 4
 		
-		or	byte [_Z80_State], Z80_STATE_RESET
-		call	_YM2612_Reset
+		or	byte [SYM(Z80_State)], Z80_STATE_RESET
+		call	SYM(YM2612_Reset)
 		pop	edx
 		pop	ecx
 		pop	ebx
 		ret
 	
 	.no_reset:
-		and	byte [_Z80_State], ~Z80_STATE_RESET
+		and	byte [SYM(Z80_State)], ~Z80_STATE_RESET
 		pop	ecx
 		pop	ebx
 		ret
@@ -2036,7 +1934,7 @@ section .text align=64
 	
 	.Pad_1:
 		push	eax
-		call	_WR_Controller_1
+		call	SYM(WR_Controller_1)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -2046,7 +1944,7 @@ section .text align=64
 	
 	.Pad_2:
 		push	eax
-		call	_WR_Controller_2
+		call	SYM(WR_Controller_2)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -2055,7 +1953,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	[_Controller_1_COM], ax
+		mov	[SYM(Controller_1_COM)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2063,7 +1961,7 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_2:
-		mov	[_Controller_2_COM], ax
+		mov	[SYM(Controller_2_COM)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2099,9 +1997,9 @@ section .text align=64
 
 	.bank_0:
 		test	al, 1
-		setnz	[_SRAM_ON]
+		setnz	[SYM(SRAM_ON)]
 		test	al, 2
-		setz	[_SRAM_Write]
+		setz	[SYM(SRAM_Write)]
 		pop	ecx
 		pop	ebx
 		ret
@@ -2151,7 +2049,7 @@ section .text align=64
 		mov	[_32X_FM], ah
 		jz	short .no_update_FB
 		
-		call	__32X_Set_FB
+		call	SYM(_32X_Set_FB)
 	
 	.no_update_FB:
 		mov	al, bl
@@ -2177,7 +2075,7 @@ section .text align=64
 		jz	short .no_32X_change
 		
 		mov	[_32X_ADEN], bl
-		call	_M68K_32X_Mode
+		call	SYM(M68K_32X_Mode)
 	
 	.no_32X_change:
 		pop	ecx
@@ -2219,8 +2117,8 @@ section .text align=64
 	
 	._32X_Bank:
 		and	al, 3
-		mov	[_Bank_SH2], al
-		call	_M68K_Set_32X_Rom_Bank
+		mov	[SYM(Bank_SH2)], al
+		call	SYM(M68K_Set_32X_Rom_Bank)
 		pop	ecx
 		pop	ebx
 		ret
@@ -2237,7 +2135,7 @@ section .text align=64
 		jz	short .RV_not_changed
 		
 		mov	[_32X_RV], al
-		call	_M68K_32X_Mode
+		call	SYM(M68K_32X_Mode)
 	
 	.RV_not_changed:
 		cmp	bx, 0x0004
@@ -2380,7 +2278,7 @@ section .text align=64
 	._32X_PWM_Cont:
 		and	al, 0x0F
 		pop	ecx
-		mov	[_PWM_Mode], al
+		mov	[SYM(PWM_Mode)], al
 		pop	ebx
 		ret
 	
@@ -2388,7 +2286,7 @@ section .text align=64
 	
 	._32X_PWM_Cycle:
 		push	eax
-		call	_PWM_Set_Cycle
+		call	SYM(PWM_Set_Cycle)
 		add	esp, 4
 		pop	ecx
 		pop	ebx
@@ -2397,15 +2295,15 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_L:
-		mov	ecx, [_PWM_RP_L]
-		mov	ebx, [_PWM_WP_L]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_L)]
+		mov	ebx, [SYM(PWM_WP_L)]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_L_full
 		
-		mov	[_PWM_FIFO_L + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_L) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_L], ebx
+		mov	[SYM(PWM_WP_L)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -2420,15 +2318,15 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_R:
-		mov	ecx, [_PWM_RP_R]
-		mov	ebx, [_PWM_WP_R]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_R)]
+		mov	ebx, [SYM(PWM_WP_R)]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_R_full
 		
-		mov	[_PWM_FIFO_R + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_R) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_R], ebx
+		mov	[SYM(PWM_WP_R)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -2443,17 +2341,17 @@ section .text align=64
 	align 16
 	
 	._32X_PWM_Pulse_C:
-		mov	ecx, [_PWM_RP_L]
-		mov	ebx, [_PWM_WP_L]
-		test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
+		mov	ecx, [SYM(PWM_RP_L)]
+		mov	ebx, [SYM(PWM_WP_L)]
+		test	byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + ebx], 0x80
 		jnz	short ._32X_PWM_Pulse_C_full
 		
-		mov	[_PWM_FIFO_L + ebx * 2], ax
-		mov	[_PWM_FIFO_R + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_L) + ebx * 2], ax
+		mov	[SYM(PWM_FIFO_R) + ebx * 2], ax
 		inc	ebx
 		and	ebx, byte (PWM_BUF_SIZE - 1)
-		mov	[_PWM_WP_L], ebx
-		mov	[_PWM_WP_R], ebx
+		mov	[SYM(PWM_WP_L)], ebx
+		mov	[SYM(PWM_WP_R)], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -2493,7 +2391,7 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode:
-		mov	[__32X_VDP + vx.Mode], al
+		mov	[SYM(_32X_VDP) + vx.Mode], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2501,7 +2399,7 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_Shift:
-		mov	[__32X_VDP + vx.Mode + 2], al
+		mov	[SYM(_32X_VDP) + vx.Mode + 2], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2509,7 +2407,7 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_AF_Len:
-		mov	[__32X_VDP + vx.AF_Len], al
+		mov	[SYM(_32X_VDP) + vx.AF_Len], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2517,7 +2415,7 @@ section .text align=64
 	align 8
 	
 	._32X_VDP_AF_St:
-		mov	[__32X_VDP + vx.AF_St], ax
+		mov	[SYM(_32X_VDP) + vx.AF_St], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2526,19 +2424,19 @@ section .text align=64
 	
 	._32X_VDP_AF_Data:
 		push	edi
-		mov	[__32X_VDP + vx.AF_Data], ax
+		mov	[SYM(_32X_VDP) + vx.AF_Data], ax
 		mov	bx, ax
-		mov	edi, [__32X_VDP + vx.State]
+		mov	edi, [SYM(_32X_VDP) + vx.State]
 		shl	eax, 16
 		and	edi, byte 1
 		mov	ax, bx
 		xor	edi, byte 1
-		mov	ebx, [__32X_VDP + vx.AF_St]
-		mov	ecx, [__32X_VDP + vx.AF_Len]
+		mov	ebx, [SYM(_32X_VDP) + vx.AF_St]
+		mov	ecx, [SYM(_32X_VDP) + vx.AF_Len]
 		shl	edi, 17
 		inc	ecx
 		shr	ecx, 1
-		lea	edi, [edi + __32X_VDP_Ram]
+		lea	edi, [edi + SYM(_32X_VDP_Ram)]
 		jz	short .Spec_Fill
 		jnc	short .Loop
 		
@@ -2554,7 +2452,7 @@ section .text align=64
 			dec	ecx
 			jns	short .Loop
 		
-		mov	[__32X_VDP + vx.AF_St], ebx
+		mov	[SYM(_32X_VDP) + vx.AF_St], ebx
 		pop	edi
 		pop	ecx
 		pop	ebx
@@ -2566,7 +2464,7 @@ section .text align=64
 		mov	[edi + ebx * 2], ax
 		inc	bl
 		pop	edi
-		mov	[__32X_VDP + vx.AF_St], ebx
+		mov	[SYM(_32X_VDP) + vx.AF_St], ebx
 		pop	ecx
 		pop	ebx
 		ret
@@ -2574,18 +2472,18 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_State:
-		mov	bh, [__32X_VDP + vx.Mode + 0]
-		mov	bl, [__32X_VDP + vx.State + 1]
+		mov	bh, [SYM(_32X_VDP) + vx.Mode + 0]
+		mov	bl, [SYM(_32X_VDP) + vx.State + 1]
 		test	bh, 3
-		mov	[__32X_VDP + vx.State + 2], al
+		mov	[SYM(_32X_VDP) + vx.State + 2], al
 		jz	short ._32X_VDP_blank
 		
 		test	bl, bl
 		jns	short ._32X_VDP_State_nvb
 	
 	._32X_VDP_blank:
-		mov	[__32X_VDP + vx.State + 0], al
-		call	__32X_Set_FB
+		mov	[SYM(_32X_VDP) + vx.State + 0], al
+		call	SYM(_32X_Set_FB)
 	
 	._32X_VDP_State_nvb:
 		pop	ecx
@@ -2608,11 +2506,11 @@ section .text align=64
 		push	edx
 		
 		and	eax, 0xFFFF
-		mov	cx, [__32X_Palette_16B + eax * 2]
-		mov	edx, [__32X_Palette_32B + eax * 4]
-		mov	[__32X_VDP_CRam + ebx - 0xA15200], ax
-		mov	[__32X_VDP_CRam_Adjusted + ebx - 0xA15200], cx
-		mov	[__32X_VDP_CRam_Adjusted32 + (ebx - 0xA15200) * 2], edx
+		mov	cx, [SYM(_32X_Palette_16B) + eax * 2]
+		mov	edx, [SYM(_32X_Palette_32B) + eax * 4]
+		mov	[SYM(_32X_VDP_CRam) + ebx - 0xA15200], ax
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + ebx - 0xA15200], cx
+		mov	[SYM(_32X_VDP_CRam_Adjusted32) + (ebx - 0xA15200) * 2], edx
 		
 		pop	edx
 		pop	ecx
@@ -2626,7 +2524,7 @@ section .text align=64
 		test	ebx, 0x20000
 		jnz	short .overwrite
 		
-		mov	[__32X_VDP_Ram + ebx], ax
+		mov	[SYM(_32X_VDP_Ram) + ebx], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2637,13 +2535,13 @@ section .text align=64
 		test	al, al
 		jz	short .blank1
 		
-		mov	[__32X_VDP_Ram + ebx - 0x20000 + 0], al
+		mov	[SYM(_32X_VDP_Ram) + ebx - 0x20000 + 0], al
 	
 	.blank1:
 		test	ah, ah
 		jz	short .blank2
 		
-		mov	[__32X_VDP_Ram + ebx - 0x20000 + 1], ah
+		mov	[SYM(_32X_VDP_Ram) + ebx - 0x20000 + 1], ah
 	
 	.blank2:
 		pop	ecx
@@ -2657,7 +2555,7 @@ section .text align=64
 		test	ebx, 0x20000
 		jnz	short .overwrite
 		
-		mov	[__32X_VDP_Ram + ebx + 0x20000], ax
+		mov	[SYM(_32X_VDP_Ram) + ebx + 0x20000], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2668,13 +2566,13 @@ section .text align=64
 		test	al, al
 		jz	short .blank1
 		
-		mov	[__32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 0], al
+		mov	[SYM(_32X_VDP_Ram) + ebx - 0x20000 + 0x20000 + 0], al
 	
 	.blank1:
 		test	ah, ah
 		jz	short .blank2
 		
-		mov	[__32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 1], ah
+		mov	[SYM(_32X_VDP_Ram) + ebx - 0x20000 + 0x20000 + 1], ah
 	
 	.blank2:
 		pop	ecx

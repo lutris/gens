@@ -1,27 +1,26 @@
 ;
 ; Gens: Miscellaneous assembly language functions.
 ;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+; Copyright (c) 2008-2009 by David Korth
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+%include "nasm_x86.inc"
 
 section .rodata align=64
 	
@@ -221,40 +220,21 @@ section .rodata align=64
 	
 section .bss align=64
 	
-	; External symbol redefines for ELF
-	%ifdef __OBJ_ELF
-		%define	_MD_Screen		MD_Screen
-		%define	_MD_Screen32		MD_Screen32
-		
-		%define	_CDD			CDD
-		%define	_CDD.Control		CDD.Control
-		%define	_CDD.Rcv_Status		CDD.Rcv_Status
-		%define	_CDD.Status		CDD.Status
-		%define _CDD.Minute		CDD.Minute
-		%define	_CDD.Seconde		CDD.Seconde
-		%define	_CDD.Frame		CDD.Frame
-		%define _CDD.Ext		CDD.Ext
-		
-		%define	_VDP_Reg		VDP_Reg
-		
-		%define _bppMD			bppMD
-	%endif
+	extern SYM(MD_Screen)
+	extern SYM(MD_Screen32)
 	
-	extern _MD_Screen
-	extern _MD_Screen32
+	extern SYM(CDD.Control)
+	extern SYM(CDD.Rcv_Status)
+	extern SYM(CDD.Status)
+	extern SYM(CDD.Minute)
+	extern SYM(CDD.Seconde)
+	extern SYM(CDD.Frame)
+	extern SYM(CDD.Ext)
 	
-	extern _CDD.Control
-	extern _CDD.Rcv_Status
-	extern _CDD.Status
-	extern _CDD.Minute
-	extern _CDD.Seconde
-	extern _CDD.Frame
-	extern _CDD.Ext
-	
-	extern _VDP_Reg
+	extern SYM(VDP_Reg)
 	
 	; MD bpp
-	extern _bppMD
+	extern SYM(bppMD)
 	
 	; Mask
 	Mask:	resd 2
@@ -796,15 +776,9 @@ section .text align=64
 
 %endmacro
 	
-	; Symbol redefines for ELF.
-	%ifdef __OBJ_ELF
-		%define	_Print_Text		Print_Text
-		%define	_CDD_Export_Status	CDD_Export_Status
-	%endif
-	
 	; void Print_Text(char *str, int Size, int Pos_X, int Pos_Y, int Style)
-	global _Print_Text
-	_Print_Text:
+	global SYM(Print_Text)
+	SYM(Print_Text):
 		
 		push	ebx
 		push	ecx
@@ -815,11 +789,11 @@ section .text align=64
 		mov	esi, [esp + 24]				; esi = *string
 		
 		; Check if 32-bit color is in use.
-		cmp	byte [_bppMD], 32
+		cmp	byte [SYM(bppMD)], 32
 		je	Print_Text32
 		
 		; 15/16-bit color functions.
-		lea	edi, [_MD_Screen + 8 * 2]		; edi = Dest
+		lea	edi, [SYM(MD_Screen) + 8 * 2]		; edi = Dest
 		
 		; Print on the bottom of the screen.
 		mov	ebx, 336 * 2				; Pitch Dest
@@ -835,7 +809,7 @@ section .text align=64
 		test	eax, 0x1				; test the emulation mode
 		jz	short .No_Emulation
 		
-		test	byte [_VDP_Reg + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
+		test	byte [SYM(VDP_Reg) + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
 		jnz	short .No_Emulation
 		
 		mov	ebx, 256				; Taille = 256
@@ -871,7 +845,7 @@ section .text align=64
 		sub	esp, 4
 		and	ebx, 0x3				; on garde uniquement le type palette
 		mov	dword [Mask], 0xF7DE
-		cmp	byte [_bppMD], 15  			; 15 == mode 555; 16 == mode 565
+		cmp	byte [SYM(bppMD)], 15  			; 15 == mode 555; 16 == mode 565
 		jne	short .Mode_565
 		or	ebx, 0x4
 		mov	dword [Mask], 0x7BDE
@@ -1031,7 +1005,7 @@ section .text align=64
 	Print_Text32:	; 32-bit color text printing functions.
 
 		shl	ebx, 1					; Pitch Dest
-		lea	edi, [_MD_Screen32 + 8 * 4]		; edi = Dest
+		lea	edi, [SYM(MD_Screen32) + 8 * 4]		; edi = Dest
 		
 		; Print on the bottom of the screen.
 		mov	ebx, 336 * 4				; Pitch Dest
@@ -1047,7 +1021,7 @@ section .text align=64
 		test	eax, 0x1				; test the emulation mode
 		jz	short .No_Emulation
 		
-		test	byte [_VDP_Reg + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
+		test	byte [SYM(VDP_Reg) + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
 		jnz	short .No_Emulation
 		
 		mov ebx, 256					; Taille = 256
@@ -1232,32 +1206,32 @@ section .text align=64
 	align 64
 	
 	; void CDD_Export_Status(void)
-	global _CDD_Export_Status
-	_CDD_Export_Status:
+	global SYM(CDD_Export_Status)
+	SYM(CDD_Export_Status):
 		push	ebx
 		push	ecx
 		
-		mov	ax, [_CDD.Status]
-		mov	bx, [_CDD.Minute]
-		mov	cx, [_CDD.Seconde]
-		mov	[_CDD.Rcv_Status + 0], ax
-		mov	[_CDD.Rcv_Status + 2], bx
-		mov	[_CDD.Rcv_Status + 4], cx
+		mov	ax, [SYM(CDD.Status)]
+		mov	bx, [SYM(CDD.Minute)]
+		mov	cx, [SYM(CDD.Seconde)]
+		mov	[SYM(CDD.Rcv_Status) + 0], ax
+		mov	[SYM(CDD.Rcv_Status) + 2], bx
+		mov	[SYM(CDD.Rcv_Status) + 4], cx
 		add	al, bl
 		add	al, bh
-		mov	bx, [_CDD.Frame]
+		mov	bx, [SYM(CDD.Frame)]
 		add	al, ch
 		add	al, cl
-		and	byte [_CDD.Control], 0x3
+		and	byte [SYM(CDD.Control)], 0x3
 		add	al, ah
 		add	al, bl
-		mov	ah, [_CDD.Ext]
+		mov	ah, [SYM(CDD.Ext)]
 		add	al, bh
 		add	al, ah
-		mov	[_CDD.Rcv_Status + 6], bx
+		mov	[SYM(CDD.Rcv_Status) + 6], bx
 		not	al
 		and	al, 0x0F
-		mov	[_CDD.Rcv_Status + 8], ax
+		mov	[SYM(CDD.Rcv_Status) + 8], ax
 		
 		pop	ecx
 		pop	ebx
