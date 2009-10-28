@@ -20,7 +20,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
 %include "nasm_x86.inc"
 
 ; macro MAKE_IMAGE_PIXEL
@@ -379,12 +378,12 @@
 
 %%Finish
 		and bl, 0x0F
-		mov edi, [XD]
+		mov edi, [SYM(XD)]
 %if %4 == 2
 		jz short %%End
 %endif
 		xor edi, 2					; because byte swapped
-		mov esi, [Buffer_Adr]
+		mov esi, [SYM(Buffer_Adr)]
 		shr edi, 1
 		mov al, [esi + edi]
 		jc short %%Other_Pix
@@ -469,7 +468,7 @@
 	%endif
 %endif
 
-		mov esi, [Stamp_Map_Adr]
+		mov esi, [SYM(Stamp_Map_Adr)]
 		add ebx, eax					; numéro de stamp
 		mov edi, [esi + ebx * 2]		; di = donnée stamp concerné
 
@@ -477,24 +476,24 @@
 
 	%%Next_Pixel
 
-		mov eax, [XD]
-		add ecx, [DXS]
+		mov eax, [SYM(XD)]
+		add ecx, [SYM(DXS)]
 		inc eax
-		add edx, [DYS]
+		add edx, [SYM(DYS)]
 		cmp eax, 8
 		jb short %%Same_Col
 
-		mov eax, [Rot_Comp.Reg_5C]
-		mov ebx, [Buffer_Adr]
+		mov eax, [SYM(Rot_Comp.Reg_5C)]
+		mov ebx, [SYM(Buffer_Adr)]
 		and eax, 0x001F
 		shl eax, 5
 		lea ebx, [ebx + eax + 32]
 		xor eax, eax
-		mov [Buffer_Adr], ebx
+		mov [SYM(Buffer_Adr)], ebx
 
 	%%Same_Col
-		dec dword [H_Dot]
-		mov [XD], eax
+		dec dword [SYM(H_Dot)]
+		mov [SYM(XD)], eax
 		jnz near %%LOOP_H
 
 %endmacro
@@ -514,19 +513,19 @@
 
 %macro MAKE_IMAGE 4
 
-		mov eax, [Rot_Comp.Reg_60]
-		mov ebx, [YD]
-		mov ecx, [Rot_Comp.Reg_5E]
+		mov eax, [SYM(Rot_Comp.Reg_60)]
+		mov ebx, [SYM(YD)]
+		mov ecx, [SYM(Rot_Comp.Reg_5E)]
 		and eax, 0x7
 		shl ebx, 2
 		and ecx, 0xFFF8
-		mov [XD], eax
+		mov [SYM(XD)], eax
 		lea ecx, [SYM(Ram_Word_2M) + ecx * 4 + ebx]
-		mov eax, [Rot_Comp.Reg_62]
-		mov [Buffer_Adr], ecx
+		mov eax, [SYM(Rot_Comp.Reg_62)]
+		mov [SYM(Buffer_Adr)], ecx
 		and eax, 0x01FF
-		mov ebx, [Vector_Adr]
-		mov [H_Dot], eax
+		mov ebx, [SYM(Vector_Adr)]
+		mov [SYM(H_Dot)], eax
 		mov ecx, [ebx]
 		mov edx, [ebx + 2]
 		shl ecx, 8
@@ -534,19 +533,19 @@
 		and ecx, 0x00FFFF00
 		shl edx, 8
 		movsx eax, word [ebx + 4]
-		mov [DXS], eax
+		mov [SYM(DXS)], eax
 		movsx eax, word [ebx + 6]
 		add ebx ,8
-		mov [DYS], eax
-		test dword [H_Dot], 0x1FF
-		mov [Vector_Adr], ebx
+		mov [SYM(DYS)], eax
+		test dword [SYM(H_Dot)], 0x1FF
+		mov [SYM(Vector_Adr)], ebx
 		jz near %%Nothing_To_Draw
 
 		MAKE_IMAGE_LINE %1, %2, %3, %4
 
 	%%Nothing_To_Draw
 
-		inc dword [YD]
+		inc dword [SYM(YD)]
 		dec byte [V_Dot]
 
 		jmp .Finish
@@ -561,68 +560,94 @@ section .bss align=64
 	extern SYM(S68K_Mem_PM)
 	extern SYM(Int_Mask_S68K)
 	
-;	DECL Table_Rot_Time
+;	global SYM(Table_Rot_Time)
+;	SYM(Table_Rot_Time):
 ;		resd 64
-
-	DECL Rot_Comp
-	DECL Rot_Comp.Reg_58
+	
+	global SYM(Rot_Comp)
+	SYM(Rot_Comp):
+	global SYM(Rot_Comp.Reg_58)
+	SYM(Rot_Comp.Reg_58):
 	Stamp_Size:
 		resd 1
-	DECL Rot_Comp.Reg_5A
+	global SYM(Rot_Comp.Reg_5A)
+	SYM(Rot_Comp.Reg_5A):
 		resd 1
-	DECL Rot_Comp.Reg_5C
+	global SYM(Rot_Comp.Reg_5C)
+	SYM(Rot_Comp.Reg_5C):
 		resd 1
-	DECL Rot_Comp.Reg_5E
+	global SYM(Rot_Comp.Reg_5E)
+	SYM(Rot_Comp.Reg_5E):
 		resd 1
-	DECL Rot_Comp.Reg_60
+	global SYM(Rot_Comp.Reg_60)
+	SYM(Rot_Comp.Reg_60):
 		resd 1
-	DECL Rot_Comp.Reg_62
+	global SYM(Rot_Comp.Reg_62)
+	SYM(Rot_Comp.Reg_62):
 		resd 1
-	DECL Rot_Comp.Reg_64
+	global SYM(Rot_Comp.Reg_64)
+	SYM(Rot_Comp.Reg_64):
 	V_Dot:
 		resd 1
-	DECL Rot_Comp.Reg_66
+	global SYM(Rot_Comp.Reg_66)
+	SYM(Rot_Comp.Reg_66):
 		resd 1
-	DECL Rotation_Running
+	global SYM(Rotation_Running)
+	SYM(Rotation_Running):
 		resd 1
 	
-	; Converted to DECL for GENS Re-Recording
-	DECL Stamp_Map_Adr
+	; Variables marked global for Gens Rerecording.
+	global SYM(Stamp_Map_Adr)
+	SYM(Stamp_Map_Adr):
 		resd 1
-	DECL Buffer_Adr
+	global SYM(Buffer_Adr)
+	SYM(Buffer_Adr):
 		resd 1
-	DECL Vector_Adr
+	global SYM(Vector_Adr)
+	SYM(Vector_Adr):
 		resd 1
-	DECL Jmp_Adr
+	global SYM(Jmp_Adr)
+	SYM(Jmp_Adr):
 		resd 1
-	DECL Float_Part
+	global SYM(Float_Part)
+	SYM(Float_Part):
 		resd 1
-	DECL Draw_Speed
+	global SYM(Draw_Speed)
+	SYM(Draw_Speed):
 		resd 1
 
-	; Converted to DECL for GENS Re-Recording
-	DECL XS
+	; Variables marked global for Gens Rerecording.
+	global SYM(XS)
+	SYM(XS):
 		resd 1
-	DECL YS
+	global SYM(YS)
+	SYM(YS):
 		resd 1
-	DECL DXS
+	global SYM(DXS)
+	SYM(DXS):
 		resd 1
-	DECL DYS
+	global SYM(DYS)
+	SYM(DYS):
 		resd 1
-	DECL XD
+	global SYM(XD)
+	SYM(XD):
 		resd 1
-	DECL YD
+	global SYM(YD)
+	SYM(YD):
 		resd 1
-	DECL XD_Mul
+	global SYM(XD_Mul)
+	SYM(XD_Mul):
 		resd 1
-	DECL H_Dot
+	global SYM(H_Dot)
+	SYM(H_Dot):
 		resd 1
 
 
 section .data align=64
-
-	DECL Table_Rot_Time
-
+	
+	global Table_Rot_Time
+	SYM(Table_Rot_Time):
+	
 	dd	0x00054000, 0x00048000, 0x00040000, 0x00036000		; 008-032		; briefing - sprite
 	dd	0x0002E000, 0x00028000, 0x00024000, 0x00022000		; 036-064		; arbre souvent
 	dd	0x00021000, 0x00020000, 0x0001E000, 0x0001B800		; 068-096		; map thunderstrike
@@ -646,67 +671,69 @@ section .data align=64
 
 section .text align=64
 
-	extern _sub68k_interrupt
+	extern SYM(sub68k_interrupt)
 
 	; void Init_RS_GFX(void)
-	DECL Init_RS_GFX
+	global SYM(Init_RS_GFX)
+	SYM(Init_RS_GFX):
 
 		xor eax, eax
-		mov [Rot_Comp.Reg_58], eax
-		mov [Rot_Comp.Reg_5A], eax
-		mov [Rot_Comp.Reg_5C], eax
-		mov [Rot_Comp.Reg_5E], eax
-		mov [Rot_Comp.Reg_60], eax
-		mov [Rot_Comp.Reg_62], eax
-		mov [Rot_Comp.Reg_64], eax
-		mov [Rot_Comp.Reg_66], eax
+		mov [SYM(Rot_Comp.Reg_58)], eax
+		mov [SYM(Rot_Comp.Reg_5A)], eax
+		mov [SYM(Rot_Comp.Reg_5C)], eax
+		mov [SYM(Rot_Comp.Reg_5E)], eax
+		mov [SYM(Rot_Comp.Reg_60)], eax
+		mov [SYM(Rot_Comp.Reg_62)], eax
+		mov [SYM(Rot_Comp.Reg_64)], eax
+		mov [SYM(Rot_Comp.Reg_66)], eax
 		ret
 
 	align 32
 
-	DECL Calcul_Rot_Comp
+	global SYM(Calcul_Rot_Comp)
+	SYM(Calcul_Rot_Comp):
 		push ebx
 		push ecx
 
 		cmp byte [SYM(Ram_Word_State)], 1
 		ja near .End
 
-		mov eax, [Rot_Comp.Reg_5C]
+		mov eax, [SYM(Rot_Comp.Reg_5C)]
 		mov ebx, [Stamp_Size]
 		and eax, 0x001F
 		and ebx, 0x7
 		lea eax, [eax * 4 + 4]
-		mov [XD_Mul], eax
+		mov [SYM(XD_Mul)], eax
 
-		mov eax, [Rot_Comp.Reg_5E]
+		mov eax, [SYM(Rot_Comp.Reg_5E)]
 		or ebx, [SYM(S68K_Mem_PM)]
 		and eax, 0xFFF8
-		mov ecx, [Rot_Comp.Reg_60]
+		mov ecx, [SYM(Rot_Comp.Reg_60)]
 		lea eax, [SYM(Ram_Word_2M) + eax * 4]
 		shr ecx, 3
-		mov [Buffer_Adr], eax
+		mov [SYM(Buffer_Adr)], eax
 
 		and ecx, 0x7
 		and ebx, 0x1F
-		mov [YD], ecx
+		mov [SYM(YD)], ecx
 
-		mov eax, [Rot_Comp.Reg_62]
-		mov ecx, [Rot_Comp.Reg_66]
+		mov eax, [SYM(Rot_Comp.Reg_62)]
+		mov ecx, [SYM(Rot_Comp.Reg_66)]
 		and eax, 0x1FF
 		and ecx, 0xFFFE
 		shr eax, 3
 
 		lea ecx, [SYM(Ram_Word_2M) + ecx * 4]
 		mov ebx, [Table_Jump_Rot + ebx * 4]
-		mov [Vector_Adr], ecx
-		mov [Jmp_Adr], ebx						; we save the jump address (for later use)
+		mov [SYM(Vector_Adr)], ecx
+		mov [SYM(Jmp_Adr)], ebx					; we save the jump address (for later use)
 
-		mov eax, [Table_Rot_Time + eax * 4]
+		mov eax, [SYM(Table_Rot_Time) + eax * 4]
 		mov ecx, [Stamp_Size]
-		mov [Draw_Speed], eax
-		mov [Float_Part], eax					; we start a new GFX operation
-		or ecx, 0x8000							; we start a new GFX operation
-		mov eax, [Rot_Comp.Reg_5A]
+		mov [SYM(Draw_Speed)], eax
+		mov [SYM(Float_Part)], eax				; we start a new GFX operation
+		or ecx, 0x8000						; we start a new GFX operation
+		mov eax, [SYM(Rot_Comp.Reg_5A)]
 		test ecx, 0x4
 		mov [Stamp_Size], ecx
 
@@ -716,7 +743,7 @@ section .text align=64
 
 		and eax, 0xFF80
 		lea eax, [SYM(Ram_Word_2M) + eax * 4]
-		mov [Stamp_Map_Adr], eax
+		mov [SYM(Stamp_Map_Adr)], eax
 		jmp short .Initialised
 
 	align 4
@@ -724,7 +751,7 @@ section .text align=64
 	.Dot_32
 		and eax, 0xFFE0
 		lea eax, [SYM(Ram_Word_2M) + eax * 4]
-		mov [Stamp_Map_Adr], eax
+		mov [SYM(Stamp_Map_Adr)], eax
 		jmp short .Initialised
 
 	align 4
@@ -734,7 +761,7 @@ section .text align=64
 		jnz short .Scr_16_Dot_32
 
 		lea eax, [SYM(Ram_Word_2M) + 0x20000]
-		mov [Stamp_Map_Adr], eax
+		mov [SYM(Stamp_Map_Adr)], eax
 		jmp short .Initialised
 
 	align 4
@@ -742,12 +769,12 @@ section .text align=64
 	.Scr_16_Dot_32
 		and eax, 0xE000
 		lea eax, [SYM(Ram_Word_2M) + eax * 4]
-		mov [Stamp_Map_Adr], eax
+		mov [SYM(Stamp_Map_Adr)], eax
 
 	align 4
 	
 	.Initialised
-		call Update_Rot
+		call SYM(Update_Rot)
 
 	.End
 		pop ecx
@@ -757,19 +784,20 @@ section .text align=64
 
 	align 32
 
-	DECL Update_Rot
+	global SYM(Update_Rot)
+	SYM(Update_Rot):
 		test byte [V_Dot], 0xFF
-		mov eax, [Float_Part]
+		mov eax, [SYM(Float_Part)]
 		jnz short .GFX_Not_Completed
 
 		and dword [Stamp_Size], 0x7FFF
 		test byte [SYM(Int_Mask_S68K)], 0x02
-		mov dword [Rot_Comp.Reg_64], 0			; GFX Completed
+		mov dword [SYM(Rot_Comp.Reg_64)], 0			; GFX Completed
 		jz short .INT1_OFF_0
 
 		push dword -1
 		push dword 1
-		call _sub68k_interrupt
+		call SYM(sub68k_interrupt)
 		add esp, 8
 
 	.INT1_OFF_0
@@ -781,8 +809,8 @@ section .text align=64
 		test eax, 0xFFFF0000
 		jnz short .Have_To_Draw
 
-		add eax, [Draw_Speed]
-		mov [Float_Part], eax
+		add eax, [SYM(Draw_Speed)]
+		mov [SYM(Float_Part)], eax
 		ret
 
 	align 4
@@ -797,11 +825,11 @@ section .text align=64
 		mov ebx, eax
 		and eax, 0xFFFF
 		shr ebx, 16
-		add eax, [Draw_Speed]
+		add eax, [SYM(Draw_Speed)]
 		push ebx
-		mov [Float_Part], eax
+		mov [SYM(Float_Part)], eax
 
-		jmp [Jmp_Adr]
+		jmp [SYM(Jmp_Adr)]
 
 	align 4
 
@@ -976,7 +1004,7 @@ section .text align=64
 		jz short GFX_Completed
 		dec dword [esp]
 		jz short GFX_Part_Completed
-		jmp [Jmp_Adr]
+		jmp [SYM(Jmp_Adr)]
 
 	align 4
 
@@ -994,13 +1022,13 @@ section .text align=64
 	GFX_Completed
 		and dword [Stamp_Size], 0x7FFF
 		test byte [SYM(Int_Mask_S68K)], 0x02
-		mov dword [Rot_Comp.Reg_64], 0			; GFX Completed
+		mov dword [SYM(Rot_Comp.Reg_64)], 0	; GFX Completed
 
 		jz short .INT1_OFF
 
 		push dword -1
 		push dword 1
-		call _sub68k_interrupt
+		call SYM(sub68k_interrupt)
 		add esp, 8
 
 	.INT1_OFF

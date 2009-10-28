@@ -26,15 +26,15 @@ section .bss align=64
 	
 	extern Ram_68k
 	
-	extern Rotation_Running
-	extern Rot_Comp.Reg_58
-	extern Rot_Comp.Reg_5A
-	extern Rot_Comp.Reg_5C
-	extern Rot_Comp.Reg_5E
-	extern Rot_Comp.Reg_60
-	extern Rot_Comp.Reg_62
-	extern Rot_Comp.Reg_64
-	extern Rot_Comp.Reg_66
+	extern SYM(Rotation_Running)
+	extern SYM(Rot_Comp.Reg_58)
+	extern SYM(Rot_Comp.Reg_5A)
+	extern SYM(Rot_Comp.Reg_5C)
+	extern SYM(Rot_Comp.Reg_5E)
+	extern SYM(Rot_Comp.Reg_60)
+	extern SYM(Rot_Comp.Reg_62)
+	extern SYM(Rot_Comp.Reg_64)
+	extern SYM(Rot_Comp.Reg_66)
 	
 	extern SYM(PCM_Chip)
 	extern SYM(Ram_PCM)
@@ -283,8 +283,8 @@ section .text align=64
 	
 	extern _sub68k_interrupt
 	extern _PCM_Write_Reg
-	extern Calcul_Rot_Comp
-	extern Update_Rot
+	extern SYM(Calcul_Rot_Comp)
+	extern SYM(Update_Rot)
 	extern SYM(CDC_Read_Reg)
 	extern SYM(CDC_Write_Reg)
 	extern SYM(CDD_Processing)
@@ -906,28 +906,28 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Size_H:
-		mov	al, [Rot_Comp.Reg_58 + 1]
+		mov	al, [SYM(Rot_Comp.Reg_58) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Size_L:
-		mov	al, [Rot_Comp.Reg_58]
+		mov	al, [SYM(Rot_Comp.Reg_58)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr_H:
-		mov	al, [Rot_Comp.Reg_5A + 1]
+		mov	al, [SYM(Rot_Comp.Reg_5A) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr_L:
-		mov	al, [Rot_Comp.Reg_5A]
+		mov	al, [SYM(Rot_Comp.Reg_5A)]
 		pop	ebx
 		ret
 	
@@ -941,21 +941,21 @@ section .text align=64
 	align 4
 	
 	.Reg_IM_VCell_Size_L:
-		mov	al, [Rot_Comp.Reg_5C]
+		mov	al, [SYM(Rot_Comp.Reg_5C)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr_H:
-		mov	al, [Rot_Comp.Reg_5E + 1]
+		mov	al, [SYM(Rot_Comp.Reg_5E) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr_L:
-		mov	al, [Rot_Comp.Reg_5E]
+		mov	al, [SYM(Rot_Comp.Reg_5E)]
 		pop	ebx
 		ret
 	
@@ -969,35 +969,35 @@ section .text align=64
 	align 4
 
 	.Reg_IM_Offset_L:
-		mov	al, [Rot_Comp.Reg_60]
+		mov	al, [SYM(Rot_Comp.Reg_60)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size_H:
-		mov	al, [Rot_Comp.Reg_62 + 1]
+		mov	al, [SYM(Rot_Comp.Reg_62) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size_L:
-		mov	al, [Rot_Comp.Reg_62]
+		mov	al, [SYM(Rot_Comp.Reg_62)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size_H:
-		mov	al, [Rot_Comp.Reg_64 + 1]
+		mov	al, [SYM(Rot_Comp.Reg_64) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size_L:
-		mov	al, [Rot_Comp.Reg_64]
+		mov	al, [SYM(Rot_Comp.Reg_64)]
 		pop	ebx
 		ret
 	
@@ -1619,49 +1619,49 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Size:
-		mov	ax, [Rot_Comp.Reg_58]
+		mov	ax, [SYM(Rot_Comp.Reg_58)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr:
-		mov	ax, [Rot_Comp.Reg_5A]
+		mov	ax, [SYM(Rot_Comp.Reg_5A)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VCell_Size:
-		mov	ax, [Rot_Comp.Reg_5C]
+		mov	ax, [SYM(Rot_Comp.Reg_5C)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr:
-		mov	ax, [Rot_Comp.Reg_5E]
+		mov	ax, [SYM(Rot_Comp.Reg_5E)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Offset:
-		mov	ax, [Rot_Comp.Reg_60]
+		mov	ax, [SYM(Rot_Comp.Reg_60)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size:
-		mov	ax, [Rot_Comp.Reg_62]
+		mov	ax, [SYM(Rot_Comp.Reg_62)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size:
-		mov	ax, [Rot_Comp.Reg_64]
+		mov	ax, [SYM(Rot_Comp.Reg_64)]
 		pop	ebx
 		ret
 	
@@ -2759,7 +2759,7 @@ section .text align=64
 		
 	.Reg_Stamp_Size_L:
 		and	al, 0x7
-		mov	[Rot_Comp.Reg_58], al
+		mov	[SYM(Rot_Comp.Reg_58)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2770,7 +2770,7 @@ section .text align=64
 	.Reg_Stamp_Adr_L:
 		mov	ah, al
 		and	ax, 0xFFE0
-		mov	[Rot_Comp.Reg_5A], ax
+		mov	[SYM(Rot_Comp.Reg_5A)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2786,7 +2786,7 @@ section .text align=64
 	
 	.Reg_IM_VCell_Size_L:
 		and	al, 0x1F
-		mov	[Rot_Comp.Reg_5C], al
+		mov	[SYM(Rot_Comp.Reg_5C)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2797,7 +2797,7 @@ section .text align=64
 	.Reg_IM_Adr_L:
 		mov	ah, al
 		and	ax, 0xFFF8
-		mov	[Rot_Comp.Reg_5E], ax
+		mov	[SYM(Rot_Comp.Reg_5E)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2813,7 +2813,7 @@ section .text align=64
 	
 	.Reg_IM_Offset_L:
 		and	al, 0x3F
-		mov	[Rot_Comp.Reg_60], al
+		mov	[SYM(Rot_Comp.Reg_60)], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -2824,7 +2824,7 @@ section .text align=64
 	.Reg_IM_HDot_Size_L:
 		mov	ah, al
 		and	ax, 0x01FF
-		mov	[Rot_Comp.Reg_62], ax
+		mov	[SYM(Rot_Comp.Reg_62)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -2835,7 +2835,7 @@ section .text align=64
 	.Reg_IM_VDot_Size_L:
 		mov	ah, al
 		and	eax, 0x00FF
-		mov	[Rot_Comp.Reg_64], eax		; Need eax for timing
+		mov	[SYM(Rot_Comp.Reg_64)], eax		; Need eax for timing
 		pop	ecx
 		pop	ebx
 		ret
@@ -2846,8 +2846,8 @@ section .text align=64
 	.Reg_Vector_Adr_L:
 		mov	ah, al
 		and	ax, 0xFFFE
-		mov	[Rot_Comp.Reg_66], ax
-		call	Calcul_Rot_Comp
+		mov	[SYM(Rot_Comp.Reg_66)], ax
+		call	SYM(Calcul_Rot_Comp)
 		pop	ecx
 		pop	ebx
 		ret
@@ -3485,7 +3485,7 @@ section .text align=64
 	
 	.Reg_Stamp_Size:
 		and	ax, 0x7
-		mov	[Rot_Comp.Reg_58], ax
+		mov	[SYM(Rot_Comp.Reg_58)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3494,7 +3494,7 @@ section .text align=64
 	
 	.Reg_Stamp_Adr:
 		and	ax, 0xFFE0
-		mov	[Rot_Comp.Reg_5A], ax
+		mov	[SYM(Rot_Comp.Reg_5A)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3503,7 +3503,7 @@ section .text align=64
 	
 	.Reg_IM_VCell_Size:
 		and	ax, 0x1F
-		mov	[Rot_Comp.Reg_5C], ax
+		mov	[SYM(Rot_Comp.Reg_5C)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3512,7 +3512,7 @@ section .text align=64
 	
 	.Reg_IM_Adr:
 		and	ax, 0xFFF8
-		mov	[Rot_Comp.Reg_5E], ax
+		mov	[SYM(Rot_Comp.Reg_5E)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3521,7 +3521,7 @@ section .text align=64
 	
 	.Reg_IM_Offset:
 		and	ax, 0x003F
-		mov	[Rot_Comp.Reg_60], ax
+		mov	[SYM(Rot_Comp.Reg_60)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3530,7 +3530,7 @@ section .text align=64
 	
 	.Reg_IM_HDot_Size:
 		and	ax, 0x01FF
-		mov	[Rot_Comp.Reg_62], ax
+		mov	[SYM(Rot_Comp.Reg_62)], ax
 		pop	ecx
 		pop	ebx
 		ret
@@ -3539,7 +3539,7 @@ section .text align=64
 	
 	.Reg_IM_VDot_Size:
 		and	eax, 0x00FF
-		mov	[Rot_Comp.Reg_64], eax		; Need eax for timing
+		mov	[SYM(Rot_Comp.Reg_64)], eax		; Need eax for timing
 		pop	ecx
 		pop	ebx
 		ret
@@ -3548,8 +3548,8 @@ section .text align=64
 	
 	.Reg_Vector_Adr:
 		and	ax, 0xFFFE
-		mov	[Rot_Comp.Reg_66], ax
-		call	Calcul_Rot_Comp
+		mov	[SYM(Rot_Comp.Reg_66)], ax
+		call	SYM(Calcul_Rot_Comp)
 		pop	ecx
 		pop	ebx
 		ret
@@ -3614,10 +3614,10 @@ section .text align=64
 	
 	.No_CD_Check:
 		mov	[SYM(CD_Timer_Counter)], cx
-		test	dword [Rot_Comp.Reg_58], 0x8000
+		test	dword [SYM(Rot_Comp.Reg_58)], 0x8000
 		jz	short .GFX_Terminated
 		
-		call	Update_Rot
+		call	SYM(Update_Rot)
 	
 	.GFX_Terminated:
 		mov	eax, [SYM(Memory_Control_Status)]
