@@ -295,7 +295,7 @@ static void ca_window_init(void)
 	// Checkboxes.
 	Button_SetCheck(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkInverted, (Invert_Color ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkScaleColors, (Scale_Colors ? BST_CHECKED : BST_UNCHECKED));
+	//Button_SetCheck(chkScaleColors, (Scale_Colors ? BST_CHECKED : BST_UNCHECKED));
 }
 
 
@@ -309,7 +309,7 @@ static void ca_window_save(void)
 	
 	Greyscale = (Button_GetCheck(chkGrayscale) == BST_CHECKED);
 	Invert_Color = (Button_GetCheck(chkInverted) == BST_CHECKED);
-	Scale_Colors = (Button_GetCheck(chkScaleColors) == BST_CHECKED);
+	//Scale_Colors = (Button_GetCheck(chkScaleColors) == BST_CHECKED);
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
