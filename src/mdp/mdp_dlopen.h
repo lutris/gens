@@ -28,6 +28,7 @@
 #define MDP_DLOPEN_EXT ".so"
 
 #define mdp_dlopen(filename)		dlopen(filename, RTLD_NOW | RTLD_LOCAL)
+#define mdp_dlopen_lazy(filename)	dlopen(filename, RTLD_LAZY | RTLD_LOCAL)
 #define mdp_dlclose(handle)		dlclose(handle)
 
 #ifdef __cplusplus
@@ -74,6 +75,7 @@ static inline const char* mdp_dlerror(void)
 #define MDP_DLOPEN_EXT ".dll"
 
 #define mdp_dlopen(filename)		(void*)(LoadLibrary(filename))
+#define mdp_dlopen_lazy(filename)	mdp_dlopen(filename)
 #define mdp_dlclose(handle)		FreeLibrary((HMODULE)(handle))
 
 #define mdp_dlsym(handle, symbol)	(void*)(GetProcAddress((HMODULE)(handle), (symbol)))
