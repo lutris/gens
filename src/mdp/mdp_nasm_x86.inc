@@ -4,7 +4,6 @@
 ; Copyright (c) 1999-2002 by Stéphane Dallongeville
 ; Copyright (c) 2003-2004 by Stéphane Akhoun
 ; Copyright (c) 2008-2009 by David Korth
-; 2xSaI Copyright (c) by Derek Liauw Kie Fa and Robert J. Ohannessian
 ;
 ; This program is free software; you can redistribute it and/or modify it
 ; under the terms of the GNU General Public License as published by the
