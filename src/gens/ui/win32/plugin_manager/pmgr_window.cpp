@@ -826,19 +826,21 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	}
 
 	// Initialize libpng.
+	if (dll_png_init() != 0)
+		return NULL;
 	
-	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_structp png_ptr = ppng_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 		return NULL;
 	
-	png_infop info_ptr = png_create_info_struct(png_ptr);
+	png_infop info_ptr = ppng_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		return NULL;
 	}
 	
-	png_infop end_info = png_create_info_struct(png_ptr);
+	png_infop end_info = ppng_create_info_struct(png_ptr);
 	if (!end_info)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
@@ -848,7 +850,7 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		// TODO: Is setjmp() really necessary?
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		ppng_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		return NULL;
 	}
 	
@@ -858,52 +860,52 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	pmgr_window_png_datapos = 0;
 	
 	void *read_io_ptr = png_get_io_ptr(png_ptr);
-	png_set_read_fn(png_ptr, read_io_ptr, &pmgr_window_png_user_read_data);
+	ppng_set_read_fn(png_ptr, read_io_ptr, &pmgr_window_png_user_read_data);
 	
 	// Get the PNG information.
-	png_read_info(png_ptr, info_ptr);
+	ppng_read_info(png_ptr, info_ptr);
 	
 	// Get the PNG information.
 	png_uint_32 width, height;
 	int bit_depth, color_type, interlace_type, compression_type, filter_method;
 	bool has_alpha = false;
 	
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-		     &interlace_type, &compression_type, &filter_method);
+	ppng_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+			&interlace_type, &compression_type, &filter_method);
 	
 	
 	if (width != 32 || height != 32)
 	{
 		// Not 32x32.
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		ppng_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		return NULL;
 	}
 	
 	// Make sure RGB color is used.
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
-		png_set_palette_to_rgb(png_ptr);
+		ppng_set_palette_to_rgb(png_ptr);
 	else if (color_type == PNG_COLOR_TYPE_GRAY)
-		png_set_gray_to_rgb(png_ptr);
+		ppng_set_gray_to_rgb(png_ptr);
 	else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA)
 		has_alpha = true;
 	
 	// Win32 expects BGRA format.
-	png_set_bgr(png_ptr);
+	ppng_set_bgr(png_ptr);
 	
 	// Convert tRNS to alpha channel.
-	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+	if (ppng_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 	{
-		png_set_tRNS_to_alpha(png_ptr);
+		ppng_set_tRNS_to_alpha(png_ptr);
 		has_alpha = true;
 	}
 	
 	// Convert 16-bit per channel PNG to 8-bit.
 	if (bit_depth == 16)
-		png_set_strip_16(png_ptr);
+		ppng_set_strip_16(png_ptr);
 	
 	// Get the new PNG information.
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-		     &interlace_type, &compression_type, &filter_method);
+	ppng_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+			&interlace_type, &compression_type, &filter_method);
 	
 	// Check if the PNG image has an alpha channel.
 	// TODO: Windows XP (and probably 2000 and Vista) support alpha transparency directly.
@@ -912,11 +914,11 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	{
 		// No alpha channel specified.
 		// Use filler instead.
-		png_set_filler(png_ptr, 0x00, PNG_FILLER_AFTER);
+		ppng_set_filler(png_ptr, 0x00, PNG_FILLER_AFTER);
 	}
 	
 	// Update the PNG info.
-	png_read_update_info(png_ptr, info_ptr);
+	ppng_read_update_info(png_ptr, info_ptr);
 	
 	// Create the bitmap.
 	// Plugin icon bitmap.
@@ -941,7 +943,7 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	if (!hbmpPluginIcon)
 	{
 		// Could not allocate a bitmap.
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		ppng_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		return NULL;
 	}
 	
@@ -955,10 +957,10 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	}
 	
 	// Read the image data.
-	png_read_image(png_ptr, row_pointers);
+	ppng_read_image(png_ptr, row_pointers);
 	
 	// Close the PNG image.
-	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+	ppng_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	
 	// Return the bitmap.
 	return hbmpPluginIcon;

@@ -51,7 +51,7 @@
 #include "video/vdraw_text.hpp"
 
 #ifdef GENS_PNG
-#include <png.h>
+#include "dll/dll_png.h"
 #endif /* GENS_PNG */
 
 
@@ -235,7 +235,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 		// Could not allocate enough memory.
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Could not allocate enough memory for the PNG row buffer.");
-		png_destroy_write_struct(&png_ptr, &info_ptr);
+		ppng_destroy_write_struct(&png_ptr, &info_ptr);
 		return 1;
 	}
 	
@@ -252,7 +252,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 		}
 		
 		// Write the row.
-		png_write_row(png_ptr, rowBuffer);
+		ppng_write_row(png_ptr, rowBuffer);
 		
 		// Next row.
 		screen += (pitch - width);
@@ -281,23 +281,27 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 1;
 	
+	int rval = dll_png_init();
+	if (rval)
+		return rval;
+	
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
 	// Initialize libpng.
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_ptr = ppng_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG pointer.");
 		return 2;
 	}
-	info_ptr = png_create_info_struct(png_ptr);
+	info_ptr = ppng_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG info pointer.");
-		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+		ppng_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 		return 3;
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))
@@ -305,47 +309,46 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		// TODO: Is setjmp() really necessary?
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Error initializing the PNG setjmp pointer.");
-		png_destroy_write_struct(&png_ptr, &info_ptr);
+		ppng_destroy_write_struct(&png_ptr, &info_ptr);
 		return 4;
 	}
 	
 	// Initialize libpng I/O.
-	png_init_io(png_ptr, fImg);
+	ppng_init_io(png_ptr, fImg);
 	
 	// Disable PNG filters.
-	png_set_filter(png_ptr, 0, PNG_FILTER_NONE);
+	ppng_set_filter(png_ptr, 0, PNG_FILTER_NONE);
 	
 	// Set the compression level to 5. (Levels range from 1 through 9.)
 	// TODO: Add a UI option to set compression level.
-	png_set_compression_level(png_ptr, 5);
+	ppng_set_compression_level(png_ptr, 5);
 	
 	// Set up the PNG header.
 	if (!(bpp == 32 && alpha != ALPHACHANNEL_NONE))
 	{
-		png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB,
-			     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-			     PNG_FILTER_TYPE_DEFAULT);
+		ppng_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB,
+				PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+				PNG_FILTER_TYPE_DEFAULT);
 	}
 	else
 	{
 		// 32-bit color, with alpha channel.
-		png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB_ALPHA,
-			     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-			     PNG_FILTER_TYPE_DEFAULT);
+		ppng_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB_ALPHA,
+				PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+				PNG_FILTER_TYPE_DEFAULT);
 	}
 	
 	// Write the PNG information to the file.
-	png_write_info(png_ptr, info_ptr);
+	ppng_write_info(png_ptr, info_ptr);
 	
-#ifdef GSFT_LIL_ENDIAN
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 	// PNG stores data in big-endian format.
 	// On little-endian systems, byteswapping needs to be enabled.
 	// TODO: Check if this really isn't needed on big-endian systems.
-	png_set_swap(png_ptr);
+	ppng_set_swap(png_ptr);
 #endif
 	
 	// Write the image.
-	int rval;
 	if (bpp == 15)
 	{
 		// 15-bit color. (Mode 555)
@@ -390,24 +393,24 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		if (!alpha)
 		{
 			// No alpha channel. Set filler byte.
-			png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
+			ppng_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
 		}
 		else if (alpha == ALPHACHANNEL_TRANSPARENCY)
 		{
 			// Alpha channel indicates transparency.
 			// 0x00 == opaque; 0xFF == transparent.
-			png_set_invert_alpha(png_ptr);
+			ppng_set_invert_alpha(png_ptr);
 		}
 		
-		png_set_bgr(png_ptr);
-		png_write_rows(png_ptr, row_pointers, h);
+		ppng_set_bgr(png_ptr);
+		ppng_write_rows(png_ptr, row_pointers, h);
 		
 		free(row_pointers);
 	}
 	
 	// Finished writing.
-	png_write_end(png_ptr, info_ptr);
-	png_destroy_write_struct(&png_ptr, &info_ptr);
+	ppng_write_end(png_ptr, info_ptr);
+	ppng_destroy_write_struct(&png_ptr, &info_ptr);
 	
 	return 0;
 }
@@ -468,13 +471,24 @@ int ImageUtil::screenShot(void)
 	// Build the filename.
 	int num = -1;
 	char filename[GENS_PATH_MAX];
+	
+	const char *ext;
+	ImageFormat fmt;
 #ifdef GENS_PNG
-	const char* ext = "png";
-	const ImageFormat fmt = IMAGEFORMAT_PNG;
-#else /* !GENS_PNG */
-	const char* ext = "bmp";
-	const ImageFormat fmt = IMAGEFORMAT_BMP;
+	if (dll_png_init() == 0)
+	{
+		// PNG initialized.
+		ext = "png";
+		fmt = IMAGEFORMAT_PNG;
+	}
+	else
 #endif /* GENS_PNG */
+	{
+		// Couldn't initialize PNG.
+		// Use BMP instead.
+		ext = "bmp";
+		fmt = IMAGEFORMAT_BMP;
+	}
 	
 	do
 	{

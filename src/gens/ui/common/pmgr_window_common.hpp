@@ -33,7 +33,7 @@ extern "C" {
 
 #ifdef GENS_PNG
 
-#include <png.h>
+#include "dll/dll_png.h"
 extern const unsigned char	*pmgr_window_png_dataptr;
 extern unsigned int		pmgr_window_png_datalen;
 extern unsigned int		pmgr_window_png_datapos;

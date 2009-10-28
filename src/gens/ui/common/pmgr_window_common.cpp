@@ -20,11 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "pmgr_window_common.hpp"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include "pmgr_window_common.hpp"
+#include "libgsft/gsft_unused.h"
 
 #include <stdint.h>
 
@@ -39,8 +40,6 @@ using std::endl;
 #ifdef GENS_PNG
 
 // PNG-related variables and functions.
-#include <png.h>
-
 const unsigned char	*pmgr_window_png_dataptr;
 unsigned int		pmgr_window_png_datalen;
 unsigned int		pmgr_window_png_datapos;
@@ -56,7 +55,7 @@ unsigned int		pmgr_window_png_datapos;
 void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	// Mark unused parameters.
-	((void)png_ptr);
+	GSFT_UNUSED_PARAMETER(png_ptr);
 	
 	// Make sure there's enough data available.
 	if (pmgr_window_png_datapos + length > pmgr_window_png_datalen)
