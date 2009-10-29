@@ -161,6 +161,9 @@ int dll_png_init(void)
 	DLL_LOAD_SYMBOL(dll_png, png_set_palette_to_rgb);
 	
 	// libpng initialized.
+	LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_INFO,
+			"%s version %d.%d.%d initialized.",
+			png_dllname, ver_major, ver_minor, ver_revision);
 	return 0;
 }
 
