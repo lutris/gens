@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common Functions.                                              *
- * gsft_byteswap.h: Byteswapping functions.                                *
+ * gsft_byteswap.c: Byteswapping functions.                                *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *

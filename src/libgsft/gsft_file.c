@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common functions.                                              *
- * gsft_file.h: File handling functions.                                   *
+ * gsft_file.c: File handling functions.                                   *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
