@@ -453,6 +453,8 @@ if test x$with_internal_png = xyes; then
 	with_png=yes
 fi
 
+PNG_LIBS=""
+with_png_dlopen=no
 if test x$with_png = xno; then
 	# libpng disabled; disable internal libpng library.
 	with_internal_png=no
@@ -469,12 +471,34 @@ AC_MSG_CHECKING(for system libpng)
 		with_png=yes
 	])
 	AC_MSG_RESULT($with_png)
+	
 	if test x$with_png = xno; then
 		# External libpng not found. Use the internal version.
 		with_png=yes
 		with_internal_png=yes
+		with_png_dlopen=no
+	else
+		# External libpng found.
+		
+		# Check if libpng should be linked at compile-time.
+		# On Win32, do not link at compile-time; instead, libpng will be dlopen()'d.
+		AC_MSG_CHECKING(if libpng should be linked at compile-time)
+		if test x$os != xwin32; then
+			# Not Win32. Link at compile-time.
+			AC_MSG_RESULT(yes);
+			PNG_LIBS="-lpng"
+			with_png_dlopen=no
+		else
+			# Win32. Use dlopen().
+			AC_MSG_RESULT(no);
+			with_png_dlopen=yes
+			AC_DEFINE(GENS_PNG_DLOPEN, 1, [Use dlopen(), or LoadLibrary() on Win32, to load libpng.])
+		fi
 	fi
 fi
+
+AC_SUBST(PNG_LIBS)
+AM_CONDITIONAL([GENS_PNG_DLOPEN], [test x$with_png_dlopen = yes])
 
 fi
 
