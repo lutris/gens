@@ -29,9 +29,11 @@
 
 #include <png.h>
 
-#ifdef GENS_PNG_INTERNAL
+#if defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN)
 
-// libpng is linked statically into the Gens/GS executable.
+// Don't use dlopen() to open libpng.
+// This is either because libpng is linked statically into the Gens/GS executable,
+// or the operating system has libpng as a system library.
 static inline int dll_png_init(void) { return 0; }
 #define dll_png_end() do { } while (0)
 
@@ -64,9 +66,9 @@ static inline int dll_png_init(void) { return 0; }
 #define ppng_set_IHDR			png_set_IHDR
 #define ppng_set_palette_to_rgb		png_set_palette_to_rgb
 
-#else
+#else /* !(defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN)) */
 
-// libpng is dynamically loaded at runtime.
+// Use dlopen() to dynamically load libpng at runtime.
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,7 +111,7 @@ MAKE_EXTFUNCPTR(png_set_palette_to_rgb);
 }
 #endif
 
-#endif /* GENS_PNG_INTERNAL */
+#endif /* defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN) */
 
 #endif /* GENS_PNG */
 
