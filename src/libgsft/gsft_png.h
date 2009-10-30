@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft: Common functions.                                              *
- * gsft_png.h: PNG handling functions.                                     *
+ * gsft_png.h: PNG handling functions, including dlopen().                 *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -22,21 +22,16 @@
 #ifndef __GSFT_PNG_H
 #define __GSFT_PNG_H
 
-#include <stdlib.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef GENS_PNG
+
 #include <png.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/** Function pointers. **/
-/** If GENS_PNG_DLOPEN is set, THIS MUST be initialized before using gsft_png_user_read_data()! **/
-#if defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN)
-#define gsft_png_get_io_ptr(x) png_get_io_ptr(x)
-#else
-#error Compiling libgsft_png.la with GENS_PNG_DLOPEN is currently broken!
-#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
-MAKE_EXTFUNCPTR(png_get_io_ptr);
 #endif
 
 /**
@@ -47,7 +42,7 @@ typedef struct _gsft_png_mem_t
 	const unsigned char *data;
 	png_size_t length;
 	
-	/* Used internally. DO NOT MODIFY! */
+	/* Used internally. Initialize to 0; DO NOT MODIFY otherwise. */
 	png_size_t pos;
 } gsft_png_mem_t;
 
@@ -56,5 +51,7 @@ void gsft_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t len
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* GENS_PNG */
 
 #endif /* __GSFT_PNG_H */

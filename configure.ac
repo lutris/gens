@@ -480,11 +480,11 @@ AC_MSG_CHECKING(for system libpng)
 	else
 		# External libpng found.
 		
-		# Check if libpng should be linked at compile-time.
-		# On Win32, do not link at compile-time; instead, libpng will be dlopen()'d.
-		AC_MSG_CHECKING(if libpng should be linked at compile-time)
+		# Check if libpng should be linked at compile time.
+		# On Win32, do not link at compile time; instead, libpng will be dlopen()'d.
+		AC_MSG_CHECKING(if libpng should be linked at compile time)
 		if test x$os != xwin32; then
-			# Not Win32. Link at compile-time.
+			# Not Win32. Link at compile time.
 			AC_MSG_RESULT(yes);
 			PNG_LIBS="-lpng"
 			with_png_dlopen=no
@@ -498,7 +498,7 @@ AC_MSG_CHECKING(for system libpng)
 fi
 
 AC_SUBST(PNG_LIBS)
-AM_CONDITIONAL([GENS_PNG_DLOPEN], [test x$with_png_dlopen = yes])
+AM_CONDITIONAL([GENS_PNG_DLOPEN], [test x$with_png_dlopen = xyes])
 
 fi
 

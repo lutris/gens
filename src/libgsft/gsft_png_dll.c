@@ -1,7 +1,8 @@
 /***************************************************************************
- * Gens: Dynamic Linking for libpng.                                       *
+ * libgsft: Common functions.                                              *
+ * gsft_png_dll.c: PNG dlopen() functions.                                 *
  *                                                                         *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -18,12 +19,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "dll_png.h"
-#include "mdp/mdp_dlopen.h"
-#include "macros/log_msg.h"
+#include "gsft_png_dll.h"
+
+// TODO: Log to console.
+#define LOG_MSG_ONCE(channel, level, msg, ...)
+
+// Simple reimplementation of mdp_dlopen.h.
+#if !defined(_WIN32)
+
+/* Linux / UNIX */
+#include <dlfcn.h>
+#define gsft_png_dlopen(filename)	dlopen(filename, RTLD_NOW | RTLD_LOCAL)
+#define gsft_png_dlopen_lazy(filename)	dlopen(filename, RTLD_LAZY | RTLD_LOCAL)
+#define gsft_png_dlclose(handle)	dlclose(handle)
+#define gsft_png_dlsym(handle, symbol)	dlsym(handle, symbol)
+
+#else
+
+/* Win32 */
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#define gsft_png_dlopen(filename)	(void*)(LoadLibrary(filename))
+#define gsft_png_dlopen_lazy(filename)	gsft_png_dlopen(filename)
+#define gsft_png_dlclose(handle)	FreeLibrary((HMODULE)(handle))
+#define gsft_png_dlsym(handle, symbol)	(void*)(GetProcAddress((HMODULE)(handle), (symbol)))
+
+#endif
 
 // libpng DLL handle.
-static void *dll_png = NULL;
+static void *png_dll = NULL;
 
 #define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
 MAKE_FUNCPTR(png_set_read_fn);
@@ -55,15 +82,16 @@ MAKE_FUNCPTR(png_write_info);
 MAKE_FUNCPTR(png_set_IHDR);
 MAKE_FUNCPTR(png_set_palette_to_rgb);
 
+
 #define DLL_LOAD_SYMBOL(handle, symname) \
 do { \
-	p##symname = (typeof(p##symname))mdp_dlsym(handle, #symname); \
+	p##symname = (typeof(p##symname))gsft_png_dlsym(handle, #symname); \
 	if (!p##symname) \
 	{ \
 		LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_ERROR, \
 			     "%s is missing symbol '%s'. Disabling PNG support.", \
 			     png_dllname, #symname); \
-		mdp_dlclose(handle); \
+		gsft_png_dlclose(handle); \
 		handle = NULL; \
 		return -4; \
 	} \
@@ -71,10 +99,10 @@ do { \
 
 
 /**
- * dll_png_init(): Initialize libpng dynamic linking.
+ * gsft_png_dll_init(): Initialize libpng dynamic linking.
  * @return 0 on success; non-zero on error.
  */
-int dll_png_init(void)
+int gsft_png_dll_init(void)
 {
 #ifdef _WIN32
 	// TODO: Verify this!
@@ -83,15 +111,15 @@ int dll_png_init(void)
 	static const char png_dllname[] = "libpng12.so";
 #endif
 	
-	if (dll_png)
+	if (png_dll)
 	{
 		// libpng is already initialized.
 		return 0;
 	}
 	
 	// Attempt to dlopen() libpng.
-	dll_png = mdp_dlopen_lazy(png_dllname);
-	if (!dll_png)
+	png_dll = gsft_png_dlopen_lazy(png_dllname);
+	if (!png_dll)
 	{
 		// libpng not found.
 		LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_ERROR,
@@ -103,7 +131,7 @@ int dll_png_init(void)
 	
 	// Check the library version.
 	MAKE_FUNCPTR(png_access_version_number);
-	ppng_access_version_number = (typeof(ppng_access_version_number))mdp_dlsym(dll_png, "png_access_version_number");
+	ppng_access_version_number = (typeof(ppng_access_version_number))gsft_png_dlsym(png_dll, "png_access_version_number");
 	if (!ppng_access_version_number)
 	{
 		// libpng doesn't have png_access_version_number().
@@ -111,7 +139,7 @@ int dll_png_init(void)
 		LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_ERROR,
 				"%s is missing symbol '%s'. Disabling PNG support.",
 				png_dllname, "png_access_version_number");
-		mdp_dlclose(dll_png);
+		gsft_png_dlclose(png_dll);
 		return -2;
 	}
 	
@@ -126,39 +154,39 @@ int dll_png_init(void)
 		LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_ERROR,
 				"%s is version %d.%d.%d; should be 1.2.x. Disabling PNG support.",
 				png_dllname, ver_major, ver_minor, ver_revision);
-		mdp_dlclose(dll_png);
+		gsft_png_dlclose(png_dll);
 		return -3;
 	}
 	
 	// Load the symbols.
-	DLL_LOAD_SYMBOL(dll_png, png_set_read_fn);
-	DLL_LOAD_SYMBOL(dll_png, png_get_valid);
-	DLL_LOAD_SYMBOL(dll_png, png_create_read_struct);
-	DLL_LOAD_SYMBOL(dll_png, png_destroy_read_struct);
-	DLL_LOAD_SYMBOL(dll_png, png_create_info_struct);
-	DLL_LOAD_SYMBOL(dll_png, png_init_io);
-	DLL_LOAD_SYMBOL(dll_png, png_set_filter);
-	DLL_LOAD_SYMBOL(dll_png, png_write_rows);
-	DLL_LOAD_SYMBOL(dll_png, png_read_update_info);
-	DLL_LOAD_SYMBOL(dll_png, png_set_compression_level);
-	DLL_LOAD_SYMBOL(dll_png, png_set_tRNS_to_alpha);
-	DLL_LOAD_SYMBOL(dll_png, png_set_swap);
-	DLL_LOAD_SYMBOL(dll_png, png_set_filler);
-	DLL_LOAD_SYMBOL(dll_png, png_set_strip_16);
-	DLL_LOAD_SYMBOL(dll_png, png_read_image);
-	DLL_LOAD_SYMBOL(dll_png, png_write_end);
-	DLL_LOAD_SYMBOL(dll_png, png_set_bgr);
-	DLL_LOAD_SYMBOL(dll_png, png_read_info);
-	DLL_LOAD_SYMBOL(dll_png, png_destroy_write_struct);
-	DLL_LOAD_SYMBOL(dll_png, png_set_gray_to_rgb);
-	DLL_LOAD_SYMBOL(dll_png, png_get_IHDR);
-	DLL_LOAD_SYMBOL(dll_png, png_write_row);
-	DLL_LOAD_SYMBOL(dll_png, png_get_io_ptr);
-	DLL_LOAD_SYMBOL(dll_png, png_create_write_struct);
-	DLL_LOAD_SYMBOL(dll_png, png_set_invert_alpha);
-	DLL_LOAD_SYMBOL(dll_png, png_write_info);
-	DLL_LOAD_SYMBOL(dll_png, png_set_IHDR);
-	DLL_LOAD_SYMBOL(dll_png, png_set_palette_to_rgb);
+	DLL_LOAD_SYMBOL(png_dll, png_set_read_fn);
+	DLL_LOAD_SYMBOL(png_dll, png_get_valid);
+	DLL_LOAD_SYMBOL(png_dll, png_create_read_struct);
+	DLL_LOAD_SYMBOL(png_dll, png_destroy_read_struct);
+	DLL_LOAD_SYMBOL(png_dll, png_create_info_struct);
+	DLL_LOAD_SYMBOL(png_dll, png_init_io);
+	DLL_LOAD_SYMBOL(png_dll, png_set_filter);
+	DLL_LOAD_SYMBOL(png_dll, png_write_rows);
+	DLL_LOAD_SYMBOL(png_dll, png_read_update_info);
+	DLL_LOAD_SYMBOL(png_dll, png_set_compression_level);
+	DLL_LOAD_SYMBOL(png_dll, png_set_tRNS_to_alpha);
+	DLL_LOAD_SYMBOL(png_dll, png_set_swap);
+	DLL_LOAD_SYMBOL(png_dll, png_set_filler);
+	DLL_LOAD_SYMBOL(png_dll, png_set_strip_16);
+	DLL_LOAD_SYMBOL(png_dll, png_read_image);
+	DLL_LOAD_SYMBOL(png_dll, png_write_end);
+	DLL_LOAD_SYMBOL(png_dll, png_set_bgr);
+	DLL_LOAD_SYMBOL(png_dll, png_read_info);
+	DLL_LOAD_SYMBOL(png_dll, png_destroy_write_struct);
+	DLL_LOAD_SYMBOL(png_dll, png_set_gray_to_rgb);
+	DLL_LOAD_SYMBOL(png_dll, png_get_IHDR);
+	DLL_LOAD_SYMBOL(png_dll, png_write_row);
+	DLL_LOAD_SYMBOL(png_dll, png_get_io_ptr);
+	DLL_LOAD_SYMBOL(png_dll, png_create_write_struct);
+	DLL_LOAD_SYMBOL(png_dll, png_set_invert_alpha);
+	DLL_LOAD_SYMBOL(png_dll, png_write_info);
+	DLL_LOAD_SYMBOL(png_dll, png_set_IHDR);
+	DLL_LOAD_SYMBOL(png_dll, png_set_palette_to_rgb);
 	
 	// libpng initialized.
 	LOG_MSG_ONCE(gens, LOG_MSG_LEVEL_INFO,
@@ -169,13 +197,13 @@ int dll_png_init(void)
 
 
 /**
- * dll_png_end(): Shut down libpng.
+ * gsft_png_dll_end(): Shut down libpng.
  */
-void dll_png_end(void)
+void gsft_png_dll_end(void)
 {
-	if (!dll_png)
+	if (!png_dll)
 		return;
 	
-	mdp_dlclose(dll_png);
-	dll_png = NULL;
+	gsft_png_dlclose(png_dll);
+	png_dll = NULL;
 }

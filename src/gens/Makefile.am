@@ -183,15 +183,6 @@ gens_SOURCES += \
 		segacd/cdda_mp3.c
 endif
 
-if GENS_PNG
-if !GENS_PNG_INTERNAL
-if GENS_PNG_DLOPEN
-gens_SOURCES += \
-		dll/dll_png.c
-endif # GENS_PNG_DLOPEN
-endif # !GENS_PNG_INTERNAL
-endif # GENS_PNG
-
 if GENS_ZLIB
 gens_SOURCES += \
 		util/file/decompressor/md_gzip.c \
@@ -294,8 +285,7 @@ noinst_HEADERS = \
 		plugins/reg/reg_get_all.h \
 		plugins/reg/reg_set_all.h \
 		plugins/eventmgr.hpp \
-		plugins/mdp_incompat.hpp \
-		dll/dll_png.h
+		plugins/mdp_incompat.hpp
 
 if !GENS_DEBUG
 noinst_HEADERS += \

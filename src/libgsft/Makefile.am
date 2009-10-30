@@ -64,7 +64,11 @@ libgsft_png_la_LIBADD	+= $(top_builddir)/src/extlib/libpng/libpng.la
 endif
 
 libgsft_png_la_SOURCES	= gsft_png.c
-noinst_HEADERS		+= gsft_png.h
+noinst_HEADERS		+= gsft_png.h gsft_png_dll.h
+
+if GENS_PNG_DLOPEN
+libgsft_png_la_SOURCES	+= gsft_png_dll.c
+endif
 
 endif
 

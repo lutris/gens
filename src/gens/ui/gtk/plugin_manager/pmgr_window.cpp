@@ -90,8 +90,8 @@ static gint	fraPluginDesc_width;
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
-#include "dll/dll_png.h"
 #include "libgsft/gsft_png.h"
+#include "libgsft/gsft_png_dll.h"
 
 static GtkWidget *imgPluginIcon;
 
@@ -801,7 +801,7 @@ static GdkPixbuf* pmgr_window_create_pixbuf_from_png(const uint8_t *icon, const 
 	}
 
 	// Initialize libpng.
-	if (dll_png_init() != 0)
+	if (gsft_png_dll_init() != 0)
 		return NULL;
 	
 	png_structp png_ptr = ppng_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);

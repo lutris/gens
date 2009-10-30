@@ -20,6 +20,8 @@
  ***************************************************************************/
 
 #include "gsft_png.h"
+#include "gsft_png_dll.h"
+
 
 /**
  * gsft_png_user_read_data(): libpng user-specified read data function.
@@ -31,7 +33,7 @@
 void gsft_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	// Get the pointer to the gsft_png_mem_t struct.
-	gsft_png_mem_t *png_mem = gsft_png_get_io_ptr(png_ptr);
+	gsft_png_mem_t *png_mem = (gsft_png_mem_t*)ppng_get_io_ptr(png_ptr);
 	if (!png_mem)
 		return;
 	

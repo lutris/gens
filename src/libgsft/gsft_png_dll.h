@@ -1,7 +1,8 @@
 /***************************************************************************
- * Gens: Dynamic Linking for libpng.                                       *
+ * libgsft: Common functions.                                              *
+ * gsft_png_dll.h: PNG dlopen() functions.                                 *
  *                                                                         *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -18,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_DLL_PNG_H
-#define GENS_DLL_PNG_H
+#ifndef __GSFT_PNG_DLL_H
+#define __GSFT_PNG_DLL_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -29,13 +30,17 @@
 
 #include <png.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN)
 
 // Don't use dlopen() to open libpng.
 // This is either because libpng is linked statically into the Gens/GS executable,
 // or the operating system has libpng as a system library.
-static inline int dll_png_init(void) { return 0; }
-#define dll_png_end() do { } while (0)
+static inline int gsft_png_dll_init(void) { return 0; }
+#define gsft_png_dll_end() do { } while (0)
 
 #define ppng_set_read_fn		png_set_read_fn
 #define ppng_get_valid			png_get_valid
@@ -70,12 +75,8 @@ static inline int dll_png_init(void) { return 0; }
 
 // Use dlopen() to dynamically load libpng at runtime.
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int dll_png_init(void);
-void dll_png_end(void);
+int gsft_png_dll_init(void);
+void gsft_png_dll_end(void);
 
 #define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
 MAKE_EXTFUNCPTR(png_set_read_fn);
@@ -107,12 +108,12 @@ MAKE_EXTFUNCPTR(png_write_info);
 MAKE_EXTFUNCPTR(png_set_IHDR);
 MAKE_EXTFUNCPTR(png_set_palette_to_rgb);
 
+#endif /* defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN) */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN) */
-
 #endif /* GENS_PNG */
 
-#endif /* GENS_DLL_PNG_H */
+#endif /* __GSFT_PNG_DLL_H */

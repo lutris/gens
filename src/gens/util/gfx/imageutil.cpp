@@ -51,7 +51,7 @@
 #include "video/vdraw_text.hpp"
 
 #ifdef GENS_PNG
-#include "dll/dll_png.h"
+#include "libgsft/gsft_png_dll.h"
 #endif /* GENS_PNG */
 
 
@@ -283,7 +283,7 @@ int ImageUtil::WritePNG(FILE *fImg, const int w, const int h, const int pitch,
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 1;
 	
-	int rval = dll_png_init();
+	int rval = gsft_png_dll_init();
 	if (rval)
 		return rval;
 	
@@ -489,7 +489,7 @@ int ImageUtil::ScreenShot(void)
 	const char *ext;
 	ImageFormat fmt;
 #ifdef GENS_PNG
-	if (dll_png_init() == 0)
+	if (gsft_png_dll_init() == 0)
 	{
 		// PNG initialized.
 		ext = "png";
