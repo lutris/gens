@@ -121,6 +121,9 @@ typedef std::pair<mdp_t*, int> pairMdpErr_t;
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
+#include "dll/dll_png.h"
+#include "libgsft/gsft_png.h"
+
 static HWND	imgPluginIcon;
 static HIMAGELIST	imglPluginIcons = NULL;
 static vector<HBITMAP>	vectPluginIcons;
@@ -854,13 +857,12 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 		return NULL;
 	}
 	
-	// Set the custom read function.
-	pmgr_window_png_dataptr = icon;
-	pmgr_window_png_datalen = iconLength;
-	pmgr_window_png_datapos = 0;
+	// Initialize the custom PNG read function.
+	gsft_png_mem_t png_mem = {icon, iconLength, 0};
+	ppng_set_read_fn(png_ptr, &png_mem, &gsft_png_user_read_data);
 	
 	void *read_io_ptr = png_get_io_ptr(png_ptr);
-	ppng_set_read_fn(png_ptr, read_io_ptr, &pmgr_window_png_user_read_data);
+	ppng_set_read_fn(png_ptr, read_io_ptr, &gsft_png_user_read_data);
 	
 	// Get the PNG information.
 	ppng_read_info(png_ptr, info_ptr);
@@ -872,7 +874,6 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	
 	ppng_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 			&interlace_type, &compression_type, &filter_method);
-	
 	
 	if (width != 32 || height != 32)
 	{

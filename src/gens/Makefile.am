@@ -362,6 +362,7 @@ endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
 if GENS_PNG
+gens_LDADD += $(top_builddir)/src/libgsft/libgsft_png.la
 if GENS_PNG_INTERNAL
 gens_LDADD += $(top_builddir)/src/extlib/libpng/libpng.la
 endif # GENS_PNG_INTERNAL
@@ -395,6 +396,7 @@ endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
 if GENS_PNG
+gens_DEPENDENCIES += $(top_builddir)/src/libgsft/libgsft_png.la
 if GENS_PNG_INTERNAL
 gens_DEPENDENCIES += $(top_builddir)/src/extlib/libpng/libpng.la
 endif # GENS_PNG_INTERNAL

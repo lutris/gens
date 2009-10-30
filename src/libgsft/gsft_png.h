@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: Plugin Manager Window. (Common Functions)                         *
+ * libgsft: Common functions.                                              *
+ * gsft_png.h: PNG handling functions.                                     *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,42 +19,42 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
-#define GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
+#ifndef __GSFT_PNG_H
+#define __GSFT_PNG_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <stdlib.h>
+#include <png.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Plugin ListViews.
-typedef enum _pmgr_type_t
+/** Function pointers. **/
+/** If GENS_PNG_DLOPEN is set, THIS MUST be initialized before using gsft_png_user_read_data()! **/
+#if defined(GENS_PNG_INTERNAL) || !defined(GENS_PNG_DLOPEN)
+#define gsft_png_get_io_ptr(x) png_get_io_ptr(x)
+#else
+#error Compiling libgsft_png.la with GENS_PNG_DLOPEN is currently broken!
+#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
+MAKE_EXTFUNCPTR(png_get_io_ptr);
+#endif
+
+/**
+ * gsft_png_mem_t: PNG read from memory struct.
+ */
+typedef struct _gsft_png_mem_t
 {
-	PMGR_INTERNAL = 0,
-	PMGR_EXTERNAL = 1,
-	PMGR_INCOMPAT = 2,
+	const unsigned char *data;
+	png_size_t length;
 	
-	PMGR_MAX
-} pmgr_type_t;
+	/* Used internally. DO NOT MODIFY! */
+	png_size_t pos;
+} gsft_png_mem_t;
+
+void gsft_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 
 #ifdef __cplusplus
 }
 #endif
 
-#ifdef __cplusplus
-
-#include <string>
-#include <stdint.h>
-
-std::string GetCPUFlags_string(const uint32_t cpuFlagsRequired,
-			       const uint32_t cpuFlagsSupported,
-			       const bool formatting);
-
-std::string UUIDtoString(const unsigned char *uuid);
-
-#endif /* __cplusplus */
-
-#endif /* GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP */
+#endif /* __GSFT_PNG_H */

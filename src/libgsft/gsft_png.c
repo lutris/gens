@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: Plugin Manager Window. (Common Functions)                         *
+ * libgsft: Common functions.                                              *
+ * gsft_png.c: PNG handling functions.                                     *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,42 +19,40 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
-#define GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
+#include "gsft_png.h"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// Plugin ListViews.
-typedef enum _pmgr_type_t
+/**
+ * gsft_png_user_read_data(): libpng user-specified read data function.
+ * Used to read PNG data from memory instead of from a file.
+ * @param png_ptr Pointer to the PNG information struct.
+ * @param png_bytep Pointer to memory to write PNG data to.
+ * @param length Length of data requested.
+ */
+void gsft_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	PMGR_INTERNAL = 0,
-	PMGR_EXTERNAL = 1,
-	PMGR_INCOMPAT = 2,
+	// Get the pointer to the gsft_png_mem_t struct.
+	gsft_png_mem_t *png_mem = gsft_png_get_io_ptr(png_ptr);
+	if (!png_mem)
+		return;
 	
-	PMGR_MAX
-} pmgr_type_t;
-
-#ifdef __cplusplus
+	// Make sure there's enough data available.
+	if (png_mem->pos + length > png_mem->length)
+	{
+		// Not enough data is available.
+		// TODO: This may still result in a crash. Use longjmp()?
+		
+		// Zero the buffer.
+		memset(data, 0x00, length);
+		
+		// Return the rest of the buffer.
+		length = png_mem->length - png_mem->pos;
+		if (length <= 0)
+			return;
+	}
+	
+	// Copy the data.
+	memcpy(data, &(png_mem->data[png_mem->pos]), length);
+	
+	// Increment the data position.
+	png_mem->pos += length;
 }
-#endif
-
-#ifdef __cplusplus
-
-#include <string>
-#include <stdint.h>
-
-std::string GetCPUFlags_string(const uint32_t cpuFlagsRequired,
-			       const uint32_t cpuFlagsSupported,
-			       const bool formatting);
-
-std::string UUIDtoString(const unsigned char *uuid);
-
-#endif /* __cplusplus */
-
-#endif /* GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP */

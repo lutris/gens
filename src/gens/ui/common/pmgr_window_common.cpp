@@ -37,50 +37,6 @@ using std::stringstream;
 using std::endl;
 
 
-#ifdef GENS_PNG
-
-// PNG-related variables and functions.
-const unsigned char	*pmgr_window_png_dataptr;
-unsigned int		pmgr_window_png_datalen;
-unsigned int		pmgr_window_png_datapos;
-
-
-/**
- * pmgr_window_png_user_read_data(): libpng user-specified read data function.
- * Used to read PNG data from memory instead of from a file.
- * @param png_ptr Pointer to the PNG information struct.
- * @param png_bytep Pointer to memory to write PNG data to.
- * @param length Length of data requested.
- */
-void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
-{
-	// Mark unused parameters.
-	GSFT_UNUSED_PARAMETER(png_ptr);
-	
-	// Make sure there's enough data available.
-	if (pmgr_window_png_datapos + length > pmgr_window_png_datalen)
-	{
-		// Not enough data is available.
-		// TODO: This may still result in a crash. Use longjmp()?
-		
-		// Zero the buffer.
-		memset(data, 0x00, length);
-		
-		// Return the rest of the buffer.
-		length = pmgr_window_png_datalen - pmgr_window_png_datapos;
-		if (length <= 0)
-			return;
-	}
-	
-	// Copy the data.
-	memcpy(data, &pmgr_window_png_dataptr[pmgr_window_png_datapos], length);
-	
-	// Increment the data position.
-	pmgr_window_png_datapos += length;
-}
-#endif /* GENS_PNG */
-
-
 /**
  * GetCPUFlags_string(): Convert required and supported CPU flags into a string.
  * @param cpuFlagsRequired Required CPU flags.

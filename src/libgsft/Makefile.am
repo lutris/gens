@@ -42,6 +42,32 @@ if !HAVE_STRLCAT
 libgsft_la_SOURCES	+= strlcat.c
 endif
 
+# PNG-specific code.
+if GENS_PNG
+
+noinst_LTLIBRARIES += libgsft_png.la
+
+libgsft_png_la_CFLAGS	= $(libgsft_la_CFLAGS)
+libgsft_png_la_CXXFLAGS	= $(libgsft_la_CXXFLAGS)
+libgsft_png_la_LDFLAGS	= $(libgsft_la_LDFLAGS)
+libgsft_png_la_LIBADD	= @PNG_LIBS@
+
+INCLUDES =
+
+if GENS_ZLIB_INTERNAL
+INCLUDES += -I@top_srcdir@/src/extlib/zlib/
+endif
+
+if GENS_PNG_INTERNAL
+INCLUDES += -I@top_srcdir@/src/extlib/libpng/
+libgsft_png_la_LIBADD	+= $(top_builddir)/src/extlib/libpng/libpng.la
+endif
+
+libgsft_png_la_SOURCES	= gsft_png.c
+noinst_HEADERS		+= gsft_png.h
+
+endif
+
 # Win32-specific code.
 if GENS_OS_WIN32
 

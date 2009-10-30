@@ -90,9 +90,12 @@ static gint	fraPluginDesc_width;
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
+#include "dll/dll_png.h"
+#include "libgsft/gsft_png.h"
+
 static GtkWidget *imgPluginIcon;
 
-static void	pmgr_window_create_plugin_icon_widget(GtkWidget *container);
+static void pmgr_window_create_plugin_icon_widget(GtkWidget *container);
 static GdkPixbuf* pmgr_window_create_pixbuf_from_png(const uint8_t *icon, const unsigned int iconLength);
 #endif
 
@@ -826,13 +829,9 @@ static GdkPixbuf* pmgr_window_create_pixbuf_from_png(const uint8_t *icon, const 
 		return NULL;
 	}
 	
-	// Initialize the custom read function.
-	pmgr_window_png_dataptr = icon;
-	pmgr_window_png_datalen = iconLength;
-	pmgr_window_png_datapos = 0;
-	
-	void *read_io_ptr = ppng_get_io_ptr(png_ptr);
-	ppng_set_read_fn(png_ptr, read_io_ptr, &pmgr_window_png_user_read_data);
+	// Initialize the custom PNG read function.
+	gsft_png_mem_t png_mem = {icon, iconLength, 0};
+	ppng_set_read_fn(png_ptr, &png_mem, &gsft_png_user_read_data);
 	
 	// Get the PNG information.
 	ppng_read_info(png_ptr, info_ptr);
