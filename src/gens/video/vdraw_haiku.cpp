@@ -41,9 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// libgsft includes.
-#include "libgsft/gsft_win32.h"
-
 // Gens window.
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"

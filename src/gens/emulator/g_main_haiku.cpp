@@ -44,8 +44,6 @@ using std::list;
 #include "sighandler.h"
 #endif
 
-#include "libgsft/gsft_strz.h"
-
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
 #include "g_md.hpp"
@@ -54,6 +52,7 @@ using std::list;
 #include "parse.hpp"
 
 #include "util/file/config_file.hpp"
+#include "libgsft/gsft_szprintf.h"
 
 // Video, Input.
 #include "video/vdraw_haiku_t.h"

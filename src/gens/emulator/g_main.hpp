@@ -191,6 +191,9 @@ void Clear_Screen_MD(void);
 #include "parse.hpp"
 void check_startup_mode(Gens_StartupInfo_t *startup);
 
+// One iteration of the main loop.
+void GensLoopIteration(void);
+
 // The main program loop.
 void GensMainLoop(void);
 

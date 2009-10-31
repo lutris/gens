@@ -165,7 +165,9 @@ int Init_SegaCD(const char* iso_name)
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	BRAM_Ex_State &= 0x100;
 	Controller_1_COM = Controller_2_COM = 0;
+#ifdef GENS_DEBUGGING
 	STOP_DEBUGGING();
+#endif
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(1);

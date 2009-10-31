@@ -256,7 +256,10 @@ int Init_Genesis(ROM_t* MD_ROM)
 	Settings.Paused = Frame_Number = 0;
 	SRAM_Start = SRAM_End = SRAM_ON = SRAM_Write = 0;
 	Controller_1_COM = Controller_2_COM = 0;
+#ifdef GENS_DEBUGGER
 	STOP_DEBUGGING();
+#endif
+
 	
 #if 0	// TODO: Replace with MDP "exclusive mode" later.
 	if (!Kaillera_Client_Running)

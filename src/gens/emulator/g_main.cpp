@@ -408,6 +408,100 @@ void check_startup_mode(Gens_StartupInfo_t *startup)
 	}
 }
 
+/**
+ * GensLoopIteration(): One iteration of the main program loop.
+ */
+void GensLoopIteration(void)
+{
+	// Update the UI.
+	GensUI::update();
+	
+	// Update physical controller inputs.
+	input_update();
+	
+#ifdef GENS_DEBUGGER
+	if (IS_DEBUGGING())
+	{
+		// DEBUG
+		Update_Debug_Screen();
+		vdraw_flip(1);
+		GensUI::sleep(100);
+	}
+	else
+#endif /* GENS_DEBUGGER */
+	if (Game != NULL)
+	{
+		if (Settings.Active && !Settings.Paused)
+		{
+			// EMULATION ACTIVE
+			if (fast_forward)
+				Update_Emulation_One();
+			else
+				Update_Emulation();
+			
+#ifdef GENS_OS_UNIX
+			// Prevent 100% CPU usage.
+			// The CPU scheduler will take away CPU time from Gens/GS if
+			// it notices that the process is eating up too much CPU time.
+			GensUI::sleep(1, true);
+#endif
+		}
+		else
+		{
+			// EMULATION PAUSED
+			if (_32X_Started)
+				Do_32X_VDP_Only();
+			else
+				Do_VDP_Only();
+			
+			if (Settings.Paused && Video.pauseTint)
+			{
+				// Emulation is paused.
+				veffect_pause_tint();
+			}
+			
+			vdraw_flip(1);
+			GensUI::sleep(250);
+		}
+	}
+	else
+	{
+		// No game is currently running.
+		
+		// Update the screen.
+		vdraw_flip(1);
+		
+		// Determine how much sleep time to add, based on intro style.
+		// TODO: Move this to v_draw.cpp?
+		if (audio_get_gym_playing())
+		{
+			// PLAY GYM
+			// TODO: Does this even do anything?
+			gym_play();
+		}
+		else if (Intro_Style == 1)
+		{
+			// Gens Logo effect.
+			GensUI::sleep(5);
+		}
+		else if (Intro_Style == 2)
+		{
+			// "Strange" effect.
+			GensUI::sleep(10);
+		}
+		else if (Intro_Style == 3)
+		{
+			// Genesis BIOS. (TODO: This is broken!)
+			GensUI::sleep(20);
+		}
+		else
+		{
+			// Blank screen. (MAX IDLE)
+			GensUI::sleep(250);
+		}
+	}
+}
+
 
 /**
  * GensMainLoop(): The main program loop.
@@ -416,92 +510,6 @@ void GensMainLoop(void)
 {
 	while (is_gens_running())
 	{
-		// Update the UI.
-		GensUI::update();
-		
-		// Update physical controller inputs.
-		input_update();
-		
-#ifdef GENS_DEBUGGER
-		if (IS_DEBUGGING())
-		{
-			// DEBUG
-			Update_Debug_Screen();
-			vdraw_flip(1);
-			GensUI::sleep(100);
-		}
-		else
-#endif /* GENS_DEBUGGER */
-		if (Game != NULL)
-		{
-			if (Settings.Active && !Settings.Paused)
-			{
-				// EMULATION ACTIVE
-				if (fast_forward)
-					Update_Emulation_One();
-				else
-					Update_Emulation();
-				
-#ifdef GENS_OS_UNIX
-				// Prevent 100% CPU usage.
-				// The CPU scheduler will take away CPU time from Gens/GS if
-				// it notices that the process is eating up too much CPU time.
-				GensUI::sleep(1, true);
-#endif
-			}
-			else
-			{
-				// EMULATION PAUSED
-				if (_32X_Started)
-					Do_32X_VDP_Only();
-				else
-					Do_VDP_Only();
-				
-				if (Settings.Paused && Video.pauseTint)
-				{
-					// Emulation is paused.
-					veffect_pause_tint();
-				}
-				
-				vdraw_flip(1);
-				GensUI::sleep(250);
-			}
-		}
-		else
-		{
-			// No game is currently running.
-			
-			// Update the screen.
-			vdraw_flip(1);
-			
-			// Determine how much sleep time to add, based on intro style.
-			// TODO: Move this to v_draw.cpp?
-			if (audio_get_gym_playing())
-			{
-				// PLAY GYM
-				// TODO: Does this even do anything?
-				gym_play();
-			}
-			else if (Intro_Style == 1)
-			{
-				// Gens Logo effect.
-				GensUI::sleep(5);
-			}
-			else if (Intro_Style == 2)
-			{
-				// "Strange" effect.
-				GensUI::sleep(10);
-			}
-			else if (Intro_Style == 3)
-			{
-				// Genesis BIOS. (TODO: This is broken!)
-				GensUI::sleep(20);
-			}
-			else
-			{
-				// Blank screen. (MAX IDLE)
-				GensUI::sleep(250);
-			}
-		}
+		GensLoopIteration();
 	}
 }

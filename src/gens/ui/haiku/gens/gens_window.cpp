@@ -49,6 +49,13 @@ void gens_window_create(void)
 {
 }
 
+/**
+ * gens_window_create_menubar(): Create the Gens Menu Bar
+ */
+void gens_window_create_menubar(void)
+{
+}
+
 
 GensWindow::GensWindow()
 	  : BWindow(BRect(10, 10, 400, 300), "Gens/GS", B_TITLED_WINDOW, B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_QUIT_ON_WINDOW_CLOSE)
