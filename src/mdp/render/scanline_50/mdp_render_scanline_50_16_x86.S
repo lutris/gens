@@ -23,12 +23,6 @@
 /* MDP GNU `as` (x86) macros. */
 #include "mdp/mdp_gnu_as_x86.inc"
 
-/* Symbol redefines for ELF. */
-#if defined(__ELF__)
-	#define _mdp_render_scanline_50_16_x86		mdp_render_scanline_50_16_x86
-	#define _mdp_render_scanline_50_16_x86_mmx	mdp_render_scanline_50_16_x86_mmx
-#endif
-
 /* Function parameters. */
 #define arg_destScreen	16+8(%esp)
 #define arg_mdScreen	16+12(%esp)
@@ -60,9 +54,9 @@ RODATA()
  *                                    int destPitch, int srcPitch,              *
  *                                    int width, int height, uint32_t mask);    *
  ********************************************************************************/
-.globl _mdp_render_scanline_50_16_x86
-SYMTYPE(_mdp_render_scanline_50_16_x86,@function)
-_mdp_render_scanline_50_16_x86:
+.globl SYM(mdp_render_scanline_50_16_x86)
+SYMTYPE(SYM(mdp_render_scanline_50_16_x86),@function)
+SYM(mdp_render_scanline_50_16_x86):
 	
 	/* Save registers for later. */
 	pushl	%ecx
@@ -159,7 +153,7 @@ _mdp_render_scanline_50_16_x86:
 	popl	%ecx
 	ret
 
-SYMSIZE_FUNC(_mdp_render_scanline_50_16_x86)
+SYMSIZE_FUNC(SYM(mdp_render_scanline_50_16_x86))
 
 .p2align 6 /* 64-byte alignment */
 
@@ -168,9 +162,9 @@ SYMSIZE_FUNC(_mdp_render_scanline_50_16_x86)
  *                                    int destPitch, int srcPitch,                  *
  *                                    int width, int height, int mode565);          *
  ************************************************************************************/
-.globl _mdp_render_scanline_50_16_x86_mmx
-SYMTYPE(_mdp_render_scanline_50_16_x86_mmx,@function)
-_mdp_render_scanline_50_16_x86_mmx:
+.globl SYM(mdp_render_scanline_50_16_x86_mmx)
+SYMTYPE(SYM(mdp_render_scanline_50_16_x86_mmx),@function)
+SYM(mdp_render_scanline_50_16_x86_mmx):
 	
 	/* Save registers for later. */
 	pushl	%ecx
@@ -287,4 +281,4 @@ _mdp_render_scanline_50_16_x86_mmx:
 	popl	%ecx
 	ret
 
-SYMSIZE_FUNC(_mdp_render_scanline_50_16_x86_mmx)
+SYMSIZE_FUNC(SYM(mdp_render_scanline_50_16_x86_mmx))

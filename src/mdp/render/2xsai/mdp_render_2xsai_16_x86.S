@@ -24,11 +24,6 @@
 /* MDP GNU `as` (x86) macros. */
 #include "mdp/mdp_gnu_as_x86.inc"
 
-/* Symbol redefines for ELF. */
-#if defined(__ELF__)
-	#define _mdp_render_2xsai_16_x86_mmx		mdp_render_2xsai_16_x86_mmx
-#endif
-
 /* 2xSaI defines. */
 #define colorI	-2
 #define colorE	0
@@ -145,9 +140,9 @@ SYMSIZE_DATA(ONE, 8)
  *                           int destPitch, int srcPitch,                     *
  *                           int width, int height, int mode565);             *
  ******************************************************************************/
-.globl _mdp_render_2xsai_16_x86_mmx
-SYMTYPE(_mdp_render_2xsai_16_x86_mmx,@function)
-_mdp_render_2xsai_16_x86_mmx:
+.globl SYM(mdp_render_2xsai_16_x86_mmx)
+SYMTYPE(SYM(mdp_render_2xsai_16_x86_mmx),@function)
+SYM(mdp_render_2xsai_16_x86_mmx):
 	
 	/* Save registers for later. */
 	pushal
@@ -240,7 +235,7 @@ _mdp_render_2xsai_16_x86_mmx:
 	popal
 	ret
 
-SYMSIZE_FUNC(_mdp_render_2xsai_16_x86_mmx)
+SYMSIZE_FUNC(SYM(mdp_render_2xsai_16_x86_mmx))
 
 /* _2xSaILine parameters. */
 #define srcPtr		28+8(%esp)
