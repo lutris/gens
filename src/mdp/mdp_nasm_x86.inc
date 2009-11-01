@@ -29,9 +29,11 @@
 	%define	__OBJ_ELF
 %elifidn __OUTPUT_FORMAT__, win32
 	%define	__OBJ_WIN32
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, win64
 	%define	__OBJ_WIN64
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, macho
 	%define	__OBJ_MACHO
