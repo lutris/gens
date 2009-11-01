@@ -22,13 +22,6 @@
 ; MDP NASM (x86) macros.
 %include "mdp/mdp_nasm_x86.inc"
 
-; Symbol redefines for ELF.
-%ifdef __OBJ_ELF
-	%define _mdp_render_hq2x_RGB16to32	mdp_render_hq2x_RGB16to32
-	%define _mdp_render_hq2x_RGB16toYUV	mdp_render_hq2x_RGB16toYUV
-	%define _mdp_render_hq2x_16_x86_mmx	mdp_render_hq2x_16_x86_mmx
-%endif
-
 section .bss align=64
 	
 	linesleft:	resd 1
@@ -51,8 +44,8 @@ section .bss align=64
 	
 section .data align=64
 	
-	extern _mdp_render_hq2x_RGB16to32
-	extern _mdp_render_hq2x_RGB16toYUV
+	extern SYM(mdp_render_hq2x_RGB16to32)
+	extern SYM(mdp_render_hq2x_RGB16toYUV)
 	
 ; Constants
 zerolowbits_15	equ	0x7BDE7BDE
@@ -114,7 +107,7 @@ section .text align=64
 	mov	edx, [%1]
 	cmp	edx, [%2]
 	je	%%fin
-	mov	ecx, [_mdp_render_hq2x_RGB16toYUV]
+	mov	ecx, [SYM(mdp_render_hq2x_RGB16toYUV)]
 	movd	mm1, [ecx + edx * 4]
 	movq	mm5, mm1
 	mov	edx, [%2]
@@ -236,7 +229,7 @@ section .text align=64
 %endmacro
 
 %macro Interp6 3
-	mov		ecx, [_mdp_render_hq2x_RGB16to32]
+	mov		ecx, [SYM(mdp_render_hq2x_RGB16to32)]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
@@ -260,7 +253,7 @@ section .text align=64
 %endmacro
 
 %macro Interp7 3
-	mov		ecx, [_mdp_render_hq2x_RGB16to32]
+	mov		ecx, [SYM(mdp_render_hq2x_RGB16to32)]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
@@ -283,7 +276,7 @@ section .text align=64
 %endmacro
 
 %macro Interp9 3
-	mov		ecx, [_mdp_render_hq2x_RGB16to32]
+	mov		ecx, [SYM(mdp_render_hq2x_RGB16to32)]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
@@ -307,7 +300,7 @@ section .text align=64
 %endmacro
 
 %macro Interp10 3
-	mov		ecx, [_mdp_render_hq2x_RGB16to32]
+	mov		ecx, [SYM(mdp_render_hq2x_RGB16to32)]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
@@ -531,12 +524,12 @@ arg_mode565	equ 32
 
 loc_calcPitchDiff	equ -4
 
-	;************************************************************************
-	; void mdp_render_hq2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-	;				  int destPitch, int srcPitch,
-	;				  int width, int height, int mode565);
-	global _mdp_render_hq2x_16_x86_mmx
-	_mdp_render_hq2x_16_x86_mmx:
+;************************************************************************
+; void mdp_render_hq2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
+;				  int destPitch, int srcPitch,
+;				  int width, int height, int mode565);
+global SYM(mdp_render_hq2x_16_x86_mmx)
+SYM(mdp_render_hq2x_16_x86_mmx):
 	
 	; Set up the frame pointer.
 	push	ebp
@@ -633,7 +626,7 @@ loc_calcPitchDiff	equ -4
 	mov	[w9], edx
 	
 .flags:
-	mov	ebx, [_mdp_render_hq2x_RGB16toYUV]
+	mov	ebx, [SYM(mdp_render_hq2x_RGB16toYUV)]
 	mov	eax, [w5]
 	xor	ecx, ecx
 	movd	mm5, [ebx + eax * 4]
