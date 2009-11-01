@@ -21,7 +21,7 @@
 ;
 
 %include "nasmhead.inc"
-%include "nasm_x86.inc"
+%include "mdp/mdp_nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_GENESIS 16
 

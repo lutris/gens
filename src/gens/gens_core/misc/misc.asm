@@ -20,7 +20,7 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasm_x86.inc"
+%include "mdp/mdp_nasm_x86.inc"
 
 section .rodata align=64
 	

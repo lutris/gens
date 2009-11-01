@@ -21,11 +21,11 @@
 ;
 
 %include "nasmhead.inc"
-%include "nasm_x86.inc"
+%include "mdp/mdp_nasm_x86.inc"
 
 %define PWM_BUF_SIZE 4
 ; For some convenience, EBP register is never modified because assumed "alive"
-; so we can access the current SH2 context by using EBP. 
+; so we can access the current SH2 context by using EBP.
 
 section .bss align=64
 	
