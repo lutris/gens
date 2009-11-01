@@ -23,25 +23,12 @@
 /* MDP GNU `as` (x86) macros. */
 #include "mdp/mdp_gnu_as_x86.inc"
 
-/* Symbol redefines for ELF. */
-#if defined(__ELF__)
-	#define _Fast_Blur_32_x86	Fast_Blur_32_x86
-	#define _Fast_Blur_32_x86_mmx	Fast_Blur_32_x86_mmx
-#endif
-
 #define MD_SCREEN_SIZE	(336*240)
 #define MASK_DIV2_32	$0x007F7F7F
 
-/* External symbol redefines for ELF. */
-#if defined(__ELF__)
-	#define _MD_Screen32	MD_Screen32
-	#define _bppMD		bppMD
-#endif
-
 /* External symbols. */
 #ifndef __APPLE__
-.extern _MD_Screen32
-.extern _bppMD
+.extern SYM(MD_Screen32)
 #endif
 
 /** .data section **/
@@ -59,9 +46,9 @@
  * void Fast_Blur_32_x86()                   *
  * 32-bit color Fast Blur function, non-MMX. *
  *********************************************/
-.globl _Fast_Blur_32_x86
-SYMTYPE(_Fast_Blur_32_x86,@function)
-_Fast_Blur_32_x86:
+.globl SYM(Fast_Blur_32_x86)
+SYMTYPE(SYM(Fast_Blur_32_x86),@function)
+SYM(Fast_Blur_32_x86):
 	
 	/* Save registers for later. */
 	pushl	%ecx
@@ -70,7 +57,7 @@ _Fast_Blur_32_x86:
 	pushl	%esi
 	
 	/* Start at the beginning of the actual display data. */
-	movl	$(_MD_Screen32 + (8*4)), %esi
+	movl	$(SYM(MD_Screen32) + (8*4)), %esi
 	movl	$(MD_SCREEN_SIZE - 8), %ecx
 	xorl	%ebx, %ebx
 	jmp	0f
@@ -96,7 +83,7 @@ _Fast_Blur_32_x86:
 	popl	%ecx
 	ret
 
-SYMSIZE_FUNC(_Fast_Blur_32_x86)
+SYMSIZE_FUNC(SYM(Fast_Blur_32_x86))
 
 .p2align 6 /* 64-byte alignment */
 
@@ -104,9 +91,9 @@ SYMSIZE_FUNC(_Fast_Blur_32_x86)
  * void Fast_Blur_32_x86_mmx()                              *
  * 32-bit color Fast Blur function, using MMX instructions. *
  ************************************************************/
-.globl _Fast_Blur_32_x86_mmx
-SYMTYPE(_Fast_Blur_32_x86_mmx,@function)
-_Fast_Blur_32_x86_mmx:
+.globl SYM(Fast_Blur_32_x86_mmx)
+SYMTYPE(SYM(Fast_Blur_32_x86_mmx),@function)
+SYM(Fast_Blur_32_x86_mmx):
 	
 	/* Save registers for later. */
 	pushl	%ecx
@@ -114,7 +101,7 @@ _Fast_Blur_32_x86_mmx:
 	pushl	%esi
 	
 	/* Start at the beginning of the actual display data. */
-	movl	$(_MD_Screen32 + (8*4)), %esi
+	movl	$(SYM(MD_Screen32) + (8*4)), %esi
 	movl	$((MD_SCREEN_SIZE - 8) / 2), %ecx
 	
 	/* Load the 32-bit color mask. */
@@ -149,4 +136,4 @@ _Fast_Blur_32_x86_mmx:
 	emms
 	ret
 
-SYMSIZE_FUNC(_Fast_Blur_32_x86_mmx)
+SYMSIZE_FUNC(SYM(Fast_Blur_32_x86_mmx))

@@ -23,12 +23,6 @@
 /* MDP GNU `as` (x86) macros. */
 #include "mdp/mdp_gnu_as_x86.inc"
 
-/* Symbol redefines for ELF. */
-#if defined(__ELF__)
-       #define _audio_write_sound_mono_x86_mmx		audio_write_sound_mono_x86_mmx
-       #define _audio_write_sound_stereo_x86_mmx	audio_write_sound_stereo_x86_mmx
-#endif
-
 /* Function parameters. */
 #define arg_left	 8(%ebp)
 #define arg_right	12(%ebp)
@@ -41,9 +35,9 @@
 /****************************************************************************************
  * void audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length); *
  ****************************************************************************************/
-.globl _audio_write_sound_mono_x86_mmx
-SYMTYPE(_audio_write_sound_mono_x86_mmx,@function)
-_audio_write_sound_mono_x86_mmx:
+.globl SYM(audio_write_sound_mono_x86_mmx)
+SYMTYPE(SYM(audio_write_sound_mono_x86_mmx),@function)
+SYM(audio_write_sound_mono_x86_mmx):
 	
 	/* Set up the frame pointer. */
 	pushl	%ebp
@@ -125,16 +119,16 @@ _audio_write_sound_mono_x86_mmx:
 	emms
 	ret
 
-SYMSIZE_FUNC(_audio_write_sound_mono_x86_mmx)
+SYMSIZE_FUNC(SYM(audio_write_sound_mono_x86_mmx))
 
 .p2align 6 /* 64-byte alignment */
 
 /******************************************************************************************
  * void audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length); *
  ******************************************************************************************/
-.globl _audio_write_sound_stereo_x86_mmx
-SYMTYPE(_audio_write_sound_stereo_x86_mmx,@function)
-_audio_write_sound_stereo_x86_mmx:
+.globl SYM(audio_write_sound_stereo_x86_mmx)
+SYMTYPE(SYM(audio_write_sound_stereo_x86_mmx),@function)
+SYM(audio_write_sound_stereo_x86_mmx):
 	
 	/* Set up the frame pointer. */
 	pushl	%ebp
@@ -231,4 +225,4 @@ _audio_write_sound_stereo_x86_mmx:
 	emms
 	ret
 
-SYMSIZE_FUNC(_audio_write_sound_stereo_x86_mmx)
+SYMSIZE_FUNC(SYM(audio_write_sound_stereo_x86_mmx))
