@@ -28,6 +28,13 @@
 	.section .note.GNU-stack,"",%progbits
 #endif
 
+/* Symbol declaration. */
+#if defined(__ELF__)
+#define SYM(x) x
+#else
+#define SYM(x) _ ## x
+#endif
+
 /* Read-only data macro. */
 #if defined(__APPLE__)
 #define RODATA() \

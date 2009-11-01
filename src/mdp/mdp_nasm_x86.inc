@@ -42,6 +42,13 @@
 	section .note.GNU-stack noalloc noexec nowrite progbits
 %endif
 
+; Symbol declaration.
+%ifdef __OBJ_ELF
+	%define SYM(x) x
+%else
+	%define SYM(x) _ %+ x
+%endif
+
 %ifdef __PIC
 	; Position-independent code.
 	; These macros assist with PIC data location.
