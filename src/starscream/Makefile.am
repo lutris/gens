@@ -8,7 +8,7 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
 BUILT_SOURCES = main68k.asm sub68k.asm
-CLEANFILES = star_m68k star_s68k main68k.asm sub68k.asm
+CLEANFILES = star_m68k${EXEEXT} star_s68k${EXEEXT} main68k.asm sub68k.asm
 
 EXTRA_DIST = stardoc_m68k.txt stardoc_s68k.txt STARCPU.H
 SUFFIXES = .asm
