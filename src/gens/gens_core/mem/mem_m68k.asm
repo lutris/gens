@@ -20,7 +20,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
 %include "mdp/mdp_nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_GENESIS 16
@@ -39,21 +38,26 @@ section .data align=64
 	
 	; Current Main 68000 Jump Table
 	
-	DECL M68K_Read_Byte_Table
+	global SYM(M68K_Read_Byte_Table)
+	SYM(M68K_Read_Byte_Table):
 		times 32	dd M68K_Read_Byte_Bad
 	
-	DECL M68K_Read_Word_Table
+	global SYM(M68K_Read_Word_Table)
+	SYM(M68K_Read_Word_Table):
 		times 32	dd M68K_Read_Byte_Bad
 	
-	DECL M68K_Write_Byte_Table
+	global SYM(M68K_Write_Byte_Table)
+	SYM(M68K_Write_Byte_Table):
 		times 16	dd M68K_Write_Bad
 	
-	DECL M68K_Write_Word_Table
+	global SYM(M68K_Write_Word_Table)
+	SYM(M68K_Write_Word_Table):
 		times 16	dd M68K_Write_Bad
 	
 section .rodata align=64
 	
-	DECL Genesis_M68K_Read_Byte_Table
+	global SYM(Genesis_M68K_Read_Byte_Table)
+	SYM(Genesis_M68K_Read_Byte_Table):
 		dd	M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Byte_Rom1,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Byte_Rom2,		; 0x100000 - 0x17FFFF
@@ -87,7 +91,8 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Byte_Ram,		; 0xF80000 - 0xFFFFFF
 	
-	DECL Genesis_M68K_Read_Word_Table
+	global SYM(Genesis_M68K_Read_Word_Table)
+	SYM(Genesis_M68K_Read_Word_Table):
 		dd	M68K_Read_Word_Rom0,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Word_Rom1,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Word_Rom2,		; 0x100000 - 0x17FFFF
@@ -121,7 +126,8 @@ section .rodata align=64
 		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Word_Ram,		; 0xF80000 - 0xFFFFFF
 	
-	DECL Genesis_M68K_Write_Byte_Table
+	global SYM(Genesis_M68K_Write_Byte_Table)
+	SYM(Genesis_M68K_Write_Byte_Table):
 		dd	M68K_Write_Byte_SRAM,		; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Byte_SRAM,		; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Byte_SRAM,		; 0x200000 - 0x2FFFFF
@@ -139,7 +145,8 @@ section .rodata align=64
 		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
 	
-	DECL Genesis_M68K_Write_Word_Table
+	global SYM(Genesis_M68K_Write_Word_Table)
+	SYM(Genesis_M68K_Write_Word_Table):
 		dd	M68K_Write_Word_SRAM,		; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Word_SRAM,		; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Word_SRAM,		; 0x200000 - 0x2FFFFF
@@ -158,16 +165,16 @@ section .rodata align=64
 		dd	M68K_Write_Word_Ram,		; 0xF00000 - 0xFFFFFF
 	
 	; SegaCD Jump Tables
-	extern SegaCD_M68K_Read_Byte_Table
-	extern SegaCD_M68K_Read_Word_Table
-	extern SegaCD_M68K_Write_Byte_Table
-	extern SegaCD_M68K_Write_Word_Table
+	extern SYM(SegaCD_M68K_Read_Byte_Table)
+	extern SYM(SegaCD_M68K_Read_Word_Table)
+	extern SYM(SegaCD_M68K_Write_Byte_Table)
+	extern SYM(SegaCD_M68K_Write_Word_Table)
 	
 	; 32X Jump Tables
-	extern _32X_M68K_Read_Byte_Table
-	extern _32X_M68K_Read_Word_Table
-	extern _32X_M68K_Write_Byte_Table
-	extern _32X_M68K_Write_Word_Table
+	extern SYM(_32X_M68K_Read_Byte_Table)
+	extern SYM(_32X_M68K_Read_Word_Table)
+	extern SYM(_32X_M68K_Write_Byte_Table)
+	extern SYM(_32X_M68K_Write_Word_Table)
 	
 section .bss align=64
 	
@@ -292,7 +299,8 @@ section .text align=64
 	extern SYM(WR_Controller_2)
 	
 	;void Init_Memory_M68K(int System_ID)
-	DECL Init_Memory_M68K
+	global SYM(Init_Memory_M68K)
+	SYM(Init_Memory_M68K):
 		
 		push	eax
 		push	ebx
@@ -305,19 +313,19 @@ section .text align=64
 	align 16
 	
 	.Genesis:
-			mov	eax, [Genesis_M68K_Read_Byte_Table + ebx * 8]
-			mov	[M68K_Read_Byte_Table + ebx * 8], eax
-			mov	eax, [Genesis_M68K_Read_Byte_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Byte_Table + ebx * 8 + 4], eax
-			mov	eax, [Genesis_M68K_Read_Word_Table + ebx * 8]
-			mov	[M68K_Read_Word_Table + ebx * 8], eax
-			mov	eax, [Genesis_M68K_Read_Word_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Word_Table + ebx * 8 + 4], eax
+			mov	eax, [SYM(Genesis_M68K_Read_Byte_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8], eax
+			mov	eax, [SYM(Genesis_M68K_Read_Byte_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8 + 4], eax
+			mov	eax, [SYM(Genesis_M68K_Read_Word_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8], eax
+			mov	eax, [SYM(Genesis_M68K_Read_Word_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8 + 4], eax
 			
-			mov	eax, [Genesis_M68K_Write_Byte_Table + ebx * 4]
-			mov	[M68K_Write_Byte_Table + ebx * 4], eax
-			mov	eax, [Genesis_M68K_Write_Word_Table + ebx * 4]
-			mov	[M68K_Write_Word_Table + ebx * 4], eax
+			mov	eax, [SYM(Genesis_M68K_Write_Byte_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Byte_Table) + ebx * 4], eax
+			mov	eax, [SYM(Genesis_M68K_Write_Word_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Word_Table) + ebx * 4], eax
 			
 			dec	ebx
 			jns	short .Genesis
@@ -329,32 +337,32 @@ section .text align=64
 	align 16
 	
 	._32X:
-			mov	eax, [_32X_M68K_Read_Byte_Table + ebx * 8]
-			mov	[M68K_Read_Byte_Table + ebx * 8], eax
-			mov	eax, [_32X_M68K_Read_Byte_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Byte_Table + ebx * 8 + 4], eax
-			mov	eax, [_32X_M68K_Read_Word_Table + ebx * 8]
-			mov	[M68K_Read_Word_Table + ebx * 8], eax
-			mov	eax, [_32X_M68K_Read_Word_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Word_Table + ebx * 8 + 4], eax
+			mov	eax, [SYM(_32X_M68K_Read_Byte_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8], eax
+			mov	eax, [SYM(_32X_M68K_Read_Byte_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8 + 4], eax
+			mov	eax, [SYM(_32X_M68K_Read_Word_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8], eax
+			mov	eax, [SYM(_32X_M68K_Read_Word_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8 + 4], eax
 			
-			mov	eax, [_32X_M68K_Write_Byte_Table + ebx * 4]
-			mov	[M68K_Write_Byte_Table + ebx * 4], eax
-			mov	eax, [_32X_M68K_Write_Word_Table + ebx * 4]
-			mov	[M68K_Write_Word_Table + ebx * 4], eax
+			mov	eax, [SYM(_32X_M68K_Write_Byte_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Byte_Table) + ebx * 4], eax
+			mov	eax, [SYM(_32X_M68K_Write_Word_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Word_Table) + ebx * 4], eax
 			
 			dec	ebx
 			jns	short ._32X
 
-		mov	eax, [_32X_M68K_Read_Byte_Table + 6 * 8]
-		mov	[M68K_Read_Byte_Table + 8 * 8 - 4], eax
-		mov	eax, [_32X_M68K_Read_Word_Table + 6 * 8]
-		mov	[M68K_Read_Word_Table + 8 * 8 - 4], eax
+		mov	eax, [SYM(_32X_M68K_Read_Byte_Table) + 6 * 8]
+		mov	[SYM(M68K_Read_Byte_Table) + 8 * 8 - 4], eax
+		mov	eax, [SYM(_32X_M68K_Read_Word_Table) + 6 * 8]
+		mov	[SYM(M68K_Read_Word_Table) + 8 * 8 - 4], eax
 		
-		mov	eax, [_32X_M68K_Write_Byte_Table + 6 * 4]
-		mov	[M68K_Write_Byte_Table + 8 * 4 + 4], eax
-		mov	eax, [_32X_M68K_Write_Word_Table + 6 * 4]
-		mov	[M68K_Write_Word_Table + 8 * 4 + 4], eax
+		mov	eax, [SYM(_32X_M68K_Write_Byte_Table) + 6 * 4]
+		mov	[SYM(M68K_Write_Byte_Table) + 8 * 4 + 4], eax
+		mov	eax, [SYM(_32X_M68K_Write_Word_Table) + 6 * 4]
+		mov	[SYM(M68K_Write_Word_Table) + 8 * 4 + 4], eax
 		
 		pop	ebx
 		pop	eax
@@ -363,19 +371,19 @@ section .text align=64
 	align 16
 	
 	.SegaCD:
-			mov	eax, [SegaCD_M68K_Read_Byte_Table + ebx * 8]
-			mov	[M68K_Read_Byte_Table + ebx * 8], eax
-			mov	eax, [SegaCD_M68K_Read_Byte_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Byte_Table + ebx * 8 + 4], eax
-			mov	eax, [SegaCD_M68K_Read_Word_Table + ebx * 8]
-			mov	[M68K_Read_Word_Table + ebx * 8], eax
-			mov	eax, [SegaCD_M68K_Read_Word_Table + ebx * 8 + 4]
-			mov	[M68K_Read_Word_Table + ebx * 8 + 4], eax
+			mov	eax, [SYM(SegaCD_M68K_Read_Byte_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8], eax
+			mov	eax, [SYM(SegaCD_M68K_Read_Byte_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Byte_Table) + ebx * 8 + 4], eax
+			mov	eax, [SYM(SegaCD_M68K_Read_Word_Table) + ebx * 8]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8], eax
+			mov	eax, [SYM(SegaCD_M68K_Read_Word_Table) + ebx * 8 + 4]
+			mov	[SYM(M68K_Read_Word_Table) + ebx * 8 + 4], eax
 			
-			mov	eax, [SegaCD_M68K_Write_Byte_Table + ebx * 4]
-			mov	[M68K_Write_Byte_Table + ebx * 4], eax
-			mov	eax, [SegaCD_M68K_Write_Word_Table + ebx * 4]
-			mov	[M68K_Write_Word_Table + ebx * 4], eax
+			mov	eax, [SYM(SegaCD_M68K_Write_Byte_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Byte_Table) + ebx * 4], eax
+			mov	eax, [SYM(SegaCD_M68K_Write_Word_Table) + ebx * 4]
+			mov	[SYM(M68K_Write_Word_Table) + ebx * 4], eax
 			
 			dec	ebx
 			jns	short .SegaCD
@@ -387,7 +395,8 @@ section .text align=64
 	align 64
 	
 	;unsigned char M68K_RB(unsigned int Adr)
-	DECL M68K_RB
+	global SYM(M68K_RB)
+	SYM(M68K_RB):
 		
 		mov	eax, [esp + 4]		; Address
 		push	ebx
@@ -396,13 +405,14 @@ section .text align=64
 		and	eax, 0xF80000
 		shr	eax, 17
 		and	ebx, 0xFFFFFF
-		jmp	[M68K_Read_Byte_Table + eax]
+		jmp	[SYM(M68K_Read_Byte_Table) + eax]
 	
 	align 64
 	
 	;unsigned short M68K_RW(unsigned int Adr)
-	DECL M68K_RW
-	
+	global SYM(M68K_RW)
+	SYM(M68K_RW):
+		
 		mov	eax, [esp + 4]		; Address
 		push	ebx
 		
@@ -410,12 +420,13 @@ section .text align=64
 		and	eax, 0xF80000
 		shr	eax, 17
 		and	ebx, 0xFFFFFF
-		jmp	[M68K_Read_Word_Table + eax]
+		jmp	[SYM(M68K_Read_Word_Table) + eax]
 	
 	align 64
 	
 	;void M68K_WB(unsigned int Adr, unsigned char Data)
-	DECL M68K_WB
+	global SYM(M68K_WB)
+	SYM(M68K_WB)
 		
 		push	ebx
 		push	ecx
@@ -427,12 +438,13 @@ section .text align=64
 		and	eax, 0xFF
 		shr	ecx, 18
 		and	ebx, 0xFFFFFF
-		jmp	[M68K_Write_Byte_Table + ecx]
+		jmp	[SYM(M68K_Write_Byte_Table) + ecx]
 	
 	align 64
 	
 	;void M68K_WW(unsigned int Adr, unsigned short Data)
-	DECL M68K_WW
+	global SYM(M68K_WW)
+	SYM(M68K_WW):
 		
 		push	ebx
 		push	ecx
@@ -444,7 +456,7 @@ section .text align=64
 		and	eax, 0xFFFF
 		shr	ecx, 18
 		and	ebx, 0xFFFFFF
-		jmp	[M68K_Write_Word_Table + ecx]
+		jmp	[SYM(M68K_Write_Word_Table) + ecx]
 	
 	
 	;******** Read Byte Proc
@@ -1382,10 +1394,10 @@ section .text align=64
 		and	ebx, 0xF
 		and	eax, 0x1F
 		shr	ebx, 1
-		mov	ecx, [Genesis_M68K_Read_Byte_Table + eax * 4]
-		mov	[M68K_Read_Byte_Table + ebx * 4], ecx
-		mov	ecx, [Genesis_M68K_Read_Word_Table + eax * 4]
-		mov	[M68K_Read_Word_Table + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Byte_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Byte_Table) + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Word_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Word_Table) + ebx * 4], ecx
 		
 		pop	ecx
 		pop	ebx
@@ -1667,10 +1679,10 @@ section .text align=64
 		and	ebx, 0xF
 		and	eax, 0x1F
 		shr	ebx, 1
-		mov	ecx, [Genesis_M68K_Read_Byte_Table + eax * 4]
-		mov	[M68K_Read_Byte_Table + ebx * 4], ecx
-		mov	ecx, [Genesis_M68K_Read_Word_Table + eax * 4]
-		mov	[M68K_Read_Word_Table + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Byte_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Byte_Table) + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Word_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Word_Table) + ebx * 4], ecx
 		
 		pop	ecx
 		pop	ebx

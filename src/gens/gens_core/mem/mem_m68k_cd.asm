@@ -20,7 +20,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
 %include "mdp/mdp_nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_SEGACD 32
@@ -106,7 +105,8 @@ section .data align=64
 section .rodata align=64
 	; Sega CD Default Jump Table
 	
-	DECL SegaCD_M68K_Read_Byte_Table
+	global SYM(SegaCD_M68K_Read_Byte_Table)
+	SYM(SegaCD_M68K_Read_Byte_Table):
 		dd	M68K_Read_Byte_Bios_CD,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x100000 - 0x17FFFF
@@ -140,7 +140,8 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Byte_Ram,		; 0xF80000 - 0xFFFFFF
 	
-	DECL SegaCD_M68K_Read_Word_Table
+	global SYM(SegaCD_M68K_Read_Word_Table)
+	SYM(SegaCD_M68K_Read_Word_Table):
 		dd	M68K_Read_Word_Bios_CD,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Word_Bad,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x100000 - 0x17FFFF
@@ -174,7 +175,8 @@ section .rodata align=64
 		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Word_Ram,		; 0xF80000 - 0xFFFFFF
 	
-	DECL SegaCD_M68K_Write_Byte_Table
+	global SYM(SegaCD_M68K_Write_Byte_Table)
+	SYM(SegaCD_M68K_Write_Byte_Table):
 		dd	M68K_Write_Byte_Bios_CD,	; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Byte_WRam,		; 0x200000 - 0x2FFFFF
@@ -192,7 +194,8 @@ section .rodata align=64
 		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
 	
-	DECL SegaCD_M68K_Write_Word_Table
+	global SYM(SegaCD_M68K_Write_Word_Table)
+	SYM(SegaCD_M68K_Write_Word_Table):
 		dd	M68K_Write_Word_Bios_CD,	; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Word_WRam,		; 0x200000 - 0x2FFFFF

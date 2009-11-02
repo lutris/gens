@@ -250,6 +250,14 @@ static void gen_banner(void) {
 	emit("%%endif\n");
 	emit("\n");
 	
+	// Symbol declaration.
+	emit("%%ifdef __OBJ_ELF\n");
+	emit("\t%%define SYM(x) x\n");
+	emit("%%else\n");
+	emit("\t%%define SYM(x) _ %%+ x\n");
+	emit("%%endif\n");
+	emit("\n");
+	
 	emit("bits 32\n");
 }
 
@@ -277,35 +285,27 @@ static void gen_variables(void) {
 	emit("section .data\n");
 	emit("bits 32\n");
 
-	// Symbol redefines for ELF.
 	emit("\n");
-	emit("\t%%ifdef __OBJ_ELF\n");
-	emit("\t\t%%define _Ram_68k	Ram_68k\n");
-	emit("\t\t%%define _Rom_Data	Rom_Data\n");
-	emit("\t\t%%define _Rom_Size	Rom_Size\n");
-	emit("\t%%endif\n");
+	emit("\textern SYM(Ram_68k)\n");
 	
-	emit("\n");
-	emit("\textern _Ram_68k\n");
-
 // TODO: Port from Gens Rerecording
 #if 0
-	emit("\textern _GensTrace\n");
+	emit("\textern SYM(GensTrace)\n");
 
-	emit("\textern _hook_read_byte\n");
-	emit("\textern _hook_read_word\n");
-	emit("\textern _hook_read_dword\n");
-	emit("\textern _hook_write_byte\n");
-	emit("\textern _hook_write_word\n");
-	emit("\textern _hook_write_dword\n");
-	emit("\textern _hook_pc\n");
-	emit("\textern _hook_address\n");
-	emit("\textern _hook_value\n");
-//	emit("\textern _Fix_Codes\n");
+	emit("\textern SYM(hook_read_byte)\n");
+	emit("\textern SYM(hook_read_word)\n");
+	emit("\textern SYM(hook_read_dword)\n");
+	emit("\textern SYM(hook_write_byte)\n");
+	emit("\textern SYM(hook_write_word)\n");
+	emit("\textern SYM(hook_write_dword)\n");
+	emit("\textern SYM(hook_pc)\n");
+	emit("\textern SYM(hook_address)\n");
+	emit("\textern SYM(hook_value)\n");
+//	emit("\textern SYM(Fix_Codes)\n");
 #endif
 	
-	emit("\textern _Rom_Data\n");
-	emit("\textern _Rom_Size\n");
+	emit("\textern SYM(Rom_Data)\n");
+	emit("\textern SYM(Rom_Size)\n");
 	emit("\n");
 
 	emit("global %scontext\n", sourcename);
@@ -596,17 +596,12 @@ static void gen_interface(void) {
 	emit("section .text\n");
 	emit("bits 32\n");
 	
-	// Symbol redefines for ELF.
 	emit("\n");
-	emit("\t%%ifdef __OBJ_ELF\n");
-	emit("\t\t%%define _VDP_Int_Ack VDP_Int_Ack\n");
-	emit("\t%%endif\n");
-	emit("\n");
-	emit("\textern M68K_RB\n");
-	emit("\textern M68K_RW\n");
-	emit("\textern M68K_WB\n");
-	emit("\textern M68K_WW\n");
-	emit("\textern _VDP_Int_Ack\n");
+	emit("\textern SYM(M68K_RB)\n");
+	emit("\textern SYM(M68K_RW)\n");
+	emit("\textern SYM(M68K_WB)\n");
+	emit("\textern SYM(M68K_WW)\n");
+	emit("\textern SYM(VDP_Int_Ack)\n");
 	emit("\n");
 
 	emit("top:\n");
@@ -1295,7 +1290,7 @@ static void gen_flush_interrupts(void) {
 	emit("mov [__sr+1], dh\n");
 
 	emit("push eax\n");
-	emit("call _VDP_Int_Ack\n");					// in: dl = old IPL line, out: al = new IPL line
+	emit("call SYM(VDP_Int_Ack)\n");				// in: dl = old IPL line, out: al = new IPL line
 	emit("mov byte [__interrupts],al\n");	// set it
 	emit("pop eax\n");
 
@@ -1602,7 +1597,7 @@ static void gen_readbw(int size)
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
 		emit("\txor edx, byte 1\n");
-		emit("\tmov cl, [_Ram_68k + edx]\n");
+		emit("\tmov cl, [SYM(Ram_68k) + edx]\n");
 		emit("\tmov edx, [__access_address]\n");
 		
 // TODO: Port from Gens Rerecording
@@ -1625,7 +1620,7 @@ static void gen_readbw(int size)
 		emit("\tmov [__io_cycle_counter], edi\n");
 		emit("\tmov [__io_fetchbase], ebp\n");
 		emit("\tmov [__io_fetchbased_pc], esi\n");
-		emit("\tcall M68K_RB\n");
+		emit("\tcall SYM(M68K_RB)\n");
 
 //	emit("\tmov eax, [esp]\n");
 //	emit("\tpush ebx\n");
@@ -1667,7 +1662,7 @@ static void gen_readbw(int size)
 		emit("\tcmp edx, 0xE00000\n");
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov cx, [_Ram_68k + edx]\n");
+		emit("\tmov cx, [SYM(Ram_68k) + edx]\n");
 		emit("\tmov edx,[__access_address]\n");
 		
 // TODO: Port from Gens Rerecording
@@ -1691,7 +1686,7 @@ static void gen_readbw(int size)
 		emit("\tmov [__io_cycle_counter], edi\n");
 		emit("\tmov [__io_fetchbase], ebp\n");
 		emit("\tmov [__io_fetchbased_pc], esi\n");
-		emit("\tcall M68K_RW\n");
+		emit("\tcall SYM(M68K_RW)\n");
 		emit("\tmov edi, [__io_cycle_counter]\n");
 		emit("\tadd esp, byte 4\n");
 		emit("\tmov ebp, [__io_fetchbase]\n");
@@ -1727,7 +1722,7 @@ static void gen_readl(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov ecx, [_Ram_68k + edx]\n");
+	emit("\tmov ecx, [SYM(Ram_68k) + edx]\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov edx, [__access_address]\n");
 	
@@ -1752,11 +1747,11 @@ static void gen_readl(void)
 	emit("\tmov [__io_cycle_counter], edi\n");
 	emit("\tmov [__io_fetchbase], ebp\n");
 	emit("\tmov [__io_fetchbased_pc], esi\n");
-	emit("\tcall M68K_RW\n");
+	emit("\tcall SYM(M68K_RW)\n");
 	emit("\tmov cx, ax\n");
 	emit("\tadd dword [esp], byte 2\n");
 	emit("\tshl ecx, 16\n");
-	emit("\tcall M68K_RW\n");
+	emit("\tcall SYM(M68K_RW)\n");
 	emit("\tmov edi, [__io_cycle_counter]\n");
 	emit("\tadd esp, byte 4\n");
 	emit("\tmov ebp, [__io_fetchbase]\n");
@@ -1791,7 +1786,7 @@ static void gen_readdecl(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov ecx, [_Ram_68k + edx]\n");
+	emit("\tmov ecx, [SYM(Ram_68k) + edx]\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov edx, [__access_address]\n");
 
@@ -1817,11 +1812,11 @@ static void gen_readdecl(void)
 	emit("\tmov [__io_cycle_counter], edi\n");
 	emit("\tmov [__io_fetchbase], ebp\n");
 	emit("\tmov [__io_fetchbased_pc], esi\n");
-	emit("\tcall M68K_RW\n");
+	emit("\tcall SYM(M68K_RW)\n");
 	emit("\tmov ecx, eax\n");
 	emit("\tsub dword [esp], byte 2\n");
 	emit("\tand ecx, 0xFFFF\n");
-	emit("\tcall M68K_RW\n");
+	emit("\tcall SYM(M68K_RW)\n");
 	emit("\tand eax, 0xFFFF\n");
 	emit("\tmov edi, [__io_cycle_counter]\n");
 	emit("\tshl eax, 16\n");
@@ -1874,7 +1869,7 @@ static void gen_writebw(int size)
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\txor edx, 1\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov [_Ram_68k + edx], cl\n");
+		emit("\tmov [SYM(Ram_68k) + edx], cl\n");
 		emit("\tmov edx, [__access_address]\n");
 
 // From Gens Rerecording, but was already commented out.
@@ -1896,7 +1891,7 @@ static void gen_writebw(int size)
 		emit("\tmov [__io_cycle_counter], edi\n");
 		emit("\tmov [__io_fetchbase], ebp\n");
 		emit("\tmov [__io_fetchbased_pc], esi\n");
-		emit("\tcall M68K_WB\n");
+		emit("\tcall SYM(M68K_WB)\n");
 		emit("\tmov edi, [__io_cycle_counter]\n");
 		emit("\tadd esp, byte 8\n");
 		emit("\tmov ebp, [__io_fetchbase]\n");
@@ -1927,7 +1922,7 @@ static void gen_writebw(int size)
 		emit("\tcmp edx, 0xE00000\n");
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov [_Ram_68k + edx], cx\n");
+		emit("\tmov [SYM(Ram_68k) + edx], cx\n");
 		emit("\tmov edx, [__access_address]\n");
 
 // From Gens Rerecording, but was already commented out.
@@ -1949,7 +1944,7 @@ static void gen_writebw(int size)
 		emit("\tmov [__io_cycle_counter], edi\n");
 		emit("\tmov [__io_fetchbase], ebp\n");
 		emit("\tmov [__io_fetchbased_pc], esi\n");
-		emit("\tcall M68K_WW\n");
+		emit("\tcall SYM(M68K_WW)\n");
 		emit("\tmov edi, [__io_cycle_counter]\n");
 		emit("\tadd esp, byte 8\n");
 		emit("\tmov ebp, [__io_fetchbase]\n");
@@ -1985,7 +1980,7 @@ static void gen_writel(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov [_Ram_68k + edx], ecx\n");
+	emit("\tmov [SYM(Ram_68k) + edx], ecx\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\trol ecx, 16\n");
 
@@ -2009,10 +2004,10 @@ static void gen_writel(void)
 	emit("\tmov [__io_fetchbase], ebp\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov [__io_fetchbased_pc], esi\n");
-	emit("\tcall M68K_WW\n");
+	emit("\tcall SYM(M68K_WW)\n");
 	emit("\tmov [esp + 4], cx\n");
 	emit("\tadd dword [esp], byte 2\n");
-	emit("\tcall M68K_WW\n");
+	emit("\tcall SYM(M68K_WW)\n");
 	emit("\tmov edi, [__io_cycle_counter]\n");
 	emit("\tadd esp, byte 8\n");
 	emit("\tmov ebp, [__io_fetchbase]\n");
@@ -2047,7 +2042,7 @@ static void gen_writedecl(void)
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\trol ecx, 16\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov [_Ram_68k + edx], ecx\n");
+	emit("\tmov [SYM(Ram_68k) + edx], ecx\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\trol ecx, 16\n");
 
@@ -2072,10 +2067,10 @@ static void gen_writedecl(void)
 	emit("\tmov [__io_fetchbase], ebp\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov [__io_fetchbased_pc], esi\n");
-	emit("\tcall M68K_WW\n");
+	emit("\tcall SYM(M68K_WW)\n");
 	emit("\tmov [esp + 4], ecx\n");
 	emit("\tsub dword [esp], byte 2\n");
-	emit("\tcall M68K_WW\n");
+	emit("\tcall SYM(M68K_WW)\n");
 	emit("\tmov edi, [__io_cycle_counter]\n");
 	emit("\tadd esp, byte 8\n");
 	emit("\tmov ebp, [__io_fetchbase]\n");

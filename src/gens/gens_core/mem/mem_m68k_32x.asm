@@ -20,7 +20,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
 %include "mdp/mdp_nasm_x86.inc"
 
 %define CYCLE_FOR_TAKE_Z80_BUS_GENESIS 16
@@ -127,16 +126,17 @@ section .data align=64
 	
 	extern M68K_Read_Byte_Bad
 	
-	extern Genesis_M68K_Read_Byte_Table
-	extern Genesis_M68K_Read_Word_Table
+	extern SYM(Genesis_M68K_Read_Byte_Table)
+	extern SYM(Genesis_M68K_Read_Word_Table)
 	
-	extern M68K_Read_Byte_Table
-	extern M68K_Read_Word_Table
+	extern SYM(M68K_Read_Byte_Table)
+	extern SYM(M68K_Read_Word_Table)
 	
 section .rodata align=64
 	; 32X Default Jump Table
 	
-	DECL _32X_M68K_Read_Byte_Table
+	global SYM(_32X_M68K_Read_Byte_Table)
+	SYM(_32X_M68K_Read_Byte_Table):
 		dd	M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Byte_Rom1,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Byte_Rom2,		; 0x100000 - 0x17FFFF
@@ -152,8 +152,8 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Bad,		; 0x600000 - 0x67FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
-		dd	M68K_Read_Byte_32X_FB0,		; 0x780000 - 0x7FFFFF
-		dd	M68K_Read_Byte_32X_FB1,		; 0x800000 - 0x87FFFF
+		dd	SYM(M68K_Read_Byte_32X_FB0),	; 0x780000 - 0x7FFFFF
+		dd	SYM(M68K_Read_Byte_32X_FB1),	; 0x800000 - 0x87FFFF
 		dd	M68K_Read_Byte_Rom0,		; 0x880000 - 0x8FFFFF
 		dd	M68K_Read_Byte_Rom1,		; 0x900000 - 0x97FFFF
 		dd	M68K_Read_Byte_Rom2,		; 0x980000 - 0x9FFFFF
@@ -170,7 +170,8 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Byte_Ram,		; 0xF80000 - 0xFFFFFF
 
-	DECL _32X_M68K_Read_Word_Table
+	global SYM(_32X_M68K_Read_Word_Table)
+	SYM(_32X_M68K_Read_Word_Table):
 		dd	M68K_Read_Word_Rom0,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Word_Rom1,		; 0x080000 - 0x0FFFFF
 		dd	M68K_Read_Word_Rom2,		; 0x100000 - 0x17FFFF
@@ -186,8 +187,8 @@ section .rodata align=64
 		dd	M68K_Read_Word_Bad,		; 0x600000 - 0x67FFFF
 		dd	M68K_Read_Word_Bad,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x700000 - 0x77FFFF
-		dd	M68K_Read_Word_32X_FB0,		; 0x780000 - 0x7FFFFF
-		dd	M68K_Read_Word_32X_FB1,		; 0x800000 - 0x87FFFF
+		dd	SYM(M68K_Read_Word_32X_FB0),	; 0x780000 - 0x7FFFFF
+		dd	SYM(M68K_Read_Word_32X_FB1),	; 0x800000 - 0x87FFFF
 		dd	M68K_Read_Word_Rom0,		; 0x880000 - 0x8FFFFF
 		dd	M68K_Read_Word_Rom1,		; 0x900000 - 0x97FFFF
 		dd	M68K_Read_Word_Rom2,		; 0x980000 - 0x9FFFFF
@@ -204,7 +205,8 @@ section .rodata align=64
 		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
 		dd	M68K_Read_Word_Ram,		; 0xF80000 - 0xFFFFFF
 	
-	DECL _32X_M68K_Write_Byte_Table
+	global SYM(_32X_M68K_Write_Byte_Table)
+	SYM(_32X_M68K_Write_Byte_Table):
 		dd	M68K_Write_Bad,			; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Byte_SRAM,		; 0x200000 - 0x2FFFFF
@@ -212,8 +214,8 @@ section .rodata align=64
 		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
 		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
 		dd	M68K_Write_Bad,			; 0x600000 - 0x6FFFFF
-		dd	M68K_Write_Byte_32X_FB0,	; 0x700000 - 0x7FFFFF
-		dd	M68K_Write_Byte_32X_FB1,	; 0x800000 - 0x8FFFFF
+		dd	SYM(M68K_Write_Byte_32X_FB0),	; 0x700000 - 0x7FFFFF
+		dd	SYM(M68K_Write_Byte_32X_FB1),	; 0x800000 - 0x8FFFFF
 		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
 		dd	M68K_Write_Byte_Misc_32X,	; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
@@ -222,7 +224,8 @@ section .rodata align=64
 		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
 	
-	DECL _32X_M68K_Write_Word_Table
+	global SYM(_32X_M68K_Write_Word_Table)
+	SYM(_32X_M68K_Write_Word_Table):
 		dd	M68K_Write_Bad,			; 0x000000 - 0x0FFFFF
 		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
 		dd	M68K_Write_Word_SRAM,		; 0x200000 - 0x2FFFFF
@@ -230,8 +233,8 @@ section .rodata align=64
 		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
 		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
 		dd	M68K_Write_Bad,			; 0x600000 - 0x6FFFFF
-		dd	M68K_Write_Word_32X_FB0,	; 0x700000 - 0x7FFFFF
-		dd	M68K_Write_Word_32X_FB1,	; 0x800000 - 0x8FFFFF
+		dd	SYM(M68K_Write_Word_32X_FB0),	; 0x700000 - 0x7FFFFF
+		dd	SYM(M68K_Write_Word_32X_FB1),	; 0x800000 - 0x8FFFFF
 		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
 		dd	M68K_Write_Word_Misc_32X,	; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
@@ -719,7 +722,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Read_Byte_32X_FB0
+	global SYM(M68K_Read_Byte_32X_FB0)
+	SYM(M68K_Read_Byte_32X_FB0):
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
 		mov	al, [SYM(_32X_VDP_Ram) + ebx]
@@ -728,7 +732,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Read_Byte_32X_FB1
+	global SYM(M68K_Read_Byte_32X_FB1)
+	SYM(M68K_Read_Byte_32X_FB1):
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
 		mov	al, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
@@ -1155,7 +1160,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Read_Word_32X_FB0
+	global SYM(M68K_Read_Word_32X_FB0)
+	SYM(M68K_Read_Word_32X_FB0):
 		and	ebx, 0x1FFFE
 		mov	ax, [SYM(_32X_VDP_Ram) + ebx]
 		pop	ebx
@@ -1163,7 +1169,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Read_Word_32X_FB1
+	global SYM(M68K_Read_Word_32X_FB1)
+	SYM(M68K_Read_Word_32X_FB1):
 		and	ebx, 0x1FFFE
 		mov	ax, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
 		pop	ebx
@@ -1362,10 +1369,10 @@ section .text align=64
 		and	ebx, 0xF
 		and	eax, 0x1F
 		shr	ebx, 1
-		mov	ecx, [Genesis_M68K_Read_Byte_Table + eax * 4]
-		mov	[M68K_Read_Byte_Table + ebx * 4], ecx
-		mov	ecx, [Genesis_M68K_Read_Word_Table + eax * 4]
-		mov	[M68K_Read_Word_Table + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Byte_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Byte_Table) + ebx * 4], ecx
+		mov	ecx, [SYM(Genesis_M68K_Read_Word_Table) + eax * 4]
+		mov	[SYM(M68K_Read_Word_Table) + ebx * 4], ecx
 		
 		pop	ecx
 		pop	ebx
@@ -1762,7 +1769,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Write_Byte_32X_FB0
+	global SYM(M68K_Write_Byte_32X_FB0)
+	SYM(M68K_Write_Byte_32X_FB0):
 		and	ebx, 0x1FFFF
 		test	al, al
 		jz	short .blank
@@ -1777,7 +1785,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Write_Byte_32X_FB1
+	global SYM(M68K_Write_Byte_32X_FB1)
+	SYM(M68K_Write_Byte_32X_FB1):
 		and	ebx, 0x1FFFF
 		test	al, al
 		jz	short .blank
@@ -2519,7 +2528,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Write_Word_32X_FB0
+	global SYM(M68K_Write_Word_32X_FB0)
+	SYM(M68K_Write_Word_32X_FB0):
 		and	ebx, 0x3FFFE
 		test	ebx, 0x20000
 		jnz	short .overwrite
@@ -2550,7 +2560,8 @@ section .text align=64
 	
 	align 64
 	
-	DECL M68K_Write_Word_32X_FB1
+	global SYM(M68K_Write_Word_32X_FB1)
+	SYM(M68K_Write_Word_32X_FB1):
 		and	ebx, 0x3FFFE
 		test	ebx, 0x20000
 		jnz	short .overwrite
