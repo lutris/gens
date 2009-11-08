@@ -141,7 +141,6 @@ extern int Country_Order[3];
 extern int Intro_Style;
 extern int SegaCD_Accurate;
 extern int Quick_Exit;
-extern int FS_Minimised;
 extern int fast_forward;
 
 #if 0	// TODO: Replace with MDP "exclusive mode" later.

@@ -115,7 +115,6 @@ char **language_name = NULL;
 int Full_Screen = 0;
 int Resolution = 1;
 int Show_LED = 0;
-int FS_Minimised = 0;
 int Auto_Pause = 0;
 int Auto_Fix_CS = 0;
 int Country = -1;
@@ -176,7 +175,6 @@ int Init_Settings(void)
 	
 	GYM_Dumping = 0;
 	
-	FS_Minimised = 0;
 	Game = NULL;
 	Genesis_Started = 0;
 	SegaCD_Started = 0;
