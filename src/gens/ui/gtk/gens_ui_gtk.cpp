@@ -591,3 +591,23 @@ void GensUI::setMousePointer(bool busy)
 	
 	update();
 }
+
+
+/**
+ * fsMinimize(): Full Screen Minimize.
+ * @param fst Type of FS Minimization.
+ */
+void GensUI::fsMinimize(fsMinimize_Type fst)
+{
+	// TODO
+}
+
+
+/**
+ * fsRestore() Full Screen Restore.
+ * @param fst Type of FS Minimization.
+ */
+void GensUI::fsRestore(fsMinimize_Type fst)
+{
+	// TODO
+}

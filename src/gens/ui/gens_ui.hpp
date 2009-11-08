@@ -128,6 +128,21 @@ class GensUI
 		static MsgBox_Response msgBox(const string& msg, const string& title = GENS_APPNAME,
 					      const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
 					      void* owner = NULL);
+		
+		// Full Screen minimization.
+		enum fsMinimize_Type
+		{
+			FSMINIMIZE_DIALOG	= 0,
+			FSMINIMIZE_ALTTAB	= 1,
+			
+			FSMINIMIZE_MAX
+		};
+		
+		static void fsMinimize(fsMinimize_Type fst);
+		static void fsRestore(fsMinimize_Type fst);
+	
+	private:
+		static int fsMinimize_Counter[(int)FSMINIMIZE_MAX];
 };
 
 #endif /* __cplusplus */

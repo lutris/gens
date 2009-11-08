@@ -35,6 +35,10 @@
 using std::stringstream;
 
 
+// Full Screen Minization counters.
+int GensUI::fsMinimize_Counter[(int)FSMINIMIZE_MAX] = {0, 0};
+
+
 /**
  * setWindowTitle_withAppVersion(): Set the window title with the app name and version at the beginning.
  * @param title Window title.
