@@ -75,7 +75,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 void gens_window_create_menubar(void);
+
 #ifdef __cplusplus
 }
 #endif
