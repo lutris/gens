@@ -727,9 +727,57 @@ unsigned int ROM::loadROM(const string& filename,
 		if (!sel_file)
 		{
 			// No file specified, or the specified file wasn't found.
-			// Show the Zip File Selection Dialog.
-			// TODO: Improve this!
-			sel_file = zipsel_dialog_get_file(z_list);
+			
+			// Check if there's only a single ROM file in the archive.
+			// This is done by checking file extensions, which isn't as reliable
+			// as checking file contents. However, checking file contents would
+			// take too much time for some types of archives, e.g. 7z.
+			static const char* const ext[] = {".bin", ".smd", ".gen", ".32x", NULL};
+			
+			mdp_z_entry_t *cur = z_list;
+			while (cur)
+			{
+				// Check if the current entry matches any of the file extensions.
+				for (int i = 0; i < 4; i++)
+				{
+					size_t ext_len = strlen(ext[i]);
+					size_t filename_len = strlen(cur->filename);
+					if (ext_len > filename_len)
+						continue;
+					
+					if (strcasecmp(&cur->filename[filename_len - ext_len], ext[i]) == 0)
+					{
+						// Extension matches.
+						if (!sel_file)
+						{
+							// A ROM hasn't been found yet.
+							sel_file = cur;
+						}
+						else
+						{
+							// A ROM has already been found.
+							// Multiple ROMs exist in this archive.
+							sel_file = NULL;
+							cur = NULL;
+						}
+						break;
+					}
+				}
+				
+				// Next ROM.
+				if (cur)
+					cur = cur->next;
+			}
+			
+			if (!sel_file)
+			{
+				// Either no ROMs matched the file extensions,
+				// or more than one ROM did.
+				
+				// Show the Zip File Selection Dialog.
+				// TODO: Improve this!
+				sel_file = zipsel_dialog_get_file(z_list);
+			}
 		}
 	}
 	
