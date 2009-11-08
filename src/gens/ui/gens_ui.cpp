@@ -37,6 +37,7 @@ using std::stringstream;
 
 // Full Screen Minization counters.
 int GensUI::fsMinimize_Counter[(int)FSMINIMIZE_MAX] = {0, 0};
+bool GensUI::fsMinimize_OldFS[(int)FSMINIMIZE_MAX] = {false, false};
 
 
 /**

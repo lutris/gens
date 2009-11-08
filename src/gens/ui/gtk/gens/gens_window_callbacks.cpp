@@ -267,3 +267,32 @@ gboolean gens_window_sdlsock_button_press(GtkWidget *widget, GdkEventButton *eve
 	// Unhandled event
 	return false;
 }
+
+
+/**
+ * gens_window_window_state_event(): Window state event.
+ * @param wigdet GTK+ widget.
+ * @param event GDK window state event.
+ * @param user_data
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_window_state_event(GtkWidget *widget, GdkEventWindowState *event, gpointer user_data)
+{
+	GSFT_UNUSED_PARAMETER(user_data);
+	
+	if (widget != gens_window)
+		return FALSE;
+	
+	if (event->changed_mask & GDK_WINDOW_STATE_ICONIFIED)
+	{
+		// Iconification state was changed.
+		if (!(event->new_window_state & GDK_WINDOW_STATE_ICONIFIED))
+		{
+			// Window was restored.
+			// Call fsRestore() for Alt-Tab processing.
+			GensUI::fsRestore(GensUI::FSMINIMIZE_ALTTAB);
+		}
+	}
+	
+	return FALSE;
+}

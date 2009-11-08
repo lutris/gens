@@ -167,6 +167,10 @@ void gens_window_create(void)
 	// Button Press event.
 	g_signal_connect(gens_window_sdlsock, "button-press-event",
 			 G_CALLBACK(gens_window_sdlsock_button_press), NULL);
+	
+	// Window State event.
+	g_signal_connect(gens_window, "window-state-event",
+			 G_CALLBACK(gens_window_window_state_event), NULL);
 }
 
 

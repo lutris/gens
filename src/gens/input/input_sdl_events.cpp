@@ -179,7 +179,18 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_TAB:
-			Options::systemReset();
+#ifndef GENS_OS_WIN32
+			if (vdraw_get_fullscreen() && IS_KMOD_ALT(mod))
+			{
+				// Alt-Tab in fullscreen.
+				GensUI::fsMinimize(GensUI::FSMINIMIZE_ALTTAB);
+			}
+			else
+#endif
+			{
+				// System Reset.
+				Options::systemReset();
+			}
 			break;
 		
 		case GENS_KEY_RETURN:

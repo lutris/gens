@@ -599,7 +599,26 @@ void GensUI::setMousePointer(bool busy)
  */
 void GensUI::fsMinimize(fsMinimize_Type fst)
 {
-	// TODO
+	// Check if fst is valid.
+	if (fst < FSMINIMIZE_DIALOG || fst >= FSMINIMIZE_MAX)
+		return;
+	
+	// Increment the fsMinimize counter for this type.
+	fsMinimize_Counter[(int)fst]++;
+	if (!vdraw_get_fullscreen())
+		return;
+	
+	if (fsMinimize_Counter[(int)fst] == 1)
+	{
+		// First minimization.
+		vdraw_set_fullscreen(false);
+		Sync_Gens_Window_GraphicsMenu();
+		fsMinimize_OldFS[(int)fst] = true;
+		
+		// Minimize the window for Alt-Tab only.
+		if (fst == FSMINIMIZE_ALTTAB)
+			gtk_window_iconify(GTK_WINDOW(gens_window));
+	}
 }
 
 
@@ -609,5 +628,23 @@ void GensUI::fsMinimize(fsMinimize_Type fst)
  */
 void GensUI::fsRestore(fsMinimize_Type fst)
 {
-	// TODO
+	// Check if fst is valid.
+	if (fst < FSMINIMIZE_DIALOG || fst >= FSMINIMIZE_MAX)
+		return;
+	
+	if (fsMinimize_Counter[(int)fst] == 0)
+		return;
+	
+	// Decrement the fsMinimize counter for this type.
+	fsMinimize_Counter[(int)fst]--;
+	if (!fsMinimize_OldFS[(int)fst] || vdraw_get_fullscreen())
+		return;
+	
+	if (fsMinimize_Counter[(int)fst] == 0)
+	{
+		// Last restoration.
+		vdraw_set_fullscreen(true);
+		Sync_Gens_Window_GraphicsMenu();
+		fsMinimize_OldFS[(int)fst] = false;
+	}
 }

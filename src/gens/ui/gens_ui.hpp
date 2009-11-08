@@ -143,6 +143,7 @@ class GensUI
 	
 	private:
 		static int fsMinimize_Counter[(int)FSMINIMIZE_MAX];
+		static bool fsMinimize_OldFS[(int)FSMINIMIZE_MAX];
 };
 
 #endif /* __cplusplus */

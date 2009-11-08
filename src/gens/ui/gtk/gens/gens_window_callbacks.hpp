@@ -50,6 +50,9 @@ gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gp
 // Mouse callback for SDL socket.
 gboolean gens_window_sdlsock_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
+// Window State Event.
+gboolean gens_window_window_state_event(GtkWidget *widget, GdkEventWindowState *event, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif
