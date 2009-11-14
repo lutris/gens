@@ -65,7 +65,7 @@ static WNDCLASS ca_wndclass;
 
 // Window size.
 #define CA_WINDOW_WIDTH  306
-#define CA_WINDOW_HEIGHT 140
+#define CA_WINDOW_HEIGHT 164
 
 #define CA_TRACKBAR_WIDTH  201
 #define CA_TRACKBAR_HEIGHT 24
@@ -81,7 +81,7 @@ static HWND	lblBrightnessVal;
 
 static HWND	chkGrayscale;
 static HWND	chkInverted;
-static HWND	chkScaleColors;
+static HWND	cboColorScaleMethod;
 
 // Widget creation functions.
 static void	ca_window_create_child_windows(HWND hWnd);
@@ -198,39 +198,54 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(lblBrightnessVal, fntMain, TRUE);
 	
 	// Center the checkboxes.
-	static const unsigned int chkLeft = (CA_WINDOW_WIDTH-80-8-80-8-96+16)/2;
+	int ctlLeft = (CA_WINDOW_WIDTH-80-8-96+16)/2;
 	
 	// "Grayscale" checkbox.
 	chkGrayscale = CreateWindow(WC_BUTTON, TEXT("&Grayscale"),
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-				    chkLeft, 16+32+32, 80, 16,
+				    ctlLeft, 16+32+32, 80, 16,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkGrayscale, fntMain, TRUE);
 	
 	// "Inverted" checkbox.
 	chkInverted = CreateWindow(WC_BUTTON, TEXT("&Inverted"),
 				   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-				   chkLeft+8+80, 16+32+32, 80, 16,
+				   ctlLeft+8+80, 16+32+32, 80, 16,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkInverted, fntMain, TRUE);
 	
-	// "Scale Colors" checkbox.
-	chkScaleColors = CreateWindow(WC_BUTTON, TEXT("Scale Co_lors"),
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					chkLeft+8+80+8+80, 16+32+32, 96, 16,
-					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkScaleColors, fntMain, TRUE);
+	// Center the "Color Scale Method" controls.
+	ctlLeft = (CA_WINDOW_WIDTH-104-8-96+16)/2;
+	
+	// Create a label for the "Color Scale Method" dropdown.
+	HWND lblColorScaleMethod = CreateWindow(WC_STATIC, TEXT("Color Sca&le Method:"),
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_CENTER,
+						ctlLeft, 16+32+32+20+2, 104, 16,
+						hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(lblColorScaleMethod, fntMain, TRUE);
+	
+	// Create the "Color Scale Method" dropdown.
+	cboColorScaleMethod = CreateWindow(WC_COMBOBOX, NULL,
+						WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+						ctlLeft+104+8, 16+32+32+20, 96, 23*3,
+						hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(cboColorScaleMethod, fntMain, TRUE);
+	
+	// Add the items to the "Color Scale Method" dropdown.
+	ComboBox_AddString(cboColorScaleMethod, TEXT("Raw"));
+	ComboBox_AddString(cboColorScaleMethod, TEXT("Full"));
+	ComboBox_AddString(cboColorScaleMethod, TEXT("Full with S/H"));
 	
 	// Create the dialog buttons.
 	
 	// TODO: Center the buttons, or right-align them?
 	// They look better center-aligned in this window...
-	static const unsigned int btnLeft = (CA_WINDOW_WIDTH-75-8-75-8-75)/2;
+	ctlLeft = (CA_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
 	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  btnLeft, CA_WINDOW_HEIGHT-8-24,
+				  ctlLeft, CA_WINDOW_HEIGHT-8-24,
 				  75, 23,
 				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
@@ -238,7 +253,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	// Cancel button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      btnLeft+8+75, CA_WINDOW_HEIGHT-8-24,
+				      ctlLeft+8+75, CA_WINDOW_HEIGHT-8-24,
 				      75, 23,
 				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
@@ -246,7 +261,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	// Apply button.
 	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     btnLeft+8+75+8+75, CA_WINDOW_HEIGHT-8-24,
+				     ctlLeft+8+75+8+75, CA_WINDOW_HEIGHT-8-24,
 				     75, 23,
 				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
@@ -295,7 +310,7 @@ static void ca_window_init(void)
 	// Checkboxes.
 	Button_SetCheck(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkInverted, (Invert_Color ? BST_CHECKED : BST_UNCHECKED));
-	//Button_SetCheck(chkScaleColors, (Scale_Colors ? BST_CHECKED : BST_UNCHECKED));
+	ComboBox_SetCurSel(cboColorScaleMethod, (int)ColorScaleMethod);
 }
 
 
@@ -309,7 +324,10 @@ static void ca_window_save(void)
 	
 	Greyscale = (Button_GetCheck(chkGrayscale) == BST_CHECKED);
 	Invert_Color = (Button_GetCheck(chkInverted) == BST_CHECKED);
-	//Scale_Colors = (Button_GetCheck(chkScaleColors) == BST_CHECKED);
+	
+	int csm = ComboBox_GetCurSel(cboColorScaleMethod);
+	if (csm != -1)
+		ColorScaleMethod = (ColorScaleMethod_t)csm;
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
