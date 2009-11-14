@@ -271,7 +271,10 @@ static void ca_window_save(void)
 	
 	Greyscale = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkGrayscale));
 	Invert_Color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkInverted));
-	ColorScaleMethod = (ColorScaleMethod_t)gtk_combo_box_get_active(GTK_COMBO_BOX(cboColorScaleMethod));
+	
+	int csm = gtk_combo_box_get_active(GTK_COMBO_BOX(cboColorScaleMethod));
+	if (csm != -1)
+		ColorScaleMethod = (ColorScaleMethod_t)csm;
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
