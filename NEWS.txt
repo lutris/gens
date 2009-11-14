@@ -36,6 +36,23 @@ release of Gens/GS r7.
 
 Changes from r7_pre5 to r7:
 
+New Features:
+
+* Added an additional color scaling method, "Full with S/H". This method takes
+  into account the Shadow and Highlight functionality of the Sega Mega Drive's
+  VDP. With this method, MD color 0xEEE (white) is scaled to 0xEEEEEE for normal,
+  0xFFFFFF for highlight, and 0x777777 for shadow. This color scaling method is
+  now the default.
+
+* Initial reimplementation of "Full Screen Minimize". This allows the emulator
+  to minimize itself from Full Screen when a dialog is open, e.g. to load a ROM
+  image. It is currently only usable for a specific case on the Linux version.
+
+* [Linux] Added Alt-Tab support in Full Screen. This uses the "Full Screen
+  Minimize" infrastructure.
+
+--------------------------------
+
 Bug Fixes:
 
 * [Win32] Added a workaround for an ASPI-related crash on Windows 98SE.
@@ -48,6 +65,8 @@ Miscellaneous:
   build has been replaced with a standard Win32 console, which is created
   after initial startup.
 
+* [MDP] Implemented mdp_host_t->emulator_control(MDP_EMUCTRL_RELOAD_INFO).
+
 --------------------------------
 
 Low-Level Code Changes:
@@ -58,6 +77,16 @@ Low-Level Code Changes:
 
 * [libgsft] Added the BSD implementations of strlcpy() and strlcat().
   Most Gens/GS code has been switched over to these functions.
+
+* Initial infrastructure for dynamically loading libpng. This will be used
+  to separate libpng on Gens/GS Win32 into a separate DLL. If libpng can't
+  be found, Gens/GS will fall back to using BMP images for screenshots.
+
+* Eliminated most of the "DECL" macros from the x86 assembler files. This
+  reduces the total symbol count in the resulting binaries.
+
+* Added a new x86 assembler macro, SYM(), which prefixes symbols with the
+  appropriate C symbol prefix for the platform.
 
 ================================================================
 
