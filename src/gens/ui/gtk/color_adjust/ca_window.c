@@ -183,12 +183,12 @@ void ca_window_show(void)
 	g_signal_connect((gpointer)chkInverted, "toggled",
 			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
-	// Create an HBox for the "Color Scale Method".
+	// Create an HBox for the "Color Scale Method" dropdown.
 	GtkWidget *hboxColorScaleMethod = gtk_hbox_new(FALSE, 4);
 	gtk_widget_show(hboxColorScaleMethod);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxColorScaleMethod, TRUE, FALSE, 0);
 	
-	// Create a label for the "Color Scale Method".
+	// Create a label for the "Color Scale Method" dropdown.
 	GtkWidget *lblColorScaleMethod = gtk_label_new_with_mnemonic("Color Sca_le Method:");
 	gtk_widget_show(lblColorScaleMethod);
 	gtk_box_pack_start(GTK_BOX(hboxColorScaleMethod), lblColorScaleMethod, TRUE, FALSE, 0);
