@@ -99,8 +99,8 @@ typedef struct PACKED _mdp_render_t
 	mdp_render_fn blit;	/* Blit function. */
 	const char* tag;	/* Render tag. */
 	
-	const int scale;	/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
-	const uint32_t flags;	/* Render flags. */
+	int scale;		/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
+	uint32_t flags;		/* Render flags. */
 	
 	void *data;		/* Extra data. */
 	
