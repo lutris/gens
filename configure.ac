@@ -738,8 +738,9 @@ if test "x$GCC" = "xyes"; then
 	GSFT_CXXFLAGS_GCC_OPTION([-Wextra], AM_CXXFLAGS)
 fi
 
-# Check if the linker supports --as-needed.
+# Check for various linker flags.
 GSFT_LDFLAGS_GCC_OPTION([-Wl,--as-needed], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([-Wl,--hash-style=both], AM_LDFLAGS)
 
 AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
 AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
