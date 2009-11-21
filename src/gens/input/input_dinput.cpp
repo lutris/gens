@@ -442,11 +442,11 @@ uint16_t input_dinput_get_key(void)
 {
 	bool prevReady = false;
 	
-	BOOL prevDiKeys[256];
-	BOOL prevJoyKeys[48*6];
+	bool prevDiKeys[256];
+	bool prevJoyKeys[48*6];
 	
-	BOOL curDiKeys[256];
-	BOOL curJoyKeys[48*6];
+	bool curDiKeys[256];
+	bool curJoyKeys[48*6];
 	
 	while (true)
 	{
