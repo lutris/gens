@@ -718,51 +718,51 @@ BOOL input_dinput_check_key_pressed(uint16_t key)
 			switch (key & 0xFF)
 			{
 				case 0:
-					if (input_dinput_joy_state[joyNum].lX < -500)
+					if (input_dinput_joy_state[joyNum].lX <= 0x3FFF)
 						return TRUE;
 					break;
 				case 1:
-					if (input_dinput_joy_state[joyNum].lX > +500)
+					if (input_dinput_joy_state[joyNum].lX >= 0xC000)
 						return TRUE;
 					break;
 				case 2:
-					if (input_dinput_joy_state[joyNum].lY < -500)
+					if (input_dinput_joy_state[joyNum].lY <= 0x3FFF)
 						return TRUE;
 					break;
 				case 3:
-					if (input_dinput_joy_state[joyNum].lY > +500)
+					if (input_dinput_joy_state[joyNum].lY >= 0xC000)
 						return TRUE;
 					break;
 				case 4:
-					if (input_dinput_joy_state[joyNum].lZ < 0x3FFF)
+					if (input_dinput_joy_state[joyNum].lZ <= 0x3FFF)
 						return TRUE;
 					break;
 				case 5:
-					if (input_dinput_joy_state[joyNum].lZ > 0xBFFF)
+					if (input_dinput_joy_state[joyNum].lZ >= 0xC000)
 						return TRUE;
 					break;
 				case 6:
-					if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
+					if (input_dinput_joy_state[joyNum].lRx <= 0x3FFF)
 						return TRUE;
 					break;
 				case 7:
-					if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
+					if (input_dinput_joy_state[joyNum].lRx >= 0xC000)
 						return TRUE;
 					break;
 				case 8:
-					if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
+					if (input_dinput_joy_state[joyNum].lRy <= 0x3FFF)
 						return TRUE;
 					break;
 				case 9:
-					if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
+					if (input_dinput_joy_state[joyNum].lRy >= 0xC000)
 						return TRUE;
 					break;
 				case 10:
-					if (input_dinput_joy_state[joyNum].lRz < 0x3FFF)
+					if (input_dinput_joy_state[joyNum].lRz <= 0x3FFF)
 						return TRUE;
 					break;
 				case 11:
-					if (input_dinput_joy_state[joyNum].lRz > 0xBFFF)
+					if (input_dinput_joy_state[joyNum].lRz >= 0xC000)
 						return TRUE;
 					break;
 				default:
