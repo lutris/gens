@@ -340,122 +340,66 @@ int input_dinput_init_joysticks(HWND hWnd)
 static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
 	HRESULT rval;
-	LPDIRECTINPUTDEVICE	lpDIJoy;
-	DIPROPRANGE diprg;
+	LPDIRECTINPUTDEVICE lpDIJoy;
  
 	if (!lpDIIJoy || input_dinput_num_joysticks >= MAX_JOYS ||
 	    input_dinput_callback_init_joysticks_enum_counter >= MAX_JOYS)
 		return DIENUM_STOP;
 	
 	// Number of times this function has been called.
+	int cur_joystick = input_dinput_callback_init_joysticks_enum_counter;
 	input_dinput_callback_init_joysticks_enum_counter++;
-	
-	input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 	
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
 	{
 		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"lpDI->CreateDevice() failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
+			"lpDI->CreateDevice() failed. (Joystick %d)", cur_joystick);
 		return DIENUM_CONTINUE;
 	}
 	
-	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void **)&input_dinput_joy_id[input_dinput_num_joysticks]);
+	IDirectInputDevice2 *pJoyDevice = NULL;
+	input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
+	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void**)&pJoyDevice);
+	
 	lpDIJoy->Release();
-	if (rval != DI_OK)
+	if (rval != DI_OK || !pJoyDevice)
 	{
 		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"lpDIJoy->QueryInterface() failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
-		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
+			"lpDIJoy->QueryInterface() failed. (Joystick %d)", cur_joystick);
 		return DIENUM_CONTINUE;
 	}
 	
-	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetDataFormat(&c_dfDIJoystick);
+	rval = pJoyDevice->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
 		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"input_dinput_joy_id[]->SetDatFormat(&c_dfDIJoystick) failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
-		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
-		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
+			"pJoyDevice->SetDatFormat(&c_dfDIJoystick) failed. (Joystick %d)", cur_joystick);
+		pJoyDevice->Release();
 		return DIENUM_CONTINUE;
 	}
 	
 	// TODO: Add an option to specify DISCL_FOREGROUND so the joysticks only work when the Gens window is active.
-	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+	rval = pJoyDevice->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 	
 	if (rval != DI_OK)
 	{
 		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
-			"input_dinput_joy_id[]->SetCooperativeLevel() failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
-		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
-		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
+			"pJoyDevice->SetCooperativeLevel() failed. (Joystick %d)", cur_joystick);
+		pJoyDevice->Release();
 		return DIENUM_CONTINUE;
-	}
-	
-	// Get joystick capabilities.
-	DIDEVCAPS jsCaps;
-	memset(&jsCaps, 0x00, sizeof(jsCaps));
-	jsCaps.dwSize = sizeof(jsCaps);
-	rval = input_dinput_joy_id[input_dinput_num_joysticks]->GetCapabilities(&jsCaps);
-	if (rval != DI_OK)
-	{
-		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-			"input_dinput_joy_id[]->GetCapabilities() failed. (Joystick %d)",
-			input_dinput_callback_init_joysticks_enum_counter);
-		return DIENUM_CONTINUE;
-	}
-	
-	if (jsCaps.dwAxes >= 1)
-	{
-		// Device has at least 1 axis. Adjust X-axis range.
-		diprg.diph.dwSize = sizeof(diprg); 
-		diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
-		diprg.diph.dwObj = DIJOFS_X;
-		diprg.diph.dwHow = DIPH_BYOFFSET;
-		diprg.lMin = -1000;
-		diprg.lMax = +1000;
-		
-		rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
-		if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
-		{
-			LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-				"input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
-				input_dinput_callback_init_joysticks_enum_counter);
-		}
-	}
-	
-	if (jsCaps.dwAxes >= 2)
-	{
-		// Device has at least 2 axes. Adjust Y-axis range.
-		diprg.diph.dwSize = sizeof(diprg); 
-		diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
-		diprg.diph.dwObj = DIJOFS_Y;
-		diprg.diph.dwHow = DIPH_BYOFFSET;
-		diprg.lMin = -1000;
-		diprg.lMax = +1000;
-		
-		rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
-		if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
-		{
-			LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
-				"input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
-				input_dinput_callback_init_joysticks_enum_counter);
-		}
 	}
 	
 	// Attempt to acquire the joystick device.
 	for (unsigned int i = 10; i != 0; i--)
 	{
-		rval = input_dinput_joy_id[input_dinput_num_joysticks]->Acquire();
+		rval = pJoyDevice->Acquire();
 		if (rval == DI_OK)
 			break;
 		GensUI::sleep(10);
 	}
 	
+	input_dinput_joy_id[input_dinput_num_joysticks] = pJoyDevice;
 	input_dinput_num_joysticks++;
 	
 	return DIENUM_CONTINUE;
@@ -520,20 +464,20 @@ uint16_t input_dinput_get_key(void)
 			if (!input_dinput_joy_exists(joystick))
 				continue;
 			
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX < -500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX > +500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY < -500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY > +500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX >= 0xC000);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY >= 0xC000);
 			
 			// TODO: Determine the correct axis order and the correct axis values.
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ >= 0xC000);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx >= 0xC000);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy >= 0xC000);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz <= 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz >= 0xC000);
 			
 			for (int povhat = 0; povhat < 4; povhat++)
 			{
@@ -921,17 +865,18 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 	HRESULT rval;
 	for (int i = 0; i < MAX_JOYS; i++)
 	{
-		if (!input_dinput_joy_id[i])
+		IDirectInputDevice2 *pJoyDevice = input_dinput_joy_id[i];
+		if (!pJoyDevice)
 			continue;
 		
-		rval = input_dinput_joy_id[i]->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+		rval = pJoyDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 		
 		if (rval != DI_OK)
 		{
 			LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
 				"SetCooperativeLevel() failed on joystick %d.", i);
-			input_dinput_joy_id[input_dinput_num_joysticks]->Release();
-			input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
+			pJoyDevice->Release();
+			input_dinput_joy_id[i] = NULL;
 		}
 		else
 		{
