@@ -709,13 +709,13 @@ AC_DEFUN([GSFT_LDFLAGS_GCC_OPTION], [
 	AS_VAR_PUSHDEF([FLAGS], [LDFLAGS])
 	AS_VAR_PUSHDEF([VAR], [gsft_cv_ldflags_gcc_option_$1])
 	AC_CACHE_CHECK(
-		[whether $CC accepts $1], VAR,
+		[whether $LD accepts $1], VAR,
 		[
 			VAR="no, unknown"
 			AC_LANG_SAVE
 			AC_LANG_C
-			ac_save_LDFLAGS="$LDFLAGS"
-			LDFLAGS="$1"
+			ac_save_LDFLAGS="-$LDFLAGS"
+			LDFLAGS="-Wl,$1"
 			AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], VAR=yes, VAR=no)
 			LDFLAGS="$ac_save_LDFLAGS"
 			AC_LANG_RESTORE
@@ -723,7 +723,7 @@ AC_DEFUN([GSFT_LDFLAGS_GCC_OPTION], [
 		);
 	
 	if test x$VAR = xyes; then
-		$2="$$2 $1"
+		$2="$$2 -Wl,$1"
 	fi
 	AS_VAR_POPDEF([VAR])
 	AS_VAR_POPDEF([FLAGS])
@@ -739,8 +739,8 @@ if test "x$GCC" = "xyes"; then
 fi
 
 # Check for various linker flags.
-GSFT_LDFLAGS_GCC_OPTION([-Wl,--as-needed], AM_LDFLAGS)
-GSFT_LDFLAGS_GCC_OPTION([-Wl,--hash-style=both], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
 
 AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
 AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
