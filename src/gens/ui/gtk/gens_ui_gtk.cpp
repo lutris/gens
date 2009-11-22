@@ -606,6 +606,9 @@ static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
  */
 void GensUI::setMousePointer(bool busy)
 {
+	if (vdraw_get_fullscreen())
+		return;
+	
 	GdkCursor *cursor;
 	
 	if (busy)

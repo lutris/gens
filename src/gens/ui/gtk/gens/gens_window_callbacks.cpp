@@ -180,6 +180,9 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 	GSFT_UNUSED_PARAMETER(event);
 	GSFT_UNUSED_PARAMETER(user_data);
 	
+	if (vdraw_get_fullscreen())
+		return false;
+	
 	Settings.Active = 1;
 	
 	// Reset the SDL key modifier state.
@@ -201,6 +204,9 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	GSFT_UNUSED_PARAMETER(widget);
 	GSFT_UNUSED_PARAMETER(event);
 	GSFT_UNUSED_PARAMETER(user_data);
+	
+	if (vdraw_get_fullscreen())
+		return false;
 	
 	if (Auto_Pause && Settings.Active)
 	{

@@ -166,6 +166,10 @@ int Init_Settings(void)
 	Video.GL.glLinearFilter = 0;
 #endif
 	
+	// Assume active and not paused initially.
+	Settings.Active = 1;
+	Settings.Paused = 0;
+	
 	// Default bpp.
 	bppMD = 32;
 	bppOut = 32;

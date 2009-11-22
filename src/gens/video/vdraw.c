@@ -581,6 +581,10 @@ void vdraw_set_fullscreen(const BOOL new_fullscreen)
 		return;
 	}
 	
+	// If fullscreen, the window is definitely active.
+	if (vdraw_prop_fullscreen)
+		Settings.Active = 1;
+	
 	// Reset the renderer.
 	vdraw_reset_renderer(FALSE);
 	
