@@ -9,7 +9,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Gens/GS version numbers.
 AC_DEFINE(GENS_VERSION_WIN32, [2,16,7,0], Gens Win32 Version Number)
-AC_DEFINE(GENS_GS_VERSION, "r7", Gens/GS Version Number)
+AC_DEFINE(GENS_GS_VERSION, "r7+", Gens/GS Version Number)
 
 # Automake build features.
 AC_CANONICAL_BUILD
