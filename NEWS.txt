@@ -62,6 +62,10 @@ Bug Fixes:
   is plugged in. Special thanks to NeKit from Sonic Retro for helping to
   diagnose and solve this problem.
 
+* [Linux] Fixed a regression from r7_pre4 where starting Gens/GS in
+  fullscreen mode with a ROM specified wouldn't work. This bug was
+  reported by Zombie in #retro.
+
 --------------------------------
 
 Miscellaneous:
