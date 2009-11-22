@@ -3,11 +3,6 @@
 #include "cd_file.h"
 #include "cdda_mp3.h"
 
-// CD-ROM drive access
-#ifdef GENS_CDROM
-#include "cd_aspi.h"
-#endif
-
 struct mpstr mp;
 
 extern int Sound_Rate;		// in G_dsound.h...
