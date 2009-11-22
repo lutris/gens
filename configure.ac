@@ -714,7 +714,7 @@ AC_DEFUN([GSFT_LDFLAGS_GCC_OPTION], [
 			VAR="no, unknown"
 			AC_LANG_SAVE
 			AC_LANG_C
-			ac_save_LDFLAGS="-$LDFLAGS"
+			ac_save_LDFLAGS="$LDFLAGS"
 			LDFLAGS="-Wl,$1"
 			AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], VAR=yes, VAR=no)
 			LDFLAGS="$ac_save_LDFLAGS"
