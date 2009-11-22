@@ -845,6 +845,7 @@ AC_SUBST(libdir)
 
 AC_CONFIG_FILES([
 	Makefile
+	doc/Makefile
 	images/Makefile
 	xdg/Makefile
 	src/Makefile
