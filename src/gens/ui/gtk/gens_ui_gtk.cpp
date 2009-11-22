@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
@@ -590,6 +589,16 @@ void GensUI::setMousePointer(bool busy)
 	gdk_cursor_destroy(cursor);
 	
 	update();
+}
+
+
+/**
+ * launchBrowser(): Launch a web browser with the given URL.
+ * @param url URL to load.
+ */
+void GensUI::LaunchBrowser(const string& url)
+{
+	// TODO
 }
 
 

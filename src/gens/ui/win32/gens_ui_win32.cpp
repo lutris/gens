@@ -647,6 +647,16 @@ void GensUI::setMousePointer(bool busy)
 
 
 /**
+ * launchBrowser(): Launch a web browser with the given URL.
+ * @param url URL to load.
+ */
+void GensUI::LaunchBrowser(const string& url)
+{
+	// TODO
+}
+
+
+/**
  * fsMinimize(): Full Screen Minimize.
  * @param fst Type of FS Minimization.
  */

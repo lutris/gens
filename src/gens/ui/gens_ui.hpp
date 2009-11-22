@@ -129,6 +129,9 @@ class GensUI
 					      const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
 					      void* owner = NULL);
 		
+		// Launch browser.
+		static void LaunchBrowser(const std::string& url);
+		
 		// Full Screen minimization.
 		enum fsMinimize_Type
 		{
