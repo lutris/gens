@@ -68,7 +68,7 @@ char vdraw_msg_text[1024];
 
 // Prerendered text for the on-screen display.
 // Each byte represents 8 pixels, or one line for a character.
-static uint8_t vdraw_msg_prerender[8][1024];
+static uint8_t vdraw_msg_prerender[16][1024];
 static unsigned int vdraw_msg_prerender_len;
 
 
@@ -81,9 +81,9 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 	const unsigned int chars_per_line = (msgWidth / charSize);
 	unsigned int chr_offset = 0;
 	
-	for (unsigned int line = 0; line < (numLines * charSize); line += charSize)
+	for (unsigned int line = 0; line < (numLines * charSize * 2); line += (charSize * 2))
 	{
-		for (unsigned int cy = 0; cy < charSize; cy++)
+		for (unsigned int cy = 0; cy < (charSize * 2); cy++)
 		{
 			pixel *screen_pos = screen_start + ((cy + line) * pitch);
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
@@ -213,13 +213,13 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	}
 #endif /* defined(GENS_OS_WIN32) */
 	
-	// Character size is 8x8 normal, 16x16 double.
-	y -= (8 + charSize);
+	// Character size is 8x16 normal, 16x32 double.
+	y -= (8 + (charSize * 2));
 	
 	// Determine how many linebreaks are needed.
 	const unsigned int msgWidth = w - 16;
 	const unsigned short lineBreaks = ((vdraw_msg_prerender_len - 1) * charSize) / msgWidth;
-	y -= (lineBreaks * charSize);
+	y -= (lineBreaks * (charSize * 2));
 	
 	vdraw_style_t textShadowStyle = *style;
 	textShadowStyle.dot_color = 0;

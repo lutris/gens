@@ -27,7 +27,9 @@
 #include <string.h>
 
 // Character used if a character cannot be found.
-static const uint8_t chr_err[8] = {0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
+static const uint8_t chr_err[16] =
+	{0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA,
+	 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
 
 // Hashtable.
 #include "libgsft/gsft_hashtable.hpp"
@@ -143,7 +145,7 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			chr_data = &(*chrIter).second[0];
 		}
 		
-		for (unsigned int row = 0; row < 8; row++)
+		for (unsigned int row = 0; row < 16; row++)
 		{
 			prerender_buf[row][chr_num] = chr_data[row];
 		}

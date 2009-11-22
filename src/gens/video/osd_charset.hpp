@@ -30,21 +30,21 @@
 extern "C" {
 #endif
 
-/***************************************************
- * Format: 8 bytes per character, 8 bits per line. *
- * 1 == opaque dot; 0 == transparent dot           *
- * MSB == left-most dot; LSB == right-most dot     *
- ***************************************************/
+/****************************************************
+ * Format: 16 bytes per character, 8 bits per line. *
+ * 1 == opaque dot; 0 == transparent dot            *
+ * MSB == left-most dot; LSB == right-most dot      *
+ ****************************************************/
 
 /** Struct for sparse-mapped character set struct. **/
 typedef struct _osd_char_t
 {
 	wchar_t chr;		// Unicode character value.
-	uint8_t data[8];	// 8x8 character data. (MSB == left-most pixel)
+	uint8_t data[16];	// 8x16 character data. (MSB == left-most pixel)
 } osd_char_t;
 
 void osd_charset_init(const osd_char_t *charset);
-int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024]);
+int osd_charset_prerender(const char *str, uint8_t prerender_buf[16][1024]);
 
 #ifdef __cplusplus
 }
