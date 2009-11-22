@@ -57,10 +57,10 @@ Bug Fixes:
 
 * [Win32] Added a workaround for an ASPI-related crash on Windows 98SE.
 
-* [Win32] Fixed a regression starting in r7_pre4 that caused Gens/GS to
-  crash if a ROM is loaded via File, Open ROM and a Saitek P580 gamepad
-  is plugged in. Special thanks to NeKit from Sonic Retro for helping to
-  diagnose and solve this problem.
+* [Win32] Fixed a regression from r7_pre3 that caused Gens/GS to crash if
+  a ROM is loaded via File, Open ROM and a Saitek P580 gamepad is plugged
+  in. Special thanks to NeKit from Sonic Retro for helping to diagnose
+  and solve this problem.
 
 * [Linux] Fixed a regression from r7_pre4 where starting Gens/GS in
   fullscreen mode with a ROM specified wouldn't work. This bug was
