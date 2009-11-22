@@ -336,6 +336,9 @@ static const GensMenuItem_t gmiPlugins[] =
 
 static const GensMenuItem_t gmiHelp[] =
 {
-	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About",	NULL,	0, 0, IDIM_HELP},
+	{IDM_HELP_MANUAL,	GMF_ITEM_NORMAL,	"&Manual",		NULL,	0, 0, IDIM_HELP},
+	{IDM_HELP_REPORTABUG,	GMF_ITEM_NORMAL,	"Report a &Bug",	NULL,	0, 0, IDIM_REPORTABUG},
+	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, 0},
+	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About",		NULL,	0, 0, IDIM_GENSGS},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };

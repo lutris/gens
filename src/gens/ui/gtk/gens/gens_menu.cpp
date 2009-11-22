@@ -63,6 +63,8 @@ typedef struct _gens_gtk_menu_icon_t
 static const gens_gtk_menu_icon_t gens_gtk_menu_icons[] =
 {
 	{false,	NULL},	// IDIM_MENU_ICON == 0x0100 == not used
+	{false, "gens_16x16.png"},
+	{false, "gensgs_16x16.png"},
 	{true,	"gtk-open"},
 	{true,	"gtk-save"},
 	{true,	"gtk-save-as"},
@@ -87,6 +89,7 @@ static const gens_gtk_menu_icon_t gens_gtk_menu_icons[] =
 	{false,	"binary.png"},
 	{false,	"memory.png"},
 	{true,	"gtk-help"},
+	{false,	"kbugbuster.png"},
 	{false,	NULL},	// End of array.
 };
 
@@ -187,7 +190,7 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 		{
 			// Icon specified.
 			const char* iconName = NULL;
-			if (menu->icon > IDIM_MENU_ICON && menu->icon <= IDIM_MENU_ICON_MAX)
+			if (menu->icon > IDIM_MENU_ICON && menu->icon < IDIM_MENU_ICON_MAX)
 			{
 				// Valid icon.
 				iconName = gens_gtk_menu_icons[menu->icon - IDIM_MENU_ICON].name;

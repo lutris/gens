@@ -24,7 +24,8 @@ dist_pkgdata_DATA = \
 	dialog-password.png \
 	preferences-system.png \
 	preferences-desktop-gaming.png \
-	document-open-folder.png
+	document-open-folder.png \
+	kbugbuster.png
 
 else
 
