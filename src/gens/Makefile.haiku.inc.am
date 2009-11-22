@@ -96,8 +96,10 @@ gens_LDADD += -lbe
 
 gens_CFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		-DGENS_MDP_DIR=\"@libdir@\"
+		-DGENS_MDP_DIR=\"@libdir@\" \
+		-DGENS_DOC_DIR=\"@docdir@\"
 
 gens_CXXFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		-DGENS_MDP_DIR=\"@libdir@\"
+		-DGENS_MDP_DIR=\"@libdir@\" \
+		-DGENS_DOC_DIR=\"@docdir@\"

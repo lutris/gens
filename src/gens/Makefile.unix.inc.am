@@ -119,11 +119,13 @@ endif # GENS_UI_GTK
 gens_CFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
 		-DGENS_MDP_DIR=\"@libdir/mdp@\" \
+		-DGENS_DOC_DIR=\"@docdir@\" \
 		@SDL_CFLAGS@
 
 gens_CXXFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
 		-DGENS_MDP_DIR=\"@libdir@/mdp\" \
+		-DGENS_DOC_DIR=\"@docdir@\" \
 		@SDL_CFLAGS@
 
 gens_LDADD	+= @SDL_LIBS@

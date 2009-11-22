@@ -815,8 +815,8 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 #else
 			// Manual could be in a few different places.
 			string manual_paths[2];
-			manual_paths[0] = "/usr/share/doc/gens/manual/index.html";
-			manual_paths[1] = "/usr/share/doc/gens-" + string(VERSION) + "/manual/index.html";
+			manual_paths[0] = GENS_DOC_DIR "/manual/index.html";
+			manual_paths[1] = GENS_DOC_DIR "-" + string(VERSION) + "/manual/index.html";
 #endif
 			
 			int i;
