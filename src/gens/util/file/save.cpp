@@ -1799,6 +1799,9 @@ void Savestate::GsxImport32X(const unsigned char* data)
 		ImportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
 		ImportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
 		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		
+		// Load the PC value correctly.
+		SH2_Set_PC(context, context->PC - context->Base_PC);
 	}
 
 	ImportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
