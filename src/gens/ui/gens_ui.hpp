@@ -68,7 +68,6 @@ void GensUI_setWindowVisibility(const int visibility);
 #ifdef __cplusplus
 
 #include <string>
-using std::string;
 
 class GensUI
 {
@@ -79,22 +78,23 @@ class GensUI
 		static void sleep(const int ms, const bool noUpdate = false);
 		static void wakeup(void);
 		
-		static void setWindowTitle(const string& title);
+		static void setWindowTitle(const std::string& title);
 		static void setWindowVisibility(const bool visibility);
 		
-		static string openFile(const string& title, const string& initFile,
-				       const FileFilterType filterType, void* owner = NULL);
-		static string saveFile(const string& title, const string& initFile,
-				       const FileFilterType filterType, void* owner = NULL);
-		static string selectDir(const string& title, const string& initDir, void* owner = NULL);
+		static std::string openFile(const std::string& title, const std::string& initFile,
+						const FileFilterType filterType, void* owner = NULL);
+		static std::string saveFile(const std::string& title, const std::string& initFile,
+						const FileFilterType filterType, void* owner = NULL);
+		static std::string selectDir(const std::string& title, const std::string& initDir,
+						void* owner = NULL);
 		
 		static void setMousePointer(bool busy);
 		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);
-		static void setWindowTitle_Game(const string& system, const string& game,
-						const string& emptyGameName = "");
-		static void setWindowTitle_Init(const string& system, const bool reinit);
+		static void setWindowTitle_Game(const std::string& system, const std::string& game,
+						const std::string& emptyGameName = "");
+		static void setWindowTitle_Init(const std::string& system, const bool reinit);
 		
 		// Message box styles for GensUI::msgBox().
 		// Format: 00000000 00000000 00000000 BBBBIIII
@@ -125,9 +125,9 @@ class GensUI
 		};
 		
 		// msgBox function
-		static MsgBox_Response msgBox(const string& msg, const string& title = GENS_APPNAME,
-					      const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
-					      void* owner = NULL);
+		static MsgBox_Response msgBox(const std::string& msg, const std::string& title = GENS_APPNAME,
+						const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
+						void* owner = NULL);
 		
 		// Launch browser.
 		static void LaunchBrowser(const std::string& url);

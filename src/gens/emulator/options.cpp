@@ -33,7 +33,9 @@
 #include <math.h>
 
 // C++ includes.
+#include <string>
 #include <list>
+using std::string;
 using std::list;
 
 #include "g_main.hpp"

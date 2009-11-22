@@ -24,8 +24,13 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+// C includes.
 #include <stdio.h>
 #include <unistd.h>
+
+// C++ includes.
+#include <string>
+using std::string;
 
 #include "save.hpp"
 #include "config_file.hpp"

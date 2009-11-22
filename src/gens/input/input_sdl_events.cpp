@@ -27,7 +27,13 @@
 #include "input_sdl_events.hpp"
 
 // C includes.
-#include <cstring>
+#include <string.h>
+
+// C++ includes.
+#include <string>
+#include <list>
+using std::string;
+using std::list;
 
 #include "emulator/g_main.hpp"
 #include "emulator/g_md.hpp"
@@ -58,10 +64,6 @@
 #include "video/vdraw_cpp.hpp"
 #include "audio/audio.h"
 #include "input/input.h"
-
-// C++ includes.
-#include <list>
-using std::list;
 
 
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.

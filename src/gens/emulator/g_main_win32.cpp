@@ -31,9 +31,10 @@
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_strlcpy.h"
 
-// C++ includes
+// C++ includes.
+#include <string>
 #include <list>
-#include <algorithm>
+using std::string;
 using std::list;
 
 #if !defined(GENS_DEBUG)

@@ -40,6 +40,10 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+// C++ includes.
+#include <string>
+using std::string;
+
 #include "g_main.hpp"
 #include "gens.hpp"
 #include "g_md.hpp"

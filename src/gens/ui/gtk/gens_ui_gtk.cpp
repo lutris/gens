@@ -29,6 +29,10 @@
 #include <string.h>
 #include <unistd.h>
 
+// C++ includes.
+#include <string>
+using std::string;
+
 // GTK+ includes.
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

@@ -35,7 +35,9 @@
 #include <unistd.h>
 
 // C++ includes
+#include <string>
 #include <list>
+using std::string;
 using std::list;
 
 #if !defined(GENS_DEBUG)

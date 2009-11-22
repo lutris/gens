@@ -26,11 +26,15 @@
 
 #include "gym.hpp"
 
-/* C includes. */
+// C includes.
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+// C++ includes.
+#include <string>
+using std::string;
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"

@@ -10,6 +10,10 @@
 #include <stdint.h>
 #include <string.h>
 
+// C++ includes.
+#include <string>
+using std::string;
+
 #include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"

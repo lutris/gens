@@ -32,7 +32,9 @@
 
 // C++ includes.
 #include <sstream>
+#include <string>
 using std::stringstream;
+using std::string;
 
 
 // Full Screen Minization counters.
