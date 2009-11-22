@@ -27,6 +27,12 @@
 #include "gens_menu_callbacks.hpp"
 #include "gens_menu.h"
 
+// C includes.
+#include <unistd.h>
+
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
@@ -794,10 +800,55 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 	
 	switch (menuID)
 	{
+#if !defined(GENS_OS_MACOSX)
+		case IDM_HELP_MANUAL:
+		{
+			// TODO: Make this less hackish.
+			
+			// TODO: Install the manual in /usr/share/doc/gens using the main install script.
+			// Currently, it's only done by the Debian packaging scripts.
+			
+#if defined(GENS_OS_WIN32)
+			// Manual should be "%EXEPATH%\\manual\\index.html".
+			string manual_paths[1];
+			manual_paths[0] = string(PathNames.Gens_EXE_Path) + "manual\\index.html";
+#else
+			// Manual could be in a few different places.
+			string manual_paths[2];
+			manual_paths[0] = "/usr/share/doc/gens/manual/index.html";
+			manual_paths[1] = "/usr/share/doc/gens-" + string(VERSION) + "/manual/index.html";
+#endif
+			
+			int i;
+			for (i = 0; i < (sizeof(manual_paths) / sizeof(manual_paths[0])); i++)
+			{
+				if (access(manual_paths[i].c_str(), R_OK) == 0)
+				{
+					// Found a working manual path.
+					GensUI::LaunchBrowser(manual_paths[i].c_str());
+					break;
+				}
+			}
+			
+			if (i == (sizeof(manual_paths) / sizeof(manual_paths[0])))
+			{
+				// No working manual path found.
+				LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+					"Cannot find the Gens/GS manual.");
+			}
+			
+			break;
+		}
+#endif
+		
+		case IDM_HELP_REPORTABUG:
+			GensUI::LaunchBrowser("http://gs_server.gerbilsoft.ddns.info/bugs/");
+			break;
+		
 		case IDM_HELP_ABOUT:
 			about_window_show();
 			break;
-			
+		
 		default:
 			// Unknown menu item ID.
 			return 0;

@@ -28,10 +28,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 // C++ includes.
 #include <string>
+#include <list>
 using std::string;
+using std::list;
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -65,7 +71,6 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 				 GtkWidget* owner,
 				 const GtkFileChooserAction action);
 
-
 // Filename filters.
 static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog);
 static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog);
@@ -73,10 +78,12 @@ static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
 static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
 static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
-
 // Sleep handler
 static bool sleeping;
 static gboolean GensUI_GLib_SleepCallback(gpointer data);
+
+// Wait list.
+static list<pid_t> waitList;
 
 
 /**
@@ -114,6 +121,24 @@ void GensUI::update(void)
 {
 	while (gtk_events_pending())
 		gtk_main_iteration_do(FALSE);
+	
+	if (waitList.size() == 0)
+		return;
+	
+	// Check for waiting processes.
+	list<pid_t>::iterator iter = waitList.begin();
+	while (iter != waitList.end())
+	{
+		pid_t pID = *iter;
+		if (waitpid(pID, NULL, WNOHANG) == pID)
+		{
+			// Process is finished.
+			list<pid_t>::iterator iter_new = iter;
+			iter_new++;
+			waitList.erase(iter);
+			iter = iter_new;
+		}
+	}
 }
 
 
@@ -602,7 +627,44 @@ void GensUI::setMousePointer(bool busy)
  */
 void GensUI::LaunchBrowser(const string& url)
 {
-	// TODO
+	// TODO: Mac OS X version.
+	// TODO: Non-XDG version.
+	
+#ifndef GENS_OS_MACOSX
+	// Use xdg-open.
+	static const char xdg_open[] = "/usr/bin/xdg-open";
+	if (access(xdg_open, X_OK) != 0)
+	{
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Cannot execute %s .", xdg_open);
+		return;
+	}
+	
+	// Set the mouse cursor to busy.
+	setMousePointer(true);
+	update();
+	
+	pid_t pID = vfork();
+	if (pID < 0)
+	{
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"vfork() failed: %d (%s)", errno, strerror(errno));
+		return;
+	}
+	else if (pID == 0)
+	{
+		// Child process. Run xdg-open.
+		execl(xdg_open, xdg_open, url.c_str(), NULL);
+	}
+	else
+	{
+		// Add the PID to the wait list.
+		waitList.push_back(pID);
+		
+		// Set the mouse cursor to normal.
+		setMousePointer(false);
+	}
+#endif
 }
 
 

@@ -652,7 +652,8 @@ void GensUI::setMousePointer(bool busy)
  */
 void GensUI::LaunchBrowser(const string& url)
 {
-	// TODO
+	printf("url: %s\n", url.c_str());
+	ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOW);
 }
 
 

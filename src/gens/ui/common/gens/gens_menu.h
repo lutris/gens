@@ -290,8 +290,10 @@ extern const GensMenuItem_t gmiMain[];
 
 // Help Menu
 #define IDM_HELP_MENU			0xF000
+#ifndef GENS_OS_MACOSX
 #define IDM_HELP_MANUAL			(IDM_HELP_MENU + 1)
 #define IDM_HELP_REPORTABUG		(IDM_HELP_MENU + 2)
+#endif
 #define IDM_HELP_ABOUT			(IDM_HELP_MENU + 3)
 
 #ifdef __cplusplus
