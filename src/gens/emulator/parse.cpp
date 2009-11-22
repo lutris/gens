@@ -356,15 +356,23 @@ static inline void printOptBArg(optBarg_enum opt)
 		optBarg_str[opt].description);
 }
 
-static void _usage()
+static void _usage(const char *argv0)
 {
-#ifdef VERSION
-	fprintf(stderr, GENS_APPNAME " " VERSION "\n");
+	// TODO: Display this in a message box on Win32.
+	// Well, either that or a custom window.
+	fprintf(stderr, GENS_APPNAME " " GENS_GS_VERSION " (" VERSION ")\n");
+	const char *filename;
+#if !defined(_WIN32)
+	filename = argv0;
 #else
-	fprintf(stderr, GENS_APPNAME "\n");
-#endif /* VERSION */
-	
-	fprintf(stderr, "Usage: gens [options] romfilename\n\nOptions:\n");
+	// argv0 contains the full pathname.
+	filename = strrchr(argv0, '\\');
+	if (filename == NULL)
+		filename = "gens.exe";
+	else
+		filename++;
+#endif
+	fprintf(stderr, "Usage: %s [options] romfilename\n\nOptions:\n", filename);
 	
 	// Print the Help option first.
 	printOpt0Arg(OPT0_HELP);
@@ -637,11 +645,11 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 #endif
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))
 		{
-			_usage();
+			_usage(argv[0]);
 		}
 		else 
 		{
-			_usage();
+			_usage(argv[0]);
 		}
 	}
 	
@@ -659,7 +667,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 	if (optind < argc - 1 || error)
 	{
 		fputs("Arguments not understood.\n", stderr);
-		_usage();
+		_usage(argv[0]);
 	}
 	else if (optind == (argc - 1))
 	{
