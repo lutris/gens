@@ -171,6 +171,9 @@ void gens_window_create(void)
 	// Window State event.
 	g_signal_connect(gens_window, "window-state-event",
 			 G_CALLBACK(gens_window_window_state_event), NULL);
+	
+	// Window is active.
+	Settings.Active = 1;
 }
 
 
