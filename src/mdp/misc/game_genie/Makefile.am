@@ -4,7 +4,7 @@
 .rc.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 

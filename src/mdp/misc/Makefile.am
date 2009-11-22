@@ -3,7 +3,7 @@
 
 # Miscellaneous plugins
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 # Miscellaneous
 SUBDIRS = \

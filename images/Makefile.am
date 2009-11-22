@@ -1,5 +1,7 @@
 # Gens images.
 
+AUTOMAKE_OPTIONS = foreign subdir-objects
+
 if !GENS_OS_WIN32
 
 dist_pkgdata_DATA = \

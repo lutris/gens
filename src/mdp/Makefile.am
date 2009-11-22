@@ -1,7 +1,7 @@
 # MDP: Mega Drive Plugins
 # Interface Specification Version 0.1.0
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 SUBDIRS = mdp_test render misc
 

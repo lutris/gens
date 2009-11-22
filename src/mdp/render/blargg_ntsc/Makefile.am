@@ -1,6 +1,6 @@
 # MDP Render Plugin: Blargg's NTSC Filter.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 

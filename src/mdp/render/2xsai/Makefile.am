@@ -1,6 +1,6 @@
 # MDP Render Plugin: 2xSaI renderer.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_2xsai.la

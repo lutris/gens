@@ -1,6 +1,6 @@
 # starscream: Motorola 68000 emulator.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 

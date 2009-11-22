@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 SUBDIRS = plugins fw
 

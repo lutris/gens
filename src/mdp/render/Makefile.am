@@ -3,9 +3,8 @@
 
 # Render plugins
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
-# Render plugins
 SUBDIRS = \
 		scanline \
 		scanline_25 \

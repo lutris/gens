@@ -1,6 +1,6 @@
 # Gens documentation.
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 dist_doc_DATA = \
 	../AUTHORS.txt \

@@ -1,7 +1,7 @@
 # Gens/GS firmware images.
 # This includes the reverse-engineered 32X firmware.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libgens_fw.la
 

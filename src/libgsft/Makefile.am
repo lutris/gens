@@ -1,6 +1,6 @@
 # libgsft: Common functions.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libgsft.la
 

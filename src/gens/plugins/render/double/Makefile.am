@@ -1,6 +1,6 @@
 # MDP Render Plugin: Double renderer.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libmdp_render_2x.la
 

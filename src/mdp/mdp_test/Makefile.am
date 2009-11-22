@@ -2,7 +2,7 @@
 # Interface Specification Version 0.1.0
 # Test Suite
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 bin_PROGRAMS = mdp_test
 

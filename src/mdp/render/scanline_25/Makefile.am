@@ -1,6 +1,6 @@
 # MDP Render Plugin: 25% Scanline renderer.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_scanline_25.la

@@ -1,4 +1,5 @@
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
+
 SUBDIRS = doc images xdg src
 
 ACLOCAL_AMFLAGS = -I m4 --install

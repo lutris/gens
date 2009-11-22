@@ -1,6 +1,6 @@
 # mp3_dec: MP3 decoder.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libmp3_dec.la
 

@@ -1,7 +1,7 @@
 # Gens/GS build system.
 # src/extlib/: "External" libraries that were specified to be built-in.
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 SUBDIRS =
 

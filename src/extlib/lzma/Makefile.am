@@ -1,6 +1,6 @@
 # lzma: LZMA SDK.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = liblzma.la
 

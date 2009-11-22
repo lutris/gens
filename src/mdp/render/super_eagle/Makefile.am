@@ -1,6 +1,6 @@
 # MDP Render Plugin: Super Eagle renderer.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_super_eagle.la

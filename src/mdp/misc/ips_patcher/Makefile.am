@@ -1,6 +1,6 @@
 # MDP Miscellaneous Plugin: IPS Patcher.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 

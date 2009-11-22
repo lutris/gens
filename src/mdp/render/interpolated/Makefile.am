@@ -3,7 +3,7 @@
 # libtool/nasm stuff from http://osdir.com/ml/sysutils.automake.general/2002-08/msg00134.html
 # strip_fPIC.sh from http://networkmultimedia.org/
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 

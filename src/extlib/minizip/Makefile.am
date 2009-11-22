@@ -1,6 +1,6 @@
 # minizip: ZIP file handling library.
 
-AUTOMAKE_OPTIONS = subdir-objects
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libminizip.la
 
