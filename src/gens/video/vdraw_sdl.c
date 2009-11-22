@@ -37,6 +37,7 @@
 
 // SDL includes.
 #include <SDL/SDL.h>
+#include "input/input_sdl_events.hpp"
 
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
@@ -391,6 +392,9 @@ static int vdraw_sdl_reinit_gens_window(void)
 	// Hide the Gens window if fullscreen.
 	// Show the Gens window if windowed.
 	GensUI_setWindowVisibility(!vdraw_get_fullscreen());
+	
+	// Reset the SDL modifier keys.
+	input_sdl_reset_modifiers();
 	
 	// TODO: Make the Gens window non-resizable.
 	return 0;
