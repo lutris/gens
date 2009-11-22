@@ -635,8 +635,17 @@ void GensUI::LaunchBrowser(const string& url)
 	static const char xdg_open[] = "/usr/bin/xdg-open";
 	if (access(xdg_open, X_OK) != 0)
 	{
-		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
-			"Cannot execute %s .", xdg_open);
+		if (access(xdg_open, F_OK) != 0)
+		{
+			LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+				"%s not found.", xdg_open);
+		}
+		else
+		{
+			LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+				"Cannot execute %s .", xdg_open);
+		}
+		
 		return;
 	}
 	
