@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #include "osd_charset.hpp"
-#include "C64_charset.h"
+#include "VGA_charset.h"
 
 // C includes.
 #include <string.h>
@@ -72,7 +72,7 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		return 0;
 	
 	if (mapOsdCharSet.empty())
-		osd_charset_init(&C64_charset[0]);
+		osd_charset_init(&VGA_charset[0]);
 	
 	const uint8_t *chr_data;
 	const unsigned char *utf8str = reinterpret_cast<const unsigned char*>(str);

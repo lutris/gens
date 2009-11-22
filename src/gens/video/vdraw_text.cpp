@@ -54,7 +54,6 @@ using std::list;
 
 // OSD character set.
 #include "osd_charset.hpp"
-#include "C64_charset.h"
 
  // Text drawing values.
 static uint32_t m_Transparency_Mask;
