@@ -13,7 +13,7 @@ int Current_OUT_Size;
 
 static char buf_out[8 * 1024];
 
-static int freqs_mp3[9] =
+static const int freqs_mp3[9] =
 {
 	44100, 48000, 32000,
 	22050, 24000, 16000,
