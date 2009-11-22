@@ -810,8 +810,9 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 			
 #if defined(GENS_OS_WIN32)
 			// Manual should be "%EXEPATH%\\manual\\index.html".
-			string manual_paths[1];
-			manual_paths[0] = string(PathNames.Gens_EXE_Path) + "manual\\index.html";
+			string manual_paths[2];
+			manual_paths[0] = string(PathNames.Gens_EXE_Path) + "doc\\manual\\index.html";
+			manual_paths[1] = string(PathNames.Gens_EXE_Path) + "manual\\index.html";
 #else
 			// Manual could be in a few different places.
 			string manual_paths[2];
