@@ -733,6 +733,7 @@ void GensUI::fsRestore(fsMinimize_Type fst)
 	if (fsMinimize_Counter[(int)fst] == 0)
 	{
 		// Last restoration.
+		update();
 		vdraw_set_fullscreen(true);
 		Sync_Gens_Window_GraphicsMenu();
 		fsMinimize_OldFS[(int)fst] = false;
