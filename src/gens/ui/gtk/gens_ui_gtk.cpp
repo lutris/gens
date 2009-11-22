@@ -138,6 +138,11 @@ void GensUI::update(void)
 			waitList.erase(iter);
 			iter = iter_new;
 		}
+		else
+		{
+			// Process is not finished. Check the next process.
+			iter++;
+		}
 	}
 }
 
