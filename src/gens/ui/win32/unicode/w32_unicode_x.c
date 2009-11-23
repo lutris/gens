@@ -27,6 +27,9 @@
 #include <stdlib.h>
 
 
+/** ComboBox functions. **/
+
+
 int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 {
 	if (!isSendMessageUnicode)
@@ -46,6 +49,72 @@ int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 	}
 	
 	LRESULT lRet = pSendMessage(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpszw);
+	free(lpszw);
+	return lRet;
+}
+
+
+/** ListBox functions. **/
+
+
+int ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
+{
+	if (!isSendMessageUnicode)
+		return pSendMessageU(hwndCtl, LB_GETTEXT, (WPARAM)index, (LPARAM)lpszBuffer);
+	
+	// Allocate a buffer for the string.
+	int textLength = ListBox_GetTextLenU(hwndCtl, index);
+	if (textLength <= 0)
+	{
+		// No text.
+		return 0;
+	}
+	wchar_t *wbuf = (wchar_t*)malloc((textLength + 1) * sizeof(wchar_t));
+	
+	// Get the string.
+	LRESULT lRet = pSendMessageU(hwndCtl, LB_GETTEXT, (WPARAM)index, (LPARAM)wbuf);
+	if (lRet == LB_ERR)
+	{
+		// Invalid index.
+		free(wbuf);
+		return lRet;
+	}
+	else if (lRet == 0)
+	{
+		// No text.
+		lpszBuffer[0] = 0;
+		free(wbuf);
+		return lRet;
+	}
+	
+	// lRet contains the number of characters returned.
+	// NOTE: No boundary checking is performed here!
+	// textLength * 4 is assumed as the worst-case buffer size, since UTF-8
+	// allows up to 4-byte characters.
+	WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
+	free(wbuf);
+	return lRet;
+}
+
+
+int ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
+{
+	if (!isSendMessageUnicode)
+		return pSendMessage(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpsz);
+	
+	// Convert lpsz from UTF-8 to UTF-16.
+	int lpszw_len;
+	wchar_t *lpszw = NULL;
+	
+	if (lpsz)
+	{
+		lpszw_len = MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, NULL, 0);
+		lpszw_len *= sizeof(wchar_t);
+		lpszw = (wchar_t*)malloc(lpszw_len);
+		MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, lpszw, lpszw_len);
+	}
+	
+	LRESULT lRet = pSendMessage(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpszw);
 	free(lpszw);
 	return lRet;
 }
