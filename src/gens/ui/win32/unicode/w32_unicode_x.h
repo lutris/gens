@@ -39,8 +39,6 @@ extern "C" {
 #define Edit_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 #define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 
-int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
-
 #ifdef __cplusplus
 }
 #endif

@@ -42,7 +42,7 @@ using std::string;
 
 // Win32 includes.
 #include "unicode/w32_unicode_x.h"
-#include <commctrl.h>
+#include "unicode/w32_unicode_commctrl.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 

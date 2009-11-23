@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (windowsx.h)                   *
+ * Gens: (Win32) Unicode Translation Layer. (commctrl.h)                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,4 +21,34 @@
  ***************************************************************************/
 
 #include "w32_unicode.h"
-#include "w32_unicode_x.h"
+#include "w32_unicode_commctrl.h"
+
+// C includes.
+#include <stdlib.h>
+
+
+int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
+{
+	if (!isSendMessageUnicode)
+		return pSendMessage(hWnd, TCM_INSERTITEMA, iItem, (LPARAM)pItem);
+	
+	// Convert pItem->pszText from UTF-8 to UTF-16.
+	TCITEMW wItem;
+	memcpy(&wItem, pItem, sizeof(wItem));
+	
+	int pszText_len;
+	wchar_t *pszwText = NULL;
+	
+	if (wItem.pszText)
+	{
+		pszText_len = MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, NULL, 0);
+		pszText_len *= sizeof(wchar_t);
+		pszwText = (wchar_t*)malloc(pszText_len);
+		MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, pszwText, pszText_len);
+		wItem.pszText = pszwText;
+	}
+	
+	LRESULT lRet = pSendMessage(hWnd, TCM_INSERTITEMW, iItem, (LPARAM)&wItem);
+	free(pszwText);
+	return lRet;
+}

@@ -20,5 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_W32_UNICODE_COMMCTRL_H
+#define GENS_W32_UNICODE_COMMCTRL_H
+
 #include "w32_unicode.h"
-#include "w32_unicode_x.h"
+#include <commctrl.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_W32_UNICODE_COMMCTRL_H */
