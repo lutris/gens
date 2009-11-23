@@ -1,11 +1,11 @@
 /***************************************************************************
- * Gens: Commodore 64 Character Set.                                       *
+ * Gens: VGA Character Set.                                                *
  *                                                                         *
- * Copyright (c) 1982 Commodore International                              *
+ * Based on the UniVGA X11 font.                                           *
  ***************************************************************************/
 
-#ifndef GENS_C64_CHARSET_H
-#define GENS_C64_CHARSET_H
+#ifndef GENS_VGA_CHARSET_H
+#define GENS_VGA_CHARSET_H
 
 #include "osd_charset.hpp"
 
@@ -13,10 +13,10 @@
 extern "C" {
 #endif
 
-extern const osd_char_t C64_charset[];
+extern const uint8_t* const VGA_charset[256];
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_C64_CHARSET_H */
+#endif /* GENS_VGA_CHARSET_H */

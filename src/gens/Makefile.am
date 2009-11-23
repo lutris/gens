@@ -134,7 +134,7 @@ gens_SOURCES = \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
-		video/C64_charset.c \
+		video/VGA_charset.c \
 		video/osd_charset.cpp \
 		video/vdraw.c \
 		video/vdraw_cpp.cpp \
@@ -259,7 +259,7 @@ noinst_HEADERS = \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
-		video/C64_charset.h \
+		video/VGA_charset.h \
 		video/osd_charset.hpp \
 		video/vdraw.h \
 		video/vdraw_cpp.hpp \
