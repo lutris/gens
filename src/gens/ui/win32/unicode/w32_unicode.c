@@ -140,6 +140,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
  * but they have separate A/W versions.
  */
 MAKE_FUNCPTR(DefWindowProcA);
+MAKE_FUNCPTR(CallWindowProcA);
 MAKE_FUNCPTR(SendMessageA);
 
 
@@ -178,6 +179,7 @@ int w32_unicode_init(void)
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
 	
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
+	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
 	
 	return 0;

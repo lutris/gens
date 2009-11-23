@@ -59,6 +59,10 @@ MAKE_EXTFUNCPTR(DefWindowProcA);
 #define pDefWindowProc pDefWindowProcA
 #define pDefWindowProcU pDefWindowProcA
 
+MAKE_EXTFUNCPTR(CallWindowProcA);
+#define pCallWindowProc pCallWindowProcA
+#define pCallWindowProcU pCallWindowProcA
+
 MAKE_EXTFUNCPTR(SendMessageA);
 #define pSendMessage pSendMessageA
 #define pSendMessageU pSendMessageA
