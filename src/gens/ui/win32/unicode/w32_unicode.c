@@ -28,9 +28,14 @@
 #include <wchar.h>
 
 #define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
+#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
+
+// DLLs.
+static HMODULE hUser32 = NULL;
 
 
 MAKE_FUNCPTR(RegisterClassA);
+MAKE_STFUNCPTR(RegisterClassW);
 static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
 {
 	// Convert lpWndClass from WNDCLASSA to WNDCLASSW.
@@ -59,7 +64,7 @@ static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
 		wWndClass.lpszClassName = lpszwClassName;
 	}
 	
-	ATOM aRet = RegisterClassW(&wWndClass);
+	ATOM aRet = pRegisterClassW(&wWndClass);
 	
 	free(lpszwMenuName);
 	free(lpszwClassName);
@@ -69,6 +74,7 @@ static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
 
 
 MAKE_FUNCPTR(CreateWindowExA);
+MAKE_STFUNCPTR(CreateWindowExW);
 static WINUSERAPI HWND WINAPI CreateWindowExU(
 		DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName,
 		DWORD dwStyle, int x, int y, int nWidth, int nHeight,
@@ -94,7 +100,7 @@ static WINUSERAPI HWND WINAPI CreateWindowExU(
 		MultiByteToWideChar(CP_UTF8, 0, lpWindowName, -1, lpwWindowName, lpwWindowName_len);
 	}
 	
-	HWND hRet = CreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
+	HWND hRet = pCreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
 					dwStyle, x, y, nWidth, nHeight,
 					hWndParent, hMenu, hInstance, lpParam);
 	
@@ -106,6 +112,7 @@ static WINUSERAPI HWND WINAPI CreateWindowExU(
 
 
 MAKE_FUNCPTR(SetWindowTextA);
+MAKE_STFUNCPTR(SetWindowTextW);
 static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 {
 	// Convert lpString from UTF-8 to UTF-16.
@@ -120,7 +127,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 		MultiByteToWideChar(CP_UTF8, 0, lpString, -1, lpwString, lpwString_len);
 	}
 	
-	BOOL bRet = SetWindowTextW(hWnd, lpwString);
+	BOOL bRet = pSetWindowTextW(hWnd, lpwString);
 	
 	free(lpwString);
 	
@@ -136,16 +143,42 @@ MAKE_FUNCPTR(DefWindowProcA);
 MAKE_FUNCPTR(SendMessageA);
 
 
+/**
+ * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
+ */
+#define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \
+do { \
+	pW = (typeof(pW))GetProcAddress(hDLL, fn "W"); \
+	if (pW) \
+		pA = &pU; \
+	else \
+		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
+} while (0)
+
+/**
+ * InitFuncPtrsU(): Initialize function pointers for functions that don't need text conversions.
+ */
+#define InitFuncPtrs(hDLL, fn, pA) \
+do { \
+	pA = (typeof(pA))GetProcAddress(hDLL, fn "W"); \
+	if (!pA) \
+		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
+} while (0)
+
+
 int w32_unicode_init(void)
 {
 	// Initialize Win32 Unicode.
-	// TODO: Use GetProcAddress() to initialize A/W functions.
-	pRegisterClassA = &RegisterClassU;
-	pCreateWindowExA = &CreateWindowExU;
-	pSetWindowTextA = &SetWindowTextU;
 	
-	pDefWindowProcA = &DefWindowProcW;
-	pSendMessageA = &SendMessageW;
+	// TODO: Error handling.
+	hUser32 = LoadLibrary("user32.dll");
+	
+	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
+	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
+	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
+	
+	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
+	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
 	
 	return 0;
 }
