@@ -37,12 +37,7 @@
 #include "libgsft/gsft_unused.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
+#include "unicode/w32_unicode.h"
 #include <commctrl.h>
 #include <shlobj.h>
 #include <tchar.h>
@@ -144,12 +139,12 @@ void GensUI::init(int *argc, char **argv[])
 	
 	// Get the Windows version.
 	memset(&winVersion, 0x00, sizeof(winVersion));
-	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+	if (GetVersionExW((OSVERSIONINFOW*)(&winVersion)) == 0)
 	{
 		memset(&winVersion, 0x00, sizeof(winVersion));
-		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx((OSVERSIONINFO*)(&winVersion));
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOW);
+		GetVersionExW((OSVERSIONINFOW*)(&winVersion));
 	}
 	
 	// Initialize the Common Controls library.
@@ -203,7 +198,7 @@ void GensUI::init(int *argc, char **argv[])
 	SetCursor(LoadCursor(NULL, IDC_ARROW));
 	
 	// Load the accelerator table for non-menu commands.
-	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
+	hAccelTable_NonMenu = LoadAcceleratorsW(ghInstance, MAKEINTRESOURCEW(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	gens_window_create();
@@ -242,9 +237,9 @@ void GensUI::update(void)
 {
 	MSG msg;
 	
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessage(&msg, NULL, 0, 0))
+		if (!GetMessageW(&msg, NULL, 0, 0))
 			close_gens();
 		
 		// Check if this message requires clearing the audio buffer.
@@ -261,25 +256,25 @@ void GensUI::update(void)
 		
 		// Check for an accelerator.
 		if (gens_window && msg.hwnd == gens_window &&
-		    ((hAccelTable_NonMenu && TranslateAccelerator(gens_window, hAccelTable_NonMenu, &msg)) ||
-		     (hAccelTable_Menu    && TranslateAccelerator(gens_window, hAccelTable_Menu, &msg))))
+		    ((hAccelTable_NonMenu && TranslateAcceleratorW(gens_window, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && TranslateAcceleratorW(gens_window, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;
 		}
 		
 		// Check for dialog messages.
-		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
-		    (bmf_window && IsDialogMessage(bmf_window, &msg)) ||
-		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
-		    (genopt_window && IsDialogMessage(genopt_window, &msg)) ||
-		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
+		if ((cc_window && IsDialogMessageW(cc_window, &msg)) ||
+		    (bmf_window && IsDialogMessageW(bmf_window, &msg)) ||
+		    (dir_window && IsDialogMessageW(dir_window, &msg)) ||
+		    (genopt_window && IsDialogMessageW(genopt_window, &msg)) ||
+		    (ca_window && IsDialogMessageW(ca_window, &msg)) ||
 #ifdef GENS_CDROM
-		    (selcd_window && IsDialogMessage(selcd_window, &msg)) ||
+		    (selcd_window && IsDialogMessageW(selcd_window, &msg)) ||
 #endif
-		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
-		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)) ||
-		    (about_window && IsDialogMessage(about_window, &msg)))
+		    (ccode_window && IsDialogMessageW(ccode_window, &msg)) ||
+		    (pmgr_window && IsDialogMessageW(pmgr_window, &msg)) ||
+		    (about_window && IsDialogMessageW(about_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.
 			continue;
@@ -291,7 +286,7 @@ void GensUI::update(void)
 		for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
 		     lstIter != PluginMgr::lstWindows.end(); lstIter++)
 		{
-			if (IsDialogMessage((HWND)((*lstIter).window), &msg))
+			if (IsDialogMessageW((HWND)((*lstIter).window), &msg))
 			{
 				// Dialog message. Don't process it as a regular message.
 				isDialogMessage = true;
@@ -308,7 +303,7 @@ void GensUI::update(void)
 		// Not a dialog message.
 		// Process the message.
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		DispatchMessageW(&msg);
 	}
 }
 
@@ -357,7 +352,7 @@ void GensUI::wakeup(void)
  */
 void GensUI::setWindowTitle(const string& title)
 {
-	SetWindowText(gens_window, title.c_str());
+	pSetWindowText(gens_window, title.c_str());
 	update();
 }
 

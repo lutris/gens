@@ -42,6 +42,9 @@ using std::list;
 #include "sighandler.h"
 #endif
 
+// Win32 Unicode support.
+#include "unicode/w32_unicode.h"
+
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
 #include <io.h>
@@ -137,6 +140,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Save hInst for other functions.
 	ghInstance = hInst;
+	
+	// Initialize Win32 Unicode.
+	w32_unicode_init();
 	
 	// Initialize the PRNG.
 	Init_PRNG();

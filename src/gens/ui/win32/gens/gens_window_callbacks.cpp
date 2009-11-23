@@ -90,11 +90,7 @@ extern "C"
 #include "input/input_dinput.hpp"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "unicode/w32_unicode.h"
 #include <shellapi.h>
 
 static bool paintsEnabled = true;
@@ -238,7 +234,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProc(hWnd, message, wParam, lParam);
 }
 
 

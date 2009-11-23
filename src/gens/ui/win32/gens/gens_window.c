@@ -34,14 +34,9 @@
 #include "video/vdraw.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <shellapi.h>
+#include "unicode/w32_unicode.h"
 #include "ui/win32/resource.h"
+#include <shellapi.h>
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
@@ -77,16 +72,16 @@ void gens_window_init_hWnd(void)
 		gens_wndclass.hCursor = NULL;
 		gens_wndclass.hbrBackground = gens_bgcolor;
 		gens_wndclass.lpszMenuName = NULL;
-		gens_wndclass.lpszClassName = TEXT("Gens");
+		gens_wndclass.lpszClassName = "Gens";
 		
-		RegisterClass(&gens_wndclass);
+		pRegisterClass(&gens_wndclass);
 	}
 	
 	// Create the window.
-	gens_window = CreateWindow(TEXT("Gens"), TEXT("Gens"),
-				   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-				   320 * 2, 240 * 2,
-				   NULL, NULL, ghInstance, NULL);
+	gens_window = pCreateWindow("Gens", "Gens",
+					WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+					320 * 2, 240 * 2,
+					NULL, NULL, ghInstance, NULL);
 	
 	// Accept dragged files.
 	DragAcceptFiles(gens_window, TRUE);
