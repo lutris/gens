@@ -31,34 +31,6 @@ static const uint8_t chr_err[16] =
 	{0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA,
 	 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
 
-// Hashtable.
-#include "libgsft/gsft_hashtable.hpp"
-typedef GSFT_HASHTABLE<wchar_t, const uint8_t*> mapOsdCharSet_t;
-typedef std::pair<wchar_t, const uint8_t*> pairOsdCharSet_t;
-static mapOsdCharSet_t mapOsdCharSet;
-
-
-/**
- * osd_charset_init(): Initialize the character set hashtable.
- * @param charset Character set to use.
- */
-void osd_charset_init(const osd_char_t *charset)
-{
-	if (!charset)
-		return;
-	
-	mapOsdCharSet.clear();
-	
-	// Add all characters to the map.
-	for (; charset->chr != (wchar_t)-1; charset++)
-	{
-		if (charset->data == NULL)
-			continue;
-		
-		mapOsdCharSet.insert(pairOsdCharSet_t(charset->chr, charset->data));
-	}
-}
-
 
 /**
  * osd_charset_prerender(): Prerender a string.
@@ -70,9 +42,6 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 {
 	if (!str || !prerender_buf)
 		return 0;
-	
-	if (mapOsdCharSet.empty())
-		osd_charset_init(&VGA_charset[0]);
 	
 	const uint8_t *chr_data;
 	const unsigned char *utf8str = reinterpret_cast<const unsigned char*>(str);
@@ -133,16 +102,24 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			}
 		}
 		
-		mapOsdCharSet_t::iterator chrIter = mapOsdCharSet.find(wchr);
-		if (chrIter == mapOsdCharSet.end())
+		// Check if the page exists.
+		if (wchr > 0xFFFF)
 		{
-			// Character not found.
+			// Outside of BMP. Not found.
+			chr_data = &chr_err[0];
+		}
+		else if (VGA_charset[wchr >> 8] == NULL)
+		{
+			// Page not found.
 			chr_data = &chr_err[0];
 		}
 		else
 		{
-			// Character found.
-			chr_data = &(*chrIter).second[0];
+			// Page found.
+			int page = (wchr >> 8) & 0xFF;
+			int chr = wchr & 0xFF;
+			
+			chr_data = VGA_charset[page] + (16*chr);
 		}
 		
 		for (unsigned int row = 0; row < 16; row++)

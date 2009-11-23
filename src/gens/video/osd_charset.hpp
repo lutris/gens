@@ -36,14 +36,9 @@ extern "C" {
  * MSB == left-most dot; LSB == right-most dot      *
  ****************************************************/
 
-/** Struct for sparse-mapped character set struct. **/
-typedef struct _osd_char_t
-{
-	wchar_t chr;		// Unicode character value.
-	uint8_t data[16];	// 8x16 character data. (MSB == left-most pixel)
-} osd_char_t;
+/** Typedef for 8x16 character set page. */
+typedef uint8_t osd_charset_page_t[256][16];
 
-void osd_charset_init(const osd_char_t *charset);
 int osd_charset_prerender(const char *str, uint8_t prerender_buf[16][1024]);
 
 #ifdef __cplusplus

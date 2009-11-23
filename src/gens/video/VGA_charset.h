@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-extern const osd_char_t VGA_charset[];
+extern const uint8_t* const VGA_charset[256];
 
 #ifdef __cplusplus
 }
