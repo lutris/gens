@@ -33,7 +33,6 @@
 // Win32 includes.
 #include "unicode/w32_unicode.h"
 #include "unicode/w32_unicode_x.h"
-#include <commctrl.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
