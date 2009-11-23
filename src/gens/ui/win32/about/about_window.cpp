@@ -41,7 +41,7 @@
 using std::string;
 
 // Win32 includes.
-#include <windowsx.h>
+#include "unicode/w32_unicode_x.h"
 #include <commctrl.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
@@ -233,10 +233,10 @@ static void about_window_create_child_windows(HWND hWnd)
 	TCITEM tab;
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
-	tab.pszText = TEXT("&Copyright");
-	TabCtrl_InsertItem(tabInfo, 0, &tab);
-	tab.pszText = TEXT("Included &Libraries");
-	TabCtrl_InsertItem(tabInfo, 1, &tab);
+	tab.pszText = "&Copyright";
+	TabCtrl_InsertItemU(tabInfo, 0, &tab);
+	tab.pszText = "Included &Libraries";
+	TabCtrl_InsertItemU(tabInfo, 1, &tab);
 	
 	// Calculate the tab's display area.
 	RECT rectTab;
@@ -379,7 +379,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 						break;
 				}
 				
-				Static_SetText(lblTabContents, sTabContents);
+				Static_SetTextU(lblTabContents, sTabContents);
 				
 				// Invalidate the tab contents groupbox.
 				InvalidateRect(tabInfo, NULL, true);
