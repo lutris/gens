@@ -228,9 +228,9 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(cboColorScaleMethod, fntMain, TRUE);
 	
 	// Add the items to the "Color Scale Method" dropdown.
-	ComboBox_AddString(cboColorScaleMethod, TEXT("Raw"));
-	ComboBox_AddString(cboColorScaleMethod, TEXT("Full"));
-	ComboBox_AddString(cboColorScaleMethod, TEXT("Full with S/H"));
+	ComboBox_AddStringU(cboColorScaleMethod, "Raw");
+	ComboBox_AddStringU(cboColorScaleMethod, "Full");
+	ComboBox_AddStringU(cboColorScaleMethod, "Full with S/H");
 	
 	// Create the dialog buttons.
 	
@@ -302,9 +302,9 @@ static void ca_window_init(void)
 	Static_SetTextU(lblBrightnessVal, buf);
 	
 	// Checkboxes.
-	Button_SetCheck(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkInverted, (Invert_Color ? BST_CHECKED : BST_UNCHECKED));
-	ComboBox_SetCurSel(cboColorScaleMethod, (int)ColorScaleMethod);
+	Button_SetCheckU(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkInverted, (Invert_Color ? BST_CHECKED : BST_UNCHECKED));
+	ComboBox_SetCurSelU(cboColorScaleMethod, (int)ColorScaleMethod);
 }
 
 
@@ -316,10 +316,10 @@ static void ca_window_save(void)
 	Contrast_Level = (pSendMessage(trkContrast, TBM_GETPOS, 0, 0) + 100);
 	Brightness_Level = (pSendMessage(trkBrightness, TBM_GETPOS, 0, 0) + 100);
 	
-	Greyscale = (Button_GetCheck(chkGrayscale) == BST_CHECKED);
-	Invert_Color = (Button_GetCheck(chkInverted) == BST_CHECKED);
+	Greyscale = (Button_GetCheckU(chkGrayscale) == BST_CHECKED);
+	Invert_Color = (Button_GetCheckU(chkInverted) == BST_CHECKED);
 	
-	int csm = ComboBox_GetCurSel(cboColorScaleMethod);
+	int csm = ComboBox_GetCurSelU(cboColorScaleMethod);
 	if (csm != -1)
 		ColorScaleMethod = (ColorScaleMethod_t)csm;
 	

@@ -22,3 +22,30 @@
 
 #include "w32_unicode.h"
 #include "w32_unicode_x.h"
+
+// C includes.
+#include <stdlib.h>
+
+
+int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
+{
+	if (!isSendMessageUnicode)
+		return pSendMessage(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpsz);
+	
+	
+	// Convert lpsz from UTF-8 to UTF-16.
+	int lpszw_len;
+	wchar_t *lpszw = NULL;
+	
+	if (lpsz)
+	{
+		lpszw_len = MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, NULL, 0);
+		lpszw_len *= sizeof(wchar_t);
+		lpszw = (wchar_t*)malloc(lpszw_len);
+		MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, lpszw, lpszw_len);
+	}
+	
+	LRESULT lRet = pSendMessage(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpszw);
+	free(lpszw);
+	return lRet;
+}

@@ -31,13 +31,20 @@
 extern "C" {
 #endif
 
-/**
- * SetWindowText() macros.
- */
-#define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
-#define ComboBox_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
+/** SetWindowText() macros. **/
 #define Edit_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 #define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
+
+/** Button macros. **/
+#define Button_GetCheckU(hwndCtl)	((int)(DWORD)pSendMessageU((hwndCtl),BM_GETCHECK,0,0))
+#define Button_SetCheckU(hwndCtl,check)	((void)pSendMessageU((hwndCtl),BM_SETCHECK,(WPARAM)(int)(check),0))
+#define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
+
+/** ComboBox macros. **/
+int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz);
+#define ComboBox_GetCurSelU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_GETCURSEL,0,0))
+#define ComboBox_SetCurSelU(hwndCtl,index)	((int)(DWORD)pSendMessageU((hwndCtl),CB_SETCURSEL,(WPARAM)(int)(index),0))
+#define ComboBox_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 #ifdef __cplusplus
 }
