@@ -30,7 +30,18 @@
 extern "C" {
 #endif
 
+/** TabCtrl macros. **/
 int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
+
+/** ListView macros. **/
+#define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
+#define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
+int ListView_GetItemU(HWND hWnd, LVITEM *pItem);
+int ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol);
+int ListView_InsertItemU(HWND hWnd, const LVITEM *pItem);
+#define ListView_SetExtendedListViewStyleU(w,s)	(DWORD)pSendMessageU((w),LVM_SETEXTENDEDLISTVIEWSTYLE,0,(s))
+#define ListView_SetImageListU(w,h,i)		(HIMAGELIST)(UINT)pSendMessageU((w),LVM_SETIMAGELIST,(i),(LPARAM)(h))
+int ListView_SetItemU(HWND hWnd, const LVITEM *pItem);
 
 #ifdef __cplusplus
 }

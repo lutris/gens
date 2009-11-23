@@ -32,7 +32,6 @@ extern "C" {
 #endif
 
 /** SetWindowText() macros. **/
-#define Edit_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 #define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 
 /** Button macros. **/
@@ -46,6 +45,10 @@ int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz);
 #define ComboBox_ResetContentU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_RESETCONTENT,0,0))
 #define ComboBox_SetCurSelU(hwndCtl,index)	((int)(DWORD)pSendMessageU((hwndCtl),CB_SETCURSEL,(WPARAM)(int)(index),0))
 #define ComboBox_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
+
+/** Edit macros. **/
+#define Edit_SetReadOnlyU(hwndCtl,fReadOnly)	((BOOL)(DWORD)pSendMessageU((hwndCtl),EM_SETREADONLY,(WPARAM)(BOOL)(fReadOnly),0))
+#define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ListBox macros. **/
 #define ListBox_DeleteStringU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_DELETESTRING,(WPARAM)(int)(index),0))
