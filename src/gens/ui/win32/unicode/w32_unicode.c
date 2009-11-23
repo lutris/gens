@@ -142,6 +142,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 MAKE_FUNCPTR(DefWindowProcA);
 MAKE_FUNCPTR(CallWindowProcA);
 MAKE_FUNCPTR(SendMessageA);
+int isSendMessageUnicode = 0;
 
 
 /**
@@ -181,6 +182,12 @@ int w32_unicode_init(void)
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
+	
+	// Check if SendMessage is Unicode.
+	if ((void*)GetProcAddress(hUser32, "SendMessageW") == pSendMessageA)
+		isSendMessageUnicode = 1;
+	else
+		isSendMessageUnicode = 0;
 	
 	return 0;
 }

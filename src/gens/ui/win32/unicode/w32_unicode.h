@@ -64,6 +64,7 @@ MAKE_EXTFUNCPTR(CallWindowProcA);
 #define pCallWindowProcU pCallWindowProcA
 
 MAKE_EXTFUNCPTR(SendMessageA);
+extern int isSendMessageUnicode;
 #define pSendMessage pSendMessageA
 #define pSendMessageU pSendMessageA
 
