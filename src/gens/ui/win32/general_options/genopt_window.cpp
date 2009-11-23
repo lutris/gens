@@ -33,14 +33,8 @@
 #include <unistd.h>
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <tchar.h>
+#include "unicode/w32_unicode.h"
+#include "unicode/w32_unicode_x.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -124,7 +118,7 @@ static HPEN	penIntroEffect[8][2];
 
 // Widget creation functions.
 static void	genopt_window_create_child_windows(HWND hWnd);
-static void	genopt_window_create_osd_frame(HWND container, LPCTSTR title, const int index,
+static void	genopt_window_create_osd_frame(HWND container, const char* title, const int index,
 					       const int x, const int y, const int w, const int h);
 
 // Configuration load/save functions.
@@ -162,17 +156,17 @@ void genopt_window_show(void)
 		genopt_wndclass.hCursor = NULL;
 		genopt_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		genopt_wndclass.lpszMenuName = NULL;
-		genopt_wndclass.lpszClassName = TEXT("genopt_window");
+		genopt_wndclass.lpszClassName = "genopt_window";
 		
-		RegisterClass(&genopt_wndclass);
+		pRegisterClassU(&genopt_wndclass);
 	}
 	
 	// Create the window.
-	genopt_window = CreateWindow(TEXT("genopt_window"), TEXT("General Options"),
-				     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				     CW_USEDEFAULT, CW_USEDEFAULT,
-				     GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT,
-				     gens_window, NULL, ghInstance, NULL);
+	genopt_window = pCreateWindowU("genopt_window", "General Options",
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT,
+					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	gsft_win32_set_actual_window_size(genopt_window, GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT);
@@ -222,72 +216,72 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	state_optColor[2] = 0;
 	
 	// On-Screen Display frame
-	HWND fraOSD = CreateWindow(WC_BUTTON, TEXT("On-Screen Display"),
-				   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				   8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
-				   hWnd, NULL, ghInstance, NULL);
+	HWND fraOSD = pCreateWindowU(WC_BUTTON, "On-Screen Display",
+					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
+					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(fraOSD, fntMain, true);
 	
 	// FPS counter frame
-	genopt_window_create_osd_frame(hWnd, TEXT("FPS counter"), 0, 16, 24,
+	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, 16, 24,
 				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
 	
 	// Message counter frame
-	genopt_window_create_osd_frame(hWnd, TEXT("Message"), 1, 16, (GENOPT_FRAME_HEIGHT/2)+16,
+	genopt_window_create_osd_frame(hWnd, "Message", 1, 16, (GENOPT_FRAME_HEIGHT/2)+16,
 				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
 	
 	// Miscellaneous frame
 	frameLeft += GENOPT_FRAME_WIDTH + 8;
 	
-	grpBox = CreateWindow(WC_BUTTON, TEXT("Miscellaneous"),
-			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-			      frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
-			      hWnd, NULL, ghInstance, NULL);
+	grpBox = pCreateWindowU(WC_BUTTON, "Miscellaneous",
+				WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
+				hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, true);
 	
 	// Auto Fix Checksum
 	frameTop += 16;
-	chkMisc_AutoFixChecksum = CreateWindow(WC_BUTTON, TEXT("Auto Fix Checksum"),
-					       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					       frameLeft+8, frameTop, 128, 20,
-					       hWnd, NULL, ghInstance, NULL);
+	chkMisc_AutoFixChecksum = pCreateWindowU(WC_BUTTON, "Auto Fix Checksum",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+							frameLeft+8, frameTop, 128, 20,
+							hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_AutoFixChecksum, fntMain, true);
 	
 	// Auto Pause
 	frameTop += 20;
-	chkMisc_AutoPause = CreateWindow(WC_BUTTON, TEXT("Auto Pause"),
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					 frameLeft+8, frameTop, 128, 20,
-					 hWnd, NULL, ghInstance, NULL);
+	chkMisc_AutoPause = pCreateWindowU(WC_BUTTON, "Auto Pause",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						frameLeft+8, frameTop, 128, 20,
+						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_AutoPause, fntMain, true);
 	
 	// Fast Blur
 	frameTop += 20;
-	chkMisc_FastBlur = CreateWindow(WC_BUTTON, TEXT("Fast Blur"),
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					frameLeft+8, frameTop, 128, 20,
-					hWnd, NULL, ghInstance, NULL);
+	chkMisc_FastBlur = pCreateWindowU(WC_BUTTON, "Fast Blur",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						frameLeft+8, frameTop, 128, 20,
+						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_FastBlur, fntMain, true);
 	
 	// Show SegaCD LEDs
 	frameTop += 20;
-	chkMisc_SegaCDLEDs = CreateWindow(WC_BUTTON, TEXT("Show SegaCD LEDs"),
-					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					  frameLeft+8, frameTop, 128, 20,
-					  hWnd, NULL, ghInstance, NULL);
+	chkMisc_SegaCDLEDs = pCreateWindowU(WC_BUTTON, "Show SegaCD LEDs",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						frameLeft+8, frameTop, 128, 20,
+						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_SegaCDLEDs, fntMain, true);
 	
 	// Border Color Emulation
 	frameTop += 20;
-	chkMisc_BorderColorEmulation = CreateWindow(WC_BUTTON, TEXT("Border Color Emulation"),
-						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						    frameLeft+8, frameTop, 128, 20,
-						    hWnd, NULL, ghInstance, NULL);
+	chkMisc_BorderColorEmulation = pCreateWindowU(WC_BUTTON, "Border Color Emulation",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+							frameLeft+8, frameTop, 128, 20,
+							hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_BorderColorEmulation, fntMain, true);
 	
 	// Pause Tint
 	frameTop += 20;
-	chkMisc_PauseTint = CreateWindow(WC_BUTTON, TEXT("Pause Tint"),
+	chkMisc_PauseTint = pCreateWindowU(WC_BUTTON, "Pause Tint",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
@@ -295,30 +289,30 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Intro Effect label.
 	frameTop += 16+8;
-	HWND lblIntroEffect = CreateWindow(WC_STATIC, TEXT("Intro Effect:"),
-					   WS_CHILD | WS_VISIBLE | SS_CENTER,
-					   frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
-					   hWnd, NULL, ghInstance, NULL);
+	HWND lblIntroEffect = pCreateWindowU(WC_STATIC, "Intro Effect:",
+						WS_CHILD | WS_VISIBLE | SS_CENTER,
+						frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
+						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblIntroEffect, fntMain, true);
 	
 	// Dropdown for intro effect.
 	frameTop += 16;
-	cboIntroEffect = CreateWindow(WC_COMBOBOX, NULL,
-				      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-				      frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 23*3,
-				      hWnd, NULL, ghInstance, NULL);
+	cboIntroEffect = pCreateWindowU(WC_COMBOBOX, NULL,
+					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+					frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 23*3,
+					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(cboIntroEffect, fntMain, true);
-	ComboBox_AddString(cboIntroEffect, TEXT("None"));
-	ComboBox_AddString(cboIntroEffect, TEXT("Gens Logo Effect"));
-	ComboBox_AddString(cboIntroEffect, TEXT("\"Crazy\" Effect"));
-	//ComboBox_AddString(cboIntroEffect, TEXT("Genesis TMSS")); // TODO: Broken.
+	ComboBox_AddStringU(cboIntroEffect, "None");
+	ComboBox_AddStringU(cboIntroEffect, "Gens Logo Effect");
+	ComboBox_AddStringU(cboIntroEffect, "\"Crazy\" Effect");
+	//ComboBox_AddStringU(cboIntroEffect, "Genesis TMSS"); // TODO: Broken.
 	
 	// Intro effect color label
 	frameTop += 24+4;
-	HWND lblIntroEffectColor = CreateWindow(WC_STATIC, TEXT("Intro Effect Color:"),
-						WS_CHILD | WS_VISIBLE | SS_CENTER,
-						frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
-						hWnd, NULL, ghInstance, NULL);
+	HWND lblIntroEffectColor = pCreateWindowU(WC_STATIC, TEXT("Intro Effect Color:"),
+							WS_CHILD | WS_VISIBLE | SS_CENTER,
+							frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
+							hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblIntroEffectColor, fntMain, true);
 	
 	// Intro effect color buttons.
@@ -326,7 +320,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	for (int i = 0; i < 8; i++)
 	{
-		optIntroEffectColor[i] = CreateWindow(
+		optIntroEffectColor[i] = pCreateWindowU(
 				WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
 				frameLeft + ((i%4)*(16+8)), frameTop + ((i / 4) * (16+4)), 16, 16,
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
@@ -335,27 +329,27 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-			     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     GENOPT_WINDOW_WIDTH-8-75-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-			     75, 23,
-			     hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				GENOPT_WINDOW_WIDTH-8-75-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
+				75, 23,
+				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, true);
 	
 	// Cancel button.
-	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
-				 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 GENOPT_WINDOW_WIDTH-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-				 75, 23,
-				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					GENOPT_WINDOW_WIDTH-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, true);
 	
 	// Apply button.
-	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
-				WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				GENOPT_WINDOW_WIDTH-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-				75, 23,
-				hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					GENOPT_WINDOW_WIDTH-8-75, GENOPT_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, true);
 	
 	// Initialize the internal data variables.
@@ -366,50 +360,50 @@ static void genopt_window_create_child_windows(HWND hWnd)
 }
 
 
-static void genopt_window_create_osd_frame(HWND container, LPCTSTR title, const int index,
+static void genopt_window_create_osd_frame(HWND container, const char* title, const int index,
 					   const int x, const int y, const int w, const int h)
 {
 	// Message frame
 	HWND grpBox, lblColor;
 	
-	grpBox = CreateWindow(WC_BUTTON, title,
-			      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
-			      x, y, w, h,
-			      container, NULL, ghInstance, NULL);
+	grpBox = pCreateWindowU(WC_BUTTON, title,
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
+				x, y, w, h,
+				container, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, true);
 	
 	// Enable
-	chkOSD_Enable[index] = CreateWindow(WC_BUTTON, TEXT("Enable"),
-					    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					    x+8, y+16, 128, 20,
-					    container, NULL, ghInstance, NULL);
+	chkOSD_Enable[index] = pCreateWindowU(WC_BUTTON, "Enable",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						x+8, y+16, 128, 20,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Enable[index], fntMain, true);
 	
 	// Double Sized
-	chkOSD_DoubleSized[index] = CreateWindow(WC_BUTTON, TEXT("Double Sized"),
-						 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						 x+8, y+16+20, 128, 20,
-						 container, NULL, ghInstance, NULL);
+	chkOSD_DoubleSized[index] = pCreateWindowU(WC_BUTTON, "Double Sized",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+							x+8, y+16+20, 128, 20,
+							container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_DoubleSized[index], fntMain, true);
 	
 	// Transparency
-	chkOSD_Transparency[index] = CreateWindow(WC_BUTTON, TEXT("Transparency"),
-						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						  x+8, y+16+20+20, 128, 20,
-						  container, NULL, ghInstance, NULL);
+	chkOSD_Transparency[index] = pCreateWindowU(WC_BUTTON, "Transparency",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+							x+8, y+16+20+20, 128, 20,
+							container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Transparency[index], fntMain, true);
 	
 	// Color label
-	lblColor = CreateWindow(WC_STATIC, TEXT("Color:"),
-				WS_CHILD | WS_VISIBLE | SS_LEFT,
-				x+8, y+16+20+20+20+2, 36, 20,
-				container, NULL, ghInstance, NULL);
+	lblColor = pCreateWindowU(WC_STATIC, "Color:",
+					WS_CHILD | WS_VISIBLE | SS_LEFT,
+					x+8, y+16+20+20+20+2, 36, 20,
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(lblColor, fntMain, true);
 	
 	// Radio buttons
 	for (int i = 0; i < 4; i++)
 	{
-		optOSD_Color[index][i] = CreateWindow(
+		optOSD_Color[index][i] = pCreateWindowU(
 				WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
 				x+8+36+4+(i*(16+8)), y+16+20+20+20+2, 16, 16,
 				container, (HMENU)(0xA000 + ((index * 4) + i)), ghInstance, NULL);
@@ -460,33 +454,33 @@ static void genopt_window_init(void)
 	unsigned char curFPSStyle, curMsgStyle;
 	
 	// Miscellaneous
-	Button_SetCheck(chkMisc_AutoFixChecksum, (Auto_Fix_CS ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_AutoPause, (Auto_Pause ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_FastBlur, (vdraw_get_fast_blur() ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_AutoFixChecksum, (Auto_Fix_CS ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_AutoPause, (Auto_Pause ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_FastBlur, (vdraw_get_fast_blur() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
 	
 	// FPS counter
-	Button_SetCheck(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
 	
 	curFPSStyle = vdraw_get_fps_style();
-	Button_SetCheck(chkOSD_DoubleSized[0], ((curFPSStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkOSD_Transparency[0], ((curFPSStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_DoubleSized[0], ((curFPSStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_Transparency[0], ((curFPSStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	state_optColor[0] = (curFPSStyle & 0x06) >> 1;
 	
 	// Message
-	Button_SetCheck(chkOSD_Enable[1], (vdraw_get_msg_enabled() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_Enable[1], (vdraw_get_msg_enabled() ? BST_CHECKED : BST_UNCHECKED));
 	
 	curMsgStyle = vdraw_get_msg_style();
-	Button_SetCheck(chkOSD_DoubleSized[1], ((curMsgStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkOSD_Transparency[1], ((curMsgStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_DoubleSized[1], ((curMsgStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkOSD_Transparency[1], ((curMsgStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	state_optColor[1] = (curMsgStyle & 0x06) >> 1;
 	
 	// Intro effect.
-	ComboBox_SetCurSel(cboIntroEffect, Intro_Style);
-	if (ComboBox_GetCurSel(cboIntroEffect) == -1)
-		ComboBox_SetCurSel(cboIntroEffect, 0);
+	ComboBox_SetCurSelU(cboIntroEffect, Intro_Style);
+	if (ComboBox_GetCurSelU(cboIntroEffect) == -1)
+		ComboBox_SetCurSelU(cboIntroEffect, 0);
 	state_optColor[2] = vdraw_get_intro_effect_color();
 }
 
@@ -500,38 +494,38 @@ static void genopt_window_save(void)
 	unsigned char curFPSStyle, curMsgStyle;
 	
 	// System
-	Auto_Fix_CS = (Button_GetCheck(chkMisc_AutoFixChecksum) == BST_CHECKED);
-	Auto_Pause = (Button_GetCheck(chkMisc_AutoPause) == BST_CHECKED);
-	vdraw_set_fast_blur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
-	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
-	Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
-	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
+	Auto_Fix_CS = (Button_GetCheckU(chkMisc_AutoFixChecksum) == BST_CHECKED);
+	Auto_Pause = (Button_GetCheckU(chkMisc_AutoPause) == BST_CHECKED);
+	vdraw_set_fast_blur(Button_GetCheckU(chkMisc_FastBlur) == BST_CHECKED);
+	Show_LED = (Button_GetCheckU(chkMisc_SegaCDLEDs) == BST_CHECKED);
+	Video.borderColorEmulation = (Button_GetCheckU(chkMisc_BorderColorEmulation) == BST_CHECKED);
+	Video.pauseTint = (Button_GetCheckU(chkMisc_PauseTint) == BST_CHECKED);
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
 	Settings.Active = !Auto_Pause;
 	
 	// FPS counter
-	vdraw_set_fps_enabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
+	vdraw_set_fps_enabled(Button_GetCheckU(chkOSD_Enable[0]) == BST_CHECKED);
 	
 	curFPSStyle = vdraw_get_fps_style() & ~0x18;
-	curFPSStyle |= ((Button_GetCheck(chkOSD_DoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
-	curFPSStyle |= ((Button_GetCheck(chkOSD_Transparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
+	curFPSStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
+	curFPSStyle |= ((Button_GetCheckU(chkOSD_Transparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
 	curFPSStyle &= ~0x06;
 	curFPSStyle |= state_optColor[0] << 1;
 	vdraw_set_fps_style(curFPSStyle);
 	
 	// Message
-	vdraw_set_msg_enabled(Button_GetCheck(chkOSD_Enable[1]) == BST_CHECKED);
+	vdraw_set_msg_enabled(Button_GetCheckU(chkOSD_Enable[1]) == BST_CHECKED);
 	curMsgStyle = vdraw_get_msg_style() & ~0x18;
-	curMsgStyle |= ((Button_GetCheck(chkOSD_DoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
-	curMsgStyle |= ((Button_GetCheck(chkOSD_Transparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
+	curMsgStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
+	curMsgStyle |= ((Button_GetCheckU(chkOSD_Transparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
 	curMsgStyle &= ~0x06;
 	curMsgStyle |= state_optColor[1] << 1;
 	vdraw_set_msg_style(curMsgStyle);
 	
 	// Intro effect.
-	Intro_Style = ComboBox_GetCurSel(cboIntroEffect);
+	Intro_Style = ComboBox_GetCurSelU(cboIntroEffect);
 	if (Intro_Style < 0)
 		Intro_Style = 0;
 	vdraw_set_intro_effect_color(static_cast<unsigned char>(state_optColor[2]));
@@ -613,7 +607,7 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -706,12 +700,12 @@ static void genopt_window_callback_selectRadioButton(int identifier)
 	state_optColor[index] = button;
 	if (index < 2)
 	{
-		InvalidateRect(optOSD_Color[index][oldButton], NULL, FALSE);
-		InvalidateRect(optOSD_Color[index][button], NULL, FALSE);
+		InvalidateRect(optOSD_Color[index][oldButton], NULL, false);
+		InvalidateRect(optOSD_Color[index][button], NULL, false);
 	}
 	else //if (index == 2)
 	{
-		InvalidateRect(optIntroEffectColor[oldButton], NULL, FALSE);
-		InvalidateRect(optIntroEffectColor[button], NULL, FALSE);
+		InvalidateRect(optIntroEffectColor[oldButton], NULL, false);
+		InvalidateRect(optIntroEffectColor[button], NULL, false);
 	}
 }
