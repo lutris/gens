@@ -32,7 +32,7 @@
 
 // Win32 includes.
 #include "unicode/w32_unicode.h"
-#include <windowsx.h>
+#include "unicode/w32_unicode_x.h"
 #include <commctrl.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
@@ -294,12 +294,12 @@ static void ca_window_init(void)
 	// Contrast.
 	pSendMessage(trkContrast, TBM_SETPOS, TRUE, (Contrast_Level - 100));
 	szprintf(buf, sizeof(buf), "%d", (Contrast_Level - 100));
-	pSetWindowText(lblContrastVal, buf);
+	Static_SetTextU(lblContrastVal, buf);
 	
 	// Brightness.
 	pSendMessage(trkBrightness, TBM_SETPOS, TRUE, (Brightness_Level - 100));
 	szprintf(buf, sizeof(buf), "%d", (Brightness_Level - 100));
-	pSetWindowText(lblBrightnessVal, buf);
+	Static_SetTextU(lblBrightnessVal, buf);
 	
 	// Checkboxes.
 	Button_SetCheck(chkGrayscale, (Greyscale ? BST_CHECKED : BST_UNCHECKED));
@@ -403,9 +403,9 @@ static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			
 			// Set the value label.
 			if ((HWND)lParam == trkContrast)
-				pSetWindowText(lblContrastVal, buf);
+				Static_SetTextU(lblContrastVal, buf);
 			else if ((HWND)lParam == trkBrightness)
-				pSetWindowText(lblBrightnessVal, buf);
+				Static_SetTextU(lblBrightnessVal, buf);
 			
 			break;
 		}
