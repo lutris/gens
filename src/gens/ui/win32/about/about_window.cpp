@@ -45,7 +45,6 @@ using std::string;
 #include <commctrl.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
-#include "charset/cp1252.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"

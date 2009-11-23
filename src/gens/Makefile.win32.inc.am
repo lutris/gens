@@ -15,7 +15,6 @@ gens_SOURCES += \
 		audio/audio_dsound.cpp \
 		plugins/mdp_host_gens_win32.c \
 		util/file/decompressor/popen_wrapper.c \
-		charset/cp1252.cpp \
 		ui/win32/fonts.c \
 		ui/win32/cc6.c \
 		ui/win32/gens_ui_win32.cpp \
@@ -54,7 +53,6 @@ noinst_HEADERS += \
 		audio/audio_dsound_t.h \
 		audio/audio_dsound.hpp \
 		plugins/mdp_host_gens_win32.h \
-		charset/cp1252.hpp \
 		ui/win32/fonts.h \
 		ui/win32/cc6.h \
 		ui/win32/unicode/w32_unicode.h \

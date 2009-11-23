@@ -45,7 +45,6 @@
 #include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
-#include "charset/cp1252.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
@@ -716,7 +715,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	stringstream ssMainInfo;
 	
 	// Plugin name.
-	ssMainInfo << "Name: " << (desc->name ? charset_utf8_to_cp1252(desc->name) : "(none)") << WIN32_ENDL;
+	ssMainInfo << "Name: " << (desc->name ? desc->name : "(none)") << WIN32_ENDL;
 	
 	// Plugin version.
 	ssMainInfo << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
@@ -724,22 +723,22 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << WIN32_ENDL;
 	
 	// Plugin author.
-	ssMainInfo << "MDP Author: " + (desc->author_mdp ? charset_utf8_to_cp1252(desc->author_mdp) : "(none)") << WIN32_ENDL;
+	ssMainInfo << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << WIN32_ENDL;
 	
 	// Original code author.
 	if (desc->author_orig)
 	{
-		ssMainInfo << "Original Author: " << charset_utf8_to_cp1252(desc->author_orig) << WIN32_ENDL;
+		ssMainInfo << "Original Author: " << desc->author_orig << WIN32_ENDL;
 	}
 	
 	// Website.
 	if (desc->website)
 	{
-		ssMainInfo << "Website: " << charset_utf8_to_cp1252(desc->website) << WIN32_ENDL;
+		ssMainInfo << "Website: " << desc->website << WIN32_ENDL;
 	}
 	
 	// License.
-	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? charset_utf8_to_cp1252(desc->license) : "(none)");
+	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? string(desc->license) : "(none)");
 	
 	// Set the main plugin information.
 	Edit_SetText(lblPluginMainInfo, ssMainInfo.str().c_str());
@@ -759,7 +758,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	// Plugin description.
 	string pluginDesc;
 	if (desc->description)
-		pluginDesc = string("Description:") + WIN32_ENDL + charset_utf8_to_cp1252(desc->description);
+		pluginDesc = string("Description:") + WIN32_ENDL + desc->description;
 	
 	// Check for an MDP error code.
 	mapMdpErrs_t::iterator errIter = mapMdpErrs.find(plugin);
