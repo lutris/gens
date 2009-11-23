@@ -30,13 +30,8 @@
 #include "emulator/g_main.hpp"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
+#include "unicode/w32_unicode.h"
+#include "unicode/w32_unicode_x.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
@@ -59,15 +54,15 @@ static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
 	mdp_z_entry_t *z_entry_cur = z_list;
 	while (z_entry_cur)
 	{
-		int index = ListBox_InsertString(lstFiles, -1, z_entry_cur->filename);
-		ListBox_SetItemData(lstFiles, index, z_entry_cur);
+		int index = ListBox_InsertStringU(lstFiles, -1, z_entry_cur->filename);
+		ListBox_SetItemDataU(lstFiles, index, z_entry_cur);
 		
 		// Next file.
 		z_entry_cur = z_entry_cur->next;
 	}
 	
 	// Select the first item by default.
-	ListBox_SetCurSel(lstFiles, 0);
+	ListBox_SetCurSelU(lstFiles, 0);
 }
 
 
@@ -80,8 +75,8 @@ static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
 static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem)
 {
 	HWND lstBox = GetDlgItem(hWndDlg, nIDDlgItem);
-	int index = ListBox_GetCurSel(lstBox);
-	return ListBox_GetItemData(lstBox, index);
+	int index = ListBox_GetCurSelU(lstBox);
+	return ListBox_GetItemDataU(lstBox, index);
 }
 
 
@@ -129,6 +124,7 @@ mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *z_list)
 		return NULL;
 	}
 	
+	// TODO: Add a Unicode version of DialogBoxParam().
 	mdp_z_entry_t *file;
 	file = (mdp_z_entry_t*)(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
