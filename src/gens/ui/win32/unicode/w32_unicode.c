@@ -23,6 +23,7 @@
 #include "w32_unicode.h"
 #include "w32_unicode_priv.h"
 #include "w32_unicode_shellapi.h"
+#include "w32_unicode_libc.h"
 
 // C includes.
 #include <string.h>
@@ -237,8 +238,9 @@ int w32_unicode_init(void)
 	else
 		isSendMessageUnicode = 0;
 	
-	// shellapi.h
+	// Other Win32 Unicode modules.
 	w32_unicode_shellapi_init();
+	w32_unicode_libc_init();
 	
 	return 0;
 }

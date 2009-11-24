@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (Private Macros)               *
+ * Gens: (Win32) Unicode Translation Layer. (shellapi.h)                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,44 +20,48 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_PRIV_H
-#define GENS_W32_UNICODE_PRIV_H
+#include "w32_unicode.h"
+#include "w32_unicode_priv.h"
+#include "w32_unicode_libc.h"
 
-#define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
+// C includes.
+#include <stdlib.h>
 
-/**
- * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
- */
-#define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \
-do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fn "W"); \
-	if (pW) \
-		pA = &pU; \
-	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
+// DLLs.
+static HMODULE hMsvcrt = NULL;
 
-/**
- * InitFuncPtrsU(): Initialize function pointers for functions that don't need text conversions.
- */
-#define InitFuncPtrs(hDLL, fn, pA) \
-do { \
-	pA = (typeof(pA))GetProcAddress(hDLL, fn "W"); \
-	if (!pA) \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
 
-/**
- * InitFuncPtrsU_libc(): Initialize function pointers for functions that need text conversions. (libc version)
- */
-#define InitFuncPtrsU_libc(hDLL, fnA, fnW, pW, pA, pU) \
-do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fnW); \
-	if (pW) \
-		pA = &pU; \
-	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fnA); \
-} while (0)
+MAKE_FUNCPTR(access);
+MAKE_STFUNCPTR(_waccess);
+static int Uaccess(const char *path, int mode)
+{
+	if (!path)
+	{
+		// String not specified. Don't bother converting anything.
+		return p_waccess((const wchar_t*)path, mode);
+	}
+	
+	// Convert lpNewItem from UTF-8 to UTF-16.
+	int path_len;
+	wchar_t *wpath = NULL;
+	
+	path_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
+	path_len *= sizeof(wchar_t);
+	wpath = (wchar_t*)malloc(path_len);
+	MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, path_len);
+	
+	UINT uRet = p_waccess(wpath, mode);
+	free(wpath);
+	return uRet;
+}
 
-#endif /* GENS_W32_UNICODE_PRIV_H */
+
+int w32_unicode_libc_init(void)
+{
+	// TODO: Error handling.
+	hMsvcrt = LoadLibrary("msvcrt.dll");
+	
+	InitFuncPtrsU_libc(hMsvcrt, "access", "_waccess", p_waccess, paccess, Uaccess);
+	
+	return 0;
+}
