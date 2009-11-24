@@ -113,11 +113,11 @@ void ca_window_show(void)
 		ca_wndclass.lpszMenuName = NULL;
 		ca_wndclass.lpszClassName = "ca_window";
 		
-		pRegisterClass(&ca_wndclass);
+		pRegisterClassU(&ca_wndclass);
 	}
 	
 	// Create the window.
-	ca_window = pCreateWindow("ca_window", "Color Adjustment",
+	ca_window = pCreateWindowU("ca_window", "Color Adjustment",
 				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				 CW_USEDEFAULT, CW_USEDEFAULT,
 				 CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT,
@@ -145,48 +145,48 @@ static void ca_window_create_child_windows(HWND hWnd)
 	static const unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
 	
 	// "Contrast" label.
-	HWND lblContrast = pCreateWindow(WC_STATIC, "Co&ntrast",
+	HWND lblContrast = pCreateWindowU(WC_STATIC, "Co&ntrast",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
 						8, 16, 56, 16,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblContrast, fntMain, TRUE);
 	
 	// "Contrast" trackbar.
-	trkContrast = pCreateWindow(TRACKBAR_CLASS, NULL, trkStyle,
+	trkContrast = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
 					8+56, 14,
 					CA_TRACKBAR_WIDTH, CA_TRACKBAR_HEIGHT,
 					hWnd, (HMENU)IDC_TRK_CA_CONTRAST, ghInstance, NULL);
-	pSendMessage(trkContrast, TBM_SETPAGESIZE, 0, 10);
-	pSendMessage(trkContrast, TBM_SETTICFREQ, 25, 0);
-	pSendMessage(trkContrast, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
-	pSendMessage(trkContrast, TBM_SETPOS, TRUE, 0);
+	pSendMessageU(trkContrast, TBM_SETPAGESIZE, 0, 10);
+	pSendMessageU(trkContrast, TBM_SETTICFREQ, 25, 0);
+	pSendMessageU(trkContrast, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
+	pSendMessageU(trkContrast, TBM_SETPOS, TRUE, 0);
 	
 	// "Contrast" value label.
-	lblContrastVal = pCreateWindow(WC_STATIC, "0",
+	lblContrastVal = pCreateWindowU(WC_STATIC, "0",
 					WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
 					8+56+CA_TRACKBAR_WIDTH+8, 16, 32, 16,
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblContrastVal, fntMain, TRUE);
 	
 	// "Brightness" label.
-	HWND lblBrightness = pCreateWindow(WC_STATIC, "&Brightness",
+	HWND lblBrightness = pCreateWindowU(WC_STATIC, "&Brightness",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
 						8, 16+32, 56, 16,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblBrightness, fntMain, TRUE);
 	
 	// "Brightness" trackbar.
-	trkBrightness = pCreateWindow(TRACKBAR_CLASS, NULL, trkStyle,
+	trkBrightness = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
 					8+56, 14+32,
 					CA_TRACKBAR_WIDTH, CA_TRACKBAR_HEIGHT,
 					hWnd, (HMENU)IDC_TRK_CA_CONTRAST, ghInstance, NULL);
-	pSendMessage(trkBrightness, TBM_SETPAGESIZE, 0, 10);
-	pSendMessage(trkBrightness, TBM_SETTICFREQ, 25, 0);
-	pSendMessage(trkBrightness, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
-	pSendMessage(trkBrightness, TBM_SETPOS, TRUE, 0);
+	pSendMessageU(trkBrightness, TBM_SETPAGESIZE, 0, 10);
+	pSendMessageU(trkBrightness, TBM_SETTICFREQ, 25, 0);
+	pSendMessageU(trkBrightness, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
+	pSendMessageU(trkBrightness, TBM_SETPOS, TRUE, 0);
 	
 	// "Brightness" value label.
-	lblBrightnessVal = pCreateWindow(WC_STATIC, "0",
+	lblBrightnessVal = pCreateWindowU(WC_STATIC, "0",
 						WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
 						8+56+CA_TRACKBAR_WIDTH+8, 16+32, 32, 16,
 						hWnd, NULL, ghInstance, NULL);
@@ -196,14 +196,14 @@ static void ca_window_create_child_windows(HWND hWnd)
 	int ctlLeft = (CA_WINDOW_WIDTH-80-8-96+16)/2;
 	
 	// "Grayscale" checkbox.
-	chkGrayscale = pCreateWindow(WC_BUTTON, "&Grayscale",
+	chkGrayscale = pCreateWindowU(WC_BUTTON, "&Grayscale",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					ctlLeft, 16+32+32, 80, 16,
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkGrayscale, fntMain, TRUE);
 	
 	// "Inverted" checkbox.
-	chkInverted = pCreateWindow(WC_BUTTON, "&Inverted",
+	chkInverted = pCreateWindowU(WC_BUTTON, "&Inverted",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					ctlLeft+8+80, 16+32+32, 80, 16,
 					hWnd, NULL, ghInstance, NULL);
@@ -213,14 +213,14 @@ static void ca_window_create_child_windows(HWND hWnd)
 	ctlLeft = (CA_WINDOW_WIDTH-104-8-96+16)/2;
 	
 	// Create a label for the "Color Scale Method" dropdown.
-	HWND lblColorScaleMethod = pCreateWindow(WC_STATIC, "Color Sca&le Method:",
+	HWND lblColorScaleMethod = pCreateWindowU(WC_STATIC, "Color Sca&le Method:",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_CENTER,
 							ctlLeft, 16+32+32+20+2, 104, 16,
 							hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblColorScaleMethod, fntMain, TRUE);
 	
 	// Create the "Color Scale Method" dropdown.
-	cboColorScaleMethod = pCreateWindow(WC_COMBOBOX, NULL,
+	cboColorScaleMethod = pCreateWindowU(WC_COMBOBOX, NULL,
 						WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
 						ctlLeft+104+8, 16+32+32+20, 96, 23*3,
 						hWnd, NULL, ghInstance, NULL);
@@ -238,7 +238,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	ctlLeft = (CA_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	HWND btnOK = pCreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 					ctlLeft, CA_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -246,7 +246,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = pCreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					ctlLeft+8+75, CA_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -254,7 +254,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = pCreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					ctlLeft+8+75+8+75, CA_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -291,12 +291,12 @@ static void ca_window_init(void)
 	char buf[16];
 	
 	// Contrast.
-	pSendMessage(trkContrast, TBM_SETPOS, TRUE, (Contrast_Level - 100));
+	pSendMessageU(trkContrast, TBM_SETPOS, TRUE, (Contrast_Level - 100));
 	szprintf(buf, sizeof(buf), "%d", (Contrast_Level - 100));
 	Static_SetTextU(lblContrastVal, buf);
 	
 	// Brightness.
-	pSendMessage(trkBrightness, TBM_SETPOS, TRUE, (Brightness_Level - 100));
+	pSendMessageU(trkBrightness, TBM_SETPOS, TRUE, (Brightness_Level - 100));
 	szprintf(buf, sizeof(buf), "%d", (Brightness_Level - 100));
 	Static_SetTextU(lblBrightnessVal, buf);
 	
@@ -312,8 +312,8 @@ static void ca_window_init(void)
  */
 static void ca_window_save(void)
 {
-	Contrast_Level = (pSendMessage(trkContrast, TBM_GETPOS, 0, 0) + 100);
-	Brightness_Level = (pSendMessage(trkBrightness, TBM_GETPOS, 0, 0) + 100);
+	Contrast_Level = (pSendMessageU(trkContrast, TBM_GETPOS, 0, 0) + 100);
+	Brightness_Level = (pSendMessageU(trkBrightness, TBM_GETPOS, 0, 0) + 100);
 	
 	Greyscale = (Button_GetCheckU(chkGrayscale) == BST_CHECKED);
 	Invert_Color = (Button_GetCheckU(chkInverted) == BST_CHECKED);
@@ -393,7 +393,7 @@ static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 				
 				default:
 					// Send TBM_GETPOS to the trackbar to get the position.
-					scrlPos = pSendMessage((HWND)lParam, TBM_GETPOS, 0, 0);
+					scrlPos = pSendMessageU((HWND)lParam, TBM_GETPOS, 0, 0);
 					break;
 			}
 			
@@ -417,5 +417,5 @@ static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			break;
 	}
 	
-	return pDefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }

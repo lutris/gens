@@ -148,11 +148,11 @@ void about_window_show(void)
 		about_wndclass.lpszMenuName = NULL;
 		about_wndclass.lpszClassName = "about_window";
 		
-		pRegisterClass(&about_wndclass);
+		pRegisterClassU(&about_wndclass);
 	}
 	
 	// Create the window.
-	about_window = pCreateWindow("about_window", "About " GENS_APPNAME,
+	about_window = pCreateWindowU("about_window", "About " GENS_APPNAME,
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
@@ -179,12 +179,12 @@ static void about_window_create_child_windows(HWND hWnd)
 	if (ice != 3)
 	{
 		// Gens logo
-		imgGensLogo = pCreateWindow(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
+		imgGensLogo = pCreateWindowU(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
 		hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 						 IMAGE_BITMAP, 0, 0,
 						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
-		pSendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
+		pSendMessageU(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
 	}
 	else
 	{
@@ -209,19 +209,19 @@ static void about_window_create_child_windows(HWND hWnd)
 	}
 	
 	// Title and version information.
-	lblGensTitle = pCreateWindow(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensTitle = pCreateWindowU(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
 					128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, true);
 	
-	lblGensDesc = pCreateWindow(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensDesc = pCreateWindowU(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
 					128, 42+ABOUT_WINDOW_GIT_HEIGHT,
 					(ABOUT_WINDOW_WIDTH-128), 100,
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, true);
 	
 	// Tab control.
-	tabInfo = pCreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
+	tabInfo = pCreateWindowU(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
 				8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
 				hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(tabInfo, fntMain, true);
@@ -248,7 +248,7 @@ static void about_window_create_child_windows(HWND hWnd)
 	
 	// Box for the tab contents.
 	HWND grpTabContents;
-	grpTabContents = pCreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+	grpTabContents = pCreateWindowU(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					rectTab.left + 4, rectTab.top,
 					rectTab.right - rectTab.left - 8,
 					rectTab.bottom - rectTab.top - 4,
@@ -260,7 +260,7 @@ static void about_window_create_child_windows(HWND hWnd)
 						(LONG_PTR)about_window_grpTabContents_wndproc);
 	
 	// Tab contents.
-	lblTabContents = pCreateWindow(WC_STATIC, about_window_copyright, WS_CHILD | WS_VISIBLE | SS_LEFT,
+	lblTabContents = pCreateWindowU(WC_STATIC, about_window_copyright, WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16,
 					rectTab.right - rectTab.left - 24,
 					rectTab.bottom - rectTab.top - 32,
@@ -268,7 +268,7 @@ static void about_window_create_child_windows(HWND hWnd)
 	SetWindowFont(lblTabContents, fntMain, true);
 	
 	// Create the OK button.
-	HWND btnOK = pCreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 					ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -416,7 +416,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 	}
 	
-	return pDefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -438,7 +438,7 @@ static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT mess
 		return (LRESULT)GetStockObject(NULL_BRUSH);
 	}
 	
-	return pCallWindowProc(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
+	return pCallWindowProcU(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
 }
 
 
@@ -524,7 +524,7 @@ static void CALLBACK about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_P
 	rIce.right = ICE_OFFSET_X + 80 - 1;
 	rIce.bottom = ICE_OFFSET_Y + 80 - 1;
 	InvalidateRect(about_window, &rIce, false);
-	pSendMessage(about_window, WM_PAINT, 0, 0);
+	pSendMessageU(about_window, WM_PAINT, 0, 0);
 	
 	iceLastTicks = dwTime;
 }

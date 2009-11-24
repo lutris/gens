@@ -352,7 +352,7 @@ void GensUI::wakeup(void)
  */
 void GensUI::setWindowTitle(const string& title)
 {
-	pSetWindowText(gens_window, title.c_str());
+	pSetWindowTextU(gens_window, title.c_str());
 	update();
 }
 

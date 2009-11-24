@@ -74,11 +74,11 @@ void gens_window_init_hWnd(void)
 		gens_wndclass.lpszMenuName = NULL;
 		gens_wndclass.lpszClassName = "Gens";
 		
-		pRegisterClass(&gens_wndclass);
+		pRegisterClassU(&gens_wndclass);
 	}
 	
 	// Create the window.
-	gens_window = pCreateWindow("Gens", "Gens",
+	gens_window = pCreateWindowU("Gens", "Gens",
 					WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 					320 * 2, 240 * 2,
 					NULL, NULL, ghInstance, NULL);

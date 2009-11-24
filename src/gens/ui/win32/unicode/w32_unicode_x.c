@@ -33,7 +33,7 @@
 int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 {
 	if (!isSendMessageUnicode)
-		return pSendMessage(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpsz);
+		return pSendMessageU(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpsz);
 	
 	
 	// Convert lpsz from UTF-8 to UTF-16.
@@ -48,7 +48,7 @@ int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 		MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, lpszw, lpszw_len);
 	}
 	
-	LRESULT lRet = pSendMessage(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpszw);
+	LRESULT lRet = pSendMessageU(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpszw);
 	free(lpszw);
 	return lRet;
 }
@@ -100,7 +100,7 @@ int ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 int ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
 {
 	if (!isSendMessageUnicode)
-		return pSendMessage(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpsz);
+		return pSendMessageU(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpsz);
 	
 	// Convert lpsz from UTF-8 to UTF-16.
 	int lpszw_len;
@@ -114,7 +114,7 @@ int ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
 		MultiByteToWideChar(CP_UTF8, 0, lpsz, -1, lpszw, lpszw_len);
 	}
 	
-	LRESULT lRet = pSendMessage(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpszw);
+	LRESULT lRet = pSendMessageU(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpszw);
 	free(lpszw);
 	return lRet;
 }

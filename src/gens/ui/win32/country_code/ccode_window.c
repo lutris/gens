@@ -126,11 +126,11 @@ void ccode_window_show(void)
 		ccode_wndclass.lpszMenuName = NULL;
 		ccode_wndclass.lpszClassName = "ccode_window";
 		
-		pRegisterClass(&ccode_wndclass);
+		pRegisterClassU(&ccode_wndclass);
 	}
 	
 	// Create the window.
-	ccode_window = pCreateWindow("ccode_window", "Country Code Order",
+	ccode_window = pCreateWindowU("ccode_window", "Country Code Order",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT,
@@ -157,7 +157,7 @@ void ccode_window_show(void)
 static void ccode_window_create_child_windows(HWND hWnd)
 {
 	// Add a frame for country code selection.
-	HWND fraCountry = pCreateWindow(WC_BUTTON, "Country Code Order",
+	HWND fraCountry = pCreateWindowU(WC_BUTTON, "Country Code Order",
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, 8,
 					CCODE_WINDOW_FRACOUNTRY_WIDTH,
@@ -188,7 +188,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	static const int btnLeft = (CCODE_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	btnOK = pCreateWindow(WC_BUTTON, "&OK",
+	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 					btnLeft, ccode_window_height-8-24,
 					75, 23,
@@ -196,7 +196,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	btnCancel = pCreateWindow(WC_BUTTON, "&Cancel",
+	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft+8+75, ccode_window_height-8-24,
 					75, 23,
@@ -204,7 +204,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	btnApply = pCreateWindow(WC_BUTTON, "&Apply",
+	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft+8+75+8+75, ccode_window_height-8-24,
 					75, 23,
@@ -229,7 +229,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 static void ccode_window_create_lstCountryCodes(HWND container)
 {
 	// Create the listbox.
-	lstCountryCodes = pCreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
+	lstCountryCodes = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 						8+8, 8+16,
 						CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH,
@@ -271,7 +271,7 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	// Create the buttons.
 	
 	// "Up" button.
-	HWND btnUp = pCreateWindow(WC_BUTTON, NULL,
+	HWND btnUp = pCreateWindowU(WC_BUTTON, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
 					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
 					8+16,
@@ -280,7 +280,7 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	SetWindowFont(btnUp, fntMain, TRUE);
 	
 	// "Down" button.
-	HWND btnDown = pCreateWindow(WC_BUTTON, NULL,
+	HWND btnDown = pCreateWindowU(WC_BUTTON, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
 					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
 					8+16+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT+(ccode_window_height-CCODE_WINDOW_DEF_HEIGHT)-CCODE_WINDOW_BTN_SIZE,

@@ -30,7 +30,7 @@
 int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 {
 	if (!isSendMessageUnicode)
-		return pSendMessage(hWnd, TCM_INSERTITEMA, iItem, (LPARAM)pItem);
+		return pSendMessageU(hWnd, TCM_INSERTITEMA, iItem, (LPARAM)pItem);
 	
 	// Convert pItem->pszText from UTF-8 to UTF-16.
 	TCITEMW wItem;
@@ -48,7 +48,7 @@ int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 		wItem.pszText = pszwText;
 	}
 	
-	LRESULT lRet = pSendMessage(hWnd, TCM_INSERTITEMW, iItem, (LPARAM)&wItem);
+	LRESULT lRet = pSendMessageU(hWnd, TCM_INSERTITEMW, iItem, (LPARAM)&wItem);
 	free(pszwText);
 	return lRet;
 }
