@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
+
 #include "md_rar.hpp"
 
 #include "emulator/g_main.hpp"

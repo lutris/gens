@@ -92,6 +92,7 @@ extern "C"
 // Win32 includes.
 #include "unicode/w32_unicode.h"
 #include "unicode/w32_unicode_shellapi.h"
+#include "unicode/w32_unicode_libc.h"
 
 static bool paintsEnabled = true;
 

@@ -88,12 +88,8 @@
 
 // Win32 includes.
 #ifdef GENS_OS_WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <shellapi.h>
+#include "unicode/w32_unicode.h"
+#include "unicode/w32_unicode_libc.h"
 #endif
 
 // For some reason, these aren't extern'd anywhere...
