@@ -496,7 +496,7 @@ static void dragDropFile(HDROP hDrop)
 	{
 		// Check that the file exists.
 		// TODO: Port this to Unicode.
-		if (gsft_file_exists(filename))
+		if (!access(filename, F_OK))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);
