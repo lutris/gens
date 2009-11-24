@@ -143,7 +143,7 @@ static int vdraw_gdi_init(void)
 		DWORD dwErr = GetLastError();
 		
 		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
-			"CreateCompatibleDC() failed: 0x%08X", dwErr);
+			"CreateCompatibleDC() failed: 0x%08lX", dwErr);
 		return -1;
 	}
 	
@@ -170,7 +170,7 @@ static int vdraw_gdi_init(void)
 		}
 		
 		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
-			"CreateDIBSection() failed: 0x%08X", dwErr);
+			"CreateDIBSection() failed: 0x%08lX", dwErr);
 		return -2;
 	}
 	
