@@ -137,7 +137,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 
 MAKE_FUNCPTR(InsertMenuA);
 MAKE_STFUNCPTR(InsertMenuW);
-static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT uIDNewItem, LPCSTR lpNewItem)
+static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
 	// Convert lpNewItem from UTF-8 to UTF-16.
 	int lpNewItem_len;
