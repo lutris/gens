@@ -57,6 +57,9 @@ MAKE_EXTFUNCPTR(InsertMenuA);
 MAKE_EXTFUNCPTR(ModifyMenuA);
 #define pModifyMenuU pModifyMenuA
 
+MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
+#define pSetCurrentDirectoryU pSetCurrentDirectoryA
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.

@@ -106,11 +106,7 @@ using std::list;
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "unicode/w32_unicode.h"
 #endif /* GENS_OS_WIN32 */
 
 
@@ -123,7 +119,7 @@ int Config::save(const string& filename)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	// Load the configuration file into the INI handler.
@@ -427,7 +423,7 @@ int Config::load(const string& filename, void* gameActive)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	INI cfg(filename);

@@ -544,7 +544,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
 	// (Why do GetOpenFileName() and GetSaveFileName change it?)
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	if (!ret)
 		return "";
@@ -596,7 +596,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
 	// I'm not sure if SHGetPathFromIDList() changes it, but it might.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	if (!bRet)
 		return "";

@@ -118,7 +118,7 @@ void get_default_save_path(char *buf, size_t size)
 	}
 	
 	// Set the current directory.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	// Set the default save path.
 	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);

@@ -32,6 +32,7 @@
 
 // DLLs.
 static HMODULE hUser32 = NULL;
+static HMODULE hKernel32 = NULL;
 
 
 MAKE_FUNCPTR(RegisterClassA);
@@ -146,13 +147,13 @@ static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int lpNewItem_len;
+	int lpwNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-	lpNewItem_len *= sizeof(wchar_t);
-	lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
-	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
+	lpwNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
+	lpwNewItem_len *= sizeof(wchar_t);
+	lpwNewItem = (wchar_t*)malloc(lpwNewItem_len);
+	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpwNewItem_len);
 	
 	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -171,16 +172,41 @@ static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int lpNewItem_len;
+	int lpwNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-	lpNewItem_len *= sizeof(wchar_t);
-	lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
-	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
+	lpwNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
+	lpwNewItem_len *= sizeof(wchar_t);
+	lpwNewItem = (wchar_t*)malloc(lpwNewItem_len);
+	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpwNewItem_len);
 	
 	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
+	return bRet;
+}
+
+
+MAKE_FUNCPTR(SetCurrentDirectoryA);
+MAKE_STFUNCPTR(SetCurrentDirectoryW);
+static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
+{
+	if (!lpPathName)
+	{
+		// String not specified. Don't bother converting anything.
+		return pSetCurrentDirectoryW(lpPathName);
+	}
+	
+	// Convert lpPathName from UTF-8 to UTF-16.
+	int lpwPathName_len;
+	wchar_t *lpwPathName = NULL;
+	
+	lpwPathName_len = MultiByteToWideChar(CP_UTF8, 0, lpPathName, -1, NULL, 0);
+	lpwPathName_len *= sizeof(wchar_t);
+	lpwPathName = (wchar_t*)malloc(lpwPathName_len);
+	MultiByteToWideChar(CP_UTF8, 0, lpPathName, -1, lpwPathName, lpwPathName_len);
+	
+	BOOL bRet = pSetCurrentDirectoryW(lpwPathName);
+	free(lpwPathName);
 	return bRet;
 }
 
@@ -211,13 +237,15 @@ int w32_unicode_init(void)
 	
 	// TODO: Error handling.
 	hUser32 = LoadLibrary("user32.dll");
+	hKernel32 = LoadLibrary("kernel32.dll");
 	
 	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
 	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
-	
+	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
+		
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);

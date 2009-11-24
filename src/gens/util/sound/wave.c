@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #ifdef _WIN32
+#include "unicode/w32_unicode.h"
 #include "unicode/w32_unicode_libc.h"
 #endif
 
@@ -102,7 +103,7 @@ int wav_dump_start(void)
 {
 	/* Make sure relative pathnames are handled correctly on Win32. */
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif
 	
 	/* A game must be loaded in order to dump a WAV. */
