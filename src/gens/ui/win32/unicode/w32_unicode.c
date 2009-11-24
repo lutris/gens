@@ -192,11 +192,11 @@ int w32_unicode_init(void)
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
 	
 #ifdef _WIN64
-	InitFuncPtrs(hUser32, "GetWindowLongPtr", pSetWindowLongPtrA);
+	InitFuncPtrs(hUser32, "GetWindowLongPtr", pGetWindowLongPtrA);
 	InitFuncPtrs(hUser32, "SetWindowLongPtr", pSetWindowLongPtrA);
 #else
-	InitFuncPtrs(hUser32, "GetWindowPtr", pSetWindowLongA);
-	InitFuncPtrs(hUser32, "SetWindowPtr", pSetWindowLongA);
+	InitFuncPtrs(hUser32, "GetWindowLong", pGetWindowLongA);
+	InitFuncPtrs(hUser32, "SetWindowLong", pSetWindowLongA);
 #endif
 	
 	// Check if SendMessage is Unicode.
