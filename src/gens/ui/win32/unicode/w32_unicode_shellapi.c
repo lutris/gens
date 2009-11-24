@@ -52,7 +52,7 @@ static UINT WINAPI DragQueryFileU(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT 
 }
 
 
-int w32_unicode_shellapi_init(void)
+int WINAPI w32_unicode_shellapi_init(void)
 {
 	// TODO: Error handling.
 	hShell32 = LoadLibrary("shell32.dll");

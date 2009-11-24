@@ -33,7 +33,7 @@ extern "C" {
 MAKE_EXTFUNCPTR(DragQueryFileA);
 #define pDragQueryFileU pDragQueryFileA
 
-int w32_unicode_shellapi_init(void);
+int WINAPI w32_unicode_shellapi_init(void);
 
 #ifdef __cplusplus
 }

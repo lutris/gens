@@ -40,7 +40,7 @@ extern "C" {
 #define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ComboBox macros. **/
-int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz);
+int WINAPI ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz);
 #define ComboBox_GetCurSelU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_GETCURSEL,0,0))
 #define ComboBox_ResetContentU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_RESETCONTENT,0,0))
 #define ComboBox_SetCurSelU(hwndCtl,index)	((int)(DWORD)pSendMessageU((hwndCtl),CB_SETCURSEL,(WPARAM)(int)(index),0))
@@ -55,9 +55,9 @@ int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz);
 #define ListBox_GetCountU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCOUNT,0,0))
 #define ListBox_GetCurSelU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCURSEL,0,0))
 #define ListBox_GetItemDataU(hwndCtl,index)		((LRESULT)(DWORD)pSendMessageU((hwndCtl),LB_GETITEMDATA,(WPARAM)(int)(index),0))
-int ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
+int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
 #define ListBox_GetTextLenU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_GETTEXTLEN,(WPARAM)(int)(index),0))
-int ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz);
+int WINAPI ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz);
 #define ListBox_ResetContentU(hwndCtl)			((BOOL)(DWORD)pSendMessageU((hwndCtl),LB_RESETCONTENT,0,0))
 #define ListBox_SetCurSelU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_SETCURSEL,(WPARAM)(int)(index),0))
 #define ListBox_SetItemDataU(hwndCtl,index,data)	((int)(DWORD)pSendMessageU((hwndCtl),LB_SETITEMDATA,(WPARAM)(int)(index),(LPARAM)(data)))

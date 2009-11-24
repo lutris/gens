@@ -252,7 +252,7 @@ MAKE_FUNCPTR(SetWindowLongA);
 MAKE_FUNCPTR(CreateAcceleratorTableA);
 
 
-int w32_unicode_init(void)
+int WINAPI w32_unicode_init(void)
 {
 	// Initialize Win32 Unicode.
 	

@@ -30,7 +30,7 @@
 /** ComboBox functions. **/
 
 
-int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
+int WINAPI ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpsz);
@@ -57,7 +57,7 @@ int ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
 /** ListBox functions. **/
 
 
-int ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
+int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hwndCtl, LB_GETTEXT, (WPARAM)index, (LPARAM)lpszBuffer);
@@ -97,7 +97,7 @@ int ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 }
 
 
-int ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
+int WINAPI ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpsz);

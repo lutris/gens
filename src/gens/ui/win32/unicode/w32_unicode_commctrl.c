@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 
-int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
+int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hWnd, TCM_INSERTITEMA, iItem, (LPARAM)pItem);
@@ -57,7 +57,7 @@ int TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 /** ListView functions. **/
 
 
-int ListView_GetItemU(HWND hWnd, LVITEM *pItem)
+int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hWnd, LVM_GETITEMA, 0, (LPARAM)pItem);
@@ -99,7 +99,7 @@ int ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 }
 
 
-int ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
+int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hWnd, LVM_INSERTCOLUMNA, iCol, (LPARAM)pCol);
@@ -126,7 +126,7 @@ int ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 }
 
 
-int ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
+int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hWnd, LVM_INSERTITEMA, 0, (LPARAM)pItem);
@@ -156,7 +156,7 @@ int ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 }
 
 
-int ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
+int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
 {
 	if (!isSendMessageUnicode)
 		return pSendMessageU(hWnd, LVM_SETITEMA, 0, (LPARAM)pItem);

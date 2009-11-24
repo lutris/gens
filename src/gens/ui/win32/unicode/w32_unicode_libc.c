@@ -87,7 +87,7 @@ static FILE* Ufopen(const char *path, const char *mode)
 }
 
 
-int w32_unicode_libc_init(void)
+int WINAPI w32_unicode_libc_init(void)
 {
 	// TODO: Error handling.
 	hMsvcrt = LoadLibrary("msvcrt.dll");

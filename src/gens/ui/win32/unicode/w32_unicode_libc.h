@@ -37,7 +37,7 @@ MAKE_EXTFUNCPTR(access);
 MAKE_EXTFUNCPTR(fopen);
 #define fopen(path, mode) pfopen(path, mode)
 
-int w32_unicode_libc_init(void);
+int WINAPI w32_unicode_libc_init(void);
 
 #ifdef __cplusplus
 }

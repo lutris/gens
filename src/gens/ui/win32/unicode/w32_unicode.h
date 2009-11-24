@@ -90,7 +90,7 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 MAKE_EXTFUNCPTR(CreateAcceleratorTableA);
 #define pCreateAcceleratorTableU pCreateAcceleratorTableA
 
-int w32_unicode_init(void);
+int WINAPI w32_unicode_init(void);
 
 #ifdef __cplusplus
 }
