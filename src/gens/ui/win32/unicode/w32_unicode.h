@@ -50,6 +50,9 @@ MAKE_EXTFUNCPTR(SetWindowTextA);
 #define pSetWindowText pSetWindowTextA
 #define pSetWindowTextU pSetWindowTextA
 
+MAKE_EXTFUNCPTR(InsertMenuA);
+#define pInsertMenuU pInsertMenuA
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
@@ -80,6 +83,9 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 #define pSetWindowLongU pSetWindowLongA
 #define pSetWindowLongPtrU pSetWindowLongA
 #endif
+
+MAKE_EXTFUNCPTR(CreateAcceleratorTableA);
+#define pCreateAcceleratorTableU pCreateAcceleratorTableA
 
 int w32_unicode_init(void);
 

@@ -135,6 +135,28 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 }
 
 
+MAKE_FUNCPTR(InsertMenuA);
+MAKE_STFUNCPTR(InsertMenuW);
+static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT uIDNewItem, LPCSTR lpNewItem)
+{
+	// Convert lpNewItem from UTF-8 to UTF-16.
+	int lpNewItem_len;
+	wchar_t *lpwNewItem = NULL;
+	
+	if (lpNewItem)
+	{
+		lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
+		lpNewItem_len *= sizeof(wchar_t);
+		lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
+		MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
+	}
+	
+	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
+	free(lpwNewItem);
+	return bRet;
+}
+
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
@@ -152,6 +174,7 @@ MAKE_FUNCPTR(GetWindowLongA);
 MAKE_FUNCPTR(SetWindowLongA);
 #endif
 
+MAKE_FUNCPTR(CreateAcceleratorTableA);
 
 /**
  * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
@@ -186,6 +209,7 @@ int w32_unicode_init(void)
 	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
 	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
+	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
@@ -198,6 +222,8 @@ int w32_unicode_init(void)
 	InitFuncPtrs(hUser32, "GetWindowLong", pGetWindowLongA);
 	InitFuncPtrs(hUser32, "SetWindowLong", pSetWindowLongA);
 #endif
+	
+	InitFuncPtrs(hUser32, "CreateAcceleratorTable", pCreateAcceleratorTableA);
 	
 	// Check if SendMessage is Unicode.
 	if ((void*)GetProcAddress(hUser32, "SendMessageW") == pSendMessageA)
