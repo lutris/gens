@@ -37,18 +37,14 @@ extern "C" {
 #define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
 
 MAKE_EXTFUNCPTR(RegisterClassA);
-#define pRegisterClass pRegisterClassA
 #define pRegisterClassU pRegisterClassA
 
 MAKE_EXTFUNCPTR(CreateWindowExA);
-#define pCreateWindowEx pCreateWindowExA
 #define pCreateWindowExU pCreateWindowExA
 #define pCreateWindowA(a,b,c,d,e,f,g,h,i,j,k) pCreateWindowExU(0,a,b,c,d,e,f,g,h,i,j,k)
-#define pCreateWindow pCreateWindowA
 #define pCreateWindowU pCreateWindowA
 
 MAKE_EXTFUNCPTR(SetWindowTextA);
-#define pSetWindowText pSetWindowTextA
 #define pSetWindowTextU pSetWindowTextA
 
 MAKE_EXTFUNCPTR(InsertMenuA);
@@ -65,16 +61,13 @@ MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
  * but they have separate A/W versions.
  */
 MAKE_EXTFUNCPTR(DefWindowProcA);
-#define pDefWindowProc pDefWindowProcA
 #define pDefWindowProcU pDefWindowProcA
 
 MAKE_EXTFUNCPTR(CallWindowProcA);
-#define pCallWindowProc pCallWindowProcA
 #define pCallWindowProcU pCallWindowProcA
 
 MAKE_EXTFUNCPTR(SendMessageA);
 extern int isSendMessageUnicode;
-#define pSendMessage pSendMessageA
 #define pSendMessageU pSendMessageA
 
 #ifdef _WIN64
