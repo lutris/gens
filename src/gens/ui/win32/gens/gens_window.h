@@ -24,11 +24,7 @@
 #define GENS_WIN32_GENS_WINDOW_H
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "unicode/w32_unicode.h"
 
 #ifdef __cplusplus
 extern "C" {
