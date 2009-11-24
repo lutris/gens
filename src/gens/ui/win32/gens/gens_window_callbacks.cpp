@@ -91,7 +91,7 @@ extern "C"
 
 // Win32 includes.
 #include "unicode/w32_unicode.h"
-#include <shellapi.h>
+#include "unicode/w32_unicode_shellapi.h"
 
 static bool paintsEnabled = true;
 
@@ -234,7 +234,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 	}
 	
-	return pDefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -466,7 +466,7 @@ static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 	
 	POINT pt;
 	GetCursorPos(&pt);
-	SendMessage(hWnd, WM_PAINT, 0, 0);
+	pSendMessageU(hWnd, WM_PAINT, 0, 0);
 	
 	// Disable painting while the popup menu is open.
 	paintsEnabled = false;
@@ -487,14 +487,15 @@ static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
  */
 static void dragDropFile(HDROP hDrop)
 {
-	TCHAR filename[GENS_PATH_MAX];
+	char filename[GENS_PATH_MAX];
 	unsigned int rval;
 	
-	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));
+	rval = pDragQueryFileU(hDrop, 0, filename, sizeof(filename));
 	
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
+		// TODO: Port this to Unicode.
 		if (gsft_file_exists(filename))
 		{
 			// File exists. Open it as a ROM image.

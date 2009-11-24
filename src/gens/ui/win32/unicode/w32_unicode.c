@@ -21,14 +21,13 @@
  ***************************************************************************/
 
 #include "w32_unicode.h"
+#include "w32_unicode_priv.h"
+#include "w32_unicode_shellapi.h"
 
 // C includes.
 #include <string.h>
 #include <stdlib.h>
 #include <wchar.h>
-
-#define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
 
 // DLLs.
 static HMODULE hUser32 = NULL;
@@ -204,28 +203,6 @@ MAKE_FUNCPTR(SetWindowLongA);
 
 MAKE_FUNCPTR(CreateAcceleratorTableA);
 
-/**
- * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
- */
-#define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \
-do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fn "W"); \
-	if (pW) \
-		pA = &pU; \
-	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
-
-/**
- * InitFuncPtrsU(): Initialize function pointers for functions that don't need text conversions.
- */
-#define InitFuncPtrs(hDLL, fn, pA) \
-do { \
-	pA = (typeof(pA))GetProcAddress(hDLL, fn "W"); \
-	if (!pA) \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
-
 
 int w32_unicode_init(void)
 {
@@ -259,6 +236,9 @@ int w32_unicode_init(void)
 		isSendMessageUnicode = 1;
 	else
 		isSendMessageUnicode = 0;
+	
+	// shellapi.h
+	w32_unicode_shellapi_init();
 	
 	return 0;
 }
