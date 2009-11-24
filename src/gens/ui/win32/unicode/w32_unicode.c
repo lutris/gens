@@ -139,17 +139,20 @@ MAKE_FUNCPTR(InsertMenuA);
 MAKE_STFUNCPTR(InsertMenuW);
 static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
+	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
+	{
+		// String not specified. Don't bother converting anything.
+		return pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
+	}
+	
 	// Convert lpNewItem from UTF-8 to UTF-16.
 	int lpNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	if (lpNewItem)
-	{
-		lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-		lpNewItem_len *= sizeof(wchar_t);
-		lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
-	}
+	lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
+	lpNewItem_len *= sizeof(wchar_t);
+	lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
+	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
 	
 	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -161,17 +164,20 @@ MAKE_FUNCPTR(ModifyMenuA);
 MAKE_STFUNCPTR(ModifyMenuW);
 static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
+	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
+	{
+		// String not specified. Don't bother converting anything.
+		return pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
+	}
+	
 	// Convert lpNewItem from UTF-8 to UTF-16.
 	int lpNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	if (lpNewItem)
-	{
-		lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-		lpNewItem_len *= sizeof(wchar_t);
-		lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
-	}
+	lpNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
+	lpNewItem_len *= sizeof(wchar_t);
+	lpwNewItem = (wchar_t*)malloc(lpNewItem_len);
+	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpNewItem_len);
 	
 	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
