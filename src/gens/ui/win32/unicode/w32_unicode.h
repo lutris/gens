@@ -67,6 +67,20 @@ extern int isSendMessageUnicode;
 #define pSendMessage pSendMessageA
 #define pSendMessageU pSendMessageA
 
+#ifdef _WIN64
+MAKE_EXTFUNCPTR(GetWindowLongPtrA);
+#define pGetWindowLongPtrU pGetWindowLongPtrA
+MAKE_EXTFUNCPTR(SetWindowLongPtrA);
+#define pSetWindowLongPtrU pSetWindowLongPtrA
+#else
+MAKE_EXTFUNCPTR(GetWindowLongA);
+#define pGetWindowLongU pGetWindowLongA
+#define pGetWindowLongPtrU pGetWindowLongA
+MAKE_EXTFUNCPTR(SetWindowLongA);
+#define pSetWindowLongU pSetWindowLongA
+#define pSetWindowLongPtrU pSetWindowLongA
+#endif
+
 int w32_unicode_init(void);
 
 #ifdef __cplusplus

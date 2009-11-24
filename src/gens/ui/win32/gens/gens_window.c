@@ -168,9 +168,9 @@ void gens_window_reinit(void)
 		while (ShowCursor(FALSE) >= 0) { }
 		
 		// Hide the window borders.
-		lStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		lStyle = pGetWindowLongPtrU(gens_window, GWL_STYLE);
 		lStyle &= ~(WS_POPUPWINDOW | WS_OVERLAPPEDWINDOW);
-		SetWindowLongPtr(gens_window, GWL_STYLE, lStyle);
+		pSetWindowLongPtrU(gens_window, GWL_STYLE, lStyle);
 		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else
@@ -180,7 +180,7 @@ void gens_window_reinit(void)
 		while (ShowCursor(TRUE) < 1) { }
 		
 		// Adjust the window style.
-		lStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		lStyle = pGetWindowLongPtrU(gens_window, GWL_STYLE);
 		if (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_WINRESIZE)
 		{
 			// Backend supports resizable windows.
@@ -193,7 +193,7 @@ void gens_window_reinit(void)
 			lStyle &= ~WS_OVERLAPPEDWINDOW;
 			lStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS;
 		}
-		SetWindowLongPtr(gens_window, GWL_STYLE, lStyle);
+		pSetWindowLongPtrU(gens_window, GWL_STYLE, lStyle);
 		
 		// Reposition the window.
 		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,

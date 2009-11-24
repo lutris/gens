@@ -144,6 +144,14 @@ MAKE_FUNCPTR(CallWindowProcA);
 MAKE_FUNCPTR(SendMessageA);
 int isSendMessageUnicode = 0;
 
+#ifdef _WIN64
+MAKE_FUNCPTR(GetWindowLongPtrA);
+MAKE_FUNCPTR(SetWindowLongPtrA);
+#else
+MAKE_FUNCPTR(GetWindowLongA);
+MAKE_FUNCPTR(SetWindowLongA);
+#endif
+
 
 /**
  * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
@@ -182,6 +190,14 @@ int w32_unicode_init(void)
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
+	
+#ifdef _WIN64
+	InitFuncPtrs(hUser32, "GetWindowLongPtr", pSetWindowLongPtrA);
+	InitFuncPtrs(hUser32, "SetWindowLongPtr", pSetWindowLongPtrA);
+#else
+	InitFuncPtrs(hUser32, "GetWindowPtr", pSetWindowLongA);
+	InitFuncPtrs(hUser32, "SetWindowPtr", pSetWindowLongA);
+#endif
 	
 	// Check if SendMessage is Unicode.
 	if ((void*)GetProcAddress(hUser32, "SendMessageW") == pSendMessageA)
