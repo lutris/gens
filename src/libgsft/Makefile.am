@@ -8,6 +8,12 @@ libgsft_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
 libgsft_la_CXXFLAGS	= $(AM_CXXFLAGS) -static -O3 -funroll-loops
 libgsft_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
+if GENS_OS_LINUX
+libgsft_la_CFLAGS	+= -fPIC -DPIC
+libgsft_la_CXXFLAGS	+= -fPIC -DPIC
+libgsft_la_LDFLAGS	+= -fPIC -DPIC
+endif
+
 libgsft_la_SOURCES = \
 		gsft_byteswap.c \
 		gsft_file.c
