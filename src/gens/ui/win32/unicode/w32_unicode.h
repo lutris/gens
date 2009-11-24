@@ -53,6 +53,9 @@ MAKE_EXTFUNCPTR(SetWindowTextA);
 MAKE_EXTFUNCPTR(InsertMenuA);
 #define pInsertMenuU pInsertMenuA
 
+MAKE_EXTFUNCPTR(ModifyMenuA);
+#define pModifyMenuU pModifyMenuA
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
