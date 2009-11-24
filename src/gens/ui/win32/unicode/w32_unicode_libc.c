@@ -42,17 +42,48 @@ static int Uaccess(const char *path, int mode)
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int path_len;
+	int wpath_len;
 	wchar_t *wpath = NULL;
 	
-	path_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
-	path_len *= sizeof(wchar_t);
-	wpath = (wchar_t*)malloc(path_len);
-	MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, path_len);
+	wpath_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
+	wpath_len *= sizeof(wchar_t);
+	wpath = (wchar_t*)malloc(wpath_len);
+	MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, wpath_len);
 	
 	UINT uRet = p_waccess(wpath, mode);
 	free(wpath);
 	return uRet;
+}
+
+
+MAKE_FUNCPTR(fopen);
+MAKE_STFUNCPTR(_wfopen);
+static FILE* Ufopen(const char *path, const char *mode)
+{
+	// Convert path and mode from UTF-8 to UTF-16.
+	int wpath_len, wmode_len;
+	wchar_t *wpath = NULL, *wmode = NULL;
+	
+	if (path)
+	{
+		wpath_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
+		wpath_len *= sizeof(wchar_t);
+		wpath = (wchar_t*)malloc(wpath_len);
+		MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, wpath_len);
+	}
+	
+	if (mode)
+	{
+		wmode_len = MultiByteToWideChar(CP_UTF8, 0, mode, -1, NULL, 0);
+		wmode_len *= sizeof(wchar_t);
+		wmode = (wchar_t*)malloc(wmode_len);
+		MultiByteToWideChar(CP_UTF8, 0, mode, -1, wmode, wmode_len);
+	}
+	
+	FILE *fRet = p_wfopen(wpath, wmode);
+	free(wpath);
+	free(wmode);
+	return fRet;
 }
 
 
@@ -62,6 +93,7 @@ int w32_unicode_libc_init(void)
 	hMsvcrt = LoadLibrary("msvcrt.dll");
 	
 	InitFuncPtrsU_libc(hMsvcrt, "access", "_waccess", p_waccess, paccess, Uaccess);
+	InitFuncPtrsU_libc(hMsvcrt, "fopen", "_wfopen", p_wfopen, pfopen, Ufopen);
 	
 	return 0;
 }

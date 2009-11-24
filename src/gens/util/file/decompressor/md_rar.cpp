@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
-#endif
-
 #include "md_rar.hpp"
 
 #include "emulator/g_main.hpp"
@@ -31,6 +27,10 @@
 
 // popen wrapper
 #include "popen_wrapper.h"
+
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
 
 // Newline constant: "\r\n" on Win32, "\n" on everything else.
 #ifdef GENS_OS_WIN32

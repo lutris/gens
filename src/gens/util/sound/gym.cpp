@@ -24,10 +24,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
-#endif
-
 #include "gym.hpp"
 
 // C includes.
@@ -39,6 +35,10 @@
 // C++ includes.
 #include <string>
 using std::string;
+
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"

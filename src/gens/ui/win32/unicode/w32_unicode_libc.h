@@ -25,6 +25,7 @@
 
 #include "w32_unicode.h"
 #include <io.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +33,9 @@ extern "C" {
 
 MAKE_EXTFUNCPTR(access);
 #define access(path, mode) paccess(path, mode)
+
+MAKE_EXTFUNCPTR(fopen);
+#define fopen(path, mode) pfopen(path, mode)
 
 int w32_unicode_libc_init(void);
 

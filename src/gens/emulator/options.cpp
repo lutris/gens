@@ -24,10 +24,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
-#endif
-
 // C includes.
 #include <assert.h>
 #include <stdio.h>
@@ -80,6 +76,10 @@ using std::list;
 
 // Render Manager.
 #include "plugins/rendermgr.hpp"
+
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
 
 
 /**

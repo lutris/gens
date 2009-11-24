@@ -24,10 +24,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
-#endif
-
 #include "wave.h"
 
 /* C includes. */
@@ -35,6 +31,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"

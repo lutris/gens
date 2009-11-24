@@ -2,6 +2,10 @@
 #include <config.h>
 #endif
 
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
+
 #include <stdio.h>
 #include <cstring>
 

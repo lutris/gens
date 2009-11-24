@@ -27,6 +27,10 @@
 #include "mdp_host_gens_z.h"
 #include "mdp/mdp_error.h"
 
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
+
 #ifdef GENS_ZLIB
 	#include <zlib.h>
 #endif

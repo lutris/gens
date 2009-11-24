@@ -42,6 +42,10 @@ using std::string;
 using std::list;
 using std::deque;
 
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
+
 #include "rom.hpp"
 
 #include "emulator/g_main.hpp"

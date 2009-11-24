@@ -2,6 +2,10 @@
  * Gens: Sega 32X initialization and main loop code.
  */
 
+#ifdef _WIN32
+#include "unicode/w32_unicode_libc.h"
+#endif
+
 #include <string.h>
 
 #include "gens.hpp"

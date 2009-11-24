@@ -24,12 +24,12 @@
 #include <config.h>
 #endif
 
+#include "imageutil.hpp"
+#include "bmp.h"
+
 #ifdef _WIN32
 #include "unicode/w32_unicode_libc.h"
 #endif
-
-#include "imageutil.hpp"
-#include "bmp.h"
 
 // Message logging.
 #include "macros/log_msg.h"
