@@ -53,6 +53,9 @@ MAKE_EXTFUNCPTR(InsertMenuA);
 MAKE_EXTFUNCPTR(ModifyMenuA);
 #define pModifyMenuU pModifyMenuA
 
+MAKE_EXTFUNCPTR(GetModuleFileNameA);
+#define pGetModuleFileNameU pGetModuleFileNameA
+
 MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
 #define pSetCurrentDirectoryU pSetCurrentDirectoryA
 

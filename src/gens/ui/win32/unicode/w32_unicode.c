@@ -186,6 +186,27 @@ static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 }
 
 
+MAKE_FUNCPTR(GetModuleFileNameA);
+MAKE_STFUNCPTR(GetModuleFileNameW);
+static WINBASEAPI DWORD WINAPI GetModuleFileNameU(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
+{
+	if (!lpFilename || nSize == 0)
+	{
+		// String not specified. Don't bother converting anything.
+		return pGetModuleFileNameW(hModule, (LPWSTR)lpFilename, nSize);
+	}
+	
+	// Allocate a buffer for the filename.
+	wchar_t *lpwFilename = (wchar_t*)malloc(nSize * sizeof(wchar_t));
+	DWORD dwRet = pGetModuleFileNameW(hModule, lpwFilename, nSize);
+	
+	// Convert the filename from UTF-16 to UTF-8.
+	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
+	free(lpwFilename);
+	return dwRet;
+}
+
+
 MAKE_FUNCPTR(SetCurrentDirectoryA);
 MAKE_STFUNCPTR(SetCurrentDirectoryW);
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
@@ -193,7 +214,7 @@ static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
 	if (!lpPathName)
 	{
 		// String not specified. Don't bother converting anything.
-		return pSetCurrentDirectoryW(lpPathName);
+		return pSetCurrentDirectoryW((LPCWSTR)lpPathName);
 	}
 	
 	// Convert lpPathName from UTF-8 to UTF-16.
@@ -244,6 +265,8 @@ int w32_unicode_init(void)
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
+	
+	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
 	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
 		
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);

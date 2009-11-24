@@ -107,11 +107,11 @@ int win32_CommCtrlEx = 0;
 void get_default_save_path(char *buf, size_t size)
 {
 	// Win32 needs the program's pathname.
-	GetModuleFileName(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
+	pGetModuleFileNameU(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
 	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path)-1] = 0x00;
 	
 	// Remove the filename portion of the pathname. (_tcsrchr() == strrchr())
-	TCHAR *last_backslash = _tcsrchr(PathNames.Gens_EXE_Path, '\\');
+	char *last_backslash = strrchr(PathNames.Gens_EXE_Path, '\\');
 	if (last_backslash)
 	{
 		*(last_backslash + 1) = 0x00;
