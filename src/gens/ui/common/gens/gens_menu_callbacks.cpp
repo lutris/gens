@@ -210,8 +210,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			Settings.Paused = 1;
 			//Pause_Screen();
 			audio_clear_sound_buffer();
-			// TODO: Add ShellExecuteU() to w32u_shellapi.c.
-			ShellExecute(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
+			pShellExecuteU(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
 			break;
 #endif /* GENS_OS_WIN32 */
 		

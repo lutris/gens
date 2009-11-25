@@ -39,6 +39,7 @@
 // Win32 includes.
 #include "libgsft/w32u/w32u.h"
 #include "libgsft/w32u/w32u_commctrl.h"
+#include "libgsft/w32u/w32u_shellapi.h"
 #include <shlobj.h>	// TODO: Port to w32u.
 #include <tchar.h>	// TODO: Get rid of this.
 #include <commdlg.h>	// TODO: Port to w32u.
@@ -646,8 +647,7 @@ void GensUI::setMousePointer(bool busy)
  */
 void GensUI::LaunchBrowser(const string& url)
 {
-	printf("url: %s\n", url.c_str());
-	ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOW);
+	pShellExecuteU(NULL, "open", url.c_str(), NULL, NULL, SW_SHOW);
 }
 
 

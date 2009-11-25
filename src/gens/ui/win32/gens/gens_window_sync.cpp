@@ -114,7 +114,7 @@ void Sync_Gens_Window_FileMenu(void)
 	HMENU mnuFile = gens_menu_find_item(IDM_FILE_MENU);
 	
         // Netplay is currently not usable.
-	EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
+	//EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
 	
 	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
 	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
