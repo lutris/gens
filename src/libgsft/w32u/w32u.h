@@ -1,5 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer.                                *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u.h: Main Unicode translation code.                                  *
+ *                                                                         *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,15 +23,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_H
-#define GENS_W32_UNICODE_H
+#ifndef GSFT_W32U_H
+#define GSFT_W32U_H
 
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <windows.h>
-#include <shellapi.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -97,10 +99,10 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 MAKE_EXTFUNCPTR(CreateAcceleratorTableA);
 #define pCreateAcceleratorTableU pCreateAcceleratorTableA
 
-int WINAPI w32_unicode_init(void);
+int WINAPI w32u_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_W32_UNICODE_H */
+#endif /* GSFT_W32U_H */

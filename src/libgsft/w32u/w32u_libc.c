@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (shellapi.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_libc.c: libc translation.                                          *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,9 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32_unicode.h"
-#include "w32_unicode_priv.h"
-#include "w32_unicode_libc.h"
+#include "w32u.h"
+#include "w32u_priv.h"
+#include "w32u_libc.h"
 
 // C includes.
 #include <stdlib.h>
@@ -42,7 +41,7 @@ static int Uaccess(const char *path, int mode)
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	wchar_t *wpath = w32_mbstowcs(path);
+	wchar_t *wpath = w32u_mbstowcs(path);
 	
 	UINT uRet = p_waccess(wpath, mode);
 	free(wpath);
@@ -58,10 +57,10 @@ static FILE* Ufopen(const char *path, const char *mode)
 	wchar_t *wpath = NULL, *wmode = NULL;
 	
 	if (path)
-		wpath = w32_mbstowcs(path);
+		wpath = w32u_mbstowcs(path);
 	
 	if (mode)
-		wmode = w32_mbstowcs(mode);
+		wmode = w32u_mbstowcs(mode);
 	
 	FILE *fRet = p_wfopen(wpath, wmode);
 	free(wpath);
@@ -70,7 +69,7 @@ static FILE* Ufopen(const char *path, const char *mode)
 }
 
 
-int WINAPI w32_unicode_libc_init(void)
+int WINAPI w32u_libc_init(void)
 {
 	// TODO: Error handling.
 	hMsvcrt = LoadLibrary("msvcrt.dll");

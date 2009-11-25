@@ -29,7 +29,7 @@
 #include "popen_wrapper.h"
 
 #ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
+#include "libgsft/w32u/w32u_libc.h"
 #endif
 
 // Newline constant: "\r\n" on Win32, "\n" on everything else.

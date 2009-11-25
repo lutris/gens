@@ -43,7 +43,7 @@ using std::list;
 #endif
 
 // Win32 Unicode support.
-#include "unicode/w32_unicode.h"
+#include "libgsft/w32u/w32u.h"
 
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
@@ -142,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	ghInstance = hInst;
 	
 	// Initialize Win32 Unicode.
-	w32_unicode_init();
+	w32u_init();
 	
 	// Initialize the PRNG.
 	Init_PRNG();

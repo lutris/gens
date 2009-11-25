@@ -43,7 +43,7 @@ using std::list;
 using std::deque;
 
 #ifdef _WIN32
-#include "unicode/w32_unicode_libc.h"
+#include "libgsft/w32u/w32u_libc.h"
 #endif
 
 #include "rom.hpp"

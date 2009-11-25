@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (windowsx.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_windowsx.h: windowsx.h translation.                                *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,10 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_X_H
-#define GENS_W32_UNICODE_X_H
+#ifndef GSFT_W32U_WINDOWSX_H
+#define GSFT_W32U_WINDOWSX_H
 
-#include "w32_unicode.h"
+#include "w32u.h"
 #include <windowsx.h>
 #include <commctrl.h>
 
@@ -66,4 +65,4 @@ int WINAPI ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz);
 }
 #endif
 
-#endif /* GENS_W32_UNICODE_X_H */
+#endif /* GSFT_W32U_WINDOWSX_H */

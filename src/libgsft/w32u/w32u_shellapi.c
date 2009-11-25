@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (shellapi.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_shellapi.c: shellapi.h translation.                                *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,9 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32_unicode.h"
-#include "w32_unicode_priv.h"
-#include "w32_unicode_shellapi.h"
+#include "w32u.h"
+#include "w32u_priv.h"
+#include "w32u_shellapi.h"
 
 // C includes.
 #include <stdlib.h>
@@ -52,7 +51,7 @@ static UINT WINAPI DragQueryFileU(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT 
 }
 
 
-int WINAPI w32_unicode_shellapi_init(void)
+int WINAPI w32u_shellapi_init(void)
 {
 	// TODO: Error handling.
 	hShell32 = LoadLibrary("shell32.dll");

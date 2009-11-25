@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (Private Header)               *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_priv.h: Private functions.                                         *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,10 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_PRIV_H
-#define GENS_W32_UNICODE_PRIV_H
+#ifndef GSFT_W32U_PRIV_H
+#define GSFT_W32U_PRIV_H
 
-#include "w32_unicode.h"
+#include "w32u.h"
 
 #define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
 #define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
@@ -71,6 +70,6 @@ do { \
 } while (0)
 
 /** Functions. **/
-wchar_t* WINAPI w32_mbstowcs(const char *mbs);
+wchar_t* WINAPI w32u_mbstowcs(const char *mbs);
 
-#endif /* GENS_W32_UNICODE_PRIV_H */
+#endif /* GSFT_W32U_PRIV_H */

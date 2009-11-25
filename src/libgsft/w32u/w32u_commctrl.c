@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (commctrl.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_commctrl.c: commctrl.h translation.                                *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,9 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32_unicode.h"
-#include "w32_unicode_priv.h"
-#include "w32_unicode_commctrl.h"
+#include "w32u.h"
+#include "w32u_priv.h"
+#include "w32u_commctrl.h"
 
 // C includes.
 #include <stdlib.h>
@@ -41,7 +40,7 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 	
 	if (wItem.pszText)
 	{
-		pszwText = w32_mbstowcs(pItem->pszText);
+		pszwText = w32u_mbstowcs(pItem->pszText);
 		wItem.pszText = pszwText;
 	}
 	
@@ -109,7 +108,7 @@ int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 	
 	if (wCol.pszText)
 	{
-		pszwText = w32_mbstowcs(pCol->pszText);
+		pszwText = w32u_mbstowcs(pCol->pszText);
 		wCol.pszText = pszwText;
 	}
 	
@@ -134,7 +133,7 @@ int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	wchar_t *pszwText = w32_mbstowcs(pItem->pszText);
+	wchar_t *pszwText = w32u_mbstowcs(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_INSERTITEMW, 0, (LPARAM)&wItem);
@@ -158,7 +157,7 @@ int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	wchar_t *pszwText = w32_mbstowcs(pItem->pszText);
+	wchar_t *pszwText = w32u_mbstowcs(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_SETITEMW, 0, (LPARAM)&wItem);

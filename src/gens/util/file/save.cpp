@@ -80,8 +80,8 @@
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#include "unicode/w32_unicode.h"
-#include "unicode/w32_unicode_libc.h"
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_libc.h"
 #endif /* GENS_OS_WIN32 */
 
 #ifdef GENS_MP3

@@ -37,18 +37,17 @@
 #include "libgsft/gsft_unused.h"
 
 // Win32 includes.
-#include "unicode/w32_unicode.h"
-#include <commctrl.h>
-#include <shlobj.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_commctrl.h"
+#include <shlobj.h>	// TODO: Port to w32u.
+#include <tchar.h>	// TODO: Get rid of this.
+#include <commdlg.h>	// TODO: Port to w32u.
 
 // commctrl.h doesn't define ICC_STANDARD_CLASSES
 // unless _WIN32_WINNT is 0x0501 or higher.
 #ifndef ICC_STANDARD_CLASSES
 #define ICC_STANDARD_CLASSES 0x00004000
 #endif
-
-#include <commdlg.h>
 
 // Gens Win32 resources.
 #include "ui/win32/resource.h"

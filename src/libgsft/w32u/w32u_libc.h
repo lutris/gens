@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (shellapi.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_libc.h: libc translation.                                          *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,23 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_SHELLAPI_H
-#define GENS_W32_UNICODE_SHELLAPI_H
+#ifndef GSFT_W32U_LIBC_H
+#define GSFT_W32U_LIBC_H
 
-#include "w32_unicode.h"
-#include <shellapi.h>
+#include "w32u.h"
+#include <io.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAKE_EXTFUNCPTR(DragQueryFileA);
-#define pDragQueryFileU pDragQueryFileA
+MAKE_EXTFUNCPTR(access);
+#define access(path, mode) paccess(path, mode)
 
-int WINAPI w32_unicode_shellapi_init(void);
+MAKE_EXTFUNCPTR(fopen);
+#define fopen(path, mode) pfopen(path, mode)
+
+int WINAPI w32u_libc_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_W32_UNICODE_SHELLAPI_H */
+#endif /* GSFT_W32U_LIBC_H */

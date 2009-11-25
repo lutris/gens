@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (shellapi.h)                   *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_commctrl.h: commctrl.h translation.                                *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,27 +19,31 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_LIBC_H
-#define GENS_W32_UNICODE_LIBC_H
+#ifndef GSFT_W32U_COMMCTRL_H
+#define GSFT_W32U_COMMCTRL_H
 
-#include "w32_unicode.h"
-#include <io.h>
-#include <stdio.h>
+#include "w32u.h"
+#include <commctrl.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAKE_EXTFUNCPTR(access);
-#define access(path, mode) paccess(path, mode)
+/** TabCtrl macros. **/
+int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 
-MAKE_EXTFUNCPTR(fopen);
-#define fopen(path, mode) pfopen(path, mode)
-
-int WINAPI w32_unicode_libc_init(void);
+/** ListView macros. **/
+#define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
+#define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
+int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem);
+int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol);
+int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem);
+#define ListView_SetExtendedListViewStyleU(w,s)	(DWORD)pSendMessageU((w),LVM_SETEXTENDEDLISTVIEWSTYLE,0,(s))
+#define ListView_SetImageListU(w,h,i)		(HIMAGELIST)(UINT)pSendMessageU((w),LVM_SETIMAGELIST,(i),(LPARAM)(h))
+int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_W32_UNICODE_LIBC_H */
+#endif /* GSFT_W32U_COMMCTRL_H */

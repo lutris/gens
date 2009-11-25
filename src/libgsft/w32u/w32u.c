@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer.                                *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u.c: Main Unicode translation code.                                  *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,10 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32_unicode.h"
-#include "w32_unicode_priv.h"
-#include "w32_unicode_shellapi.h"
-#include "w32_unicode_libc.h"
+#include "w32u.h"
+#include "w32u_priv.h"
+#include "w32u_shellapi.h"
+#include "w32u_libc.h"
 
 // C includes.
 #include <string.h>
@@ -70,7 +69,7 @@ static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
 	}
 	
 	// Convert lpPathName from UTF-8 to UTF-16.
-	wchar_t *lpwPathName = w32_mbstowcs(lpPathName);
+	wchar_t *lpwPathName = w32u_mbstowcs(lpPathName);
 	
 	BOOL bRet = pSetCurrentDirectoryW(lpwPathName);
 	free(lpwPathName);
@@ -91,13 +90,13 @@ static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
 	
 	if (lpWndClass->lpszMenuName)
 	{
-		lpszwMenuName = w32_mbstowcs(lpWndClass->lpszMenuName);
+		lpszwMenuName = w32u_mbstowcs(lpWndClass->lpszMenuName);
 		wWndClass.lpszMenuName = lpszwMenuName;
 	}
 	
 	if (lpWndClass->lpszClassName)
 	{
-		lpszwClassName = w32_mbstowcs(lpWndClass->lpszClassName);
+		lpszwClassName = w32u_mbstowcs(lpWndClass->lpszClassName);
 		wWndClass.lpszClassName = lpszwClassName;
 	}
 	
@@ -119,10 +118,10 @@ static WINUSERAPI HWND WINAPI CreateWindowExU(
 	wchar_t *lpwClassName = NULL, *lpwWindowName = NULL;
 	
 	if (lpClassName)
-		lpwClassName = w32_mbstowcs(lpClassName);
+		lpwClassName = w32u_mbstowcs(lpClassName);
 	
 	if (lpWindowName)
-		lpwWindowName = w32_mbstowcs(lpWindowName);
+		lpwWindowName = w32u_mbstowcs(lpWindowName);
 	
 	HWND hRet = pCreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
 					dwStyle, x, y, nWidth, nHeight,
@@ -142,7 +141,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 	wchar_t *lpwString = NULL;
 	
 	if (lpString)
-		lpwString = w32_mbstowcs(lpString);
+		lpwString = w32u_mbstowcs(lpString);
 	
 	BOOL bRet = pSetWindowTextW(hWnd, lpwString);
 	free(lpwString);
@@ -164,7 +163,7 @@ static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	wchar_t *lpwNewItem = NULL;
 	
 	if (lpNewItem)
-		lpwNewItem = w32_mbstowcs(lpNewItem);
+		lpwNewItem = w32u_mbstowcs(lpNewItem);
 	
 	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -186,7 +185,7 @@ static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	wchar_t *lpwNewItem = NULL;
 	
 	if (lpNewItem)
-		lpwNewItem = w32_mbstowcs(lpNewItem);
+		lpwNewItem = w32u_mbstowcs(lpNewItem);
 	
 	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -214,7 +213,7 @@ MAKE_FUNCPTR(SetWindowLongA);
 MAKE_FUNCPTR(CreateAcceleratorTableA);
 
 
-int WINAPI w32_unicode_init(void)
+int WINAPI w32u_init(void)
 {
 	// Initialize Win32 Unicode.
 	
@@ -257,8 +256,8 @@ int WINAPI w32_unicode_init(void)
 		isSendMessageUnicode = 0;
 	
 	// Other Win32 Unicode modules.
-	w32_unicode_shellapi_init();
-	w32_unicode_libc_init();
+	w32u_shellapi_init();
+	w32u_libc_init();
 	
 	return 0;
 }

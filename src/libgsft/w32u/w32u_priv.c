@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (Private Functions             *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_priv.c: Private functions.                                         *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32_unicode_priv.h"
+#include "w32u_priv.h"
 
 // C includes.
 #include <stdlib.h>
@@ -31,11 +30,11 @@
 
 
 /**
- * w32_mbstowcs(): Convert a multibyte (UTF-8) string to a wide-character (UTF-16) string.
+ * w32u_mbstowcs(): Convert a multibyte (UTF-8) string to a wide-character (UTF-16) string.
  * @param mbs Multibyte string.
  * @return Wide-character string. (MUST BE free()'d AFTER USE!)
  */
-wchar_t* WINAPI w32_mbstowcs(const char *mbs)
+wchar_t* WINAPI w32u_mbstowcs(const char *mbs)
 {
 	int len = pMultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
 	if (len <= 0)

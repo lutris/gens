@@ -866,6 +866,7 @@ AC_CONFIG_FILES([
 	src/starscream/Makefile
 	src/mdZ80/Makefile
 	src/libgsft/Makefile
+	src/libgsft/w32u/Makefile
 	src/cbob/Makefile
 	src/gens/Makefile
 	src/gens/plugins/Makefile

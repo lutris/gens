@@ -24,7 +24,7 @@
 #define GENS_WIN32_GENS_WINDOW_H
 
 // Win32 includes.
-#include "unicode/w32_unicode.h"
+#include "libgsft/w32u/w32u.h"
 
 #ifdef __cplusplus
 extern "C" {

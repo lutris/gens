@@ -90,9 +90,9 @@ extern "C"
 #include "input/input_dinput.hpp"
 
 // Win32 includes.
-#include "unicode/w32_unicode.h"
-#include "unicode/w32_unicode_shellapi.h"
-#include "unicode/w32_unicode_libc.h"
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_shellapi.h"
+#include "libgsft/w32u/w32u_libc.h"
 
 static bool paintsEnabled = true;
 

@@ -34,9 +34,9 @@
 #include "video/vdraw.h"
 
 // Win32 includes.
-#include "unicode/w32_unicode.h"
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_shellapi.h"
 #include "ui/win32/resource.h"
-#include <shellapi.h>
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"

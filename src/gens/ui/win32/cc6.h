@@ -24,8 +24,8 @@
 #define GENS_WIN32_CC6_H
 
 // Win32 includes.
-#include "unicode/w32_unicode.h"
-#include "unicode/w32_unicode_commctrl.h"
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 
 #ifdef __cplusplus
 extern "C" {

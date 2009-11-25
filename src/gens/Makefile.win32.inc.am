@@ -18,12 +18,6 @@ gens_SOURCES += \
 		ui/win32/fonts.c \
 		ui/win32/cc6.c \
 		ui/win32/gens_ui_win32.cpp \
-		ui/win32/unicode/w32_unicode.c \
-		ui/win32/unicode/w32_unicode_priv.c \
-		ui/win32/unicode/w32_unicode_x.c \
-		ui/win32/unicode/w32_unicode_commctrl.c \
-		ui/win32/unicode/w32_unicode_shellapi.c \
-		ui/win32/unicode/w32_unicode_libc.c \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
@@ -60,12 +54,6 @@ noinst_HEADERS += \
 		plugins/mdp_host_gens_win32.h \
 		ui/win32/fonts.h \
 		ui/win32/cc6.h \
-		ui/win32/unicode/w32_unicode.h \
-		ui/win32/unicode/w32_unicode_priv.h \
-		ui/win32/unicode/w32_unicode_x.h \
-		ui/win32/unicode/w32_unicode_commctrl.h \
-		ui/win32/unicode/w32_unicode_shellapi.h \
-		ui/win32/unicode/w32_unicode_libc.h \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
@@ -87,8 +75,12 @@ noinst_HEADERS += \
 		ui/win32/select_cdrom/selcd_window.hpp
 endif
 
-gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound
+gens_LDADD += -lkernel32 -luser32 -lcomctl32 -lcomdlg32 -lgdi32 -lole32 -ldxguid -lddraw -ldinput -ldsound
 
 # libgsft Win32 libraries.
-gens_LDADD += $(top_builddir)/src/libgsft/libgsft_win32.la
-gens_DEPENDENCIES += $(top_builddir)/src/libgsft/libgsft_win32.la
+gens_LDADD += \
+		$(top_builddir)/src/libgsft/libgsft_win32.la \
+		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
+gens_DEPENDENCIES += \
+		$(top_builddir)/src/libgsft/libgsft_win32.la \
+		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
