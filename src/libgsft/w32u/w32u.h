@@ -86,6 +86,9 @@ MAKE_EXTFUNCPTR(LoadIconA);
 MAKE_EXTFUNCPTR(LoadImageA);
 #define pLoadImageU pLoadImageA
 
+MAKE_EXTFUNCPTR(MessageBoxA);
+#define pMessageBoxU pMessageBoxA
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
@@ -97,8 +100,26 @@ MAKE_EXTFUNCPTR(CallWindowProcA);
 #define pCallWindowProcU pCallWindowProcA
 
 MAKE_EXTFUNCPTR(SendMessageA);
-extern int isSendMessageUnicode;
+extern BOOL isSendMessageUnicode;
 #define pSendMessageU pSendMessageA
+
+MAKE_EXTFUNCPTR(GetMessageA);
+#define pGetMessageU pGetMessageA
+
+MAKE_EXTFUNCPTR(PeekMessageA);
+#define pPeekMessageU pPeekMessageA
+
+MAKE_EXTFUNCPTR(CreateAcceleratorTableA);
+#define pCreateAcceleratorTableU pCreateAcceleratorTableA
+
+MAKE_EXTFUNCPTR(TranslateAcceleratorA);
+#define pTranslateAcceleratorU pTranslateAcceleratorA
+
+MAKE_EXTFUNCPTR(IsDialogMessageA);
+#define pIsDialogMessageU pIsDialogMessageA
+
+MAKE_EXTFUNCPTR(DispatchMessageA);
+#define pDispatchMessageU pDispatchMessageA
 
 #ifdef _WIN64
 MAKE_EXTFUNCPTR(GetWindowLongPtrA);
@@ -113,9 +134,6 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 #define pSetWindowLongU pSetWindowLongA
 #define pSetWindowLongPtrU pSetWindowLongA
 #endif
-
-MAKE_EXTFUNCPTR(CreateAcceleratorTableA);
-#define pCreateAcceleratorTableU pCreateAcceleratorTableA
 
 int WINAPI w32u_init(void);
 

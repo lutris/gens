@@ -334,14 +334,29 @@ static WINUSERAPI HANDLE WINAPI LoadImageU(HINSTANCE hInst, LPCSTR lpszName, UIN
 }
 
 
+MAKE_FUNCPTR(MessageBoxA);
+MAKE_STFUNCPTR(MessageBoxW);
+static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+{
+	// Convert lpText and lpCaption from UTF-8 to UTF-16.
+	wchar_t *lpwText = NULL, *lpwCaption = NULL;
+	
+	if (lpText)
+		lpwText = w32u_mbstowcs(lpText);
+	if (lpCaption)
+		lpwCaption = w32u_mbstowcs(lpCaption);
+	
+	int ret = pMessageBoxW(hWnd, lpwText, lpwCaption, uType);
+	free(lpwText);
+	free(lpwCaption);
+	return ret;
+}
+
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
  */
-MAKE_FUNCPTR(DefWindowProcA);
-MAKE_FUNCPTR(CallWindowProcA);
-MAKE_FUNCPTR(SendMessageA);
-int isSendMessageUnicode = 0;
 
 #ifdef _WIN64
 MAKE_FUNCPTR(GetWindowLongPtrA);
@@ -352,6 +367,18 @@ MAKE_FUNCPTR(SetWindowLongA);
 #endif
 
 MAKE_FUNCPTR(CreateAcceleratorTableA);
+MAKE_FUNCPTR(TranslateAcceleratorA);
+
+MAKE_FUNCPTR(DefWindowProcA);
+MAKE_FUNCPTR(CallWindowProcA);
+
+MAKE_FUNCPTR(SendMessageA);
+BOOL isSendMessageUnicode = 0;
+MAKE_FUNCPTR(GetMessageA);
+MAKE_FUNCPTR(PeekMessageA);
+
+MAKE_FUNCPTR(IsDialogMessageA);
+MAKE_FUNCPTR(DispatchMessageA);
 
 
 int WINAPI w32u_init(void)
@@ -381,10 +408,20 @@ int WINAPI w32u_init(void)
 	InitFuncPtrsU(hUser32, "LoadCursor", pLoadCursorW, pLoadCursorA, LoadCursorU);
 	InitFuncPtrsU(hUser32, "LoadIcon", pLoadIconW, pLoadIconA, LoadIconU);
 	InitFuncPtrsU(hUser32, "LoadImage", pLoadImageW, pLoadImageA, LoadImageU);
+	InitFuncPtrsU(hUser32, "MessageBox", pMessageBoxW, pMessageBoxA, MessageBoxU);
 	
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
+	
 	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
+	InitFuncPtrs(hUser32, "GetMessage", pGetMessageA);
+	InitFuncPtrs(hUser32, "PeekMessage", pPeekMessageA);
+	
+	InitFuncPtrs(hUser32, "CreateAcceleratorTable", pCreateAcceleratorTableA);
+	InitFuncPtrs(hUser32, "TranslateAccelerator", pTranslateAcceleratorA);
+	
+	InitFuncPtrs(hUser32, "IsDialogMessage", pIsDialogMessageA);
+	InitFuncPtrs(hUser32, "DispatchMessage", pDispatchMessageA);
 	
 #ifdef _WIN64
 	InitFuncPtrs(hUser32, "GetWindowLongPtr", pGetWindowLongPtrA);
@@ -393,8 +430,6 @@ int WINAPI w32u_init(void)
 	InitFuncPtrs(hUser32, "GetWindowLong", pGetWindowLongA);
 	InitFuncPtrs(hUser32, "SetWindowLong", pSetWindowLongA);
 #endif
-	
-	InitFuncPtrs(hUser32, "CreateAcceleratorTable", pCreateAcceleratorTableA);
 	
 	// Check if SendMessage is Unicode.
 	if ((void*)GetProcAddress(hUser32, "SendMessageW") == pSendMessageA)

@@ -138,13 +138,11 @@ void GensUI::init(int *argc, char **argv[])
 	GSFT_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	memset(&winVersion, 0x00, sizeof(winVersion));
-	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-	if (GetVersionExW((OSVERSIONINFOW*)(&winVersion)) == 0)
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (pGetVersionExU((OSVERSIONINFO*)(&winVersion)) == 0)
 	{
-		memset(&winVersion, 0x00, sizeof(winVersion));
-		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOW);
-		GetVersionExW((OSVERSIONINFOW*)(&winVersion));
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		pGetVersionExU((OSVERSIONINFO*)(&winVersion));
 	}
 	
 	// Initialize the Common Controls library.
@@ -195,10 +193,10 @@ void GensUI::init(int *argc, char **argv[])
 	CoInitialize(NULL);
 	
 	// Initialize the cursor.
-	SetCursor(LoadCursor(NULL, IDC_ARROW));
+	SetCursor(pLoadCursorU(NULL, IDC_ARROW));
 	
 	// Load the accelerator table for non-menu commands.
-	hAccelTable_NonMenu = LoadAcceleratorsW(ghInstance, MAKEINTRESOURCEW(IDR_GENS_WINDOW_ACCEL_NONMENU));
+	hAccelTable_NonMenu = pLoadAcceleratorsU(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	gens_window_create();
@@ -237,9 +235,9 @@ void GensUI::update(void)
 {
 	MSG msg;
 	
-	while (PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (pPeekMessageU(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessageW(&msg, NULL, 0, 0))
+		if (!pGetMessageU(&msg, NULL, 0, 0))
 			close_gens();
 		
 		// Check if this message requires clearing the audio buffer.
@@ -256,25 +254,25 @@ void GensUI::update(void)
 		
 		// Check for an accelerator.
 		if (gens_window && msg.hwnd == gens_window &&
-		    ((hAccelTable_NonMenu && TranslateAcceleratorW(gens_window, hAccelTable_NonMenu, &msg)) ||
-		     (hAccelTable_Menu    && TranslateAcceleratorW(gens_window, hAccelTable_Menu, &msg))))
+		    ((hAccelTable_NonMenu && pTranslateAcceleratorU(gens_window, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && pTranslateAcceleratorU(gens_window, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;
 		}
 		
 		// Check for dialog messages.
-		if ((cc_window && IsDialogMessageW(cc_window, &msg)) ||
-		    (bmf_window && IsDialogMessageW(bmf_window, &msg)) ||
-		    (dir_window && IsDialogMessageW(dir_window, &msg)) ||
-		    (genopt_window && IsDialogMessageW(genopt_window, &msg)) ||
-		    (ca_window && IsDialogMessageW(ca_window, &msg)) ||
+		if ((cc_window		&& pIsDialogMessageU(cc_window, &msg)) ||
+		    (bmf_window		&& pIsDialogMessageU(bmf_window, &msg)) ||
+		    (dir_window		&& pIsDialogMessageU(dir_window, &msg)) ||
+		    (genopt_window	&& pIsDialogMessageU(genopt_window, &msg)) ||
+		    (ca_window		&& pIsDialogMessageU(ca_window, &msg)) ||
 #ifdef GENS_CDROM
-		    (selcd_window && IsDialogMessageW(selcd_window, &msg)) ||
+		    (selcd_window	&& pIsDialogMessageU(selcd_window, &msg)) ||
 #endif
-		    (ccode_window && IsDialogMessageW(ccode_window, &msg)) ||
-		    (pmgr_window && IsDialogMessageW(pmgr_window, &msg)) ||
-		    (about_window && IsDialogMessageW(about_window, &msg)))
+		    (ccode_window	&& pIsDialogMessageU(ccode_window, &msg)) ||
+		    (pmgr_window	&& pIsDialogMessageU(pmgr_window, &msg)) ||
+		    (about_window	&& pIsDialogMessageU(about_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.
 			continue;
@@ -286,7 +284,8 @@ void GensUI::update(void)
 		for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
 		     lstIter != PluginMgr::lstWindows.end(); lstIter++)
 		{
-			if (IsDialogMessageW((HWND)((*lstIter).window), &msg))
+			HWND hWnd = (HWND)((*lstIter).window);
+			if (pIsDialogMessageU(hWnd, &msg))
 			{
 				// Dialog message. Don't process it as a regular message.
 				isDialogMessage = true;
@@ -303,7 +302,7 @@ void GensUI::update(void)
 		// Not a dialog message.
 		// Process the message.
 		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
+		pDispatchMessageU(&msg);
 	}
 }
 
@@ -418,7 +417,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 	audio_clear_sound_buffer();
 	
 	// Show the message box.
-	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
+	int response = pMessageBoxU(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
 	
 	switch (response)
 	{
@@ -633,9 +632,9 @@ void GensUI::setMousePointer(bool busy)
 	HCURSOR cursor;
 	
 	if (busy)
-		cursor = LoadCursor(NULL, IDC_WAIT);
+		cursor = pLoadCursorU(NULL, IDC_WAIT);
 	else
-		cursor = LoadCursor(NULL, IDC_ARROW);
+		cursor = pLoadCursorU(NULL, IDC_ARROW);
 	
 	SetCursor(cursor);
 }
