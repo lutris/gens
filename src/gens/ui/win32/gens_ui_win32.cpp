@@ -77,7 +77,7 @@ using std::list;
 using std::string;
 
 // Filename filters.
-static const char* UI_Win32_FileFilter_AllFiles =
+static const char UI_Win32_FileFilter_AllFiles[] =
 	"All Files\0*.*\0\0";
 
 // File extensions.
@@ -92,26 +92,26 @@ static const char* UI_Win32_FileFilter_AllFiles =
 	#define LZMA_EXT
 #endif
 
-static const char* UI_Win32_FileFilter_ROMFile =
+static const char UI_Win32_FileFilter_ROMFile[] =
 	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;" ZLIB_EXT LZMA_EXT "*.rar\0"
 	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
 	"32X ROMs\0*.32x;" ZLIB_EXT LZMA_EXT "*.rar"
 	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
 	"All Files\0*.*\0\0";
 
-static const char* UI_Win32_FileFilter_SavestateFile =
+static const char UI_Win32_FileFilter_SavestateFile[] =
 	"Savestate Files\0*.gs?\0"
 	"All Files\0*.*\0\0";
 
-static const char* UI_Win32_FileFilter_CDImage =
+static const char UI_Win32_FileFilter_CDImage[] =
 	"SegaCD Disc Images\0*.bin;*.iso;*.cue\0"
 	"All Files\0*.*\0\0";
 
-static const char* UI_Win32_FileFilter_ConfigFile =
+static const char UI_Win32_FileFilter_ConfigFile[] =
 	"Gens Config Files\0*.cfg\0\0"
 	"All Files\0*.*\0\0";
 
-static const char* UI_Win32_FileFilter_GYMFile =
+static const char UI_Win32_FileFilter_GYMFile[] =
 	"GYM Files\0*.gym\0\0"
 	"All Files\0*.*\0\0";
 
