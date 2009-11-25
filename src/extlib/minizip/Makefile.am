@@ -11,11 +11,13 @@ if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/
 endif # GENS_ZLIB_INTERNAL
 
-libminizip_la_SOURCES = \
-		ioapi.c \
-		unzip.c
+libminizip_la_SOURCES	= unzip.c
+noinst_HEADERS		= unzip.h ioapi.h crypt.h
 
-noinst_HEADERS = \
-		ioapi.h \
-		unzip.h \
-		crypt.h
+if !GENS_OS_WIN32
+libminizip_la_SOURCES	+= ioapi.c
+else
+libminizip_la_SOURCES	+= iowin32.c
+noinst_HEADERS		+= iowin32.h
+libminizip_la_LIBADD	= -lkernel32
+endif
