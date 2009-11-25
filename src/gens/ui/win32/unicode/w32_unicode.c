@@ -44,32 +44,23 @@ static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
 	memcpy(&wWndClass, lpWndClass, sizeof(wWndClass));
 	
 	// Convert the ANSI strings to Unicode.
-	int lpszwMenuName_len, lpszwClassName_len;
 	wchar_t *lpszwMenuName = NULL, *lpszwClassName = NULL;
 	
 	if (lpWndClass->lpszMenuName)
 	{
-		lpszwMenuName_len = MultiByteToWideChar(CP_UTF8, 0, lpWndClass->lpszMenuName, -1, NULL, 0);
-		lpszwMenuName_len *= sizeof(wchar_t);
-		lpszwMenuName = (wchar_t*)malloc(lpszwMenuName_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpWndClass->lpszMenuName, -1, lpszwMenuName, lpszwMenuName_len);
+		lpszwMenuName = w32_mbstowcs(lpWndClass->lpszMenuName);
 		wWndClass.lpszMenuName = lpszwMenuName;
 	}
 	
 	if (lpWndClass->lpszClassName)
 	{
-		lpszwClassName_len = MultiByteToWideChar(CP_UTF8, 0, lpWndClass->lpszClassName, -1, NULL, 0);
-		lpszwClassName_len *= sizeof(wchar_t);
-		lpszwClassName = (wchar_t*)malloc(lpszwClassName_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpWndClass->lpszClassName, -1, lpszwClassName, lpszwClassName_len);
+		lpszwClassName = w32_mbstowcs(lpWndClass->lpszClassName);
 		wWndClass.lpszClassName = lpszwClassName;
 	}
 	
 	ATOM aRet = pRegisterClassW(&wWndClass);
-	
 	free(lpszwMenuName);
 	free(lpszwClassName);
-	
 	return aRet;
 }
 
@@ -82,24 +73,13 @@ static WINUSERAPI HWND WINAPI CreateWindowExU(
 		HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
 	// Convert lpClassName and lpWindowName from UTF-8 to UTF-16.
-	int lpwClassName_len, lpwWindowName_len;
 	wchar_t *lpwClassName = NULL, *lpwWindowName = NULL;
 	
 	if (lpClassName)
-	{
-		lpwClassName_len = MultiByteToWideChar(CP_UTF8, 0, lpClassName, -1, NULL, 0);
-		lpwClassName_len *= sizeof(wchar_t);
-		lpwClassName = (wchar_t*)malloc(lpwClassName_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpClassName, -1, lpwClassName, lpwClassName_len);
-	}
+		lpwClassName = w32_mbstowcs(lpClassName);
 	
 	if (lpWindowName)
-	{
-		lpwWindowName_len = MultiByteToWideChar(CP_UTF8, 0, lpWindowName, -1, NULL, 0);
-		lpwWindowName_len *= sizeof(wchar_t);
-		lpwWindowName = (wchar_t*)malloc(lpwWindowName_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpWindowName, -1, lpwWindowName, lpwWindowName_len);
-	}
+		lpwWindowName = w32_mbstowcs(lpWindowName);
 	
 	HWND hRet = pCreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
 					dwStyle, x, y, nWidth, nHeight,
@@ -107,7 +87,6 @@ static WINUSERAPI HWND WINAPI CreateWindowExU(
 	
 	free(lpwClassName);
 	free(lpwWindowName);
-	
 	return hRet;
 }
 
@@ -117,21 +96,13 @@ MAKE_STFUNCPTR(SetWindowTextW);
 static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 {
 	// Convert lpString from UTF-8 to UTF-16.
-	int lpwString_len;
 	wchar_t *lpwString = NULL;
 	
 	if (lpString)
-	{
-		lpwString_len = MultiByteToWideChar(CP_UTF8, 0, lpString, -1, NULL, 0);
-		lpwString_len *= sizeof(wchar_t);
-		lpwString = (wchar_t*)malloc(lpwString_len);
-		MultiByteToWideChar(CP_UTF8, 0, lpString, -1, lpwString, lpwString_len);
-	}
+		lpwString = w32_mbstowcs(lpString);
 	
 	BOOL bRet = pSetWindowTextW(hWnd, lpwString);
-	
 	free(lpwString);
-	
 	return bRet;
 }
 
@@ -147,13 +118,10 @@ static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int lpwNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	lpwNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-	lpwNewItem_len *= sizeof(wchar_t);
-	lpwNewItem = (wchar_t*)malloc(lpwNewItem_len);
-	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpwNewItem_len);
+	if (lpNewItem)
+		lpwNewItem = w32_mbstowcs(lpNewItem);
 	
 	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -172,13 +140,10 @@ static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int lpwNewItem_len;
 	wchar_t *lpwNewItem = NULL;
 	
-	lpwNewItem_len = MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, NULL, 0);
-	lpwNewItem_len *= sizeof(wchar_t);
-	lpwNewItem = (wchar_t*)malloc(lpwNewItem_len);
-	MultiByteToWideChar(CP_UTF8, 0, lpNewItem, -1, lpwNewItem, lpwNewItem_len);
+	if (lpNewItem)
+		lpwNewItem = w32_mbstowcs(lpNewItem);
 	
 	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -218,13 +183,7 @@ static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
 	}
 	
 	// Convert lpPathName from UTF-8 to UTF-16.
-	int lpwPathName_len;
-	wchar_t *lpwPathName = NULL;
-	
-	lpwPathName_len = MultiByteToWideChar(CP_UTF8, 0, lpPathName, -1, NULL, 0);
-	lpwPathName_len *= sizeof(wchar_t);
-	lpwPathName = (wchar_t*)malloc(lpwPathName_len);
-	MultiByteToWideChar(CP_UTF8, 0, lpPathName, -1, lpwPathName, lpwPathName_len);
+	wchar_t *lpwPathName = w32_mbstowcs(lpPathName);
 	
 	BOOL bRet = pSetCurrentDirectoryW(lpwPathName);
 	free(lpwPathName);

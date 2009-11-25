@@ -42,13 +42,7 @@ static int Uaccess(const char *path, int mode)
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	int wpath_len;
-	wchar_t *wpath = NULL;
-	
-	wpath_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
-	wpath_len *= sizeof(wchar_t);
-	wpath = (wchar_t*)malloc(wpath_len);
-	MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, wpath_len);
+	wchar_t *wpath = w32_mbstowcs(path);
 	
 	UINT uRet = p_waccess(wpath, mode);
 	free(wpath);
@@ -61,24 +55,13 @@ MAKE_STFUNCPTR(_wfopen);
 static FILE* Ufopen(const char *path, const char *mode)
 {
 	// Convert path and mode from UTF-8 to UTF-16.
-	int wpath_len, wmode_len;
 	wchar_t *wpath = NULL, *wmode = NULL;
 	
 	if (path)
-	{
-		wpath_len = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
-		wpath_len *= sizeof(wchar_t);
-		wpath = (wchar_t*)malloc(wpath_len);
-		MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, wpath_len);
-	}
+		wpath = w32_mbstowcs(path);
 	
 	if (mode)
-	{
-		wmode_len = MultiByteToWideChar(CP_UTF8, 0, mode, -1, NULL, 0);
-		wmode_len *= sizeof(wchar_t);
-		wmode = (wchar_t*)malloc(wmode_len);
-		MultiByteToWideChar(CP_UTF8, 0, mode, -1, wmode, wmode_len);
-	}
+		wmode = w32_mbstowcs(mode);
 	
 	FILE *fRet = p_wfopen(wpath, wmode);
 	free(wpath);
