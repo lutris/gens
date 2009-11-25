@@ -29,6 +29,14 @@
 #define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
 
 /**
+ * InitFuncPtr(): Initialize a function pointer.
+ */
+#define InitFuncPtr(hDLL, fn) \
+do { \
+	p##fn = (typeof(p##fn))GetProcAddress(hDLL, #fn); \
+} while (0)
+
+/**
  * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
  */
 #define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \

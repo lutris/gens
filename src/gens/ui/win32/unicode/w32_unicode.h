@@ -36,6 +36,19 @@ extern "C" {
 
 #define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
 
+/** kernel32.dll **/
+
+MAKE_EXTFUNCPTR(MultiByteToWideChar);
+MAKE_EXTFUNCPTR(WideCharToMultiByte);
+
+MAKE_EXTFUNCPTR(GetModuleFileNameA);
+#define pGetModuleFileNameU pGetModuleFileNameA
+
+MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
+#define pSetCurrentDirectoryU pSetCurrentDirectoryA
+
+/** user32.dll **/
+
 MAKE_EXTFUNCPTR(RegisterClassA);
 #define pRegisterClassU pRegisterClassA
 
@@ -52,12 +65,6 @@ MAKE_EXTFUNCPTR(InsertMenuA);
 
 MAKE_EXTFUNCPTR(ModifyMenuA);
 #define pModifyMenuU pModifyMenuA
-
-MAKE_EXTFUNCPTR(GetModuleFileNameA);
-#define pGetModuleFileNameU pGetModuleFileNameA
-
-MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
-#define pSetCurrentDirectoryU pSetCurrentDirectoryA
 
 /**
  * These functions don't need reimplementation (no string processing),
