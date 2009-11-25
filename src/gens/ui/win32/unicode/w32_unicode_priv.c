@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Unicode Translation Layer. (Private Header)               *
+ * Gens: (Win32) Unicode Translation Layer. (Private Functions             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,49 +20,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_W32_UNICODE_PRIV_H
-#define GENS_W32_UNICODE_PRIV_H
+#include "w32_unicode_priv.h"
 
-#include "w32_unicode.h"
+// C includes.
+#include <stdlib.h>
+#include <wchar.h>
 
-#define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
+// Win32 includes.
+#include <winnls.h>
 
-/**
- * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
- */
-#define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \
-do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fn "W"); \
-	if (pW) \
-		pA = &pU; \
-	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
 
 /**
- * InitFuncPtrsU(): Initialize function pointers for functions that don't need text conversions.
+ * w32_mbstowcs(): Convert a multibyte (UTF-8) string to a wide-character (UTF-16) string.
+ * @param mbs Multibyte string.
+ * @return Wide-character string. (MUST BE free()'d AFTER USE!)
  */
-#define InitFuncPtrs(hDLL, fn, pA) \
-do { \
-	pA = (typeof(pA))GetProcAddress(hDLL, fn "W"); \
-	if (!pA) \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
-} while (0)
-
-/**
- * InitFuncPtrsU_libc(): Initialize function pointers for functions that need text conversions. (libc version)
- */
-#define InitFuncPtrsU_libc(hDLL, fnA, fnW, pW, pA, pU) \
-do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fnW); \
-	if (pW) \
-		pA = &pU; \
-	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fnA); \
-} while (0)
-
-/** Functions. **/
-wchar_t* WINAPI w32_mbstowcs(const char *mbs);
-
-#endif /* GENS_W32_UNICODE_PRIV_H */
+wchar_t* WINAPI w32_mbstowcs(const char *mbs)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
+	if (len <= 0)
+		return NULL;
+	
+	len *= sizeof(wchar_t);
+	wchar_t *wcs = (wchar_t*)malloc(len);
+	
+	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, len);
+	return wcs;
+}

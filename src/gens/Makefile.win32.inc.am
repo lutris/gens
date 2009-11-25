@@ -19,6 +19,7 @@ gens_SOURCES += \
 		ui/win32/cc6.c \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/unicode/w32_unicode.c \
+		ui/win32/unicode/w32_unicode_priv.c \
 		ui/win32/unicode/w32_unicode_x.c \
 		ui/win32/unicode/w32_unicode_commctrl.c \
 		ui/win32/unicode/w32_unicode_shellapi.c \
@@ -64,6 +65,7 @@ noinst_HEADERS += \
 		ui/win32/unicode/w32_unicode_x.h \
 		ui/win32/unicode/w32_unicode_commctrl.h \
 		ui/win32/unicode/w32_unicode_shellapi.h \
+		ui/win32/unicode/w32_unicode_libc.h \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
