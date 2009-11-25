@@ -49,6 +49,9 @@ MAKE_EXTFUNCPTR(GetModuleFileNameA);
 MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
 #define pSetCurrentDirectoryU pSetCurrentDirectoryA
 
+MAKE_EXTFUNCPTR(GetVersionExA);
+#define pGetVersionExU pGetVersionExA
+
 /** user32.dll **/
 
 MAKE_EXTFUNCPTR(RegisterClassA);

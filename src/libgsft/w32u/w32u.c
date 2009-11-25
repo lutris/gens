@@ -37,6 +37,9 @@ MAKE_FUNCPTR(WideCharToMultiByte);
 static HMODULE hUser32 = NULL;
 
 
+/** kernel32.dll **/
+
+
 MAKE_FUNCPTR(GetModuleFileNameA);
 MAKE_STFUNCPTR(GetModuleFileNameW);
 static WINBASEAPI DWORD WINAPI GetModuleFileNameU(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
@@ -75,6 +78,48 @@ static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
 	free(lpwPathName);
 	return bRet;
 }
+
+
+MAKE_FUNCPTR(GetVersionExA);
+MAKE_STFUNCPTR(GetVersionExW);
+static WINBASEAPI BOOL WINAPI GetVersionExU(LPOSVERSIONINFOA lpVersionInfo)
+{
+	// Get the version information.
+	OSVERSIONINFOEXW wVersionInfo;
+	wVersionInfo.dwOSVersionInfoSize = lpVersionInfo->dwOSVersionInfoSize + sizeof(lpVersionInfo->szCSDVersion);
+	BOOL bRet = pGetVersionExW((OSVERSIONINFOW*)&wVersionInfo);
+	if (bRet == 0)
+		return bRet;
+	
+	// Copy the OSVERSIONINFO struct data.
+	lpVersionInfo->dwMajorVersion = wVersionInfo.dwMajorVersion;
+	lpVersionInfo->dwMinorVersion = wVersionInfo.dwMinorVersion;
+	lpVersionInfo->dwBuildNumber = wVersionInfo.dwBuildNumber;
+	lpVersionInfo->dwPlatformId = wVersionInfo.dwPlatformId;
+	
+	// Convert szCSDVersion from UTF-16 to UTF-8.
+	pWideCharToMultiByte(CP_UTF8, 0, wVersionInfo.szCSDVersion, 
+				sizeof(wVersionInfo.szCSDVersion) / sizeof(wVersionInfo.szCSDVersion[0]),
+				lpVersionInfo->szCSDVersion,
+				sizeof(lpVersionInfo->szCSDVersion) / sizeof(lpVersionInfo->szCSDVersion[0]),
+				NULL, NULL);
+	
+	if (lpVersionInfo->dwOSVersionInfoSize + sizeof(lpVersionInfo->szCSDVersion) == sizeof(OSVERSIONINFOEXW))
+	{
+		// OSVERSIONINFOEXW.
+		LPOSVERSIONINFOEXA lpVersionInfoEx = (OSVERSIONINFOEXA*)lpVersionInfo;
+		lpVersionInfoEx->wServicePackMajor = wVersionInfo.wServicePackMajor;
+		lpVersionInfoEx->wServicePackMinor = wVersionInfo.wServicePackMinor;
+		lpVersionInfoEx->wSuiteMask = wVersionInfo.wSuiteMask;
+		lpVersionInfoEx->wProductType = wVersionInfo.wProductType;
+		lpVersionInfoEx->wReserved = wVersionInfo.wReserved;
+	}
+	
+	return bRet;
+}
+
+
+/** user32.dll **/
 
 
 MAKE_FUNCPTR(RegisterClassA);
@@ -226,6 +271,7 @@ int WINAPI w32u_init(void)
 	
 	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
 	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
+	InitFuncPtrsU(hKernel32, "GetVersionEx", pGetVersionExW, pGetVersionExA, GetVersionExU);
 	
 	hUser32 = LoadLibrary("user32.dll");
 	
