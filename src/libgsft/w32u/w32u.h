@@ -71,6 +71,21 @@ MAKE_EXTFUNCPTR(InsertMenuA);
 MAKE_EXTFUNCPTR(ModifyMenuA);
 #define pModifyMenuU pModifyMenuA
 
+MAKE_EXTFUNCPTR(LoadAcceleratorsA);
+#define pLoadAcceleratorsU pLoadAcceleratorsA
+
+MAKE_EXTFUNCPTR(LoadBitmapA);
+#define pLoadBitmapU pLoadBitmapA
+
+MAKE_EXTFUNCPTR(LoadCursorA);
+#define pLoadCursorU pLoadCursorA
+
+MAKE_EXTFUNCPTR(LoadIconA);
+#define pLoadIconU pLoadIconA
+
+MAKE_EXTFUNCPTR(LoadImageA);
+#define pLoadImageU pLoadImageA
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.

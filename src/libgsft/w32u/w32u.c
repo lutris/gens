@@ -238,6 +238,102 @@ static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFla
 }
 
 
+MAKE_FUNCPTR(LoadAcceleratorsA);
+MAKE_STFUNCPTR(LoadAcceleratorsW);
+static WINUSERAPI HACCEL WINAPI LoadAcceleratorsU(HINSTANCE hInstance, LPCSTR lpTableName)
+{
+	if ((DWORD_PTR)lpTableName < 0x10000)
+	{
+		// lpTableName is a resource ID.
+		return pLoadAcceleratorsW(hInstance, (LPCWSTR)lpTableName);
+	}
+	
+	// lpTableName is a string. Convert it from UTF-8 to UTF-16.
+	wchar_t *lpwTableName = w32u_mbstowcs(lpTableName);
+	
+	HACCEL hRet = pLoadAcceleratorsW(hInstance, lpwTableName);
+	free(lpwTableName);
+	return hRet;
+}
+
+
+MAKE_FUNCPTR(LoadBitmapA);
+MAKE_STFUNCPTR(LoadBitmapW);
+static WINUSERAPI HBITMAP WINAPI LoadBitmapU(HINSTANCE hInstance, LPCSTR lpBitmapName)
+{
+	if ((DWORD_PTR)lpBitmapName < 0x10000)
+	{
+		// lpBitmapName is a resource ID.
+		return pLoadBitmapW(hInstance, (LPCWSTR)lpBitmapName);
+	}
+	
+	// lpBitmapName is a string. Convert it from UTF-8 to UTF-16.
+	wchar_t *lpwBitmapName = w32u_mbstowcs(lpBitmapName);
+	
+	HBITMAP hRet = pLoadBitmapW(hInstance, lpwBitmapName);
+	free(lpwBitmapName);
+	return hRet;
+}
+
+
+MAKE_FUNCPTR(LoadCursorA);
+MAKE_STFUNCPTR(LoadCursorW);
+static WINUSERAPI HCURSOR WINAPI LoadCursorU(HINSTANCE hInstance, LPCSTR lpCursorName)
+{
+	if ((DWORD_PTR)lpCursorName < 0x10000)
+	{
+		// lpCursorName is a resource ID.
+		return pLoadCursorW(hInstance, (LPCWSTR)lpCursorName);
+	}
+	
+	// lpCursorName is a string. Convert it from UTF-8 to UTF-16.
+	wchar_t *lpwCursorName = w32u_mbstowcs(lpCursorName);
+	
+	HCURSOR hRet = pLoadCursorW(hInstance, lpwCursorName);
+	free(lpwCursorName);
+	return hRet;
+}
+
+
+MAKE_FUNCPTR(LoadIconA);
+MAKE_STFUNCPTR(LoadIconW);
+static WINUSERAPI HICON WINAPI LoadIconU(HINSTANCE hInstance, LPCSTR lpIconName)
+{
+	if ((DWORD_PTR)lpIconName < 0x10000)
+	{
+		// lpIconName is a resource ID.
+		return pLoadIconW(hInstance, (LPCWSTR)lpIconName);
+	}
+	
+	// lpIconName is a string. Convert it from UTF-8 to UTF-16.
+	wchar_t *lpwIconName = w32u_mbstowcs(lpIconName);
+	
+	HICON hRet = pLoadIconW(hInstance, lpwIconName);
+	free(lpwIconName);
+	return hRet;
+}
+
+
+MAKE_FUNCPTR(LoadImageA);
+MAKE_STFUNCPTR(LoadImageW);
+static WINUSERAPI HANDLE WINAPI LoadImageU(HINSTANCE hInst, LPCSTR lpszName, UINT uType,
+					   int cxDesired, int cyDesired, UINT fuLoad)
+{
+	if ((DWORD_PTR)lpszName < 0x10000)
+	{
+		// lpszName is a resource ID.
+		return pLoadImageW(hInst, (LPCWSTR)lpszName, uType, cxDesired, cyDesired, fuLoad);
+	}
+	
+	// lpszName is a string. Convert it from UTF-8 to UTF-16.
+	wchar_t *lpszwName = w32u_mbstowcs(lpszName);
+	
+	HANDLE hRet = pLoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
+	free(lpszwName);
+	return hRet;
+}
+
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
@@ -280,6 +376,11 @@ int WINAPI w32u_init(void)
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
+	InitFuncPtrsU(hUser32, "LoadAccelerators", pLoadAcceleratorsW, pLoadAcceleratorsA, LoadAcceleratorsU);
+	InitFuncPtrsU(hUser32, "LoadBitmap", pLoadBitmapW, pLoadBitmapA, LoadBitmapU);
+	InitFuncPtrsU(hUser32, "LoadCursor", pLoadCursorW, pLoadCursorA, LoadCursorU);
+	InitFuncPtrsU(hUser32, "LoadIcon", pLoadIconW, pLoadIconA, LoadIconU);
+	InitFuncPtrsU(hUser32, "LoadImage", pLoadImageW, pLoadImageA, LoadImageU);
 	
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
