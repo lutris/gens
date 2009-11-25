@@ -85,7 +85,7 @@ int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 	// Convert the text to UTF-8.
 	// TODO Verify characters vs. bytes.
 	char *utf8_buf = pItem->pszText;
-	WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, utf8_buf, pItem->cchTextMax, NULL, NULL);
+	pWideCharToMultiByte(CP_UTF8, 0, wbuf, -1, utf8_buf, pItem->cchTextMax, NULL, NULL);
 	
 	// Copy the LVITEM struct back to pItem.
 	memcpy(pItem, &wItem, sizeof(*pItem));

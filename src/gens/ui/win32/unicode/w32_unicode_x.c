@@ -82,7 +82,7 @@ int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 	// NOTE: No boundary checking is performed here!
 	// textLength * 4 is assumed as the worst-case buffer size, since UTF-8
 	// allows up to 4-byte characters.
-	WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
+	pWideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
 	free(wbuf);
 	return lRet;
 }
