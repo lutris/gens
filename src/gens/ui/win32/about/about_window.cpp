@@ -143,7 +143,7 @@ void about_window_show(void)
 		about_wndclass.cbClsExtra = 0;
 		about_wndclass.cbWndExtra = 0;
 		about_wndclass.hInstance = ghInstance;
-		about_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		about_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		about_wndclass.hCursor = NULL;
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
@@ -182,9 +182,9 @@ static void about_window_create_child_windows(HWND hWnd)
 		// Gens logo
 		imgGensLogo = pCreateWindowU(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
-						 IMAGE_BITMAP, 0, 0,
-						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+		hbmpGensLogo = (HBITMAP)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+							IMAGE_BITMAP, 0, 0,
+							LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 		pSendMessageU(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
 	}
 	else

@@ -34,6 +34,7 @@
 #endif
 
 #ifdef GENS_OS_WIN32
+#include "libgsft/w32u/w32u.h"
 #include "ui/win32/resource.h"
 #endif
 
@@ -197,7 +198,7 @@ int Update_Gens_Logo(void)
 		
 		// TODO: LoadBitmap() uses the desktop color depth,
 		// which may not be the same as bppMD.
-		HBITMAP hbmpLogo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
+		HBITMAP hbmpLogo = pLoadBitmapU(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
 		GetBitmapBits(hbmpLogo, logo_size, logo_data);
 		lastBpp = bppMD;
 #endif

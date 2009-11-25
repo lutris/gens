@@ -120,7 +120,7 @@ void ccode_window_show(void)
 		ccode_wndclass.cbClsExtra = 0;
 		ccode_wndclass.cbWndExtra = 0;
 		ccode_wndclass.hInstance = ghInstance;
-		ccode_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		ccode_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		ccode_wndclass.hCursor = NULL;
 		ccode_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ccode_wndclass.lpszMenuName = NULL;
@@ -258,15 +258,14 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	// See http://support.microsoft.com/kb/142226
 	
 	// Load the icons.
-	// TODO: Figure out how to Unicode-ize LoadImage().
-	HICON icoUp   = (HICON)LoadImage(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
-					 IMAGE_ICON,
-					 CCODE_WINDOW_BTN_ICON_SIZE,
-					 CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
-	HICON icoDown = (HICON)LoadImage(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
-					 IMAGE_ICON,
-					 CCODE_WINDOW_BTN_ICON_SIZE,
-					 CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+	HICON icoUp   = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
+						IMAGE_ICON,
+						CCODE_WINDOW_BTN_ICON_SIZE,
+						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+	HICON icoDown = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
+						IMAGE_ICON,
+						CCODE_WINDOW_BTN_ICON_SIZE,
+						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
 	
 	// Create the buttons.
 	
