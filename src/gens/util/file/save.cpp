@@ -77,6 +77,7 @@
 #include "gsx_struct.h"
 #include "gsx_v6.h"
 #include "gsx_v7.h"
+#include "gsx_v7_32X.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
@@ -1726,150 +1727,209 @@ void Savestate::GsxImport32X(const unsigned char* data)
 {
 	// TODO: Reimplement v5 support.
 	
-	unsigned int offset = 0;
-	int i, contextNum;
+	gsx_v7_32X sv;
+	memcpy(&sv, data, sizeof(sv));
 	
-	for (contextNum = 0; contextNum < 2; contextNum++)
+	for (int contextNum = 0; contextNum < 2; contextNum++)
 	{
 		SH2_CONTEXT* context = (contextNum == 0) ? &M_SH2 : &S_SH2;
-
-		ImportDataAuto(context->Cache, data, offset, sizeof(context->Cache));
-		ImportDataAuto(context->R, data, offset, sizeof(context->R));
-		ImportDataAuto(&context->SR, data, offset, sizeof(context->SR));
-		ImportDataAuto(&context->INT, data, offset, sizeof(context->INT));
-		ImportDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
-		ImportDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
-		ImportDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
-		ImportDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
-		ImportDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
-		ImportDataAuto(&context->PR, data, offset, sizeof(context->PR));
-		ImportDataAuto(&context->PC, data, offset, sizeof(context->PC));
-		ImportDataAuto(&context->Status, data, offset, sizeof(context->Status));
-		ImportDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
-		ImportDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
-		ImportDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
-		ImportDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
-		ImportDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
-		ImportDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
-		ImportDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
-		ImportDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
-		ImportDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
-		ImportDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
-		ImportDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
-		ImportDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
-		ImportDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
-		ImportDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
-		ImportDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
-		ImportDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
-		ImportDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
-		ImportDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
-		ImportDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
-		ImportDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
-		ImportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
-		ImportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
-		ImportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
-		ImportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
-		ImportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
-		ImportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
-		ImportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
-		ImportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
-		ImportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
-		ImportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
-		ImportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
-		ImportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
-		ImportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
-		ImportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
-		ImportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
-		ImportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
-		ImportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
-		ImportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
-		ImportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
-		ImportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
-		ImportDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
-		ImportDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
-		ImportDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
-		ImportDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
-		ImportDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
-		ImportDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
-		ImportDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
-		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
-		ImportDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
-		ImportDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
-		ImportDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
-		ImportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
-		ImportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
-		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		
+		// TODO: Verify byteswapping.
+		// le32_to_cpu() does nothing on x86, so it's "ok" for now.
+		memcpy(context->Cache, sv.cpu[contextNum].Cache, sizeof(context->Cache));
+		
+		for (int i = 0; i < 0x10; i++)
+			context->R[i] = le32_to_cpu(sv.cpu[contextNum].R[i]);
+		
+		context->SR.T		= sv.cpu[contextNum].SR.T;
+		context->SR.S		= sv.cpu[contextNum].SR.S;
+		context->SR.IMask	= sv.cpu[contextNum].SR.IMask;
+		context->SR.MQ		= sv.cpu[contextNum].SR.MQ;
+		
+		context->INT.Vect	= sv.cpu[contextNum].INT.Vect;
+		context->INT.Prio	= sv.cpu[contextNum].INT.Prio;
+		context->INT.res1	= sv.cpu[contextNum].INT.res1;
+		context->INT.res2	= sv.cpu[contextNum].INT.res2;
+		
+		context->GBR		= le32_to_cpu(sv.cpu[contextNum].GBR);
+		context->VBR		= le32_to_cpu(sv.cpu[contextNum].VBR);
+		
+		
+		memcpy(context->INT_QUEUE, sv.cpu[contextNum].INT_QUEUE, sizeof(context->INT_QUEUE));
+		
+		context->MACH		= le32_to_cpu(sv.cpu[contextNum].MACH);
+		context->MACL		= le32_to_cpu(sv.cpu[contextNum].MACL);
+		context->PR		= le32_to_cpu(sv.cpu[contextNum].PR);
+		context->PC		= le32_to_cpu(sv.cpu[contextNum].PC);		// Linked to Base_PC.
+		
+		context->Status		= le32_to_cpu(sv.cpu[contextNum].Status);
+		context->Base_PC	= le32_to_cpu(sv.cpu[contextNum].Base_PC);
+		context->Fetch_Start	= le32_to_cpu(sv.cpu[contextNum].Fetch_Start);
+		context->Fetch_End	= le32_to_cpu(sv.cpu[contextNum].Fetch_End);
+		
+		context->DS_Inst	= le32_to_cpu(sv.cpu[contextNum].DS_Inst);
+		context->DS_PC		= le32_to_cpu(sv.cpu[contextNum].DS_PC);	// WARNING: This is affected by a different Base_PC!
+		
+		context->Odometer	= le32_to_cpu(sv.cpu[contextNum].Odometer);
+		context->Cycle_TD	= le32_to_cpu(sv.cpu[contextNum].Cycle_TD);
+		context->Cycle_IO	= le32_to_cpu(sv.cpu[contextNum].Cycle_IO);
+		context->Cycle_Sup	= le32_to_cpu(sv.cpu[contextNum].Cycle_Sup);
+		
+		memcpy(context->IO_Reg, sv.cpu[contextNum].IO_Reg, sizeof(context->IO_Reg));
+		
+		context->DVCR		= le32_to_cpu(sv.cpu[contextNum].DVCR);
+		context->DVSR		= le32_to_cpu(sv.cpu[contextNum].DVSR);
+		context->DVDNTH		= le32_to_cpu(sv.cpu[contextNum].DVDNTH);
+		context->DVDNTL		= le32_to_cpu(sv.cpu[contextNum].DVDNTL);
+		
+		context->DRCR0		= sv.cpu[contextNum].DRCR0;
+		context->DRCR1		= sv.cpu[contextNum].DRCR1;
+		context->DREQ0		= sv.cpu[contextNum].DREQ0;
+		context->DREQ1		= sv.cpu[contextNum].DREQ1;
+		
+		context->DMAOR		= le32_to_cpu(sv.cpu[contextNum].DMAOR);
+		
+		context->SAR0		= le32_to_cpu(sv.cpu[contextNum].SAR0);
+		context->DAR0		= le32_to_cpu(sv.cpu[contextNum].DAR0);
+		context->TCR0		= le32_to_cpu(sv.cpu[contextNum].TCR0);
+		context->CHCR0		= le32_to_cpu(sv.cpu[contextNum].CHCR0);
+		
+		context->SAR1		= le32_to_cpu(sv.cpu[contextNum].SAR1);
+		context->DAR1		= le32_to_cpu(sv.cpu[contextNum].DAR1);
+		context->TCR1		= le32_to_cpu(sv.cpu[contextNum].TCR1);
+		context->CHCR1		= le32_to_cpu(sv.cpu[contextNum].CHCR1);
+		
+		context->VCRDIV		= le32_to_cpu(sv.cpu[contextNum].VCRDIV);
+		context->VCRDMA0	= le32_to_cpu(sv.cpu[contextNum].VCRDMA0);
+		context->VCRDMA1	= le32_to_cpu(sv.cpu[contextNum].VCRDMA1);
+		context->VCRWDT		= le32_to_cpu(sv.cpu[contextNum].VCRWDT);
+		
+		context->IPDIV		= le32_to_cpu(sv.cpu[contextNum].IPDIV);
+		context->IPDMA		= le32_to_cpu(sv.cpu[contextNum].IPDMA);
+		context->IPWDT		= le32_to_cpu(sv.cpu[contextNum].IPWDT);
+		context->IPBSC		= le32_to_cpu(sv.cpu[contextNum].IPBSC);
+		
+		context->BARA		= le32_to_cpu(sv.cpu[contextNum].BARA);
+		context->BAMRA		= le32_to_cpu(sv.cpu[contextNum].BAMRA);
+		
+		memcpy(context->WDT_Tab, sv.cpu[contextNum].WDT_Tab, sizeof(context->WDT_Tab));
+		context->WDTCNT		= le32_to_cpu(sv.cpu[contextNum].WDTCNT);
+		context->WDT_Sft	= sv.cpu[contextNum].WDT_Sft;
+		context->WDTSR		= sv.cpu[contextNum].WDTSR;
+		context->WDTRST		= sv.cpu[contextNum].WDTRST;
+		
+		memcpy(context->FRT_Tab, sv.cpu[contextNum].FRT_Tab, sizeof(context->FRT_Tab));
+		context->FRTCNT		= le32_to_cpu(sv.cpu[contextNum].FRTCNT);
+		context->FRTOCRA	= le32_to_cpu(sv.cpu[contextNum].FRTOCRA);
+		context->FRTOCRB	= le32_to_cpu(sv.cpu[contextNum].FRTOCRB);
+		
+		context->FRTTIER	= sv.cpu[contextNum].FRTTIER;
+		context->FRTCSR		= sv.cpu[contextNum].DUPE1_FRTCSR;	// Same as FRTCSR.
+		context->FRTTCR		= sv.cpu[contextNum].FRTTCR;
+		context->FRTTOCR	= sv.cpu[contextNum].FRTTOCR;
+		context->FRTICR		= le32_to_cpu(sv.cpu[contextNum].FRTICR);
+		context->FRT_Sft	= le32_to_cpu(sv.cpu[contextNum].FRT_Sft);
+		context->BCR1		= le32_to_cpu(sv.cpu[contextNum].BCR1);
+		context->FRTCSR		= sv.cpu[contextNum].FRTCSR;
 		
 		// Load the PC value correctly.
-		SH2_Set_PC(context, context->PC - context->Base_PC);
+		SH2_Set_PC(context, (context->PC - context->Base_PC));
 	}
-
-	ImportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
-	ImportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
-	ImportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
-	ImportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
-	ImportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
-	ImportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
-	ImportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
-	ImportDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
-	ImportDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
-	ImportDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
-	ImportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
-	ImportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
-	ImportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
-	ImportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
-	ImportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
-	ImportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
-	ImportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
-	ImportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
-	ImportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
-	ImportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
-	ImportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
-	ImportDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
-	ImportDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
-	ImportDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
-	ImportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
-
-	ImportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
-	ImportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
-	ImportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
-
-	ImportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
-	ImportDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
-
-	ImportDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
-	ImportDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
-	ImportDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
-	ImportDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
-	ImportDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
-	ImportDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
-	ImportDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
-	ImportDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
-	ImportDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
-	ImportDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
-	ImportDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
-	ImportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
-	ImportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
-	ImportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
+	
+	// TODO: Proper byteswapping for e.g. 32X RAM.
+	memcpy(_32X_Ram, sv._32x_ram, sizeof(_32X_Ram));
+	memcpy(_MSH2_Reg, sv.msh2_reg, sizeof(_MSH2_Reg));
+	memcpy(_SSH2_Reg, sv.ssh2_reg, sizeof(_SSH2_Reg));
+	memcpy(_SH2_VDP_Reg, sv.sh2_vdp_reg, sizeof(_SH2_VDP_Reg));
+	
+	memcpy(_32X_Comm, sv._32x_comm, sizeof(_32X_Comm));
+	_32X_ADEN		= sv._32x_aden;
+	_32X_RES		= sv._32x_res;
+	_32X_FM			= sv._32x_fm;
+	_32X_RV			= sv._32x_rv;
+	
+	_32X_DREQ_ST		= le32_to_cpu(sv._32x_dreq_st);
+	_32X_DREQ_SRC		= le32_to_cpu(sv._32x_dreq_src);
+	_32X_DREQ_DST		= le32_to_cpu(sv._32x_dreq_dst);
+	_32X_DREQ_LEN		= le32_to_cpu(sv._32x_dreq_len);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		_32X_FIFO_A[i] = le16_to_cpu(sv._32x_fifo_A[i]);
+		_32X_FIFO_B[i] = le16_to_cpu(sv._32x_fifo_B[i]);
+	}
+	
+	_32X_FIFO_Block		= le32_to_cpu(sv._32x_fifo_block);
+	_32X_FIFO_Read		= le32_to_cpu(sv._32x_fifo_read);
+	_32X_FIFO_Write		= le32_to_cpu(sv._32x_fifo_write);
+	
+	_32X_MINT		= sv._32x_mint;
+	_32X_SINT		= sv._32x_sint;
+	_32X_HIC		= sv._32x_hic;
+	
+	CPL_SSH2		= le32_to_cpu(sv.cpl_ssh2);
+	CPL_MSH2		= le32_to_cpu(sv.cpl_msh2);
+	Cycles_MSH2		= le32_to_cpu(sv.cycles_msh2);
+	Cycles_SSH2		= le32_to_cpu(sv.cycles_ssh2);
+	
+	_32X_VDP.Mode		= le32_to_cpu(sv.vdp.mode);
+	_32X_VDP.State		= le32_to_cpu(sv.vdp.state);
+	_32X_VDP.AF_Data	= le32_to_cpu(sv.vdp.af_data);
+	_32X_VDP.AF_St		= le32_to_cpu(sv.vdp.af_st);
+	_32X_VDP.AF_Len		= le32_to_cpu(sv.vdp.af_len);
+	_32X_VDP.AF_Line	= le32_to_cpu(sv.vdp.af_line);
+	
+	// TODO: Is VDP RAM byteswapped? (CRAM probably is...)
+	memcpy(_32X_VDP_Ram, sv.vdp_ram, sizeof(_32X_VDP_Ram));
+	memcpy(_32X_VDP_CRam, sv.vdp_cram, sizeof(_32X_VDP_CRam));
+	le16_to_cpu_array(_32X_VDP_CRam, sizeof(_32X_VDP_CRam));
+	
+	memcpy(Set_SR_Table, sv.set_sr_table, sizeof(Set_SR_Table));
+	//le32_to_cpu_array(Set_SR_Table, sizeof(Set_SR_Table));	// TODO: Add this function.
+	Bank_SH2		= le32_to_cpu(sv.bank_sh2);
+	
+	memcpy(PWM_FIFO_R, sv.pwm_fifo_R, sizeof(PWM_FIFO_R));
+	le16_to_cpu_array(PWM_FIFO_R, sizeof(PWM_FIFO_R));
+	memcpy(PWM_FIFO_L, sv.pwm_fifo_L, sizeof(PWM_FIFO_L));
+	le16_to_cpu_array(PWM_FIFO_L, sizeof(PWM_FIFO_L));
+	PWM_RP_R		= le32_to_cpu(sv.pwm_rp_R);
+	PWM_WP_R		= le32_to_cpu(sv.pwm_wp_R);
+	PWM_RP_L		= le32_to_cpu(sv.pwm_rp_L);
+	PWM_WP_L		= le32_to_cpu(sv.pwm_wp_L);
+	PWM_Cycles		= le32_to_cpu(sv.pwm_cycles);
+	PWM_Cycle		= le32_to_cpu(sv.pwm_cycle);
+	PWM_Cycle_Cnt		= le32_to_cpu(sv.pwm_cycle_cnt);
+	PWM_Int			= le32_to_cpu(sv.pwm_int);
+	PWM_Int_Cnt		= le32_to_cpu(sv.pwm_int_cnt);
+	PWM_Mode		= le32_to_cpu(sv.pwm_mode);
+	PWM_Out_R		= le32_to_cpu(sv.pwm_out_R);
+	PWM_Out_L		= le32_to_cpu(sv.pwm_out_L);
+	
 	PWM_Recalc_Scale();
 	
-	ImportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
-	ImportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
-	ImportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
+	// just in case some of these bytes are not in fact read-only
+	// as was apparently the case with Sega CD games (1024 seems acceptably small)
+	// NOTE: This is the 32X (non-swapped) version.
+	// TODO: Should this also be copied to the MD ROM?
+	memcpy(&_32X_Rom[0], sv.rom_header, sizeof(sv.rom_header));
+	
+	// MSH2 and SSH2 firmware. (non-swapped for now)
+	memcpy(_32X_MSH2_Rom, sv._32x_msh2_rom, sizeof(_32X_MSH2_Rom));
+	memcpy(_32X_SSH2_Rom, sv._32x_ssh2_rom, sizeof(_32X_SSH2_Rom));
 
 	M68K_32X_Mode();
 	_32X_Set_FB();
 	M68K_Set_32X_Rom_Bank();
 
 	//Recalculate_Palettes();
-	for (i = 0; i < 0x100; i++)
+	for (int i = 0; i < 0x100; i++)
 	{
 		_32X_VDP_CRam_Adjusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
 		_32X_VDP_CRam_Adjusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
 	}
 
 #ifdef GENS_DEBUG_SAVESTATE
-	assert(offset == G32X_LENGTH_EX);
+	assert(sizeof(gsx_v7_32X) == G32X_LENGTH_EX);
 #endif
 }
 
@@ -1924,20 +1984,25 @@ void Savestate::GsxExport32X(unsigned char* data)
 		ExportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
 		ExportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
 		ExportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
+		
 		ExportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
 		ExportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
 		ExportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
 		ExportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
+		
 		ExportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
 		ExportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
 		ExportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
 		ExportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
+		
 		ExportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
 		ExportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
 		ExportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
 		ExportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
+		
 		ExportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
 		ExportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
+		
 		ExportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
 		ExportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
 		ExportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
@@ -1961,6 +2026,7 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
 	ExportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
 	ExportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
+	
 	ExportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
 	ExportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
 	ExportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
@@ -1970,11 +2036,14 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
 	ExportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
 	ExportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
+	
 	ExportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
 	ExportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
+	
 	ExportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
 	ExportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
 	ExportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
+	
 	ExportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
 	ExportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
 	ExportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
