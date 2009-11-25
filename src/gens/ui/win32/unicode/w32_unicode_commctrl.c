@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "w32_unicode.h"
+#include "w32_unicode_priv.h"
 #include "w32_unicode_commctrl.h"
 
 // C includes.
@@ -36,15 +37,11 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 	TCITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	int pszText_len;
 	wchar_t *pszwText = NULL;
 	
 	if (wItem.pszText)
 	{
-		pszText_len = MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, NULL, 0);
-		pszText_len *= sizeof(wchar_t);
-		pszwText = (wchar_t*)malloc(pszText_len);
-		MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, pszwText, pszText_len);
+		pszwText = w32_mbstowcs(pItem->pszText);
 		wItem.pszText = pszwText;
 	}
 	
@@ -108,15 +105,11 @@ int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 	TCITEMW wCol;
 	memcpy(&wCol, pCol, sizeof(wCol));
 	
-	int pszText_len;
 	wchar_t *pszwText = NULL;
 	
 	if (wCol.pszText)
 	{
-		pszText_len = MultiByteToWideChar(CP_UTF8, 0, pCol->pszText, -1, NULL, 0);
-		pszText_len *= sizeof(wchar_t);
-		pszwText = (wchar_t*)malloc(pszText_len);
-		MultiByteToWideChar(CP_UTF8, 0, pCol->pszText, -1, pszwText, pszText_len);
+		pszwText = w32_mbstowcs(pCol->pszText);
 		wCol.pszText = pszwText;
 	}
 	
@@ -141,13 +134,7 @@ int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	int pszText_len;
-	wchar_t *pszwText = NULL;
-	
-	pszText_len = MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, NULL, 0);
-	pszText_len *= sizeof(wchar_t);
-	pszwText = (wchar_t*)malloc(pszText_len);
-	MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, pszwText, pszText_len);
+	wchar_t *pszwText = w32_mbstowcs(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_INSERTITEMW, 0, (LPARAM)&wItem);
@@ -171,13 +158,7 @@ int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	int pszText_len;
-	wchar_t *pszwText = NULL;
-	
-	pszText_len = MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, NULL, 0);
-	pszText_len *= sizeof(wchar_t);
-	pszwText = (wchar_t*)malloc(pszText_len);
-	MultiByteToWideChar(CP_UTF8, 0, pItem->pszText, -1, pszwText, pszText_len);
+	wchar_t *pszwText = w32_mbstowcs(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_SETITEMW, 0, (LPARAM)&wItem);
