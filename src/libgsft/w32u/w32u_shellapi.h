@@ -32,6 +32,9 @@ extern "C" {
 MAKE_EXTFUNCPTR(DragQueryFileA);
 #define pDragQueryFileU pDragQueryFileA
 
+MAKE_EXTFUNCPTR(ShellExecuteA);
+#define pShellExecuteU pShellExecuteA
+
 int WINAPI w32u_shellapi_init(void);
 
 #ifdef __cplusplus

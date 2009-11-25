@@ -51,12 +51,40 @@ static UINT WINAPI DragQueryFileU(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT 
 }
 
 
+MAKE_FUNCPTR(ShellExecuteA);
+MAKE_STFUNCPTR(ShellExecuteW);
+static HINSTANCE WINAPI ShellExecuteU(HWND hWnd, LPCSTR lpOperation, LPCSTR lpFile,
+				      LPCSTR lpParameters, LPCSTR lpDirectory, INT nShowCmd)
+{
+	// Convert the four strings from UTF-8 to UTF-16.
+	wchar_t *lpwOperation = NULL, *lpwFile = NULL;
+	wchar_t *lpwParameters = NULL, *lpwDirectory = NULL;
+	
+	if (lpOperation)
+		lpwOperation = w32u_mbstowcs(lpOperation);
+	if (lpFile)
+		lpwFile = w32u_mbstowcs(lpFile);
+	if (lpParameters)
+		lpwParameters = w32u_mbstowcs(lpParameters);
+	if (lpDirectory)
+		lpwDirectory = w32u_mbstowcs(lpDirectory);
+	
+	HINSTANCE hRet = pShellExecuteW(hWnd, lpwOperation, lpwFile, lpwParameters, lpwDirectory, nShowCmd);
+	free(lpwOperation);
+	free(lpwFile);
+	free(lpwParameters);
+	free(lpwDirectory);
+	return hRet;
+}
+
+
 int WINAPI w32u_shellapi_init(void)
 {
 	// TODO: Error handling.
 	hShell32 = LoadLibrary("shell32.dll");
 	
 	InitFuncPtrsU(hShell32, "DragQueryFile", pDragQueryFileW, pDragQueryFileA, DragQueryFileU);
+	InitFuncPtrsU(hShell32, "ShellExecute", pShellExecuteW, pShellExecuteA, ShellExecuteU);
 	
 	return 0;
 }
