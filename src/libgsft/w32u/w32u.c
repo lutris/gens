@@ -412,7 +412,7 @@ int WINAPI w32u_init(void)
 	// Initialize Win32 Unicode.
 	
 	// TODO: Error handling.
-	//hKernel32 = LoadLibrary("kernel32.dll");
+	hKernel32 = LoadLibrary("kernel32.dll");
 	
 	// TODO: If either of these GetProcAddress()'s fails, revert to ANSI.
 	InitFuncPtr(hKernel32, MultiByteToWideChar);
