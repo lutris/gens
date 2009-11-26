@@ -46,6 +46,7 @@ extern "C" {
 #define ComboBox_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** Edit macros. **/
+#define Edit_LimitTextU(hwndCtl,cchMax)		((void)pSendMessageU((hwndCtl),EM_LIMITTEXT,(WPARAM)(cchMax),0))
 #define Edit_SetReadOnlyU(hwndCtl,fReadOnly)	((BOOL)(DWORD)pSendMessageU((hwndCtl),EM_SETREADONLY,(WPARAM)(BOOL)(fReadOnly),0))
 #define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
