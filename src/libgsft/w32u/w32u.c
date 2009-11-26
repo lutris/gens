@@ -23,6 +23,7 @@
 #include "w32u_priv.h"
 #include "w32u_shellapi.h"
 #include "w32u_libc.h"
+#include "w32u_commdlg.h"
 
 // C includes.
 #include <string.h>
@@ -440,6 +441,7 @@ int WINAPI w32u_init(void)
 	// Other Win32 Unicode modules.
 	w32u_shellapi_init();
 	w32u_libc_init();
+	w32u_commdlg_init();
 	
 	return 0;
 }
