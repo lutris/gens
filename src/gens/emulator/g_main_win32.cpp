@@ -141,7 +141,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	
-	// Initialize Win32 Unicode.
+	// Initialize the Win32 Unicode Translation Layer.
 	w32u_init();
 	
 	// Initialize the PRNG.
@@ -285,6 +285,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Shut down the signal handler.
 	gens_sighandler_end();
 #endif
+	
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
 	return 0;
