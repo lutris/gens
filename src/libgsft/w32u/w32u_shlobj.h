@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shellapi.h: shellapi.h translation.                                *
+ * w32u_shlobj.h: shlobj.h translation.                                    *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,26 +19,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHELLAPI_H
-#define GSFT_W32U_SHELLAPI_H
+#ifndef GSFT_W32U_SHLOBJ_H
+#define GSFT_W32U_SHLOBJ_H
 
 #include "w32u.h"
-#include <shellapi.h>
+#include <shlobj.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAKE_EXTFUNCPTR(DragQueryFileA);
-#define pDragQueryFileU pDragQueryFileA
+MAKE_EXTFUNCPTR(SHBrowseForFolderA);
+#define pSHBrowseForFolderU pSHBrowseForFolderA
 
-MAKE_EXTFUNCPTR(ShellExecuteA);
-#define pShellExecuteU pShellExecuteA
+MAKE_EXTFUNCPTR(SHGetPathFromIDListA);
+#define pSHGetPathFromIDListU pSHGetPathFromIDListA
 
-int WINAPI w32u_shellapi_init(HMODULE hShell32);
+int WINAPI w32u_shlobj_init(HMODULE hShell32);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GSFT_W32U_SHELLAPI_H */
+#endif /* GSFT_W32U_SHLOBJ_H */

@@ -26,9 +26,6 @@
 // C includes.
 #include <stdlib.h>
 
-// DLLs.
-static HMODULE hShell32 = NULL;
-
 
 MAKE_FUNCPTR(DragQueryFileA);
 MAKE_STFUNCPTR(DragQueryFileW);
@@ -78,11 +75,8 @@ static HINSTANCE WINAPI ShellExecuteU(HWND hWnd, LPCSTR lpOperation, LPCSTR lpFi
 }
 
 
-int WINAPI w32u_shellapi_init(void)
+int WINAPI w32u_shellapi_init(HMODULE hShell32)
 {
-	// TODO: Error handling.
-	hShell32 = LoadLibrary("shell32.dll");
-	
 	InitFuncPtrsU(hShell32, "DragQueryFile", pDragQueryFileW, pDragQueryFileA, DragQueryFileU);
 	InitFuncPtrsU(hShell32, "ShellExecute", pShellExecuteW, pShellExecuteA, ShellExecuteU);
 	

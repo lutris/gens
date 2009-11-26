@@ -24,6 +24,7 @@
 #include "w32u_shellapi.h"
 #include "w32u_libc.h"
 #include "w32u_commdlg.h"
+#include "w32u_shlobj.h"
 
 // C includes.
 #include <string.h>
@@ -36,6 +37,7 @@ MAKE_FUNCPTR(MultiByteToWideChar);
 MAKE_FUNCPTR(WideCharToMultiByte);
 
 static HMODULE hUser32 = NULL;
+static HMODULE hShell32 = NULL;
 
 
 /** kernel32.dll **/
@@ -438,10 +440,14 @@ int WINAPI w32u_init(void)
 	else
 		isSendMessageUnicode = 0;
 	
+	// Other DLLs.
+	hShell32 = LoadLibrary("shell32.dll");
+	
 	// Other Win32 Unicode modules.
-	w32u_shellapi_init();
+	w32u_shellapi_init(hShell32);
 	w32u_libc_init();
 	w32u_commdlg_init();
+	w32u_shlobj_init(hShell32);
 	
 	return 0;
 }
