@@ -42,7 +42,7 @@
 #include "libgsft/w32u/w32u_shellapi.h"
 #include <shlobj.h>	// TODO: Port to w32u.
 #include <tchar.h>	// TODO: Get rid of this.
-#include <commdlg.h>	// TODO: Port to w32u.
+#include "libgsft/w32u/w32u_commdlg.h"
 
 // commctrl.h doesn't define ICC_STANDARD_CLASSES
 // unless _WIN32_WINNT is 0x0501 or higher.
@@ -477,22 +477,23 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 				    const FileFilterType filterType, HWND owner,
 				    const bool openOrSave)
 {
-	TCHAR filename[GENS_PATH_MAX];
+	char filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
-	
-	memset(filename, 0, sizeof(filename));
-	memset(&ofn, 0, sizeof(OPENFILENAME));
 	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
 		owner = gens_window;
 	
+	// Clear the filename.
+	filename[0] = 0x00;
+	
 	// Open Filename dialog settings
+	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = owner;
 	ofn.hInstance = ghInstance;
 	ofn.lpstrFile = filename;
-	ofn.nMaxFile = GENS_PATH_MAX - 1;
+	ofn.nMaxFile = sizeof(filename) - 1;
 	ofn.lpstrTitle = title.c_str();
 	ofn.lpstrInitialDir = initFile.c_str();
 	
@@ -532,13 +533,13 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	{
 		// Open Dialog
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		ret = GetOpenFileName(&ofn);
+		ret = pGetOpenFileNameU(&ofn);
 	}
 	else
 	{
 		// Save Dialog
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		ret = GetSaveFileName(&ofn);
+		ret = pGetSaveFileNameU(&ofn);
 	}
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
