@@ -357,6 +357,29 @@ static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCapt
 
 
 /**
+ * SendMessageU_LPCSTR(): Convert LPARAM from UTF-8 to UTF-16, then call SendMessageW().
+ */
+MAKE_FUNCPTR2(SendMessageA, SendMessageU_LPCSTR);
+static WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	if (!isSendMessageUnicode || !lParam)
+	{
+		// Either SendMessage() isn't Unicode, or no lParam is specified.
+		// Send the message as-is.
+		return pSendMessageU(hWnd, msg, wParam, lParam);
+	}
+	
+	// Convert lParam from UTF-8 to UTF-16.
+	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
+	
+	// Send the message.
+	LRESULT lRet = pSendMessageU(hWnd, msg, wParam, (LPARAM)lwParam);
+	free(lwParam);
+	return lRet;
+}
+
+
+/**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.
  */
@@ -416,7 +439,6 @@ int WINAPI w32u_init(void)
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	
-	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
 	InitFuncPtrs(hUser32, "GetMessage", pGetMessageA);
 	InitFuncPtrs(hUser32, "PeekMessage", pPeekMessageA);
 	
@@ -435,10 +457,19 @@ int WINAPI w32u_init(void)
 #endif
 	
 	// Check if SendMessage is Unicode.
-	if ((void*)GetProcAddress(hUser32, "SendMessageW") == pSendMessageA)
-		isSendMessageUnicode = 1;
-	else
+	pSendMessageA = (typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageW");
+	if ((typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageW") == &SendMessageA)
+	{
+		// ANSI SendMessage().
 		isSendMessageUnicode = 0;
+		pSendMessageU_LPCSTR = &SendMessageA;
+	}
+	else
+	{
+		// Unicode SendMessage().
+		isSendMessageUnicode = 1;
+		pSendMessageU_LPCSTR = &SendMessageU_LPCSTR;
+	}
 	
 	// Other DLLs.
 	hShell32 = LoadLibrary("shell32.dll");

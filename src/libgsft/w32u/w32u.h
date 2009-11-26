@@ -32,11 +32,12 @@
 #endif
 #include <windows.h>
 
+#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
+#define MAKE_EXTFUNCPTR2(f1, f2) extern typeof(f1) * p##f2
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
 
 /** kernel32.dll **/
 
@@ -102,6 +103,7 @@ MAKE_EXTFUNCPTR(CallWindowProcA);
 MAKE_EXTFUNCPTR(SendMessageA);
 extern BOOL isSendMessageUnicode;
 #define pSendMessageU pSendMessageA
+MAKE_EXTFUNCPTR2(SendMessageA, SendMessageU_LPCSTR);
 
 MAKE_EXTFUNCPTR(GetMessageA);
 #define pGetMessageU pGetMessageA
