@@ -368,7 +368,7 @@ static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCapt
 WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
 {
 	if (!isSendMessageUnicode)
-		return pSendMessageU(hWnd, msgA, wParam, lParam);
+		return SendMessageA(hWnd, msgA, wParam, lParam);
 	if (!lParam)
 		return pSendMessageU(hWnd, msgW, wParam, lParam);
 	
