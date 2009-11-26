@@ -1128,11 +1128,11 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 			char utf8_buf[48*4];
 			int ret;
 			
-			ret = MultiByteToWideChar(932, MB_PRECOMPOSED, RomName, sizeof(RomName),
-						  wbuf, (sizeof(wbuf)/sizeof(wchar_t)));
+			ret = pMultiByteToWideChar(932, MB_PRECOMPOSED, RomName, sizeof(RomName),
+						   wbuf, (sizeof(wbuf)/sizeof(wchar_t)));
 			if (ret > 0)
 			{
-				WideCharToMultiByte(CP_UTF8, 0, wbuf, 48, utf8_buf, sizeof(utf8_buf), NULL, NULL);
+				pWideCharToMultiByte(CP_UTF8, 0, wbuf, 48, utf8_buf, sizeof(utf8_buf), NULL, NULL);
 				utf8_buf[sizeof(utf8_buf)-1] = 0x00;
 				return string(utf8_buf);
 			}
