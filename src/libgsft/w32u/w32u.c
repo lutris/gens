@@ -26,6 +26,9 @@
 #include "w32u_commdlg.h"
 #include "w32u_shlobj.h"
 
+// shlwapi.h needed for DLLVERSIONINFO and DLLGETVERSIONPROC.
+#include <shlwapi.h>
+
 // C includes.
 #include <string.h>
 #include <stdlib.h>
@@ -41,6 +44,9 @@ MAKE_FUNCPTR(WideCharToMultiByte);
 
 static HMODULE hUser32 = NULL;
 static HMODULE hShell32 = NULL;
+
+/** DLL versions. (0xMMNNRRRR) **/
+DWORD shell32_dll_version = 0;
 
 
 /** kernel32.dll **/
@@ -438,6 +444,34 @@ MAKE_FUNCPTR(IsDialogMessageA);
 MAKE_FUNCPTR(DispatchMessageA);
 
 
+/**
+ * GetDllVersionNumber(): Get a DLL's version number via DllGetVersion().
+ * @param hDLL Handle to DLL.
+ * @return DLL version number, or 0 on error.
+ */
+static DWORD WINAPI GetDllVersionNumber(HMODULE hDLL)
+{
+	DLLVERSIONINFO dllvi;
+	DLLGETVERSIONPROC dllviproc;
+	HRESULT hRet;
+	dllvi.cbSize = sizeof(dllvi);
+	
+	dllviproc = (DLLGETVERSIONPROC)GetProcAddress(hDLL, "DllGetVersion");
+	if (!dllviproc)
+		return 0;
+	
+	// DllGetVersion() found.
+	hRet = dllviproc(&dllvi);
+	if (hRet != S_OK)
+		return 0;
+	
+	// Received the version number.
+	return  (dllvi.dwMajorVersion & 0xFF) << 24 |
+		(dllvi.dwMinorVersion & 0xFF) << 16 |
+		(dllvi.dwBuildNumber & 0xFFFF);
+}
+
+
 int WINAPI w32u_init(void)
 {
 	// Initialize the Win32 Unicode Translation Layer.
@@ -503,6 +537,9 @@ int WINAPI w32u_init(void)
 	// Other DLLs.
 	hShell32 = LoadLibrary("shell32.dll");
 	
+	// Get DLL version numbers.
+	shell32_dll_version = GetDllVersionNumber(hShell32);
+	
 	// Other Win32 Unicode modules.
 	w32u_shellapi_init(hShell32);
 	w32u_libc_init();
@@ -529,6 +566,9 @@ int WINAPI w32u_end(void)
 	hUser32 = NULL;
 	FreeLibrary(hShell32);
 	hShell32 = NULL;
+	
+	// Clear the DLL versions.
+	shell32_dll_version = 0;
 	
 	// TODO: Should function pointers be NULL'd?
 	// TODO: Should shellapi and shlobj have end functions?

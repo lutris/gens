@@ -39,6 +39,9 @@
 extern "C" {
 #endif
 
+/** DLL versions. (0xMMNNRRRR) **/
+extern DWORD shell32_dll_version;
+
 /** kernel32.dll **/
 
 MAKE_EXTFUNCPTR(MultiByteToWideChar);
