@@ -428,10 +428,8 @@ int WINAPI w32u_init(void)
 	hUser32 = LoadLibrary("user32.dll");
 	
 	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
-	printf("pRegisterClassW == 0x%08X; pRegisterClassA == 0x%08X\n", pRegisterClassW, pRegisterClassA);
 	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
-	printf("pSetWindowTextW == 0x%08X; pSetWindowTextA == 0x%08X\n", pSetWindowTextW, pSetWindowTextA);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
 	InitFuncPtrsU(hUser32, "LoadAccelerators", pLoadAcceleratorsW, pLoadAcceleratorsA, LoadAcceleratorsU);
