@@ -103,7 +103,7 @@ MAKE_EXTFUNCPTR(CallWindowProcA);
 MAKE_EXTFUNCPTR(SendMessageA);
 extern BOOL isSendMessageUnicode;
 #define pSendMessageU pSendMessageA
-MAKE_EXTFUNCPTR2(SendMessageA, SendMessageU_LPCSTR);
+WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam);
 
 MAKE_EXTFUNCPTR(GetMessageA);
 #define pGetMessageU pGetMessageA

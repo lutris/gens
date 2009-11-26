@@ -358,22 +358,25 @@ static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCapt
 
 /**
  * SendMessageU_LPCSTR(): Convert LPARAM from UTF-8 to UTF-16, then call SendMessageW().
+ * @param hWnd hWnd.
+ * @param msgA ANSI message.
+ * @param msgW Unicode message.
+ * @param wParam wParam.
+ * @param lParam lParam. (LPCSTR)
+ * @return Result.
  */
-MAKE_FUNCPTR2(SendMessageA, SendMessageU_LPCSTR);
-static WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
 {
-	if (!isSendMessageUnicode || !lParam)
-	{
-		// Either SendMessage() isn't Unicode, or no lParam is specified.
-		// Send the message as-is.
-		return pSendMessageU(hWnd, msg, wParam, lParam);
-	}
+	if (!isSendMessageUnicode)
+		return pSendMessageU(hWnd, msgA, wParam, lParam);
+	if (!lParam)
+		return pSendMessageU(hWnd, msgW, wParam, lParam);
 	
 	// Convert lParam from UTF-8 to UTF-16.
 	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
 	
 	// Send the message.
-	LRESULT lRet = pSendMessageU(hWnd, msg, wParam, (LPARAM)lwParam);
+	LRESULT lRet = pSendMessageU(hWnd, msgW, wParam, (LPARAM)lwParam);
 	free(lwParam);
 	return lRet;
 }
@@ -425,8 +428,10 @@ int WINAPI w32u_init(void)
 	hUser32 = LoadLibrary("user32.dll");
 	
 	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
+	printf("pRegisterClassW == 0x%08X; pRegisterClassA == 0x%08X\n", pRegisterClassW, pRegisterClassA);
 	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
+	printf("pSetWindowTextW == 0x%08X; pSetWindowTextA == 0x%08X\n", pSetWindowTextW, pSetWindowTextA);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
 	InitFuncPtrsU(hUser32, "LoadAccelerators", pLoadAcceleratorsW, pLoadAcceleratorsA, LoadAcceleratorsU);
@@ -458,18 +463,10 @@ int WINAPI w32u_init(void)
 	
 	// Check if SendMessage is Unicode.
 	pSendMessageA = (typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageW");
-	if ((typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageW") == &SendMessageA)
-	{
-		// ANSI SendMessage().
+	if ((typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageA") == &SendMessageA)
 		isSendMessageUnicode = 0;
-		pSendMessageU_LPCSTR = &SendMessageA;
-	}
 	else
-	{
-		// Unicode SendMessage().
 		isSendMessageUnicode = 1;
-		pSendMessageU_LPCSTR = &SendMessageU_LPCSTR;
-	}
 	
 	// Other DLLs.
 	hShell32 = LoadLibrary("shell32.dll");
