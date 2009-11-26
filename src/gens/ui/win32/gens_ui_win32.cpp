@@ -357,6 +357,17 @@ void GensUI::setWindowTitle(const string& title)
 
 
 /**
+ * setWindowVisibility(): Sets window visibility.
+ * @param visibility true to show; false to hide.
+ */
+void GensUI::setWindowVisibility(const bool visibility)
+{
+	// TODO
+	GSFT_UNUSED_PARAMETER(visibility);
+}
+
+
+/**
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
@@ -659,6 +670,7 @@ void GensUI::LaunchBrowser(const string& url)
 void GensUI::fsMinimize(fsMinimize_Type fst)
 {
 	// TODO
+	GSFT_UNUSED_PARAMETER(fst);
 }
 
 
@@ -669,4 +681,5 @@ void GensUI::fsMinimize(fsMinimize_Type fst)
 void GensUI::fsRestore(fsMinimize_Type fst)
 {
 	// TODO
+	GSFT_UNUSED_PARAMETER(fst);
 }

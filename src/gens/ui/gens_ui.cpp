@@ -151,8 +151,5 @@ void GensUI_wakeup(void)
  */
 void GensUI_setWindowVisibility(const int visibility)
 {
-	// TODO: Implement GensUI::setWindowVisibility() on Win32.
-#ifndef GENS_OS_WIN32
 	GensUI::setWindowVisibility(visibility);
-#endif
 }
