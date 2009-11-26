@@ -36,6 +36,7 @@ MAKE_EXTFUNCPTR(GetSaveFileNameA);
 #define pGetSaveFileNameU pGetSaveFileNameA
 
 int WINAPI w32u_commdlg_init(void);
+int WINAPI w32u_commdlg_end(void);
 
 #ifdef __cplusplus
 }

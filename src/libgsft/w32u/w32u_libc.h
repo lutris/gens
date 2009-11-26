@@ -37,6 +37,7 @@ MAKE_EXTFUNCPTR(fopen);
 #define fopen(path, mode) pfopen(path, mode)
 
 int WINAPI w32u_libc_init(void);
+int WINAPI w32u_libc_end(void);
 
 #ifdef __cplusplus
 }

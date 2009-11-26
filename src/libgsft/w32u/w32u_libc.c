@@ -26,6 +26,9 @@
 // C includes.
 #include <stdlib.h>
 
+// Initialization counter.
+static int init_counter = 0;
+
 // DLLs.
 static HMODULE hMsvcrt = NULL;
 
@@ -71,11 +74,31 @@ static FILE* Ufopen(const char *path, const char *mode)
 
 int WINAPI w32u_libc_init(void)
 {
+	if (init_counter++ != 0)
+		return 0;
+	
 	// TODO: Error handling.
 	hMsvcrt = LoadLibrary("msvcrt.dll");
 	
 	InitFuncPtrsU_libc(hMsvcrt, "access", "_waccess", p_waccess, paccess, Uaccess);
 	InitFuncPtrsU_libc(hMsvcrt, "fopen", "_wfopen", p_wfopen, pfopen, Ufopen);
 	
+	return 0;
+}
+
+
+int WINAPI w32u_libc_end(void)
+{
+	if (init_counter <= 0)
+		return 0;
+	
+	init_counter--;
+	if (init_counter > 0)
+		return 0;
+	
+	FreeLibrary(hMsvcrt);
+	hMsvcrt = NULL;
+	printf("libc shutdown\n");
+	// TODO: Should function pointers be NULL'd?
 	return 0;
 }

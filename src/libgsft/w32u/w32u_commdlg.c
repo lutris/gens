@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Initialization counter.
+static int init_counter = 0;
+
 // DLLs.
 static HMODULE hComDlg32 = NULL;
 
@@ -253,11 +256,31 @@ static BOOL WINAPI GetSaveFileNameU(LPOPENFILENAMEA lpofn)
 
 int WINAPI w32u_commdlg_init(void)
 {
+	if (init_counter++ != 0)
+		return 0;
+	
 	// TODO: Error handling.
 	hComDlg32 = LoadLibrary("comdlg32.dll");
 	
 	InitFuncPtrsU(hComDlg32, "GetOpenFileName", pGetOpenFileNameW, pGetOpenFileNameA, GetOpenFileNameU);
 	InitFuncPtrsU(hComDlg32, "GetSaveFileName", pGetSaveFileNameW, pGetSaveFileNameA, GetSaveFileNameU);
 	
+	return 0;
+}
+
+
+int WINAPI w32u_commdlg_end(void)
+{
+	if (init_counter <= 0)
+		return 0;
+	
+	init_counter--;
+	if (init_counter > 0)
+		return 0;
+	
+	FreeLibrary(hComDlg32);
+	hComDlg32 = NULL;
+	printf("comdlg shutdown\n");
+	// TODO: Should function pointers be NULL'd?
 	return 0;
 }

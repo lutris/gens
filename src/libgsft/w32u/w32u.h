@@ -138,6 +138,7 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 #endif
 
 int WINAPI w32u_init(void);
+int WINAPI w32u_end(void);
 
 #ifdef __cplusplus
 }

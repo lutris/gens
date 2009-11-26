@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+// Initialization counter.
+static int init_counter = 0;
+
 // DLLs.
 static HMODULE hKernel32 = NULL;
 MAKE_FUNCPTR(MultiByteToWideChar);
@@ -412,7 +415,12 @@ MAKE_FUNCPTR(DispatchMessageA);
 
 int WINAPI w32u_init(void)
 {
-	// Initialize Win32 Unicode.
+	// Initialize the Win32 Unicode Translation Layer.
+	if (init_counter++ != 0)
+	{
+		// The Win32 Unicode Translation Layer is already initialized.
+		return 0;
+	}
 	
 	// TODO: Error handling.
 	hKernel32 = LoadLibrary("kernel32.dll");
@@ -474,6 +482,34 @@ int WINAPI w32u_init(void)
 	w32u_libc_init();
 	w32u_commdlg_init();
 	w32u_shlobj_init(hShell32);
+	
+	return 0;
+}
+
+
+int WINAPI w32u_end(void)
+{
+	if (init_counter <= 0)
+		return 0;
+	
+	init_counter--;
+	if (init_counter > 0)
+		return 0;
+	
+	// Unload the libraries.
+	FreeLibrary(hKernel32);
+	hKernel32 = NULL;
+	FreeLibrary(hUser32);
+	hUser32 = NULL;
+	FreeLibrary(hShell32);
+	hShell32 = NULL;
+	
+	// TODO: Should function pointers be NULL'd?
+	// TODO: Should shellapi and shlobj have end functions?
+	//w32u_shellapi_end();
+	w32u_libc_end();
+	w32u_commdlg_end();
+	//w32u_shlobj_end();
 	
 	return 0;
 }
