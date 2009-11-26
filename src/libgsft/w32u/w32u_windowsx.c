@@ -27,23 +27,6 @@
 #include <stdlib.h>
 
 
-/** ComboBox functions. **/
-
-
-int WINAPI ComboBox_AddStringU(HWND hwndCtl, LPCSTR lpsz)
-{
-	if (!isSendMessageUnicode || !lpsz)
-		return pSendMessageU(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpsz);
-	
-	// Convert lpsz from UTF-8 to UTF-16.
-	wchar_t *lpszw = w32u_mbstowcs(lpsz);
-	
-	LRESULT lRet = pSendMessageU(hwndCtl, CB_ADDSTRING, 0, (LPARAM)lpszw);
-	free(lpszw);
-	return lRet;
-}
-
-
 /** ListBox functions. **/
 
 
@@ -83,19 +66,5 @@ int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 	// allows up to 4-byte characters.
 	pWideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
 	free(wbuf);
-	return lRet;
-}
-
-
-int WINAPI ListBox_InsertStringU(HWND hwndCtl, int index, LPCSTR lpsz)
-{
-	if (!isSendMessageUnicode || !lpsz)
-		return pSendMessageU(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpsz);
-	
-	// Convert lpsz from UTF-8 to UTF-16.
-	wchar_t *lpszw = w32u_mbstowcs(lpsz);
-	
-	LRESULT lRet = pSendMessageU(hwndCtl, LB_INSERTSTRING, (WPARAM)index, (LPARAM)lpszw);
-	free(lpszw);
 	return lRet;
 }
