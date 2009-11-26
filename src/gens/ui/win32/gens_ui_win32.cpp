@@ -40,7 +40,7 @@
 #include "libgsft/w32u/w32u.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_shellapi.h"
-#include <shlobj.h>	// TODO: Port to w32u.
+#include "libgsft/w32u/w32u_shlobj.h"
 #include <tchar.h>	// TODO: Get rid of this.
 #include "libgsft/w32u/w32u_commdlg.h"
 
@@ -562,8 +562,8 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
  */
 string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
-	TCHAR displayName[GENS_PATH_MAX];
-	TCHAR selDir[GENS_PATH_MAX];
+	char displayName[GENS_PATH_MAX];
+	char selDir[GENS_PATH_MAX];
 	
 	BROWSEINFO bi;
 	memset(&bi, 0x00, sizeof(bi));
@@ -585,14 +585,15 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	// TODO: Does pidl need to be free()'d?
+	LPITEMIDLIST pidl = pSHBrowseForFolderU(&bi);
 	if (!pidl)
 	{
 		// No directory was selected.
 		return "";
 	}
 	
-	bool bRet = SHGetPathFromIDList(pidl, selDir);
+	bool bRet = pSHGetPathFromIDListU(pidl, selDir);
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
 	// I'm not sure if SHGetPathFromIDList() changes it, but it might.
