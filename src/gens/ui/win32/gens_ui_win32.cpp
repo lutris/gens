@@ -593,6 +593,18 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.lpfn = selectDir_SetSelProc;
 	bi.lParam = (LPARAM)(initDir.c_str());
 	
+	// Check for DLL-specific features.
+	if (shell32_dll_version >= 0x04470000)
+	{
+		// shell32.dll v4.71 or later.
+		bi.ulFlags |= BIF_EDITBOX;
+	}
+	if (shell32_dll_version >= 0x05000000)
+	{
+		// shell32.dll v5.0 or later.
+		bi.ulFlags |= BIF_NEWDIALOGSTYLE;
+	}
+	
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
