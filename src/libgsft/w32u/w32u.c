@@ -200,6 +200,31 @@ static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
 }
 
 
+MAKE_FUNCPTR(GetWindowTextA);
+MAKE_STFUNCPTR(GetWindowTextW);
+static WINUSERAPI int WINAPI GetWindowTextU(HWND hWnd, LPSTR lpString, int nMaxCount)
+{
+	if (!lpString || nMaxCount <= 0)
+	{
+		// No return buffer specified.
+		return pGetWindowTextW(hWnd, (LPWSTR)lpString, nMaxCount);
+	}
+	
+	// Allocate a temporary UTF-16 return buffer.
+	wchar_t *lpwString = (wchar_t*)malloc(nMaxCount * sizeof(lpwString));
+	
+	// Get the window text.
+	int ret = pGetWindowTextW(hWnd, lpwString, nMaxCount);
+	
+	// Convert the window text to UTF-8.
+	pWideCharToMultiByte(CP_UTF8, 0, lpwString, nMaxCount, lpString, nMaxCount, NULL, NULL);
+	
+	// Free the buffer.
+	free(lpwString);
+	return ret;
+}
+
+
 MAKE_FUNCPTR(InsertMenuA);
 MAKE_STFUNCPTR(InsertMenuW);
 static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
@@ -438,6 +463,7 @@ int WINAPI w32u_init(void)
 	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
 	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
 	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
+	InitFuncPtrsU(hUser32, "GetWindowText", pGetWindowTextW, pGetWindowTextA, GetWindowTextU);
 	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
 	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
 	InitFuncPtrsU(hUser32, "LoadAccelerators", pLoadAcceleratorsW, pLoadAcceleratorsA, LoadAcceleratorsU);

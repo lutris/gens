@@ -66,6 +66,9 @@ MAKE_EXTFUNCPTR(CreateWindowExA);
 MAKE_EXTFUNCPTR(SetWindowTextA);
 #define pSetWindowTextU pSetWindowTextA
 
+MAKE_EXTFUNCPTR(GetWindowTextA);
+#define pGetWindowTextU pGetWindowTextA
+
 MAKE_EXTFUNCPTR(InsertMenuA);
 #define pInsertMenuU pInsertMenuA
 
