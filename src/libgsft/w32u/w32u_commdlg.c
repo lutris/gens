@@ -280,7 +280,7 @@ int WINAPI w32u_commdlg_end(void)
 	
 	FreeLibrary(hComDlg32);
 	hComDlg32 = NULL;
-	printf("comdlg shutdown\n");
+	
 	// TODO: Should function pointers be NULL'd?
 	return 0;
 }

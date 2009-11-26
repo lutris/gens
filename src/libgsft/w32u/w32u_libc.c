@@ -98,7 +98,7 @@ int WINAPI w32u_libc_end(void)
 	
 	FreeLibrary(hMsvcrt);
 	hMsvcrt = NULL;
-	printf("libc shutdown\n");
+	
 	// TODO: Should function pointers be NULL'd?
 	return 0;
 }
