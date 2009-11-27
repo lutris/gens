@@ -14,9 +14,14 @@
 #endif
 #include <windows.h>
 
+// C includes.
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdlib.h>
+
+// libgsft includes.
+#include "libgsft/gsft_strdup.h"
 
 
 static HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
@@ -43,7 +48,7 @@ static int my_pipe(HANDLE *readwrite)
 
 /**
  * gens_popen(): Replacement for popen() on Win32.
- * @ If "2>&1" is found in cmd, stderr is redirected to stdout.
+ * If "2>&1" is found in cmd, stderr is redirected to stdout.
  * @param cmd Command line.
  * @param mode Mode. ("r" or "w")
  * @return File handle, or NULL on error.
@@ -89,8 +94,11 @@ FILE* gens_popen(const char *cmd, const char *mode)
 		siStartInfo.hStdError	= my_pipeerr[1];
 	siStartInfo.dwFlags	= STARTF_USESTDHANDLES;
 	
+	/* Copy the command line before passing it to CreateProcess(). */
+	char *cmd_dup = strdup(cmd);
+	
 	success = CreateProcess(NULL,
-				(LPSTR)cmd,		// command line 
+				cmd_dup,		// command line 
 				NULL,			// process security attributes 
 				NULL,			// primary thread security attributes 
 				TRUE,			// handles are inherited 
@@ -99,6 +107,9 @@ FILE* gens_popen(const char *cmd, const char *mode)
 				NULL,			// use parent's current directory 
 				&siStartInfo,		// STARTUPINFO pointer 
 				&piProcInfo);		// receives PROCESS_INFORMATION 
+	
+	/* Free the copied command line. */
+	free(cmd_dup);
 	
 	if (!success)
 		goto finito;
@@ -109,9 +120,9 @@ FILE* gens_popen(const char *cmd, const char *mode)
 	CloseHandle(my_pipeerr[1]); my_pipeerr[1] = INVALID_HANDLE_VALUE;
 	
 	if (my_popenmode == 'r')
-		fptr = _fdopen(_open_osfhandle((long)my_pipeout[0],_O_BINARY),"r");
+		fptr = _fdopen(_open_osfhandle((long)my_pipeout[0], _O_BINARY), "r");
 	else
-		fptr = _fdopen(_open_osfhandle((long)my_pipein[1],_O_BINARY),"w");
+		fptr = _fdopen(_open_osfhandle((long)my_pipein[1], _O_BINARY), "w");
 	
 finito:
 	if (!fptr)
