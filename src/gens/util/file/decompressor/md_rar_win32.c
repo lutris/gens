@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: RAR Decompressor.                                                 *
+ * Gens: RAR Decompressor. (Win32)                                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,34 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "md_rar.hpp"
+#include "md_rar_win32.h"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
-#ifdef _WIN32
 #include "libgsft/w32u/w32u_libc.h"
-#endif
-
-// Newline constant: "\r\n" on Win32, "\n" on everything else.
-#ifdef GENS_OS_WIN32
-#define RAR_NEWLINE "\r\n"
-#define RAR_NEWLINE_LENGTH 2
-#define RAR_NAME "WinRAR"
-#else
-#define RAR_NEWLINE "\n"
-#define RAR_NEWLINE_LENGTH 1
-#define RAR_NAME "rar"
-#endif
 
 // C includes.
 #include <unistd.h>
 #include <stdlib.h>
-
-// C++ includes.
-#include <sstream>
-using std::string;
-using std::stringstream;
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -58,12 +40,29 @@ using std::stringstream;
 #include "libgsft/gsft_szprintf.h"
 
 
+// RAR (Win32) decompressor functions.
+static int decompressor_rar_win32_detect_format(FILE *zF);
+static int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename,
+						mdp_z_entry_t** z_entry_out);
+static size_t decompressor_rar_win32_get_file(FILE *zF, const char* filename,
+						mdp_z_entry_t *z_entry,
+						void *buf, const size_t size);
+
+// RAR (Win32) decompressor struct.
+const decompressor_t decompressor_rar_win32 =
+{
+	.detect_format	= decompressor_rar_win32_detect_format,
+	.get_file_info	= decompressor_rar_win32_get_file_info,
+	.get_file	= decompressor_rar_win32_get_file
+};
+
+
 /**
- * decompressor_rar_detect_format(): Detect if this file can be handled by this decompressor.
+ * decompressor_rar_win32_detect_format(): Detect if this file can be handled by this decompressor.
  * @param zF Open file handle.
  * @return Non-zero if this file can be handled; 0 if it can't be.
  */
-int decompressor_rar_detect_format(FILE *zF)
+int decompressor_rar_win32_detect_format(FILE *zF)
 {
 	// Magic Number for RAR:
 	// First four bytes: "Rar!"
@@ -77,14 +76,16 @@ int decompressor_rar_detect_format(FILE *zF)
 
 
 /**
- * decompressor_rar_get_file_info(): Get information about all files in the archive.
+ * decompressor_rar_win32_get_file_info(): Get information about all files in the archive.
  * @param zF		[in] Open file handle.
  * @param filename	[in] Filename of the archive.
  * @param z_entry_out	[out] Pointer to mdp_z_entry_t*, which will contain an allocated mdp_z_entry_t.
  * @return MDP error code.
  */
-int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
+int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
+	return -1;
+#if 0
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	if (!z_entry_out)
@@ -104,7 +105,7 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 	// Build the command line.
 	char cmd_line[GENS_PATH_MAX*2 + 256];
 	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" v \"%s\"",
-			Misc_Filenames.RAR_Binary, filename);
+		 Misc_Filenames.RAR_Binary, filename);
 	
 	// Open the RAR file.
 	FILE *pRAR = popen(cmd_line, "r");
@@ -234,11 +235,12 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 	// Return the list of files.
 	*z_entry_out = z_entry_head;
 	return MDP_ERR_OK;
+#endif
 }
 
 
 /**
- * decompressor_rar_get_file(): Get a file from the archive.
+ * decompressor_rar_win32_get_file(): Get a file from the archive.
  * @param zF Open file handle. (Unused in the RAR handler.)
  * @param filename Filename of the archive.
  * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
@@ -246,10 +248,12 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
-size_t decompressor_rar_get_file(FILE *zF, const char *filename,
-				 mdp_z_entry_t *z_entry,
-				 void *buf, const size_t size)
+size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
+					mdp_z_entry_t *z_entry,
+					void *buf, const size_t size)
 {
+	return -1;
+#if 0
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
@@ -270,7 +274,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	
 	char cmd_line[GENS_PATH_MAX*3 + 256];
 	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" p -ierr  \"%s\" \"%s\"%s",
-			Misc_Filenames.RAR_Binary, filename, z_entry->filename,
+		 Misc_Filenames.RAR_Binary, filename, z_entry->filename,
 #if !defined(GENS_OS_WIN32)
 		" 2>/dev/null"
 #else
@@ -302,4 +306,5 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	
 	// Return the filesize.
 	return extracted_size;
+#endif
 }

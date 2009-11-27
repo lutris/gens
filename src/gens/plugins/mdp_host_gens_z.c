@@ -28,11 +28,11 @@
 #include "mdp/mdp_error.h"
 
 #ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
+#	include "libgsft/w32u/w32u_libc.h"
 #endif
 
 #ifdef GENS_ZLIB
-	#include <zlib.h>
+#	include <zlib.h>
 #endif
 
 /* C includes. */
@@ -42,13 +42,17 @@
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/dummy.h"
 #ifdef GENS_ZLIB
-	#include "util/file/decompressor/md_gzip.h"
-	#include "util/file/decompressor/md_zip.h"
+#	include "util/file/decompressor/md_gzip.h"
+#	include "util/file/decompressor/md_zip.h"
 #endif
 #ifdef GENS_LZMA
-	#include "util/file/decompressor/md_7z.h"
+#	include "util/file/decompressor/md_7z.h"
 #endif
-#include "util/file/decompressor/md_rar_t.h"
+#ifdef _WIN32
+#	include "util/file/decompressor/md_rar_win32.h"
+#else
+#	include "util/file/decompressor/md_rar_t.h"
+#endif
 
 /* libgsft includes. */
 #include "libgsft/gsft_strdup.h"
@@ -56,14 +60,18 @@
 /* Array of decompressors. */
 static const decompressor_t* const decompressors[] =
 {
-	#ifdef GENS_ZLIB
-		&decompressor_gzip,
-		&decompressor_zip,
-	#endif
-	#ifdef GENS_LZMA
-		&decompressor_7z,
-	#endif
+#ifdef GENS_ZLIB
+	&decompressor_gzip,
+	&decompressor_zip,
+#endif
+#ifdef GENS_LZMA
+	&decompressor_7z,
+#endif
+#ifdef _WIN32
+	&decompressor_rar_win32,
+#else
 	&decompressor_rar,
+#endif
 	
 	// Last decompressor is the Dummy decompressor.
 	&decompressor_dummy,

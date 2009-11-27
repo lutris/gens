@@ -129,8 +129,6 @@ gens_SOURCES = \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
 		util/file/decompressor/dummy.c \
-		util/file/decompressor/md_rar.cpp \
-		util/file/decompressor/md_rar_t.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
