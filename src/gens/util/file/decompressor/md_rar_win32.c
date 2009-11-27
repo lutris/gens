@@ -25,7 +25,9 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
+#include "libgsft/w32u/w32u.h"
 #include "libgsft/w32u/w32u_libc.h"
+#include "libgsft/w32u/w32u_priv.h"
 
 // C includes.
 #include <unistd.h>
@@ -33,6 +35,7 @@
 
 // MDP includes.
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_dlopen.h"
 
 // libgsft includes.
 #include "libgsft/gsft_strdup.h"
@@ -55,6 +58,76 @@ const decompressor_t decompressor_rar_win32 =
 	.get_file_info	= decompressor_rar_win32_get_file_info,
 	.get_file	= decompressor_rar_win32_get_file
 };
+
+
+// UnRAR.dll
+#include "unrar.h"
+static void *hUnrarDll = NULL;
+static int unrar_refcnt = 0;
+MAKE_STFUNCPTR(RAROpenArchiveEx);
+MAKE_STFUNCPTR(RARCloseArchive);
+MAKE_STFUNCPTR(RARReadHeaderEx);
+MAKE_STFUNCPTR(RARProcessFile);
+MAKE_STFUNCPTR(RARProcessFileW);
+MAKE_STFUNCPTR(RARGetDllVersion);
+
+#define InitFuncPtr_unrar(hDll, fn) p##fn = (typeof(p##fn))mdp_dlsym((hDll), #fn)
+
+/**
+ * unrar_dll_init(): Initialize UnRAR.dll.
+ * @return 0 on success; non-zero on error.
+ */
+static int unrar_dll_init(void)
+{
+	if (unrar_refcnt++ != 0)
+		return 0;
+	
+	// Load the DLL.
+	hUnrarDll = mdp_dlopen("unrar.dll");
+	if (!hUnrarDll)
+		return -2;
+	
+	// Load the function pointers.
+	// TODO: Return an error if any of them fail.
+	InitFuncPtr_unrar(hUnrarDll, RAROpenArchiveEx);
+	InitFuncPtr_unrar(hUnrarDll, RARCloseArchive);
+	InitFuncPtr_unrar(hUnrarDll, RARReadHeaderEx);
+	InitFuncPtr_unrar(hUnrarDll, RARProcessFile);
+	InitFuncPtr_unrar(hUnrarDll, RARProcessFileW);
+	InitFuncPtr_unrar(hUnrarDll, RARGetDllVersion);
+	
+	// Increment the reference counter and return.
+	unrar_refcnt++;
+	return 0;
+}
+
+/**
+ * unrar_dll_end(): Shut down UnRAR.dll.
+ * @return 0 on success; non-zero on error.
+ */
+static int unrar_dll_end(void)
+{
+	if (unrar_refcnt <= 0)
+		return 0;
+	
+	unrar_refcnt--;
+	if (unrar_refcnt != 0)
+		return 0;
+	
+	// Unload the DLL.
+	mdp_dlclose(hUnrarDll);
+	hUnrarDll = NULL;
+	
+	// Clear the function pointers.
+	pRAROpenArchiveEx	= NULL;
+	pRARCloseArchive	= NULL;
+	pRARReadHeaderEx	= NULL;
+	pRARProcessFile		= NULL;
+	pRARProcessFileW	= NULL;
+	pRARGetDllVersion	= NULL;
+	
+	return 0;
+}
 
 
 /**
@@ -84,6 +157,13 @@ int decompressor_rar_win32_detect_format(FILE *zF)
  */
 int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
+	// Initialize UnRAR.dll.
+	if (unrar_dll_init() != 0)
+	{
+		// Error initializing UnRAR.dll.
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
+	}
+	
 	return -1;
 #if 0
 	GSFT_UNUSED_PARAMETER(zF);
