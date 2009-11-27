@@ -70,7 +70,15 @@ do { \
 		pA = (typeof(pA))GetProcAddress(hDLL, fnA); \
 } while (0)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Functions. **/
 wchar_t* WINAPI w32u_mbstowcs(const char *mbs);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GSFT_W32U_PRIV_H */
