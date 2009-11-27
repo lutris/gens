@@ -94,7 +94,11 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Check that the RAR executable is available.
+#if !defined(_WIN32)
 	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+#else
+	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
+#endif
 	{
 		// Cannot run the RAR executable.
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
@@ -256,7 +260,11 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 		return 0;
 	
 	// Check that the RAR executable is available.
+#if !defined(_WIN32)
 	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+#else
+	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
+#endif
 	{
 		// Cannot run the RAR executable.
 		// TODO: Show an error message and/or return an error code.
