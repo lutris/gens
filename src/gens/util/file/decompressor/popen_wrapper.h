@@ -27,7 +27,10 @@ extern "C" {
 
 // Win32. Use wrapper functions.
 #include <stdio.h>
+#include <wchar.h>
+#define gens_popen gens_popenA
 FILE* gens_popen(const char *cmd, const char *mode);
+FILE* gens_popenW(const wchar_t *cmd, const wchar_t *mode);
 int gens_pclose(FILE *fle);
 
 #ifdef __cplusplus

@@ -47,18 +47,18 @@ static int my_pipe(HANDLE *readwrite)
 
 
 /**
- * gens_popen(): Replacement for popen() on Win32.
+ * gens_popenA(): Replacement for popen() on Win32. (ANSI version)
  * If "2>&1" is found in cmd, stderr is redirected to stdout.
  * @param cmd Command line.
  * @param mode Mode. ("r" or "w")
  * @return File handle, or NULL on error.
  */
-FILE* gens_popen(const char *cmd, const char *mode)
+FILE* gens_popenA(const char *cmd, const char *mode)
 {
 	FILE *fptr = NULL;
-	STARTUPINFO siStartInfo;
+	STARTUPINFOA siStartInfo;
 	int success, redirect;
-
+	
 	my_pipein[0]	= INVALID_HANDLE_VALUE;
 	my_pipein[1]	= INVALID_HANDLE_VALUE;
 	my_pipeout[0]	= INVALID_HANDLE_VALUE;
@@ -84,8 +84,8 @@ FILE* gens_popen(const char *cmd, const char *mode)
 		goto finito;
 	
 	/* Create the child process. */
-	memset(&siStartInfo, 0x00, sizeof(STARTUPINFO));
-	siStartInfo.cb		= sizeof(STARTUPINFO);
+	memset(&siStartInfo, 0x00, sizeof(siStartInfo));
+	siStartInfo.cb		= sizeof(siStartInfo);
 	siStartInfo.hStdInput	= my_pipein[0];
 	siStartInfo.hStdOutput	= my_pipeout[1];
 	if (redirect)
@@ -97,7 +97,7 @@ FILE* gens_popen(const char *cmd, const char *mode)
 	/* Copy the command line before passing it to CreateProcess(). */
 	char *cmd_dup = strdup(cmd);
 	
-	success = CreateProcess(NULL,
+	success = CreateProcessA(NULL,
 				cmd_dup,		// command line 
 				NULL,			// process security attributes 
 				NULL,			// primary thread security attributes 
@@ -123,6 +123,107 @@ FILE* gens_popen(const char *cmd, const char *mode)
 		fptr = _fdopen(_open_osfhandle((long)my_pipeout[0], _O_BINARY), "r");
 	else
 		fptr = _fdopen(_open_osfhandle((long)my_pipein[1], _O_BINARY), "w");
+	
+finito:
+	if (!fptr)
+	{
+		if (my_pipein[0]  != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipein[0]);
+		if (my_pipein[1]  != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipein[1]);
+		if (my_pipeout[0] != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipeout[0]);
+		if (my_pipeout[1] != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipeout[1]);
+		if (my_pipeerr[0] != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipeerr[0]);
+		if (my_pipeerr[1] != INVALID_HANDLE_VALUE)
+			CloseHandle(my_pipeerr[1]);
+	}
+	return fptr;
+}
+
+
+/**
+ * gens_popenW(): Replacement for popen() on Win32. (Unicode version)
+ * If "2>&1" is found in cmd, stderr is redirected to stdout.
+ * @param cmd Command line.
+ * @param mode Mode. ("r" or "w")
+ * @return File handle, or NULL on error.
+ */
+FILE* gens_popenW(const wchar_t *cmd, const wchar_t *mode)
+{
+	FILE *fptr = NULL;
+	STARTUPINFOW siStartInfo;
+	int success, redirect;
+	
+	my_pipein[0]	= INVALID_HANDLE_VALUE;
+	my_pipein[1]	= INVALID_HANDLE_VALUE;
+	my_pipeout[0]	= INVALID_HANDLE_VALUE;
+	my_pipeout[1]	= INVALID_HANDLE_VALUE;
+	my_pipeerr[0]	= INVALID_HANDLE_VALUE;
+	my_pipeerr[1]	= INVALID_HANDLE_VALUE;
+	
+	if (!mode || !*mode)
+		goto finito;
+	
+	if (*mode == L'r')
+		my_popenmode = 'r';
+	else if (*mode == L'w')
+		my_popenmode = 'w';
+	else
+		goto finito;
+	
+	/* Should stderr be redirected to stdout? */
+	redirect = (wcsstr(cmd, L"2>&1") != 0);
+	
+	/* Create the pipes. */
+	if (my_pipe(my_pipein)  == -1 ||
+	    my_pipe(my_pipeout) == -1)
+		goto finito;
+	if (!redirect && my_pipe(my_pipeerr) == -1)
+		goto finito;
+	
+	/* Create the child process. */
+	memset(&siStartInfo, 0x00, sizeof(siStartInfo));
+	siStartInfo.cb		= sizeof(siStartInfo);
+	siStartInfo.hStdInput	= my_pipein[0];
+	siStartInfo.hStdOutput	= my_pipeout[1];
+	if (redirect)
+		siStartInfo.hStdError	= my_pipeout[1];
+	else
+		siStartInfo.hStdError	= my_pipeerr[1];
+	siStartInfo.dwFlags	= STARTF_USESTDHANDLES;
+	
+	/* Copy the command line before passing it to CreateProcess(). */
+	wchar_t *cmd_dup = _wcsdup(cmd);
+	
+	success = CreateProcessW(NULL,
+				cmd_dup,		// command line 
+				NULL,			// process security attributes 
+				NULL,			// primary thread security attributes 
+				TRUE,			// handles are inherited 
+				DETACHED_PROCESS,	// creation flags: no window
+				NULL,			// use parent's environment 
+				NULL,			// use parent's current directory 
+				&siStartInfo,		// STARTUPINFO pointer 
+				&piProcInfo);		// receives PROCESS_INFORMATION 
+	
+	/* Free the copied command line. */
+	free(cmd_dup);
+	
+	if (!success)
+		goto finito;
+	
+	/* These handles belong to the child process. */
+	CloseHandle(my_pipein[0]);  my_pipein[0]  = INVALID_HANDLE_VALUE;
+	CloseHandle(my_pipeout[1]); my_pipeout[1] = INVALID_HANDLE_VALUE;
+	CloseHandle(my_pipeerr[1]); my_pipeerr[1] = INVALID_HANDLE_VALUE;
+	
+	if (my_popenmode == 'r')
+		fptr = _wfdopen(_open_osfhandle((long)my_pipeout[0], _O_BINARY), L"r");
+	else
+		fptr = _wfdopen(_open_osfhandle((long)my_pipein[1], _O_BINARY), L"w");
 	
 finito:
 	if (!fptr)
