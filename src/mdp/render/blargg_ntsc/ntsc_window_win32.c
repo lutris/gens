@@ -284,6 +284,7 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
+				case IDCANCEL:
 				case IDCLOSE:
 					// Close.
 					ntsc_window_close();
