@@ -58,6 +58,7 @@ using std::stringstream;
 // libgsft includes.
 #include "libgsft/gsft_strdup.h"
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_szprintf.h"
 
 
 /**
@@ -100,11 +101,12 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 	}
 	
 	// Build the command line.
-	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" v \"" << filename << "\"";
+	char cmd_line[GENS_PATH_MAX*2 + 256];
+	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" v \"%s\"",
+		 Misc_Filenames.RAR_Binary, filename);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
+	FILE *pRAR = gens_popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -112,12 +114,12 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 	}
 	
 	// Read from the pipe.
-	char buf[1025];
+	char buf[4096+1];
 	size_t rv;
 	stringstream ss;
-	while ((rv = fread(buf, 1, 1024, pRAR)))
+	while ((rv = fread(buf, 1, sizeof(buf)-1, pRAR)))
 	{
-		buf[rv] = 0x00;
+		buf[sizeof(buf)-1] = 0x00;
 		ss << buf;
 	}
 	gens_pclose(pRAR);
@@ -261,16 +263,18 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 		return 0;
 	}
 	
-	// Build the command line.
-	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" p -ierr \"" << filename
-			<< "\" \"" << z_entry->filename << "\"";
-#ifndef GENS_OS_WIN32
-	ssCmd << " 2>/dev/null";
+	char cmd_line[GENS_PATH_MAX*3 + 256];
+	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" p -ierr  \"%s\" \"%s\"%s",
+		 Misc_Filenames.RAR_Binary, filename, z_entry->filename,
+#if !defined(GENS_OS_WIN32)
+		" 2>/dev/null"
+#else
+		""
 #endif
+		);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
+	FILE *pRAR = gens_popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -281,8 +285,8 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	// Read from the pipe.
 	size_t extracted_size = 0;
 	size_t rv;
-	unsigned char bufRAR[1024];
-	while ((rv = fread(bufRAR, 1, 1024, pRAR)))
+	unsigned char bufRAR[4096];
+	while ((rv = fread(bufRAR, 1, sizeof(bufRAR), pRAR)))
 	{
 		if (extracted_size + rv > size)
 			break;
