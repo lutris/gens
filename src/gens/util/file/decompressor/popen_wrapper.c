@@ -102,7 +102,7 @@ FILE* gens_popen(const char *cmd, const char *mode)
 				NULL,			// process security attributes 
 				NULL,			// primary thread security attributes 
 				TRUE,			// handles are inherited 
-				DETACHED_PROCESS,	// creation flags: Ohne Fenster (?)
+				DETACHED_PROCESS,	// creation flags: no window
 				NULL,			// use parent's environment 
 				NULL,			// use parent's current directory 
 				&siStartInfo,		// STARTUPINFO pointer 
