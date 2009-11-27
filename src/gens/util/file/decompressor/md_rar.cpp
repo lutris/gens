@@ -25,9 +25,6 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
-// popen wrapper
-#include "popen_wrapper.h"
-
 #ifdef _WIN32
 #include "libgsft/w32u/w32u_libc.h"
 #endif
@@ -110,7 +107,7 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 		 Misc_Filenames.RAR_Binary, filename);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(cmd_line, "r");
+	FILE *pRAR = popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -126,7 +123,7 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 		buf[sizeof(buf)-1] = 0x00;
 		ss << buf;
 	}
-	gens_pclose(pRAR);
+	pclose(pRAR);
 	
 	// Get the string and go through it to get the file listing.
 	string data = ss.str();
@@ -282,7 +279,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 		);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(cmd_line, "r");
+	FILE *pRAR = popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -301,7 +298,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 		memcpy(&((unsigned char*)buf)[extracted_size], &bufRAR, rv);
 		extracted_size += rv;
 	}
-	gens_pclose(pRAR);
+	pclose(pRAR);
 	
 	// Return the filesize.
 	return extracted_size;

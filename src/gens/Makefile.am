@@ -252,7 +252,6 @@ noinst_HEADERS = \
 		util/file/gsx_v6.h \
 		util/file/gsx_v7.h \
 		util/file/decompressor/decompressor.h \
-		util/file/decompressor/popen_wrapper.h \
 		util/file/decompressor/dummy.h \
 		util/file/decompressor/md_rar.hpp \
 		util/file/decompressor/md_rar_t.h \
