@@ -23,11 +23,7 @@
 #include "mdp_host_gens_win32.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u.h"
 
 // g_main_win32.hpp has winVersion, which has the OS version.
 #include "emulator/g_main_win32.hpp"
@@ -60,22 +56,22 @@ void mdp_host_win32_check_icon(void *window)
 	// - Window Icon (Small, App Provided) (XP only)
 	
 	// Class Icon. (Big)
-	icon = (HICON)GetClassLong(hWnd, GCL_HICON);
+	icon = (HICON)pGetClassLongU(hWnd, GCL_HICON);
 	if (icon)
 		return;
 	
 	// Class Icon. (Small)
-	icon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
+	icon = (HICON)pGetClassLongU(hWnd, GCL_HICONSM);
 	if (icon)
 		return;
 	
 	// Window Icon. (Big)
-	icon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
+	icon = (HICON)pSendMessageU(hWnd, WM_GETICON, ICON_BIG, 0);
 	if (icon)
 		return;
 	
 	// Window Icon. (Small)
-	icon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
+	icon = (HICON)pSendMessageU(hWnd, WM_GETICON, ICON_SMALL, 0);
 	if (icon)
 		return;
 	
@@ -84,12 +80,12 @@ void mdp_host_win32_check_icon(void *window)
 	    (winVersion.dwMajorVersion == 5 && winVersion.dwMinorVersion >= 1))
 	{
 		// Windows XP. Check for this icon.
-		icon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
+		icon = (HICON)pSendMessageU(hWnd, WM_GETICON, ICON_SMALL2, 0);
 		if (icon)
 			return;
 	}
 	
 	// Window has no icon. Set it to the Gens/GS icon.
 	// TODO: Use an icon that indicates it's from a plugin instead of using IDI_GENS_APP.
-	SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP)));
+	pSendMessageU(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP)));
 }
