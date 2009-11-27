@@ -257,7 +257,7 @@ static void about_window_create_child_windows(HWND hWnd)
 	SetWindowFont(grpTabContents, fntMain, true);
 	
 	// Subclass the tab box.
-	grpTabContents_old_wndproc = (WNDPROC)SetWindowLongPtr(grpTabContents, GWL_WNDPROC,
+	grpTabContents_old_wndproc = (WNDPROC)pSetWindowLongPtrU(grpTabContents, GWL_WNDPROC,
 						(LONG_PTR)about_window_grpTabContents_wndproc);
 	
 	// Tab contents.
