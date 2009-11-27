@@ -139,6 +139,21 @@ MAKE_EXTFUNCPTR(SetWindowLongA);
 #define pSetWindowLongPtrU pSetWindowLongA
 #endif
 
+/** WARNING: GCL_MENUNAME requires manual conversion! **/
+#ifdef _WIN64
+MAKE_EXTFUNCPTR(GetClassLongPtrA);
+#define pGetClassLongPtrU pGetClassLongPtrA
+MAKE_EXTFUNCPTR(SetClassLongPtrA);
+#define pSetClassLongPtrU pSetClassLongPtrA
+#else
+MAKE_EXTFUNCPTR(GetClassLongA);
+#define pGetClassLongU pGetClassLongA
+#define pGetClassLongPtrU pGetClassLongA
+MAKE_EXTFUNCPTR(SetClassLongA);
+#define pSetClassLongU pSetClassLongA
+#define pSetClassLongPtrU pSetClassLongA
+#endif
+
 int WINAPI w32u_init(void);
 int WINAPI w32u_end(void);
 

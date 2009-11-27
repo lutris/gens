@@ -429,6 +429,14 @@ MAKE_FUNCPTR(GetWindowLongA);
 MAKE_FUNCPTR(SetWindowLongA);
 #endif
 
+#ifdef _WIN64
+MAKE_FUNCPTR(GetClassLongPtrA);
+MAKE_FUNCPTR(SetClassLongPtrA);
+#else
+MAKE_FUNCPTR(GetClassLongA);
+MAKE_FUNCPTR(SetClassLongA);
+#endif
+
 MAKE_FUNCPTR(CreateAcceleratorTableA);
 MAKE_FUNCPTR(TranslateAcceleratorA);
 
@@ -525,6 +533,14 @@ int WINAPI w32u_init(void)
 #else
 	InitFuncPtrs(hUser32, "GetWindowLong", pGetWindowLongA);
 	InitFuncPtrs(hUser32, "SetWindowLong", pSetWindowLongA);
+#endif
+	
+#ifdef _WIN64
+	InitFuncPtrs(hUser32, "GetClassLongPtr", pGetClassLongPtrA);
+	InitFuncPtrs(hUser32, "SetClassLongPtr", pSetClassLongPtrA);
+#else
+	InitFuncPtrs(hUser32, "GetClassLong", pGetClassLongA);
+	InitFuncPtrs(hUser32, "SetClassLong", pSetClassLongA);
 #endif
 	
 	// Check if SendMessage is Unicode.
