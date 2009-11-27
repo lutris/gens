@@ -1,4 +1,4 @@
-/*
+/**
  * popen_wrapper.c: Provides a popen()-like function for Win32.
  * Adapted from http://lists.trolltech.com/qt-interest/1999-09/thread00282-0.html
  */
@@ -6,7 +6,7 @@
 #include "popen_wrapper.h"
 
 /*------------------------------------------------------------------------------
-  Globals fuer die Routinen pt_popen() / pt_pclose()
+  Globals for the routines gens_popen() / gens_pclose()
 ------------------------------------------------------------------------------*/
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX
@@ -16,18 +16,19 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 
 
-HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
-char   my_popenmode = ' ';
-PROCESS_INFORMATION piProcInfo;
+static HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
+static char   my_popenmode = ' ';
+static PROCESS_INFORMATION piProcInfo;
 
 static int my_pipe(HANDLE *readwrite)
 {
 	SECURITY_ATTRIBUTES sa;
 	
-	sa.nLength = sizeof(sa);          /* Laenge in Byte */
-	sa.bInheritHandle = 1;            /* Descriptoren sollen vererbbar sein */
+	sa.nLength = sizeof(sa);          /* Length in bytes. */
+	sa.bInheritHandle = 1;            /* Descriptors to be inherited. */
 	sa.lpSecurityDescriptor = NULL;
 	
 	if (!CreatePipe(&readwrite[0], &readwrite[1], &sa, 1 << 13))
@@ -40,16 +41,18 @@ static int my_pipe(HANDLE *readwrite)
 }
 
 
-/*------------------------------------------------------------------------------
-  Ersatz fuer die Routine 'popen()' unter WIN32.
-  ACHTUNG: Wenn 'cmd' den String '2>&1' enthaelt, wird der Standarderror File-
-  Handle auf den Standardoutputfilehandle umgebogen.
-------------------------------------------------------------------------------*/
+/**
+ * gens_popen(): Replacement for popen() on Win32.
+ * @ If "2>&1" is found in cmd, stderr is redirected to stdout.
+ * @param cmd Command line.
+ * @param mode Mode. ("r" or "w")
+ * @return File handle, or NULL on error.
+ */
 FILE* gens_popen(const char *cmd, const char *mode)
 {
 	FILE *fptr = NULL;
 	STARTUPINFO siStartInfo;
-	int success, umlenkung;
+	int success, redirect;
 
 	my_pipein[0]	= INVALID_HANDLE_VALUE;
 	my_pipein[1]	= INVALID_HANDLE_VALUE;
@@ -65,42 +68,42 @@ FILE* gens_popen(const char *cmd, const char *mode)
 	if (my_popenmode != 'r' && my_popenmode != 'w')
 		goto finito;
 	
-	/* Soll der stderr auf stdin umgelenkt werden ? */
-	umlenkung = (strstr((char*)cmd, "2>&1") != 0);
+	/* Should stderr be redirected to stdout? */
+	redirect = (strstr(cmd, "2>&1") != 0);
 	
-	/* Erzeuge die Pipes... */
+	/* Create the pipes. */
 	if (my_pipe(my_pipein)  == -1 ||
-		   my_pipe(my_pipeout) == -1)
+	    my_pipe(my_pipeout) == -1)
 		goto finito;
-	if (!umlenkung && my_pipe(my_pipeerr) == -1)
+	if (!redirect && my_pipe(my_pipeerr) == -1)
 		goto finito;
 	
-	/* Erzeuge jetzt den Sohnprozess */
-	ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
-	siStartInfo.cb           = sizeof(STARTUPINFO);
-	siStartInfo.hStdInput    = my_pipein[0];
-	siStartInfo.hStdOutput   = my_pipeout[1];
-	if (umlenkung)
-		siStartInfo.hStdError  = my_pipeout[1];
+	/* Create the child process. */
+	memset(&siStartInfo, 0x00, sizeof(STARTUPINFO));
+	siStartInfo.cb		= sizeof(STARTUPINFO);
+	siStartInfo.hStdInput	= my_pipein[0];
+	siStartInfo.hStdOutput	= my_pipeout[1];
+	if (redirect)
+		siStartInfo.hStdError	= my_pipeout[1];
 	else
-		siStartInfo.hStdError  = my_pipeerr[1];
-	siStartInfo.dwFlags    = STARTF_USESTDHANDLES;
+		siStartInfo.hStdError	= my_pipeerr[1];
+	siStartInfo.dwFlags	= STARTF_USESTDHANDLES;
 	
 	success = CreateProcess(NULL,
-				(LPTSTR)cmd,       // command line 
-				NULL,              // process security attributes 
-				NULL,              // primary thread security attributes 
-				TRUE,              // handles are inherited 
-				DETACHED_PROCESS,  // creation flags: Ohne Fenster (?)
-				NULL,              // use parent's environment 
-				NULL,              // use parent's current directory 
-				&siStartInfo,      // STARTUPINFO pointer 
-				&piProcInfo);      // receives PROCESS_INFORMATION 
+				(LPSTR)cmd,		// command line 
+				NULL,			// process security attributes 
+				NULL,			// primary thread security attributes 
+				TRUE,			// handles are inherited 
+				DETACHED_PROCESS,	// creation flags: Ohne Fenster (?)
+				NULL,			// use parent's environment 
+				NULL,			// use parent's current directory 
+				&siStartInfo,		// STARTUPINFO pointer 
+				&piProcInfo);		// receives PROCESS_INFORMATION 
 	
 	if (!success)
 		goto finito;
 	
-	/* Diese Handles gehoeren dem Sohnprozess */
+	/* These handles belong to the child process. */
 	CloseHandle(my_pipein[0]);  my_pipein[0]  = INVALID_HANDLE_VALUE;
 	CloseHandle(my_pipeout[1]); my_pipeout[1] = INVALID_HANDLE_VALUE;
 	CloseHandle(my_pipeerr[1]); my_pipeerr[1] = INVALID_HANDLE_VALUE;
@@ -129,31 +132,35 @@ finito:
 	return fptr;
 }
 
-/*------------------------------------------------------------------------------
-  Ersatz fuer die Routine 'pclose()' unter WIN32
-------------------------------------------------------------------------------*/
+
+/**
+ * gens_popen(): Replacement for pclose() on Win32.
+ * @param fle File handle for the pipe.
+ * @return 0 on success; non-zero on error.
+ */
 int gens_pclose(FILE *fle)
 {
-	if (fle)
+	if (!fle)
 	{
-		(void)fclose(fle);
-		
-		CloseHandle(my_pipeerr[0]);
-		if (my_popenmode == 'r')
-			CloseHandle(my_pipein[1]);
-		else
-			CloseHandle(my_pipeout[0]);
-		
-		// Terminate the child process.
-		if (piProcInfo.hProcess)
-		{
-			TerminateProcess(piProcInfo.hProcess, 0);
-			piProcInfo.hProcess = NULL;
-		}
-		
-		return 0;
+		// Pipe isn't open.
+		return -1;
 	}
 	
-	// Pipe isn't open.
-	return -1;
+	// Close the pipe.
+	fclose(fle);
+	
+	CloseHandle(my_pipeerr[0]);
+	if (my_popenmode == 'r')
+		CloseHandle(my_pipein[1]);
+	else
+		CloseHandle(my_pipeout[0]);
+	
+	// Terminate the child process.
+	if (piProcInfo.hProcess)
+	{
+		TerminateProcess(piProcInfo.hProcess, 0);
+		piProcInfo.hProcess = NULL;
+	}
+	
+	return 0;
 }
