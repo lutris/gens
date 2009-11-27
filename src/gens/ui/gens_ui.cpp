@@ -66,6 +66,17 @@ void GensUI::setWindowTitle_Idle(void)
 
 
 /**
+ * isGraphChar(): Determine if a character is a graphical character.
+ * @param chr Character.
+ * @return True if the character is graphical; false if it's a space.
+ */
+static inline bool isGraphChar(char chr)
+{
+	return (isgraph(chr) || (chr & 0x80));
+}
+
+
+/**
  * setWindowTitle_Game(): Set the window title to the system name, followed by the game name.
  * @param systemName System name.
  * @param gameName Game name.
@@ -76,29 +87,46 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 {
 	stringstream ss;
 	string condGameName;
-	char curChar = 0x00;
+	bool lastCharIsGraph = false;
 	
 	// Condense the game name by removing excess spaces.
 	for (unsigned int cpos = 0; cpos < gameName.length(); cpos++)
 	{
-		if (!isgraph(curChar) && isspace(gameName.at(cpos)))
+		char chr = gameName.at(cpos);
+		
+		if (!lastCharIsGraph && !isGraphChar(chr))
+		{
+			// This is a space character, and the previous
+			// character was not a space character.
 			continue;
-		curChar = gameName.at(cpos);
-		ss << curChar;
+		}
+		
+		// This is not a space character.
+		ss << chr;
+		lastCharIsGraph = isGraphChar(chr);
 	}
 	
 	// Trim any excess spaces.
 	condGameName = ss.str();
 	
-	if (condGameName.length() > 0 &&
-	    isspace(condGameName.at(condGameName.length() - 1)))
+	// Trim trailing spaces.
+	int len = condGameName.length();
+	if (len > 0)
 	{
-		condGameName = condGameName.substr(0, condGameName.length() - 1);
+		if (!isGraphChar(condGameName.at(len - 1)))
+		{
+			condGameName = condGameName.substr(0, len - 1);
+		}
 	}
 	
-	if (condGameName.length() > 0 && isspace(condGameName.at(0)))
+	// Trim leading spaces.
+	len = condGameName.length();
+	if (len > 0)
 	{
-		condGameName = condGameName.substr(1, condGameName.length() - 1);
+		if (!isGraphChar(condGameName.at(0)))
+		{
+			condGameName = condGameName.substr(1, len - 1);
+		}
 	}
 	
 	// Check if the condensed game name is empty.
