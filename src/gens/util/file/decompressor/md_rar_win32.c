@@ -25,9 +25,11 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
+// Win32 includes.
 #include "libgsft/w32u/w32u.h"
 #include "libgsft/w32u/w32u_libc.h"
 #include "libgsft/w32u/w32u_priv.h"
+#include <winnls.h>
 
 // C includes.
 #include <unistd.h>
@@ -164,132 +166,70 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
-	return -1;
-#if 0
-	GSFT_UNUSED_PARAMETER(zF);
-	
-	if (!z_entry_out)
-		return -MDP_ERR_INVALID_PARAMETERS;
-	
-	// Check that the RAR executable is available.
-#if !defined(_WIN32)
-	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
-#else
-	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
-#endif
-	{
-		// Cannot run the RAR executable.
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
-	}
-	
-	// Build the command line.
-	char cmd_line[GENS_PATH_MAX*2 + 256];
-	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" v \"%s\"",
-		 Misc_Filenames.RAR_Binary, filename);
+	HANDLE hRAR;
+	wchar_t *filenameW = NULL;
+	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
 	
 	// Open the RAR file.
-	FILE *pRAR = popen(cmd_line, "r");
-	if (!pRAR)
+	struct RAROpenArchiveDataEx rar_open;
+	rar_open.OpenMode = RAR_OM_LIST;
+	rar_open.CmtBuf = NULL;
+	rar_open.CmtBufSize = 0;
+	
+	if (doUnicode)
 	{
-		// Error opening `rar`.
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
+		// Unicode mode.
+		filenameW = w32u_mbstowcs(filename);
+		rar_open.ArcName = NULL;
+		rar_open.ArcNameW = filenameW;
+	}
+	else
+	{
+		// ANSI mode.
+		// TODO: Make a copy of filename, since rar_open.ArcName isn't const.
+		rar_open.ArcName = filename;
+		rar_open.ArcNameW = NULL;
 	}
 	
-	// Read from the pipe.
-	char buf[4096+1];
-	size_t rv;
-	stringstream ss;
-	while ((rv = fread(buf, 1, sizeof(buf)-1, pRAR)))
+	hRAR = pRAROpenArchiveEx(&rar_open);
+	if (!hRAR)
 	{
-		buf[sizeof(buf)-1] = 0x00;
-		ss << buf;
-	}
-	pclose(pRAR);
-	
-	// Get the string and go through it to get the file listing.
-	string data = ss.str();
-	ss.clear();
-	
-	// Find the "---", which indicates the start of the file listing.
-	unsigned int listStart = data.find("---");
-	if (listStart == string::npos)
-	{
-		// Not found. Either there are no files, or the archive is broken.
-		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
-	}
-	
-	// Find the newline after the list start.
-	unsigned int listStartLF = data.find(RAR_NEWLINE, listStart);
-	if (listStart == string::npos)
-	{
-		// Not found. Either there are no files, or the archive is broken.
-		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
+		// Error opening the RAR file.
+		free(filenameW);
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
 	// File list pointers.
 	mdp_z_entry_t *z_entry_head = NULL;
 	mdp_z_entry_t *z_entry_end = NULL;
 	
-	// Parse all lines until we hit another "---" (or EOF).
-	unsigned int curStartPos = listStartLF + RAR_NEWLINE_LENGTH;
-	unsigned int curEndPos;
-	string curLine;
-	bool endOfRAR = false;
-	
-	// Temporary data.
-	string tmp_filename;
-	size_t tmp_filesize;
-	
-	while (!endOfRAR)
+	// Process the archive.
+	struct RARHeaderDataEx rar_header;
+	char utf8_buf[1024*4];
+	int ret = 0;
+	while ((ret = pRARReadHeaderEx(hRAR, &rar_header)) == 0)
 	{
-		curEndPos = data.find(RAR_NEWLINE, curStartPos);
-		if (curEndPos == string::npos)
-		{
-			// End of file listing.
-			break;
-		}
-		
-		// Get the current line.
-		curLine = data.substr(curStartPos, curEndPos - curStartPos);
-		
-		// First line in a RAR file listing is the filename. (starting at the second character)
-		if (curLine.length() < 2)
-		{
-			break;
-		}
-		if (curLine.at(0) == '-')
-		{
-			// End of file listing.
-			break;
-		}
-		tmp_filename = curLine.substr(1);
-		
-		// Get the second line, which contains the filesize and filetype.
-		curStartPos = curEndPos + RAR_NEWLINE_LENGTH;
-		curEndPos = data.find(RAR_NEWLINE, curStartPos);
-		if (curEndPos == string::npos)
-		{
-			// End of file listing.
-			break;
-		}
-		
-		// Get the current line.
-		curLine = data.substr(curStartPos, curEndPos - curStartPos);
-		
-		// Check if this is a normal file.
-		if (curLine.length() < 62)
-			break;
-		
-		// Normal file.
-		tmp_filesize = atoi(curLine.substr(12, 10).c_str());
-		
-		// Allocate memory for the next file list element.
-		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
+		// Allocate memory for the file.
+		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(*z_entry_cur));
 		
 		// Store the ROM file information.
-		z_entry_cur->filename = strdup(tmp_filename.c_str());
-		z_entry_cur->filesize = tmp_filesize;
+		// TODO: What do we do if rar_header.UnpSizeHigh is set (indicating >4 GB)?
+		z_entry_cur->filesize = rar_header.UnpSize;
 		z_entry_cur->next = NULL;
+		
+		// Check which filename should be used.
+		if (doUnicode)
+		{
+			// Use the Unicode filename. (rar_header.FileNameW)
+			pWideCharToMultiByte(CP_UTF8, 0, rar_header.FileNameW, -1,
+						utf8_buf, sizeof(utf8_buf), NULL, NULL);
+			z_entry_cur->filename = strdup(utf8_buf);
+		}
+		else
+		{
+			// Use the ANSI filename. (rar_header.FileName)
+			z_entry_cur->filename = strdup(rar_header.FileName);
+		}
 		
 		if (!z_entry_head)
 		{
@@ -304,18 +244,21 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 			z_entry_end = z_entry_cur;
 		}
 		
-		// Go to the next file in the listing.
-		curStartPos = curEndPos + RAR_NEWLINE_LENGTH;
+		// Go to the next file.
+		if (pRARProcessFile(hRAR, RAR_SKIP, NULL, NULL) != 0)
+			break;
 	}
 	
-	// If there are no files in the archive, return an error.
-	if (!z_entry_head)
-		return -MDP_ERR_Z_NO_FILES_IN_ARCHIVE;
+	// Close the RAR file.
+	pRARCloseArchive(hRAR);
+	free(filenameW);
+	
+	// Shut down UnRAR.dll.
+	unrar_dll_end();
 	
 	// Return the list of files.
 	*z_entry_out = z_entry_head;
 	return MDP_ERR_OK;
-#endif
 }
 
 
