@@ -260,34 +260,17 @@ void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 	
 	// TODO: Move character set conversion to a different module.
 	// If overseas is false (Japan), convert from Shift-JIS to UTF-8, if necessary.
+#if defined(HAVE_ICONV) || defined(_WIN32)
 	if (!overseas)
 	{
-#if defined(HAVE_ICONV)
-		// Attempt to convert the ROM name.
-		string romNameJP = gens_iconv(ROM_Filename, sizeof(ROM_Filename), "SHIFT-JIS", "");
+		string romNameJP = SJIStoUTF8(ROM_Filename, sizeof(ROM_Filename));
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.
 			strlcpy(ROM_Filename, romNameJP.c_str(), sizeof(ROM_Filename));
 		}
-#elif defined(_WIN32)
-		if (pMultiByteToWideChar && pWideCharToMultiByte)
-		{
-			// Unicode system.
-			// Convert Shift-JIS to UTF-16, then UTF-16 to UTF-8.
-			wchar_t wbuf[48];
-			int ret;
-			
-			ret = MultiByteToWideChar(932, MB_PRECOMPOSED, ROM_Filename, 48,
-						  wbuf, (sizeof(wbuf)/sizeof(wchar_t)));
-			if (ret > 0)
-			{
-				WideCharToMultiByte(CP_UTF8, 0, wbuf, 48, ROM_Filename, sizeof(ROM_Filename), NULL, NULL);
-				ROM_Filename[sizeof(ROM_Filename)-1] = 0x00;
-			}
-		}
-#endif
 	}
+#endif
 }
 
 // Temporary C wrapper functions.
@@ -1103,42 +1086,65 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 		}
 	}
 	
+#if defined(HAVE_ICONV) || defined(_WIN32)
+	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
+	if (romNameToUse == rom->ROM_Name_JP)
+		return SJIStoUTF8(romNameToUse, sizeof(rom->ROM_Name_JP));
+#endif
+	
 	// Convert the ROM name to a null-terminated string.
 	char RomName[49];
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
-	
-	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
-	if (romNameToUse == rom->ROM_Name_JP)
-	{
-#ifdef HAVE_ICONV
-		// Attempt to convert the ROM name.
-		string romNameJP = gens_iconv(RomName, sizeof(RomName), "SHIFT-JIS", "");
-		if (!romNameJP.empty())
-		{
-			// The ROM name was converted successfully.
-			return romNameJP;
-		}
-#elif defined(_WIN32)
-		if (pMultiByteToWideChar && pWideCharToMultiByte)
-		{
-			// Unicode system.
-			// Convert Shift-JIS to UTF-16, then UTF-16 to UTF-8.
-			wchar_t wbuf[48];
-			char utf8_buf[48*4];
-			int ret;
-			
-			ret = pMultiByteToWideChar(932, MB_PRECOMPOSED, RomName, sizeof(RomName),
-						   wbuf, (sizeof(wbuf)/sizeof(wchar_t)));
-			if (ret > 0)
-			{
-				pWideCharToMultiByte(CP_UTF8, 0, wbuf, 48, utf8_buf, sizeof(utf8_buf), NULL, NULL);
-				utf8_buf[sizeof(utf8_buf)-1] = 0x00;
-				return string(utf8_buf);
-			}
-		}
-#endif
-	}
-	
 	return string(RomName);
 }
+
+
+#if defined(HAVE_ICONV) || defined(_WIN32)
+/**
+ * SJIStoUTF8(): Convert a Shift-JIS string to UTF-8.
+ * @param sjis Shift-JIS string.
+ * @param len Shift-JIS string length.
+ * @return UTF-8 string.
+ */
+string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
+{
+#if defined(HAVE_ICONV)
+	// libiconv-based Shift-JIS to UTF-8 conversion code.
+	return gens_iconv(sjis, len, "SHIFT-JIS", "");
+#elif defined(_WIN32)
+	// Win32-based Shift-JIS to UTF-8 conversion code.
+	if (!pMultiByteToWideChar || !pWideCharToMultiByte)
+		return string(sjis);
+	
+	// Convert Shift-JIS to UTF-16.
+	int wcs_len = pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, NULL, 0);
+	if (wcs_len <= 0)
+		return string(sjis);
+	
+	wchar_t *wcs = (wchar_t*)malloc(wcs_len * sizeof(wchar_t));
+	pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, wcs, wcs_len);
+	
+	// Convert UTF-16 to UTF-8.
+	int mbs_len = pWideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, NULL, 0, NULL, NULL);
+	if (mbs_len <= 0)
+	{
+		free(wcs);
+		return string(sjis);
+	}
+	
+	char *mbs = (char*)malloc(mbs_len * sizeof(char) + 1);
+	pWideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, mbs, mbs_len, NULL, NULL);
+	mbs[mbs_len * sizeof(char)] = 0x00;
+	
+	string s_utf8 = string(mbs);
+	
+	// Free the buffers.
+	free(wcs);
+	free(mbs);
+	
+	// Return the string.
+	return s_utf8;
+#endif
+}
+#endif
