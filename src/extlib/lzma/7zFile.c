@@ -23,6 +23,19 @@
 
 #define kChunkSizeMax (1 << 22)
 
+/** Unicode functions for Gens/GS. **/
+
+#include <winnls.h>
+#include <wchar.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
+static HMODULE hKernel32 = NULL;
+MAKE_STFUNCPTR(CreateFileW);
+MAKE_STFUNCPTR(MultiByteToWideChar);
+static BOOL isUnicodeChecked = FALSE;
+
 #endif
 
 void File_Construct(CSzFile *p)
@@ -36,17 +49,57 @@ void File_Construct(CSzFile *p)
 
 static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 {
-  #ifdef USE_WINDOWS_FILE
-  p->handle = CreateFileA(name,
-      writeMode ? GENERIC_WRITE : GENERIC_READ,
-      FILE_SHARE_READ, NULL,
-      writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
-      FILE_ATTRIBUTE_NORMAL, NULL);
-  return (p->handle != INVALID_HANDLE_VALUE) ? 0 : GetLastError();
-  #else
-  p->file = fopen(name, writeMode ? "wb+" : "rb");
-  return (p->file != 0) ? 0 : errno;
-  #endif
+#ifdef USE_WINDOWS_FILE
+	// Check for Unicode.
+	if (!isUnicodeChecked)
+	{
+		hKernel32 = LoadLibrary("kernel32.dll");
+		if (hKernel32)
+		{
+			pCreateFileW = (typeof(pCreateFileW))
+					GetProcAddress(hKernel32, "CreateFileW");
+			pMultiByteToWideChar = (typeof(pMultiByteToWideChar))
+					GetProcAddress(hKernel32, "MultiByteToWideChar");
+		}
+		isUnicodeChecked = TRUE;
+	}
+	
+	if (pCreateFileW)
+	{
+		// Unicode found.
+		
+		// Convert the name from UTF-8 to UTF-16.
+		wchar_t *wname = NULL;
+		int name_len = pMultiByteToWideChar(CP_UTF8, 0, name, -1, NULL, 0);
+		if (name_len > 0)
+		{
+			wname = (wchar_t*)malloc(name_len * sizeof(wchar_t));
+			pMultiByteToWideChar(CP_UTF8, 0, name, -1, wname, name_len);
+		}
+		
+		p->handle = pCreateFileW(wname,
+				writeMode ? GENERIC_WRITE : GENERIC_READ,
+				FILE_SHARE_READ, NULL,
+				writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL, NULL);
+		
+		free(wname);
+	}
+	else
+	{
+		// Unicode not found.
+		p->handle = CreateFileA(name,
+				writeMode ? GENERIC_WRITE : GENERIC_READ,
+				FILE_SHARE_READ, NULL,
+				writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL, NULL);
+	}
+	
+	return (p->handle != INVALID_HANDLE_VALUE) ? 0 : GetLastError();
+#else
+	p->file = fopen(name, writeMode ? "wb+" : "rb");
+	return (p->file != 0) ? 0 : errno;
+#endif
 }
 
 WRes InFile_Open(CSzFile *p, const char *name) { return File_Open(p, name, 0); }
