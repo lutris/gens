@@ -35,6 +35,7 @@ static HMODULE hKernel32 = NULL;
 MAKE_STFUNCPTR(CreateFileW);
 MAKE_STFUNCPTR(MultiByteToWideChar);
 static BOOL isUnicodeChecked = FALSE;
+static BOOL isUnicodeAvailable = FALSE;
 
 #endif
 
@@ -60,13 +61,24 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 					GetProcAddress(hKernel32, "CreateFileW");
 			pMultiByteToWideChar = (typeof(pMultiByteToWideChar))
 					GetProcAddress(hKernel32, "MultiByteToWideChar");
+			
+			isUnicodeAvailable = (pCreateFileW && pMultiByteToWideChar);
+			if (!isUnicodeAvailable)
+			{
+				// Unicode is not enabled.
+				// Unload kernel32.dll and NULL out the pointers.
+				FreeLibrary(hKernel32);
+				hKernel32 = NULL;
+				pCreateFileW = NULL;
+				pMultiByteToWideChar = NULL;
+			}
 		}
 		isUnicodeChecked = TRUE;
 	}
 	
-	if (pCreateFileW)
+	if (isUnicodeAvailable)
 	{
-		// Unicode found.
+		// Unicode is available.
 		
 		// Convert the name from UTF-8 to UTF-16.
 		wchar_t *wname = NULL;
@@ -87,7 +99,7 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 	}
 	else
 	{
-		// Unicode not found.
+		// Unicode is not available. Use ANSI.
 		p->handle = CreateFileA(name,
 				writeMode ? GENERIC_WRITE : GENERIC_READ,
 				FILE_SHARE_READ, NULL,
