@@ -108,11 +108,11 @@ static const char UI_Win32_FileFilter_CDImage[] =
 	"All Files\0*.*\0\0";
 
 static const char UI_Win32_FileFilter_ConfigFile[] =
-	"Gens Config Files\0*.cfg\0\0"
+	"Gens Config Files\0*.cfg\0"
 	"All Files\0*.*\0\0";
 
 static const char UI_Win32_FileFilter_GYMFile[] =
-	"GYM Files\0*.gym\0\0"
+	"GYM Files\0*.gym\0"
 	"All Files\0*.*\0\0";
 
 static string UI_Win32_OpenFile_int(const string& title,
