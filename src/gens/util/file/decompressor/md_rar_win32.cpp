@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "md_rar_win32.hpp"
+#include "unrar_dll.hpp"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
@@ -52,92 +53,6 @@ typedef struct _RarState_t
 	size_t	pos;	// Current position.
 } RarState_t;
 
-// UnRAR.dll
-#include "unrar.h"
-static void *hUnrarDll = NULL;
-static int unrar_refcnt = 0;
-MAKE_STFUNCPTR(RAROpenArchiveEx);
-MAKE_STFUNCPTR(RARCloseArchive);
-MAKE_STFUNCPTR(RARReadHeaderEx);
-MAKE_STFUNCPTR(RARProcessFile);
-MAKE_STFUNCPTR(RARSetCallback);
-MAKE_STFUNCPTR(RARGetDllVersion);
-
-#define InitFuncPtr_unrar(hDll, fn) p##fn = (typeof(p##fn))mdp_dlsym((hDll), #fn)
-
-static int unrar_dll_init(void);
-static int unrar_dll_end(void);
-
-/**
- * unrar_dll_init(): Initialize UnRAR.dll.
- * @return 0 on success; non-zero on error.
- */
-static int unrar_dll_init(void)
-{
-	if (unrar_refcnt++ != 0)
-		return 0;
-	
-	// Load the DLL.
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-	hUnrarDll = mdp_dlopen(Misc_Filenames.RAR_Binary);
-	if (!hUnrarDll)
-	{
-		// DLL could not be loaded.
-		// TODO: Come up with a new MDP error code for "DLL not found."
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
-	}
-	
-	// Load the function pointers.
-	InitFuncPtr_unrar(hUnrarDll, RAROpenArchiveEx);
-	InitFuncPtr_unrar(hUnrarDll, RARCloseArchive);
-	InitFuncPtr_unrar(hUnrarDll, RARReadHeaderEx);
-	InitFuncPtr_unrar(hUnrarDll, RARProcessFile);
-	InitFuncPtr_unrar(hUnrarDll, RARSetCallback);
-	InitFuncPtr_unrar(hUnrarDll, RARGetDllVersion);
-	
-	// Check if any of the function pointers are NULL.
-	if (!pRAROpenArchiveEx || !pRARCloseArchive ||
-	    !pRARReadHeaderEx  || !pRARProcessFile ||
-	    !pRARSetCallback   || !pRARGetDllVersion)
-	{
-		// NULL pointers found. That's bad.
-		// TODO: Come up with a new MDP error code for "Incorrect DLL."
-		unrar_dll_end();
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
-	}
-	
-	// UnRAR.dll loaded successfully.
-	return 0;
-}
-
-/**
- * unrar_dll_end(): Shut down UnRAR.dll.
- * @return 0 on success; non-zero on error.
- */
-static int unrar_dll_end(void)
-{
-	if (unrar_refcnt <= 0)
-		return 0;
-	
-	unrar_refcnt--;
-	if (unrar_refcnt != 0)
-		return 0;
-	
-	// Unload the DLL.
-	mdp_dlclose(hUnrarDll);
-	hUnrarDll = NULL;
-	
-	// Clear the function pointers.
-	pRAROpenArchiveEx	= NULL;
-	pRARCloseArchive	= NULL;
-	pRARReadHeaderEx	= NULL;
-	pRARProcessFile		= NULL;
-	pRARSetCallback		= NULL;
-	pRARGetDllVersion	= NULL;
-	
-	return 0;
-}
-
 
 /**
  * decompressor_rar_win32_detect_format(): Detect if this file can be handled by this decompressor.
@@ -167,11 +82,12 @@ int decompressor_rar_win32_detect_format(FILE *zF)
 int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
 	// Initialize UnRAR.dll.
-	int ret = unrar_dll_init();
-	if (ret != 0)
+	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
+	if (!dll.isLoaded())
 	{
 		// Error initializing UnRAR.dll.
-		return ret;
+		// TODO: Determine if it was a missing DLL or a missing symbol.
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	HANDLE hRar;
@@ -200,7 +116,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		rar_open.ArcNameW = NULL;
 	}
 	
-	hRar = pRAROpenArchiveEx(&rar_open);
+	hRar = dll.pRAROpenArchiveEx(&rar_open);
 	if (!hRar)
 	{
 		// Error opening the RAR file.
@@ -215,7 +131,8 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	// Process the archive.
 	struct RARHeaderDataEx rar_header;
 	char utf8_buf[1024*4];
-	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
+	int ret;
+	while ((ret = dll.pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
 		// Allocate memory for the file.
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(*z_entry_cur));
@@ -253,17 +170,14 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		}
 		
 		// Go to the next file.
-		if (pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
+		if (dll.pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
 			break;
 	}
 	
 	// Close the RAR file.
-	pRARCloseArchive(hRar);
+	dll.pRARCloseArchive(hRar);
 	free(filenameA);
 	free(filenameW);
-	
-	// Shut down UnRAR.dll.
-	unrar_dll_end();
 	
 	// Return the list of files.
 	*z_entry_out = z_entry_head;
@@ -330,11 +244,12 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
-	int ret = unrar_dll_init();
-	if (ret != 0)
+	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
+	if (!dll.isLoaded())
 	{
 		// Error initializing UnRAR.dll.
-		return ret;
+		// TODO: Determine if it was a missing DLL or a missing symbol.
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	HANDLE hRar;
@@ -363,7 +278,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 		rar_open.ArcNameW = NULL;
 	}
 	
-	hRar = pRAROpenArchiveEx(&rar_open);
+	hRar = dll.pRAROpenArchiveEx(&rar_open);
 	if (!hRar)
 	{
 		// Error opening the RAR file.
@@ -379,8 +294,8 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	// Search for the file.
 	struct RARHeaderDataEx rar_header;
 	size_t success = 0;	// 0 == not successful; positive == size read
-	int cmp;
-	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
+	int ret, cmp;
+	while ((ret = dll.pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
 		if (doUnicode)
 		{
@@ -396,7 +311,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 		if (cmp != 0)
 		{
 			// Not a match. Skip the file.
-			if (pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
+			if (dll.pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
 				break;
 			continue;
 		}
@@ -410,14 +325,14 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 		rar_state.pos = 0;
 		
 		// Set up the RAR callback.
-		pRARSetCallback(hRar, &decompressor_rar_win32_callback, (LPARAM)&rar_state);
+		dll.pRARSetCallback(hRar, &decompressor_rar_win32_callback, (LPARAM)&rar_state);
 		
 		// Process the file.
 		// Possible errors:
 		// - 0: Success.
 		// - ERAR_UNKNOWN: Read the maximum amount of data for the ubuffer.
 		// - Others: Read error; abort. (TODO: Show an error message.)
-		ret = pRARProcessFile(hRar, RAR_TEST, NULL, NULL);
+		ret = dll.pRARProcessFile(hRar, RAR_TEST, NULL, NULL);
 		// TODO: md_rar.cpp returns the filesize processed on error.
 		// This just returns 0.
 		if (ret != 0 && ret != ERAR_UNKNOWN)
@@ -429,13 +344,10 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	}
 	
 	// Close the RAR file.
-	pRARCloseArchive(hRar);
+	dll.pRARCloseArchive(hRar);
 	free(filenameA);
 	free(filenameW);
 	free(z_filenameW);
-	
-	// Shut down UnRAR.dll.
-	unrar_dll_end();
 	
 	return success;
 }

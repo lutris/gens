@@ -7,6 +7,7 @@ gens_SOURCES += \
 		port/argc_argv.c \
 		util/file/decompressor/md_rar_win32.cpp \
 		util/file/decompressor/md_rar_win32_t.c \
+		util/file/decompressor/unrar_dll.cpp \
 		video/vdraw_gdi.c \
 		video/vdraw_ddraw_t.c \
 		video/vdraw_ddraw.cpp \
@@ -45,6 +46,7 @@ noinst_HEADERS += \
 		port/argc_argv.h \
 		util/file/decompressor/md_rar_win32.hpp \
 		util/file/decompressor/md_rar_win32_t.h \
+		util/file/decompressor/unrar_dll.hpp \
 		video/vdraw_gdi.h \
 		video/vdraw_ddraw_t.h \
 		video/vdraw_ddraw.hpp \
