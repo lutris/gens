@@ -339,7 +339,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	
 	HANDLE hRar;
 	wchar_t *filenameW = NULL;
-	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
+	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte && p_wcsicmp);
 	
 	// Open the RAR file.
 	struct RAROpenArchiveDataEx rar_open;
@@ -385,7 +385,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 		if (doUnicode)
 		{
 			// Unicode mode.
-			cmp = _wcsicmp(z_filenameW, rar_header.FileNameW);
+			cmp = p_wcsicmp(z_filenameW, rar_header.FileNameW);
 		}
 		else
 		{
