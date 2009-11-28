@@ -25,16 +25,22 @@
 #include "w32u.h"
 #include <io.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** Unicode wrappers. **/
 
 MAKE_EXTFUNCPTR(access);
 #define access(path, mode) paccess(path, mode)
 
 MAKE_EXTFUNCPTR(fopen);
 #define fopen(path, mode) pfopen(path, mode)
+
+/** Unicode functions that are accessed directly. **/
+MAKE_EXTFUNCPTR(_wcsicmp);
 
 int WINAPI w32u_libc_init(void);
 int WINAPI w32u_libc_end(void);

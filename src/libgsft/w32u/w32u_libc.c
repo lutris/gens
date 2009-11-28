@@ -72,6 +72,10 @@ static FILE* Ufopen(const char *path, const char *mode)
 }
 
 
+/** Unicode functions that are accessed directly. **/
+MAKE_FUNCPTR(_wcsicmp);
+
+
 int WINAPI w32u_libc_init(void)
 {
 	if (init_counter++ != 0)
@@ -82,6 +86,8 @@ int WINAPI w32u_libc_init(void)
 	
 	InitFuncPtrsU_libc(hMsvcrt, "access", "_waccess", p_waccess, paccess, Uaccess);
 	InitFuncPtrsU_libc(hMsvcrt, "fopen", "_wfopen", p_wfopen, pfopen, Ufopen);
+	
+	InitFuncPtr(hMsvcrt, _wcsicmp);
 	
 	return 0;
 }
