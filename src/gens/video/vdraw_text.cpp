@@ -445,13 +445,14 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
  */
 void vdraw_msg_timer_update(void)
 {
-	if (GetTickCount() > vdraw_msg_time)
-	{
-		vdraw_msg_visible = false;
-		vdraw_msg_text[0] = 0x00;
-		vdraw_msg_prerender_len = 0;
-		
-		// Force a wakeup.
-		GensUI::wakeup();
-	}
+	if (GetTickCount() <= vdraw_msg_time)
+		return;
+	
+	// Message timer has expired. Clear the message.
+	vdraw_msg_visible = false;
+	vdraw_msg_text[0] = 0x00;
+	vdraw_msg_prerender_len = 0;
+	
+	// Force a wakeup.
+	GensUI::wakeup();
 }
