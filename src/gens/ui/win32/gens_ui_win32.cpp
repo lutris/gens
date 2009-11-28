@@ -92,32 +92,40 @@ static const char UI_Win32_FileFilter_AllFiles[] =
 	#define LZMA_EXT
 #endif
 
-static const char UI_Win32_FileFilter_ROMFile[] =
+static const char *FFT_Win32[] =
+{
+	// AnyFile
+	"All Files\0*.*\0\0",
+	
+	// ROMFile
 	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;" ZLIB_EXT LZMA_EXT "*.rar\0"
 	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
 	"32X ROMs\0*.32x;" ZLIB_EXT LZMA_EXT "*.rar\0"
 	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
-	"All Files\0*.*\0\0";
-
-static const char UI_Win32_FileFilter_SavestateFile[] =
+	"All Files\0*.*\0\0",
+	
+	// SavestateFile
 	"Savestate Files\0*.gs?\0"
-	"All Files\0*.*\0\0";
-
-static const char UI_Win32_FileFilter_CDImage[] =
+	"All Files\0*.*\0\0",
+	
+	// CDImage
 	"SegaCD Disc Images\0*.bin;*.iso;*.cue\0"
-	"All Files\0*.*\0\0";
-
-static const char UI_Win32_FileFilter_ConfigFile[] =
+	"All Files\0*.*\0\0",
+	
+	// ConfigFile
 	"Gens Config Files\0*.cfg\0"
-	"All Files\0*.*\0\0";
-
-static const char UI_Win32_FileFilter_GYMFile[] =
+	"All Files\0*.*\0\0",
+	
+	// GYMFile
 	"GYM Files\0*.gym\0"
-	"All Files\0*.*\0\0";
+	"All Files\0*.*\0\0",
+	
+	NULL
+};
 
 static string UI_Win32_OpenFile_int(const string& title,
 				    const string& initFile,
-				    const FileFilterType filterType,
+				    FileFilterType filterType,
 				    HWND owner,
 				    const bool openOrSave);
 
@@ -454,7 +462,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::openFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), false);
 }
@@ -469,7 +477,7 @@ string GensUI::openFile(const string& title, const string& initFile,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::saveFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), true);
 }
@@ -485,7 +493,7 @@ string GensUI::saveFile(const string& title, const string& initFile,
  * @return Filename if successful; otherwise, an empty string.
  */
 static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
-				    const FileFilterType filterType, HWND owner,
+				    FileFilterType filterType, HWND owner,
 				    const bool openOrSave)
 {
 	char filename[GENS_PATH_MAX];
@@ -508,29 +516,10 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	ofn.lpstrTitle = title.c_str();
 	ofn.lpstrInitialDir = initFile.c_str();
 	
-	switch (filterType)
-	{
-		case ROMFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_ROMFile;
-			break;
-		case SavestateFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_SavestateFile;
-			break;
-		case CDImage:
-			ofn.lpstrFilter = UI_Win32_FileFilter_CDImage;
-			break;
-		case ConfigFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_ConfigFile;
-			break;
-		case GYMFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_GYMFile;
-			break;
-		case AnyFile:
-		default:
-			ofn.lpstrFilter = UI_Win32_FileFilter_AllFiles;
-			break;
-	}
+	if (filterType >= FFT_MAX)
+		filterType = AnyFile;
 	
+	ofn.lpstrFilter = FFT_Win32[filterType];
 	ofn.nFilterIndex = 0;
 	ofn.lpstrInitialDir = initFile.c_str();
 	
