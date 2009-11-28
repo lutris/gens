@@ -70,7 +70,7 @@ int MDP_FNCALL ips_init(const mdp_host_t *host_srv)
 	// If this fails, gg_dir_id will be less than 0.
 	ips_dir_id = ips_host_srv->dir_register(&mdp, "IPS Patches", ips_dir_get, ips_dir_set);
 	
-	// Register the event handler. (TODO)
+	// Register the event handlers.
 	ips_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
 	ips_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
 	
@@ -94,6 +94,10 @@ int MDP_FNCALL ips_end(void)
 		ips_host_srv->dir_unregister(&mdp, ips_dir_id);
 		ips_dir_id = -1;
 	}
+	
+	// Unregister the event handlers.
+	ips_host_srv->event_unregister(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
+	ips_host_srv->event_unregister(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

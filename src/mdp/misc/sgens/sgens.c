@@ -104,6 +104,10 @@ int MDP_FNCALL sgens_end(void)
 		sgens_menuItemID = -1;
 	}
 	
+	// Unregister the MDP event handlers.
+	sgens_host_srv->event_unregister(&mdp, MDP_EVENT_OPEN_ROM, sgens_event_handler);
+	sgens_host_srv->event_unregister(&mdp, MDP_EVENT_CLOSE_ROM, sgens_event_handler);
+	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
 }
