@@ -234,12 +234,21 @@ if test x$with_dbus = xyes; then
 		PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1], [has_dbus_glib=yes], [has_dbus_glib=no])
 		if test x$has_dbus_glib = xyes; then
 			AC_DEFINE(HAVE_DBUS_GLIB, 1, Define to 1 if you have the `DBUS_GLIB' library (-ldbus-1).)
-		else
-			with_dbus=no
+			
+			# Search for the D-Bus binding tool.
+			AC_PATH_PROG(DBUS_BINDING_TOOL, dbus-binding-tool, no)
+			if test x$DBUS_BINDING_TOOL = xno; then
+				AC_MSG_WARN([*** dbus-binding-tool not found, disabling D-Bus support.])
+				has_dbus=no
+				has_dbus_glib=no
+			fi
 		fi
 	else
-		with_dbus=no
+		has_dbus_glib=no
 	fi
+else
+	has_dbus=no
+	has_dbus_glib=no
 fi
 
 # END: Unix / Linux (and MacOS X for now)
@@ -274,6 +283,7 @@ AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
 AM_CONDITIONAL([HAVE_DBUS], [test x$has_dbus = xyes])
 AC_SUBST(DBUS_CFLAGS)
 AC_SUBST(DBUS_LIBS)
+AC_SUBST(DBUS_BINDING_TOOL)
 
 # D-Bus GLib conditional and substitutions.
 AM_CONDITIONAL([HAVE_DBUS_GLIB], [test x$has_dbus_glib = xyes])
