@@ -82,6 +82,9 @@ MAKE_STFUNCPTR(RARGetDllVersion);
 
 #define InitFuncPtr_unrar(hDll, fn) p##fn = (typeof(p##fn))mdp_dlsym((hDll), #fn)
 
+static int unrar_dll_init(void);
+static int unrar_dll_end(void);
+
 /**
  * unrar_dll_init(): Initialize UnRAR.dll.
  * @return 0 on success; non-zero on error.
@@ -95,16 +98,30 @@ static int unrar_dll_init(void)
 	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	hUnrarDll = mdp_dlopen(Misc_Filenames.RAR_Binary);
 	if (!hUnrarDll)
-		return -2;
+	{
+		// DLL could not be loaded.
+		// TODO: Come up with a new MDP error code for "DLL not found."
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
+	}
 	
 	// Load the function pointers.
-	// TODO: Return an error if any of them fail.
 	InitFuncPtr_unrar(hUnrarDll, RAROpenArchiveEx);
 	InitFuncPtr_unrar(hUnrarDll, RARCloseArchive);
 	InitFuncPtr_unrar(hUnrarDll, RARReadHeaderEx);
 	InitFuncPtr_unrar(hUnrarDll, RARProcessFile);
 	InitFuncPtr_unrar(hUnrarDll, RARSetCallback);
 	InitFuncPtr_unrar(hUnrarDll, RARGetDllVersion);
+	
+	// Check if any of the function pointers are NULL.
+	if (!pRAROpenArchiveEx || !pRARCloseArchive ||
+	    !pRARReadHeaderEx  || !pRARProcessFile ||
+	    !pRARSetCallback   || !pRARGetDllVersion)
+	{
+		// NULL pointers found. That's bad.
+		// TODO: Come up with a new MDP error code for "Incorrect DLL."
+		unrar_dll_end();
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
+	}
 	
 	// UnRAR.dll loaded successfully.
 	return 0;
@@ -167,10 +184,11 @@ int decompressor_rar_win32_detect_format(FILE *zF)
 int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
 	// Initialize UnRAR.dll.
-	if (unrar_dll_init() != 0)
+	int ret = unrar_dll_init();
+	if (ret != 0)
 	{
 		// Error initializing UnRAR.dll.
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
+		return ret;
 	}
 	
 	HANDLE hRar;
@@ -214,7 +232,6 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	// Process the archive.
 	struct RARHeaderDataEx rar_header;
 	char utf8_buf[1024*4];
-	int ret = 0;
 	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
 		// Allocate memory for the file.
@@ -330,12 +347,11 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
-	// Initialize UnRAR.dll.
-	if (unrar_dll_init() != 0)
+	int ret = unrar_dll_init();
+	if (ret != 0)
 	{
 		// Error initializing UnRAR.dll.
-		// TODO: Show an error message.
-		return 0;
+		return ret;
 	}
 	
 	HANDLE hRar;
@@ -380,7 +396,6 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	// Search for the file.
 	struct RARHeaderDataEx rar_header;
 	size_t success = 0;	// 0 == not successful; positive == size read
-	int ret = 0;
 	int cmp;
 	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
