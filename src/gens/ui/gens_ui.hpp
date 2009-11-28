@@ -40,7 +40,11 @@ typedef enum
 	SavestateFile	= 2,
 	CDImage		= 3,
 	ConfigFile	= 4,
-	GYMFile		= 5
+	GYMFile		= 5,
+	DllFile		= 6,
+	ExeFile		= 7,
+	
+	FFT_MAX
 } FileFilterType;
 
 /**
@@ -82,9 +86,9 @@ class GensUI
 		static void setWindowVisibility(const bool visibility);
 		
 		static std::string openFile(const std::string& title, const std::string& initFile,
-						const FileFilterType filterType, void* owner = NULL);
+						FileFilterType filterType, void* owner = NULL);
 		static std::string saveFile(const std::string& title, const std::string& initFile,
-						const FileFilterType filterType, void* owner = NULL);
+						FileFilterType filterType, void* owner = NULL);
 		static std::string selectDir(const std::string& title, const std::string& initDir,
 						void* owner = NULL);
 		
