@@ -62,6 +62,14 @@ const decompressor_t decompressor_rar_win32 =
 };
 
 
+// RAR load state.
+typedef struct _RarState_t
+{
+	uint8_t	*buf;	// Buffer.
+	size_t	size;	// Size of buffer.
+	size_t	pos;	// Current position.
+} RarState_t;
+
 // UnRAR.dll
 #include "unrar.h"
 static void *hUnrarDll = NULL;
@@ -70,7 +78,7 @@ MAKE_STFUNCPTR(RAROpenArchiveEx);
 MAKE_STFUNCPTR(RARCloseArchive);
 MAKE_STFUNCPTR(RARReadHeaderEx);
 MAKE_STFUNCPTR(RARProcessFile);
-MAKE_STFUNCPTR(RARProcessFileW);
+MAKE_STFUNCPTR(RARSetCallback);
 MAKE_STFUNCPTR(RARGetDllVersion);
 
 #define InitFuncPtr_unrar(hDll, fn) p##fn = (typeof(p##fn))mdp_dlsym((hDll), #fn)
@@ -95,7 +103,7 @@ static int unrar_dll_init(void)
 	InitFuncPtr_unrar(hUnrarDll, RARCloseArchive);
 	InitFuncPtr_unrar(hUnrarDll, RARReadHeaderEx);
 	InitFuncPtr_unrar(hUnrarDll, RARProcessFile);
-	InitFuncPtr_unrar(hUnrarDll, RARProcessFileW);
+	InitFuncPtr_unrar(hUnrarDll, RARSetCallback);
 	InitFuncPtr_unrar(hUnrarDll, RARGetDllVersion);
 	
 	// Increment the reference counter and return.
@@ -125,7 +133,7 @@ static int unrar_dll_end(void)
 	pRARCloseArchive	= NULL;
 	pRARReadHeaderEx	= NULL;
 	pRARProcessFile		= NULL;
-	pRARProcessFileW	= NULL;
+	pRARSetCallback		= NULL;
 	pRARGetDllVersion	= NULL;
 	
 	return 0;
@@ -166,7 +174,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
-	HANDLE hRAR;
+	HANDLE hRar;
 	wchar_t *filenameW = NULL;
 	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
 	
@@ -191,8 +199,8 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		rar_open.ArcNameW = NULL;
 	}
 	
-	hRAR = pRAROpenArchiveEx(&rar_open);
-	if (!hRAR)
+	hRar = pRAROpenArchiveEx(&rar_open);
+	if (!hRar)
 	{
 		// Error opening the RAR file.
 		free(filenameW);
@@ -207,7 +215,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	struct RARHeaderDataEx rar_header;
 	char utf8_buf[1024*4];
 	int ret = 0;
-	while ((ret = pRARReadHeaderEx(hRAR, &rar_header)) == 0)
+	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
 		// Allocate memory for the file.
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(*z_entry_cur));
@@ -245,12 +253,12 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		}
 		
 		// Go to the next file.
-		if (pRARProcessFile(hRAR, RAR_SKIP, NULL, NULL) != 0)
+		if (pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
 			break;
 	}
 	
 	// Close the RAR file.
-	pRARCloseArchive(hRAR);
+	pRARCloseArchive(hRar);
 	free(filenameW);
 	
 	// Shut down UnRAR.dll.
@@ -259,6 +267,52 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	// Return the list of files.
 	*z_entry_out = z_entry_head;
 	return MDP_ERR_OK;
+}
+
+
+/**
+ * decompressor_rar_win32_callback(): UnRAR.dll callback function.
+ * @param msg
+ * @param UserData
+ * @param P1
+ * @param P2
+ */
+static int CALLBACK decompressor_rar_win32_callback(UINT msg, LPARAM UserData, LPARAM P1, LPARAM P2)
+{
+	switch (msg)
+	{
+		default:
+		case UCM_CHANGEVOLUME:
+		case UCM_NEEDPASSWORD:
+			// Unhandled message.
+			// TODO: Support at least UCM_NEEDPASSWORD.
+			return -1;
+		
+		case UCM_PROCESSDATA:
+		{
+			// Process data.
+			RarState_t *pRarState = (RarState_t*)UserData;
+			
+			const uint8_t *buf = (const uint8_t*)P1;
+			size_t size = (size_t)P2;
+			
+			if ((pRarState->pos + size) > pRarState->size)
+			{
+				// Overflow!
+				size_t size_diff = (pRarState->size - pRarState->pos);
+				memcpy(&pRarState->buf[pRarState->pos], buf, size_diff);
+				pRarState->pos += size_diff;
+				return -1;
+			}
+			
+			// Copy the data.
+			memcpy(&pRarState->buf[pRarState->pos], buf, size);
+			pRarState->pos += size;
+			break;
+		}
+	}
+	
+	return 0;
 }
 
 
@@ -275,59 +329,112 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
-	return -1;
-#if 0
-	GSFT_UNUSED_PARAMETER(zF);
-	
-	// All parameters (except zF) must be specified.
-	if (!filename || !z_entry || !buf || !size)
-		return 0;
-	
-	// Check that the RAR executable is available.
-#if !defined(_WIN32)
-	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
-#else
-	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
-#endif
+	// Initialize UnRAR.dll.
+	if (unrar_dll_init() != 0)
 	{
-		// Cannot run the RAR executable.
-		// TODO: Show an error message and/or return an error code.
+		// Error initializing UnRAR.dll.
+		// TODO: Show an error message.
 		return 0;
 	}
 	
-	char cmd_line[GENS_PATH_MAX*3 + 256];
-	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" p -ierr  \"%s\" \"%s\"%s",
-		 Misc_Filenames.RAR_Binary, filename, z_entry->filename,
-#if !defined(GENS_OS_WIN32)
-		" 2>/dev/null"
-#else
-		""
-#endif
-		);
+	HANDLE hRar;
+	wchar_t *filenameW = NULL;
+	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
 	
 	// Open the RAR file.
-	FILE *pRAR = popen(cmd_line, "r");
-	if (!pRAR)
+	struct RAROpenArchiveDataEx rar_open;
+	rar_open.OpenMode = RAR_OM_EXTRACT;
+	rar_open.CmtBuf = NULL;
+	rar_open.CmtBufSize = 0;
+	
+	if (doUnicode)
 	{
-		// Error opening `rar`.
-		// TODO: Show an error message and/or return an error code.
-		return 0;
+		// Unicode mode.
+		filenameW = w32u_mbstowcs(filename);
+		rar_open.ArcName = NULL;
+		rar_open.ArcNameW = filenameW;
+	}
+	else
+	{
+		// ANSI mode.
+		// TODO: Make a copy of filename, since rar_open.ArcName isn't const.
+		rar_open.ArcName = filename;
+		rar_open.ArcNameW = NULL;
 	}
 	
-	// Read from the pipe.
-	size_t extracted_size = 0;
-	size_t rv;
-	unsigned char bufRAR[4096];
-	while ((rv = fread(bufRAR, 1, sizeof(bufRAR), pRAR)))
+	hRar = pRAROpenArchiveEx(&rar_open);
+	if (!hRar)
 	{
-		if (extracted_size + rv > size)
+		// Error opening the RAR file.
+		free(filenameW);
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+	}
+	
+	// If we're using Unicode, convert the selected filename to Unicode.
+	wchar_t *z_filenameW = NULL;
+	if (doUnicode)
+		z_filenameW = w32u_mbstowcs(z_entry->filename);
+	
+	// Search for the file.
+	struct RARHeaderDataEx rar_header;
+	size_t success = 0;	// 0 == not successful; positive == size read
+	int ret = 0;
+	int cmp;
+	while ((ret = pRARReadHeaderEx(hRar, &rar_header)) == 0)
+	{
+		if (doUnicode)
+		{
+			// Unicode mode.
+			cmp = _wcsicmp(z_filenameW, rar_header.FileNameW);
+		}
+		else
+		{
+			// ANSI mode.
+			cmp = _stricmp(z_entry->filename, rar_header.FileName);
+		}
+		
+		if (cmp != 0)
+		{
+			// Not a match. Skip the file.
+			if (pRARProcessFile(hRar, RAR_SKIP, NULL, NULL) != 0)
+				break;
+			continue;
+		}
+		
+		// Found the file.
+		
+		// Create the RAR state.
+		RarState_t rar_state;
+		rar_state.buf = (uint8_t*)buf;
+		rar_state.size = size;
+		rar_state.pos = 0;
+		
+		// Set up the RAR callback.
+		pRARSetCallback(hRar, &decompressor_rar_win32_callback, (LPARAM)&rar_state);
+		
+		// Process the file.
+		// Possible errors:
+		// - 0: Success.
+		// - ERAR_UNKNOWN: Read the maximum amount of data for the ubuffer.
+		// - Others: Read error; abort. (TODO: Show an error message.)
+		ret = pRARProcessFile(hRar, RAR_TEST, NULL, NULL);
+		// TODO: md_rar.cpp returns the filesize processed on error.
+		// This just returns 0.
+		if (ret != 0 && ret != ERAR_UNKNOWN)
 			break;
-		memcpy(&((unsigned char*)buf)[extracted_size], &bufRAR, rv);
-		extracted_size += rv;
+		
+		// File processed.
+		success = rar_state.pos;
+		break;
 	}
-	pclose(pRAR);
 	
-	// Return the filesize.
-	return extracted_size;
-#endif
+	// Close the RAR file.
+	pRARCloseArchive(hRar);
+	free(filenameW);
+	free(z_filenameW);
+	
+	// Shut down UnRAR.dll.
+	unrar_dll_end();
+	
+	return success;
 }
