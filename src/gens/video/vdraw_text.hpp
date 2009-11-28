@@ -68,6 +68,7 @@ void vdraw_text_printf(const int duration, const char* msg, ...)
 	__attribute__ ((format (printf, 2, 3)));
 void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	__attribute__ ((format (printf, 2, 0)));
+void vdraw_text_clear(void);
 void vdraw_msg_timer_update(void);
 
 // Text buffer.

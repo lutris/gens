@@ -441,6 +441,16 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 
 
 /**
+ * vdraw_text_clear(): Clear the message text.
+ */
+void vdraw_text_clear(void)
+{
+	vdraw_msg_text[0] = 0x00;
+	vdraw_msg_prerender_len = 0;
+}
+
+
+/**
  * vdraw_msg_timer_update(): Update the message timer.
  */
 void vdraw_msg_timer_update(void)
@@ -450,8 +460,7 @@ void vdraw_msg_timer_update(void)
 	
 	// Message timer has expired. Clear the message.
 	vdraw_msg_visible = false;
-	vdraw_msg_text[0] = 0x00;
-	vdraw_msg_prerender_len = 0;
+	vdraw_text_clear();
 	
 	// Force a wakeup.
 	GensUI::wakeup();

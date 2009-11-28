@@ -413,7 +413,7 @@ int vdraw_flip(int md_screen_updated)
 					vdraw_fps_freq_cpu[0] = 1;
 				
 				// Clear the message text.
-				vdraw_msg_text[0] = 0x00;
+				vdraw_text_clear();
 			}
 		}
 		
