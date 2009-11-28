@@ -26,45 +26,45 @@ static void lose_gerror(const char *prefix, GError *error)
 	lose("%s: %s", prefix, error->message);
 }
 
-typedef struct SomeObject SomeObject;
-typedef struct SomeObjectClass SomeObjectClass;
+typedef struct IrcReporter IrcReporter;
+typedef struct IrcReporterClass IrcReporterClass;
 
-GType some_object_get_type (void);
+GType irc_reporter_get_type (void);
 
-struct SomeObject
+struct IrcReporter
 {
 	GObject parent;
 };
 
-struct SomeObjectClass
+struct IrcReporterClass
 {
 	GObjectClass parent;
 };
 
-#define SOME_TYPE_OBJECT              (some_object_get_type ())
-#define SOME_OBJECT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), SOME_TYPE_OBJECT, SomeObject))
-#define SOME_OBJECT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), SOME_TYPE_OBJECT, SomeObjectClass))
+#define SOME_TYPE_OBJECT              (irc_reporter_get_type ())
+#define SOME_OBJECT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), SOME_TYPE_OBJECT, IrcReporter))
+#define SOME_OBJECT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), SOME_TYPE_OBJECT, IrcReporterClass))
 #define SOME_IS_OBJECT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), SOME_TYPE_OBJECT))
 #define SOME_IS_OBJECT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), SOME_TYPE_OBJECT))
-#define SOME_OBJECT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), SOME_TYPE_OBJECT, SomeObjectClass))
+#define SOME_OBJECT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), SOME_TYPE_OBJECT, IrcReporterClass))
 
-G_DEFINE_TYPE(SomeObject, some_object, G_TYPE_OBJECT)
+G_DEFINE_TYPE(IrcReporter, irc_reporter, G_TYPE_OBJECT)
 
-gboolean some_object_hello_world(SomeObject *obj, const char *hello_message, char ***ret, GError **error);
-gboolean some_object_get_tuple(SomeObject *obj, GValueArray **ret, GError **error);
-gboolean some_object_get_dict(SomeObject *obj, GHashTable **ret, GError **error);
+gboolean irc_reporter_hello_world(IrcReporter *obj, const char *hello_message, char ***ret, GError **error);
+gboolean irc_reporter_get_tuple(IrcReporter *obj, GValueArray **ret, GError **error);
+gboolean irc_reporter_get_dict(IrcReporter *obj, GHashTable **ret, GError **error);
 
 #include "dbus-service-glue.h"
 
-static void some_object_init(SomeObject *obj)
+static void irc_reporter_init(IrcReporter *obj)
 {
 }
 
-static void some_object_class_init(SomeObjectClass *klass)
+static void irc_reporter_class_init(IrcReporterClass *klass)
 {
 }
 
-gboolean some_object_hello_world(SomeObject *obj, const char *hello_message, char ***ret, GError **error)
+gboolean irc_reporter_hello_world(IrcReporter *obj, const char *hello_message, char ***ret, GError **error)
 {
 	printf("%s\n", hello_message);
 	*ret = g_new (char *, 3);
@@ -75,7 +75,7 @@ gboolean some_object_hello_world(SomeObject *obj, const char *hello_message, cha
 	return TRUE;
 }
 
-gboolean some_object_get_tuple (SomeObject *obj, GValueArray **ret, GError **error)
+gboolean irc_reporter_get_tuple (IrcReporter *obj, GValueArray **ret, GError **error)
 {
 	*ret = g_value_array_new (6);
 	g_value_array_prepend (*ret, NULL);
@@ -88,7 +88,7 @@ gboolean some_object_get_tuple (SomeObject *obj, GValueArray **ret, GError **err
 	return TRUE;
 }
 
-gboolean some_object_get_dict(SomeObject *obj, GHashTable **ret, GError **error)
+gboolean irc_reporter_get_dict(IrcReporter *obj, GHashTable **ret, GError **error)
 {
 	*ret = g_hash_table_new (g_str_hash, g_str_equal);
 	g_hash_table_insert(*ret, "first", "Hello Dict");
@@ -99,7 +99,7 @@ gboolean some_object_get_dict(SomeObject *obj, GHashTable **ret, GError **error)
 
 static DBusGConnection *bus = NULL;
 static DBusGProxy *bus_proxy = NULL;
-static SomeObject *obj = NULL;
+static IrcReporter *obj = NULL;
 
 
 /**
@@ -111,7 +111,7 @@ int irc_dbus_init(void)
 	GError *error = NULL;
 	guint request_name_result;
 	
-	dbus_g_object_type_install_info(SOME_TYPE_OBJECT, &dbus_glib_some_object_object_info);
+	dbus_g_object_type_install_info(SOME_TYPE_OBJECT, &dbus_glib_irc_reporter_object_info);
 	
 	bus = dbus_g_bus_get(DBUS_BUS_SESSION, &error);
 	if (!bus)
@@ -122,18 +122,18 @@ int irc_dbus_init(void)
 						"org.freedesktop.DBus");
 	
 	if (!dbus_g_proxy_call(bus_proxy, "RequestName", &error,
-				G_TYPE_STRING, "org.designfu.SampleService",
+				G_TYPE_STRING, "org.mdp.IrcService",
 				G_TYPE_UINT, 0,
 				G_TYPE_INVALID,
 				G_TYPE_UINT, &request_name_result,
 				G_TYPE_INVALID))
 	{
-		lose_gerror("Failed to acquire org.designfu.SampleService", error);
+		lose_gerror("Failed to acquire org.mdp.IrcService", error);
 	}
 	
 	obj = g_object_new(SOME_TYPE_OBJECT, NULL);
 	
-	dbus_g_connection_register_g_object(bus, "/SomeObject", G_OBJECT(obj));
+	dbus_g_connection_register_g_object(bus, "/IrcReporter", G_OBJECT(obj));
 	
 	printf("service running\n");
 }

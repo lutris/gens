@@ -22,4 +22,4 @@ noinst_HEADERS = \
 		irc.h		\
 		dbus-service.h
 
-#dbus-binding-tool --mode=glib-server --prefix="some_object" dbus-service.xml >dbus-service-glue.h
+#dbus-binding-tool --mode=glib-server --prefix="irc_reporter" dbus-service.xml >dbus-service-glue.h
