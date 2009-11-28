@@ -225,6 +225,23 @@ ifdef(
 	[AC_MSG_WARN([[*** AM_PATH_SDL is not defined. Assuming SDL is installed.]])]
 )
 
+# D-Bus
+AC_ARG_WITH(dbus, AC_HELP_STRING([--without-dbus], [Do not build the D-Bus IRC Reporter plugin [[default=no]]]), with_dbus=$withval, with_dbus=yes)
+if test x$with_dbus = xyes; then
+	PKG_CHECK_MODULES([DBUS], [dbus-1], [has_dbus=yes], [has_dbus=no])
+	if test x$has_dbus = xyes; then
+		AC_DEFINE(HAVE_DBUS, 1, Define to 1 if you have the `DBUS' library (-ldbus-1).)
+		PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1], [has_dbus_glib=yes], [has_dbus_glib=no])
+		if test x$has_dbus_glib = xyes; then
+			AC_DEFINE(HAVE_DBUS_GLIB, 1, Define to 1 if you have the `DBUS_GLIB' library (-ldbus-1).)
+		else
+			with_dbus=no
+		fi
+	else
+		with_dbus=no
+	fi
+fi
+
 # END: Unix / Linux (and MacOS X for now)
 
 elif test x$os = xwin32; then
@@ -252,6 +269,16 @@ fi
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
+
+# D-Bus conditional and substitutions.
+AM_CONDITIONAL([HAVE_DBUS], [test x$has_dbus = xyes])
+AC_SUBST(DBUS_CFLAGS)
+AC_SUBST(DBUS_LIBS)
+
+# D-Bus GLib conditional and substitutions.
+AM_CONDITIONAL([HAVE_DBUS_GLIB], [test x$has_dbus_glib = xyes])
+AC_SUBST(DBUS_GLIB_CFLAGS)
+AC_SUBST(DBUS_GLIB_LIBS)
 
 # X11 conditional and substitutions.
 AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])

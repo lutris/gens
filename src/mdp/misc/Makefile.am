@@ -12,6 +12,8 @@ SUBDIRS = \
 		sgens			\
 		ips_patcher
 
-if GENS_OS_LINUX
+if HAVE_DBUS
+if HAVE_DBUS_GLIB
 SUBDIRS += irc_reporter
-endif
+endif # HAVE_DBUS_GLIB
+endif # HAVE_DBUS
