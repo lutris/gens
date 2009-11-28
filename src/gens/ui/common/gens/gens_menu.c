@@ -25,6 +25,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "gens_menu.h"
+#include "emulator/gens.hpp"
 
 #include <unistd.h>
 #ifndef NULL
@@ -341,6 +342,6 @@ static const GensMenuItem_t gmiHelp[] =
 	{IDM_HELP_REPORTABUG,	GMF_ITEM_NORMAL,	"Report a &Bug",	NULL,	0, 0, IDIM_REPORTABUG},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, 0},
 #endif
-	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About",		NULL,	0, 0, IDIM_GENSGS},
+	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About " GENS_APPNAME,	NULL,	0, 0, IDIM_GENSGS},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
