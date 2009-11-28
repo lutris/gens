@@ -33,7 +33,6 @@
 HFONT fntMain;
 HFONT fntTitle;
 HFONT fntMono;
-HFONT fntDebug;
 
 
 /**
@@ -61,9 +60,6 @@ void fonts_init(void)
 	
 	// Set up the monospaced font. (WinXP: Fixedsys)
 	fntMono = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
-	
-	// Set up the debug font. (WinXP: Terminal)
-	fntDebug = (HFONT)GetStockObject(OEM_FIXED_FONT);
 }
 
 

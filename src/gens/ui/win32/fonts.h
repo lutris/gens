@@ -36,7 +36,6 @@ extern "C" {
 extern HFONT fntMain;
 extern HFONT fntTitle;
 extern HFONT fntMono;
-extern HFONT fntDebug;
 
 void fonts_init(void);
 void fonts_end(void);
