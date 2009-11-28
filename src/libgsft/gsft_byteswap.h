@@ -39,32 +39,6 @@
 #endif
 #endif
 
-// TODO: Optimize out ?e??_to_cpu_from_ptr on appropriate architectures.
-#define be16_to_cpu_from_ptr(ptr) \
-	(((ptr)[0] << 8) | ((ptr)[1]))
-#define le16_to_cpu_from_ptr(ptr) \
-	(((ptr)[1] << 8) | ((ptr)[0]))
-#define be32_to_cpu_from_ptr(ptr) \
-	(((ptr)[0] << 24) | ((ptr)[1] << 16) | ((ptr)[2] << 8) | ((ptr)[3]))
-#define le32_to_cpu_from_ptr(ptr) \
-	(((ptr)[3] << 24) | ((ptr)[2] << 16) | ((ptr)[1] << 8) | ((ptr)[0]))
-#define cpu_to_le16_ucptr(ptr, val) \
-	(ptr)[0] = ((val) & 0xFF);  \
-	(ptr)[1] = (((val) >> 8) & 0xFF);
-#define cpu_to_be16_ucptr(ptr, val) \
-	(ptr)[0] = (((val) >> 8) & 0xFF);  \
-	(ptr)[1] = ((val) & 0xFF);
-#define cpu_to_le32_ucptr(ptr, val) \
-	(ptr)[0] = ((val) & 0xFF);  \
-	(ptr)[1] = (((val) >> 8) & 0xFF);  \
-	(ptr)[2] = (((val) >> 16) & 0xFF); \
-	(ptr)[3] = (((val) >> 24) & 0xFF);
-#define cpu_to_be32_ucptr(ptr, val) \
-	(ptr)[0] = (((val) >> 24) & 0xFF); \
-	(ptr)[1] = (((val) >> 16) & 0xFF); \
-	(ptr)[2] = (((val) >> 8) & 0xFF);  \
-	(ptr)[3] = ((val) & 0xFF);
-
 #define __swab16(x) (((x) << 8) | ((x) >> 8))
 
 #define __swab32(x) \
