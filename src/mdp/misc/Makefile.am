@@ -11,3 +11,7 @@ SUBDIRS = \
 		vdp_layer_options	\
 		sgens			\
 		ips_patcher
+
+if GENS_OS_LINUX
+SUBDIRS += irc_reporter
+endif
