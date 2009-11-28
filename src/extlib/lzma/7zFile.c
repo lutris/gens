@@ -37,6 +37,8 @@ MAKE_STFUNCPTR(MultiByteToWideChar);
 static BOOL isUnicodeChecked = FALSE;
 static BOOL isUnicodeAvailable = FALSE;
 
+#define InitFuncPtr_lzma(hDll, fn) p##fn = (typeof(p##fn))GetProcAddress((hDll), #fn)
+
 #endif
 
 void File_Construct(CSzFile *p)
@@ -57,10 +59,8 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 		hKernel32 = LoadLibrary("kernel32.dll");
 		if (hKernel32)
 		{
-			pCreateFileW = (typeof(pCreateFileW))
-					GetProcAddress(hKernel32, "CreateFileW");
-			pMultiByteToWideChar = (typeof(pMultiByteToWideChar))
-					GetProcAddress(hKernel32, "MultiByteToWideChar");
+			InitFuncPtr_lzma(hKernel32, CreateFileW);
+			InitFuncPtr_lzma(hKernel32, MultiByteToWideChar);
 			
 			isUnicodeAvailable = (pCreateFileW && pMultiByteToWideChar);
 			if (!isUnicodeAvailable)
