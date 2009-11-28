@@ -52,6 +52,7 @@ extern "C" {
 #define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ListBox macros. **/
+#define ListBox_AddStringU(hwndCtl, lpsz)		((int)(DWORD)SendMessageU_LPCSTR((hwndCtl),LB_ADDSTRING,LB_ADDSTRING,0,(LPARAM)(lpsz)))
 #define ListBox_DeleteStringU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_DELETESTRING,(WPARAM)(int)(index),0))
 #define ListBox_GetCountU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCOUNT,0,0))
 #define ListBox_GetCurSelU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCURSEL,0,0))
