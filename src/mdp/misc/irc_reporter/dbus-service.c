@@ -1,4 +1,5 @@
 #include "dbus-service.h"
+#include "irc.h"
 
 #include <dbus/dbus-glib.h>
 #include <stdio.h>
@@ -72,19 +73,19 @@ static void irc_reporter_class_init(IrcReporterClass *klass)
 
 gboolean irc_reporter_get_last_modified(IrcReporter *obj, unsigned int *ret, GError **error)
 {
-	*ret = 212194;
+	*ret = irc_last_modified;
 	return TRUE;
 }
 
 gboolean irc_reporter_is_rom_loaded(IrcReporter *obj, gboolean *ret, GError **error)
 {
-	*ret = FALSE;
+	*ret = irc_is_rom_loaded;
 	return TRUE;
 }
 
 gboolean irc_reporter_get_rom_string(IrcReporter *obj, char **ret, GError **error)
 {
-	*ret = g_strdup("The Game");
+	*ret = g_strdup(irc_rom_string);
 	return TRUE;
 }
 
@@ -148,4 +149,6 @@ int irc_dbus_end(void)
 	bus = NULL;
 	bus_proxy = NULL;
 	obj = NULL;
+	
+	return 0;
 }
