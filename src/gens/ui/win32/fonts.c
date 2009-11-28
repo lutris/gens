@@ -26,14 +26,8 @@
 #include "gens/gens_window.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <tchar.h>
-
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windowsx.h"
 
 // Fonts.
 HFONT fntMain;
@@ -47,6 +41,10 @@ HFONT fntDebug;
  */
 void fonts_init(void)
 {
+	/** NOTE: This function does not need Unicode translation,
+	 *  since it passes the text directly from SystemParametersInfo().
+	 */
+	
 	// Get the system message font.
 	NONCLIENTMETRICS ncm;
 	ncm.cbSize = sizeof(ncm);
