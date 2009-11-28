@@ -26,11 +26,11 @@
 
 #include "md_ntsc.hpp"
 
-#ifdef _WIN32
-#define NTSC_DEGREE_SYMBOL "\xB0"
-#else
+//#ifdef _WIN32
+//#define NTSC_DEGREE_SYMBOL "\xB0"
+//#else
 #define NTSC_DEGREE_SYMBOL "°"
-#endif
+//#endif
 
 #ifdef __cplusplus
 extern "C" {
