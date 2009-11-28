@@ -120,6 +120,14 @@ static const char *FFT_Win32[] =
 	"GYM Files\0*.gym\0"
 	"All Files\0*.*\0\0",
 	
+	// DllFile
+	"DLL Files\0*.dll\0"
+	"All Files\0*.*\0\0",
+	
+	// ExeFile
+	"EXE Files\0*.exe\0"
+	"All Files\0*.*\0\0",
+	
 	NULL
 };
 
