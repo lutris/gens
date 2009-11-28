@@ -449,6 +449,7 @@ void vdraw_msg_timer_update(void)
 	{
 		vdraw_msg_visible = false;
 		vdraw_msg_text[0] = 0x00;
+		vdraw_msg_prerender_len = 0;
 		
 		// Force a wakeup.
 		GensUI::wakeup();
