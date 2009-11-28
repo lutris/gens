@@ -53,7 +53,7 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		// Check if this is the start of a UTF-8 sequence.
 		if (!(*utf8str & 0x80))
 		{
-			// Not the start of UTF-8. Assume it's ASCII.
+			// Not the start of a UTF-8 sequence. Assume it's ASCII.
 			wchr = *utf8str++;
 		}
 		else
