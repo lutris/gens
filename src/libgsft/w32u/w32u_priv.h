@@ -31,44 +31,59 @@
 /**
  * InitFuncPtr(): Initialize a function pointer.
  */
-#define InitFuncPtr(hDLL, fn) \
+#define InitFuncPtr(hDll, fn) \
 do { \
-	p##fn = (typeof(p##fn))GetProcAddress(hDLL, #fn); \
+	p##fn = (typeof(p##fn))GetProcAddress(hDll, #fn); \
 } while (0)
 
 /**
  * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
  */
-#define InitFuncPtrsU(hDLL, fn, pW, pA, pU) \
+#ifdef W32U_NO_UNICODE
+#define InitFuncPtrsU(hDll, fn, pW, pA, pU) \
+do { pA = (typeof(pA))GetProcAddress(hDll, fn "A"); } while (0)
+#else
+#define InitFuncPtrsU(hDll, fn, pW, pA, pU) \
 do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fn "W"); \
+	pW = (typeof(pW))GetProcAddress(hDll, fn "W"); \
 	if (pW) \
 		pA = &pU; \
 	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
+		pA = (typeof(pA))GetProcAddress(hDll, fn "A"); \
 } while (0)
+#endif
 
 /**
- * InitFuncPtrsU(): Initialize function pointers for functions that don't need text conversions.
+ * InitFuncPtrs(): Initialize function pointers for functions that don't need text conversions.
  */
-#define InitFuncPtrs(hDLL, fn, pA) \
+#ifdef W32U_NO_UNICODE
+#define InitFuncPtrs(hDll, fn, pA) \
+do { pA = (typeof(pA))GetProcAddress(hDll, fn "A"); } while (0)
+#else
+#define InitFuncPtrs(hDll, fn, pA) \
 do { \
-	pA = (typeof(pA))GetProcAddress(hDLL, fn "W"); \
+	pA = (typeof(pA))GetProcAddress(hDll, fn "W"); \
 	if (!pA) \
-		pA = (typeof(pA))GetProcAddress(hDLL, fn "A"); \
+		pA = (typeof(pA))GetProcAddress(hDll, fn "A"); \
 } while (0)
+#endif
 
 /**
  * InitFuncPtrsU_libc(): Initialize function pointers for functions that need text conversions. (libc version)
  */
-#define InitFuncPtrsU_libc(hDLL, fnA, fnW, pW, pA, pU) \
+#ifdef W32U_NO_UNICODE
+#define InitFuncPtrsU_libc(hDll, fnA, fnW, pW, pA, pU) \
+do { pA = (typeof(pA))GetProcAddress(hDll, fnA); } while (0)
+#else
+#define InitFuncPtrsU_libc(hDll, fnA, fnW, pW, pA, pU) \
 do { \
-	pW = (typeof(pW))GetProcAddress(hDLL, fnW); \
+	pW = (typeof(pW))GetProcAddress(hDll, fnW); \
 	if (pW) \
 		pA = &pU; \
 	else \
-		pA = (typeof(pA))GetProcAddress(hDLL, fnA); \
+		pA = (typeof(pA))GetProcAddress(hDll, fnA); \
 } while (0)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
