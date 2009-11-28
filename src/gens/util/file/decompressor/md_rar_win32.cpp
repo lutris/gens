@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "md_rar_win32.h"
+#include "md_rar_win32.hpp"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
@@ -42,23 +42,6 @@
 // libgsft includes.
 #include "libgsft/gsft_strdup.h"
 #include "libgsft/gsft_unused.h"
-
-
-// RAR (Win32) decompressor functions.
-static int decompressor_rar_win32_detect_format(FILE *zF);
-static int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename,
-						mdp_z_entry_t** z_entry_out);
-static size_t decompressor_rar_win32_get_file(FILE *zF, const char* filename,
-						mdp_z_entry_t *z_entry,
-						void *buf, const size_t size);
-
-// RAR (Win32) decompressor struct.
-const decompressor_t decompressor_rar_win32 =
-{
-	.detect_format	= decompressor_rar_win32_detect_format,
-	.get_file_info	= decompressor_rar_win32_get_file_info,
-	.get_file	= decompressor_rar_win32_get_file
-};
 
 
 // RAR load state.

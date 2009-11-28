@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: RAR Decompressor. (Win32)                                         *
+ * Gens: RAR Decompressor. (Win32) (decompressor_t struct)                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_DECOMPRESSOR_MD_RAR_WIN32_H
-#define GENS_DECOMPRESSOR_MD_RAR_WIN32_H
+#ifndef GENS_DECOMPRESSOR_MD_RAR_WIN32_T_H
+#define GENS_DECOMPRESSOR_MD_RAR_WIN32_T_H
 
 #include "decompressor.h"
 
@@ -35,4 +35,4 @@ extern const decompressor_t decompressor_rar_win32;
 }
 #endif
 
-#endif /* GENS_DECOMPRESSOR_MD_RAR_WIN32_H */
+#endif /* GENS_DECOMPRESSOR_MD_RAR_WIN32_T_H */

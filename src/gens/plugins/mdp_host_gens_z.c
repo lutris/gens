@@ -49,7 +49,7 @@
 #	include "util/file/decompressor/md_7z.h"
 #endif
 #ifdef _WIN32
-#	include "util/file/decompressor/md_rar_win32.h"
+#	include "util/file/decompressor/md_rar_win32_t.h"
 #else
 #	include "util/file/decompressor/md_rar_t.h"
 #endif
