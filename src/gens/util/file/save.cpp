@@ -1885,7 +1885,7 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	le16_to_cpu_array(_32X_VDP_CRam, sizeof(_32X_VDP_CRam));
 	
 	memcpy(Set_SR_Table, sv.set_sr_table, sizeof(Set_SR_Table));
-	//le32_to_cpu_array(Set_SR_Table, sizeof(Set_SR_Table));	// TODO: Add this function.
+	le32_to_cpu_array(Set_SR_Table, sizeof(Set_SR_Table));
 	Bank_SH2		= le32_to_cpu(sv.bank_sh2);
 	
 	memcpy(PWM_FIFO_R, sv.pwm_fifo_R, sizeof(PWM_FIFO_R));
