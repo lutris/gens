@@ -109,6 +109,15 @@ using std::list;
 #include "libgsft/w32u/w32u.h"
 #endif /* GENS_OS_WIN32 */
 
+// RAR stuff.
+#ifdef _WIN32
+static const char rar_binary_key[] = "UnRAR DLL";
+static const char rar_binary_default[] = ".\\unrar.dll";
+#else
+static const char rar_binary_key[] = "RAR Binary";
+static const char rar_binary_default[] = "/usr/bin/rar";
+#endif	
+
 
 /**
  * save(): Save Gens configuration.
@@ -317,7 +326,7 @@ int Config::save(const string& filename)
 		cfg.writeInt("Options", "RAM Cart Size", -1);
 	
 	// Miscellaneous files.
-	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
+	cfg.writeString("Options", rar_binary_key, Misc_Filenames.RAR_Binary);
 	
 	// Controller settings.
 	cfg.writeInt("Input", "P1.Type", (Controller_1_Type & 0x11), true, 2);
@@ -695,13 +704,8 @@ int Config::load(const string& filename, void* gameActive)
 		BRAM_Ex_State |= 0x100;
 	
 	// Miscellaneous files.
-#if defined(__WIN32__)
-	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\rar.exe",
+	cfg.getString("Options", rar_binary_key, rar_binary_default,
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
-#else /* !defined(__WIN32__) */
-	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
-		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
-#endif	
 	
 	// Controller settings.
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 0x01);

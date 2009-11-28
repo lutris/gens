@@ -42,7 +42,6 @@
 // libgsft includes.
 #include "libgsft/gsft_strdup.h"
 #include "libgsft/gsft_unused.h"
-#include "libgsft/gsft_szprintf.h"
 
 
 // RAR (Win32) decompressor functions.
@@ -93,7 +92,8 @@ static int unrar_dll_init(void)
 		return 0;
 	
 	// Load the DLL.
-	hUnrarDll = mdp_dlopen("unrar.dll");
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	hUnrarDll = mdp_dlopen(Misc_Filenames.RAR_Binary);
 	if (!hUnrarDll)
 		return -2;
 	
@@ -106,8 +106,7 @@ static int unrar_dll_init(void)
 	InitFuncPtr_unrar(hUnrarDll, RARSetCallback);
 	InitFuncPtr_unrar(hUnrarDll, RARGetDllVersion);
 	
-	// Increment the reference counter and return.
-	unrar_refcnt++;
+	// UnRAR.dll loaded successfully.
 	return 0;
 }
 
