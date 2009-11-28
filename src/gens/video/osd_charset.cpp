@@ -30,7 +30,7 @@
 static const uint8_t chr_err[16] =
 	{0x00, 0x38, 0x7C, 0x7C, 0xC6, 0x92, 0xF2, 0xE6,
 	 0xFE, 0xE6, 0x7C, 0x7C, 0x38, 0x00, 0x00, 0x00};
-
+#include <stdio.h>
 
 /**
  * osd_charset_prerender(): Prerender a string.
@@ -122,9 +122,35 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			chr_data = VGA_charset[page] + (16*chr);
 		}
 		
-		for (unsigned int row = 0; row < 16; row++)
+		// Check for combining characters.
+		// Unicode has the following combining characters:
+		// * Combining Diacritical Marks (0300–036F)
+		// * Combining Diacritical Marks Supplement (1DC0–1DFF)
+		// * Combining Diacritical Marks for Symbols (20D0–20FF)
+		// * Combining Half Marks (FE20–FE2F)
+		// Reference: http://en.wikipedia.org/wiki/Combining_character
+		if (chr_num > 0 &&
+		    (wchr >= 0x0300 && wchr <= 0x036F) ||
+		    (wchr >= 0x1DC0 && wchr <= 0x1DFF) ||
+		    (wchr >= 0x20D0 && wchr <= 0x20FF) ||
+		    (wchr >= 0xFE20 && wchr <= 0xFE2F))
 		{
-			prerender_buf[row][chr_num] = chr_data[row];
+			// Unicode combining character.
+			// OR the glyph with the previous character.
+			// TODO: This isn't the perfect method, but it's good enough for now.
+			chr_num--;
+			for (unsigned int row = 0; row < 16; row++)
+			{
+				prerender_buf[row][chr_num] |= chr_data[row];
+			}
+		}
+		else
+		{
+			// Regular character.
+			for (unsigned int row = 0; row < 16; row++)
+			{
+				prerender_buf[row][chr_num] = chr_data[row];
+			}
 		}
 		
 		// Next character.
