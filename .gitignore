@@ -1,13 +1,21 @@
 *~
 /autom4te.cache/
+/FOR FUTURE USE/
+/aclocal.m4
 /config.guess
 /config.sub
 /config.h.in
+/config.log
 /configure
-/FOR FUTURE USE/
+/Doxyfile
+/gens_gs.kdev*
+/libtool
+/ltmain.sh
+
 Makefile.in
 
 /debug-*/
 /release-*/
+/m4/*.m4
 
 .directory
