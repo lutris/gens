@@ -1979,7 +1979,7 @@ void YM2612_Update(int **buf, int length)
 {
 	int i, j, algo_type;
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG4,
 		"Starting generating sound...");
 	
 	// Mise à jour des pas des compteurs-fréquences s'ils ont été modifiés
@@ -2070,7 +2070,7 @@ void YM2612_Update(int **buf, int length)
 	
 	YM2612.Inter_Cnt = int_cnt;
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG4,
 		"Finishing generating sound...");
 
 }
