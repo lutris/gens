@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <node name="/">
-  <interface name="org.mdp.IrcInterface">
-    <method name="HelloWorld">
-      <arg type="s"/>
-      <arg type="as" direction="out"/>
-    </method>
-
-    <method name="GetTuple">
-      <arg type="(ss)" direction="out" />
-    </method>
-
-    <method name="GetDict">
-      <arg type="a{ss}" direction="out"/>
-    </method>
-
-  </interface>
+	<interface name="org.mdp.IrcInterface">
+		<method name="GetLastModified">
+			<arg type="u" direction="out"/>
+		</method>
+		<method name="IsRomLoaded">
+			<arg type="b" direction="out"/>
+		</method>
+		<method name="GetRomString">
+			<arg type="s" direction="out"/>
+		</method>
+	</interface>
 </node>

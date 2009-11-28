@@ -50,9 +50,15 @@ struct IrcReporterClass
 
 G_DEFINE_TYPE(IrcReporter, irc_reporter, G_TYPE_OBJECT)
 
+#if 0
 gboolean irc_reporter_hello_world(IrcReporter *obj, const char *hello_message, char ***ret, GError **error);
 gboolean irc_reporter_get_tuple(IrcReporter *obj, GValueArray **ret, GError **error);
 gboolean irc_reporter_get_dict(IrcReporter *obj, GHashTable **ret, GError **error);
+#endif
+
+gboolean irc_reporter_get_last_modified(IrcReporter *obj, unsigned int *ret, GError **error);
+gboolean irc_reporter_is_rom_loaded(IrcReporter *obj, gboolean *ret, GError **error);
+gboolean irc_reporter_get_rom_string(IrcReporter *obj, char **ret, GError **error);
 
 #include "dbus-service-glue.h"
 
@@ -64,35 +70,21 @@ static void irc_reporter_class_init(IrcReporterClass *klass)
 {
 }
 
-gboolean irc_reporter_hello_world(IrcReporter *obj, const char *hello_message, char ***ret, GError **error)
+gboolean irc_reporter_get_last_modified(IrcReporter *obj, unsigned int *ret, GError **error)
 {
-	printf("%s\n", hello_message);
-	*ret = g_new (char *, 3);
-	(*ret)[0] = g_strdup("Hello");
-	(*ret)[1] = g_strdup(" from example-service.c");
-	(*ret)[2] = NULL;
-	
+	*ret = 212194;
 	return TRUE;
 }
 
-gboolean irc_reporter_get_tuple (IrcReporter *obj, GValueArray **ret, GError **error)
+gboolean irc_reporter_is_rom_loaded(IrcReporter *obj, gboolean *ret, GError **error)
 {
-	*ret = g_value_array_new (6);
-	g_value_array_prepend (*ret, NULL);
-	g_value_init (g_value_array_get_nth (*ret, 0), G_TYPE_STRING);
-	g_value_set_string (g_value_array_get_nth (*ret, 0), "hello");
-	g_value_array_prepend (*ret, NULL);
-	g_value_init (g_value_array_get_nth (*ret, 0), G_TYPE_UINT);
-	g_value_set_uint (g_value_array_get_nth (*ret, 0), 42);
-	
+	*ret = FALSE;
 	return TRUE;
 }
 
-gboolean irc_reporter_get_dict(IrcReporter *obj, GHashTable **ret, GError **error)
+gboolean irc_reporter_get_rom_string(IrcReporter *obj, char **ret, GError **error)
 {
-	*ret = g_hash_table_new (g_str_hash, g_str_equal);
-	g_hash_table_insert(*ret, "first", "Hello Dict");
-	g_hash_table_insert(*ret, "second", " from example-service.c");
+	*ret = g_strdup("The Game");
 	return TRUE;
 }
 
