@@ -175,6 +175,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	}
 	
 	HANDLE hRar;
+	char *filenameA = NULL;
 	wchar_t *filenameW = NULL;
 	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
 	
@@ -194,8 +195,8 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	else
 	{
 		// ANSI mode.
-		// TODO: Make a copy of filename, since rar_open.ArcName isn't const.
-		rar_open.ArcName = filename;
+		filenameA = strdup(filename);
+		rar_open.ArcName = filenameA;
 		rar_open.ArcNameW = NULL;
 	}
 	
@@ -259,6 +260,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	
 	// Close the RAR file.
 	pRARCloseArchive(hRar);
+	free(filenameA);
 	free(filenameW);
 	
 	// Shut down UnRAR.dll.
@@ -338,6 +340,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	}
 	
 	HANDLE hRar;
+	char *filenameA = NULL;
 	wchar_t *filenameW = NULL;
 	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte && p_wcsicmp);
 	
@@ -357,8 +360,8 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	else
 	{
 		// ANSI mode.
-		// TODO: Make a copy of filename, since rar_open.ArcName isn't const.
-		rar_open.ArcName = filename;
+		filenameA = strdup(filename);
+		rar_open.ArcName = filenameA;
 		rar_open.ArcNameW = NULL;
 	}
 	
@@ -430,6 +433,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	
 	// Close the RAR file.
 	pRARCloseArchive(hRar);
+	free(filenameA);
 	free(filenameW);
 	free(z_filenameW);
 	
