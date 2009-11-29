@@ -41,7 +41,8 @@ mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_win32.c vlopt_dllmain.c re
 mdp_misc_vdp_layer_options_la_LIBADD	+= \
 		-lgdi32 \
 		$(top_builddir)/src/libgsft/libgsft_win32.la \
-		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la \
+		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
 noinst_HEADERS += \
 		vlopt.ico \
 		vlopt_dllmain.h \
