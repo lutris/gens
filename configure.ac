@@ -775,9 +775,21 @@ if test "x$GCC" = "xyes"; then
 	GSFT_CXXFLAGS_GCC_OPTION([-Wextra], AM_CXXFLAGS)
 fi
 
+if test xobj_format = xelf32 -o xobj_format = xelf64; then
+	# Enable -rdynamic on ELF platforms.
+	# This allows for more extensive backtraces.
+	GSFT_CFLAGS_GCC_OPTION([-rdynamic], AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION([-rdynamic], AM_CXXFLAGS)
+	
+	# HACK: This might not work properly on some systems.
+	AM_LDFLAGS="$AM_LDFLAGS -rdynamic"
+fi
+
 # Check for various linker flags.
-GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([-O1], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([--sort-common], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
 
 AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
 AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
