@@ -34,6 +34,7 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 
 /** ListView macros. **/
 #define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
+#define ListView_GetItemCountU(w)		(int)pSendMessageU((w),LVM_GETITEMCOUNT,0,0)
 #define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
 int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem);
 int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol);
