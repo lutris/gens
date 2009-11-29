@@ -34,14 +34,24 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 
 /** ListView macros. **/
 #define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
+#define ListView_GetCheckStateU(w,i)		((((UINT)(pSendMessageU((w),LVM_GETITEMSTATE,(WPARAM)(i),LVIS_STATEIMAGEMASK)))>>12)-1)
 #define ListView_GetItemCountU(w)		(int)pSendMessageU((w),LVM_GETITEMCOUNT,0,0)
 #define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
 int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem);
 int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol);
 int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem);
+#define ListView_SetCheckStateU(w,i,f)		ListView_SetItemStateU(w,i,INDEXTOSTATEIMAGEMASK((f)+1),LVIS_STATEIMAGEMASK)
 #define ListView_SetExtendedListViewStyleU(w,s)	(DWORD)pSendMessageU((w),LVM_SETEXTENDEDLISTVIEWSTYLE,0,(s))
 #define ListView_SetImageListU(w,h,i)		(HIMAGELIST)(UINT)pSendMessageU((w),LVM_SETIMAGELIST,(i),(LPARAM)(h))
 int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem);
+
+#define ListView_SetItemStateU(w,i,d,m) \
+{ \
+	LV_ITEM _lvi;\
+	_lvi.stateMask=m;\
+	_lvi.state=d;\
+	pSendMessageU((w),LVM_SETITEMSTATE,i,(LPARAM)(LV_ITEM*)&_lvi);\
+}
 
 #ifdef __cplusplus
 }
