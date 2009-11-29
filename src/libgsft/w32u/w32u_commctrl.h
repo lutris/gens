@@ -34,6 +34,7 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 
 /** ListView macros. **/
 #define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
+#define ListView_DeleteItemU(w,i)		(BOOL)pSendMessageU((w),LVM_DELETEITEM,i,0)
 #define ListView_GetCheckStateU(w,i)		((((UINT)(pSendMessageU((w),LVM_GETITEMSTATE,(WPARAM)(i),LVIS_STATEIMAGEMASK)))>>12)-1)
 #define ListView_GetItemCountU(w)		(int)pSendMessageU((w),LVM_GETITEMCOUNT,0,0)
 #define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
