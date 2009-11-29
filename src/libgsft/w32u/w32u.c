@@ -236,9 +236,7 @@ static WINUSERAPI int WINAPI GetWindowTextU(HWND hWnd, LPSTR lpString, int nMaxC
 	}
 	
 	// Allocate a temporary UTF-16 return buffer.
-	wchar_t *lpwString = (wchar_t*)malloc(nMaxCount * sizeof(lpwString));
-	
-	// Get the window text.
+	wchar_t *lpwString = (wchar_t*)malloc(nMaxCount * sizeof(wchar_t));
 	int ret = pGetWindowTextW(hWnd, lpwString, nMaxCount);
 	
 	// Convert the window text to UTF-8.
