@@ -820,7 +820,7 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 			manual_paths[1] = GENS_DOC_DIR "-" + string(VERSION) + "/manual/index.html";
 #endif
 			
-			int i;
+			unsigned int i;
 			for (i = 0; i < (sizeof(manual_paths) / sizeof(manual_paths[0])); i++)
 			{
 				if (access(manual_paths[i].c_str(), R_OK) == 0)

@@ -77,7 +77,8 @@ typedef struct _dir_plugin_t
 static vector<dir_widget_t> vectDirs;
 
 // Widget creation functions.
-static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row, int dir_id);
+static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table,
+						      int row, unsigned int dir_id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -227,7 +228,8 @@ void dir_window_show(void)
  * @param dir_id Directory ID for the "Change..." callback function.
  * @return Textbox.
  */
-static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row, int dir_id)
+static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *table,
+						int row, unsigned int dir_id)
 {
 	// Create tbe label for the directory.
 	GtkWidget *lblDirectory = gtk_label_new(title);
@@ -262,7 +264,7 @@ static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *ta
 	// Connect the "clicked" signal for the "Change" button.
 	g_signal_connect(GTK_OBJECT(btnChange), "clicked",
 			 G_CALLBACK(dir_window_callback_btnChange_clicked),
-			 GINT_TO_POINTER(dir_id));
+			 GUINT_TO_POINTER(dir_id));
 	
 	return txtDirectory;
 }
@@ -454,10 +456,10 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 {
 	GSFT_UNUSED_PARAMETER(button);
 	
-	if (GPOINTER_TO_INT(user_data) < 0 || GPOINTER_TO_INT(user_data) >= vectDirs.size())
+	if (GPOINTER_TO_UINT(user_data) >= vectDirs.size())
 		return;
 	
-	dir_widget_t *dir_widget = &vectDirs[GPOINTER_TO_INT(user_data)];
+	dir_widget_t *dir_widget = &vectDirs[GPOINTER_TO_SIZE(user_data)];
 	
 	char title[128];
 	szprintf(title, sizeof(title), "Select %s Directory", dir_widget->title.c_str());

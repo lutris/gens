@@ -103,14 +103,15 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 
 // Widget creation functions.
 static void	dir_window_create_child_windows(HWND hWnd);
-static HWND	dir_window_create_dir_widgets(LPCTSTR title, HWND parent, int y, int id);
+static HWND	dir_window_create_dir_widgets(LPCTSTR title, HWND parent,
+					      int y, unsigned int id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
 static void	dir_window_save(void);
 
 // Callbacks.
-static void	dir_window_callback_btnChange_clicked(int dir);
+static void	dir_window_callback_btnChange_clicked(unsigned int dir);
 
 
 /**
@@ -270,7 +271,8 @@ static void dir_window_create_child_windows(HWND hWnd)
 }
 
 
-static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container, int y, int id)
+static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container,
+					  int y, unsigned int id)
 {
 	// Create the label for the directory.
 	HWND lblTitle = CreateWindow(WC_STATIC, title,
@@ -321,7 +323,6 @@ static void dir_window_init(void)
 {
 	char dir_buf[GENS_PATH_MAX];
 	char dir_buf_rel[GENS_PATH_MAX];
-	const unsigned int gens_exe_pathlen = strlen(PathNames.Gens_EXE_Path);
 	
 	// Internal directories.
 	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
@@ -483,6 +484,8 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 								Button_Enable(btnApply, true);
 							}
 							break;
+						default:
+							break;
 					}
 					break;
 			}
@@ -494,6 +497,9 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 			
 			dir_window = NULL;
 			break;
+		
+		default:
+			break;
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -504,13 +510,13 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
  * dir_window_callback_btnChange_clicked(): A "Change" button was clicked.
  * @param dir Directory number.
  */
-static void dir_window_callback_btnChange_clicked(int dir)
+static void dir_window_callback_btnChange_clicked(unsigned int dir)
 {
 	char dir_buf[GENS_PATH_MAX];
 	char dir_buf_abs[GENS_PATH_MAX];
 	string new_dir;
 	
-	if (dir < 0 || dir >= vectDirs.size())
+	if (dir >= vectDirs.size())
 		return;
 	
 	dir_widget_t *dir_widget = &vectDirs[dir];
