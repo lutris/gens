@@ -29,12 +29,16 @@
 // C includes.
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 // C++ includes.
 #include <sstream>
 #include <string>
 using std::stringstream;
 using std::string;
+
+// libgsft includes.
+#include "libgsft/gsft_space_elim.h"
 
 
 // Full Screen Minization counters.
@@ -85,60 +89,25 @@ static inline bool isGraphChar(char chr)
 void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName,
 				 const string& emptyGameName)
 {
-	stringstream ss;
 	string condGameName;
-	bool lastCharIsGraph = false;
 	
-	// Condense the game name by removing excess spaces.
-	for (unsigned int cpos = 0; cpos < gameName.length(); cpos++)
+	if (gameName.empty())
 	{
-		char chr = gameName.at(cpos);
-		
-		if (!lastCharIsGraph && !isGraphChar(chr))
-		{
-			// This is a space character, and the previous
-			// character was not a space character.
-			continue;
-		}
-		
-		// This is not a space character.
-		ss << chr;
-		lastCharIsGraph = isGraphChar(chr);
-	}
-	
-	// Trim any excess spaces.
-	condGameName = ss.str();
-	
-	// Trim trailing spaces.
-	int len = condGameName.length();
-	if (len > 0)
-	{
-		if (!isGraphChar(condGameName.at(len - 1)))
-		{
-			condGameName = condGameName.substr(0, len - 1);
-		}
-	}
-	
-	// Trim leading spaces.
-	len = condGameName.length();
-	if (len > 0)
-	{
-		if (!isGraphChar(condGameName.at(0)))
-		{
-			condGameName = condGameName.substr(1, len - 1);
-		}
-	}
-	
-	// Check if the condensed game name is empty.
-	if (condGameName.empty())
-	{
-		// Condensed game name is empty.
-		// Replace it with emptyGameName.
+		// Specified game name is empty. Use the empty game name.
 		condGameName = emptyGameName;
+	}
+	else
+	{
+		// Specified game name is not empty.
+		// Run it through the space elimination algorithm.
+		char *buf = (char*)malloc(gameName.size() + 1);
+		gsft_space_elim(gameName.c_str(), gameName.size(), buf);
+		condGameName = (buf[0] != 0x00 ? string(buf) : emptyGameName);
+		free(buf);
 	}
 	
 	// Set the title.
-	setWindowTitle_withAppVersion(systemName + ": " + condGameName);
+	setWindowTitle_withAppVersion(systemName + ": " + string(condGameName));
 }
 
 
