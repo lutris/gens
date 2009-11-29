@@ -30,23 +30,23 @@
 extern "C" {
 #endif
 
-/** SetWindowText() macros. **/
-#define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
-
 /** Button macros. **/
 #define Button_GetCheckU(hwndCtl)	((int)(DWORD)pSendMessageU((hwndCtl),BM_GETCHECK,0,0))
+#define Button_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
 #define Button_SetCheckU(hwndCtl,check)	((void)pSendMessageU((hwndCtl),BM_SETCHECK,(WPARAM)(int)(check),0))
 #define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ComboBox macros. **/
 #define ComboBox_AddStringU(hwndCtl, lpsz)	((int)(DWORD)SendMessageU_LPCSTR((hwndCtl),CB_ADDSTRING,CB_ADDSTRING,0,(LPARAM)(lpsz)))
 #define ComboBox_GetCurSelU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_GETCURSEL,0,0))
+#define ComboBox_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
 #define ComboBox_ResetContentU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_RESETCONTENT,0,0))
 #define ComboBox_SetCurSelU(hwndCtl,index)	((int)(DWORD)pSendMessageU((hwndCtl),CB_SETCURSEL,(WPARAM)(int)(index),0))
 #define ComboBox_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** Edit macros. **/
 #define Edit_GetTextU(hwndCtl,lpch,cchMax)	pGetWindowTextU((hwndCtl),(lpch),(cchMax))
+#define Edit_GetTextLengthU(hwndCtl)		pGetWindowTextLengthU(hwndCtl)
 #define Edit_LimitTextU(hwndCtl,cchMax)		((void)pSendMessageU((hwndCtl),EM_LIMITTEXT,(WPARAM)(cchMax),0))
 #define Edit_SetReadOnlyU(hwndCtl,fReadOnly)	((BOOL)(DWORD)pSendMessageU((hwndCtl),EM_SETREADONLY,(WPARAM)(BOOL)(fReadOnly),0))
 #define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
@@ -64,6 +64,10 @@ int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
 #define ListBox_ResetContentU(hwndCtl)			((BOOL)(DWORD)pSendMessageU((hwndCtl),LB_RESETCONTENT,0,0))
 #define ListBox_SetCurSelU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_SETCURSEL,(WPARAM)(int)(index),0))
 #define ListBox_SetItemDataU(hwndCtl,index,data)	((int)(DWORD)pSendMessageU((hwndCtl),LB_SETITEMDATA,(WPARAM)(int)(index),(LPARAM)(data)))
+
+/** Static macros. **/
+#define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
+#define Static_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
 
 #ifdef __cplusplus
 }

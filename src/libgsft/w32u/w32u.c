@@ -440,6 +440,22 @@ WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, W
  * but they have separate A/W versions.
  */
 
+MAKE_FUNCPTR(CreateAcceleratorTableA);
+MAKE_FUNCPTR(TranslateAcceleratorA);
+
+MAKE_FUNCPTR(DefWindowProcA);
+MAKE_FUNCPTR(CallWindowProcA);
+
+MAKE_FUNCPTR(SendMessageA);
+BOOL isSendMessageUnicode = 0;
+MAKE_FUNCPTR(GetMessageA);
+MAKE_FUNCPTR(PeekMessageA);
+
+MAKE_FUNCPTR(IsDialogMessageA);
+MAKE_FUNCPTR(DispatchMessageA);
+
+MAKE_FUNCPTR(GetWindowTextLengthA);
+
 #ifdef _WIN64
 MAKE_FUNCPTR(GetWindowLongPtrA);
 MAKE_FUNCPTR(SetWindowLongPtrA);
@@ -455,20 +471,6 @@ MAKE_FUNCPTR(SetClassLongPtrA);
 MAKE_FUNCPTR(GetClassLongA);
 MAKE_FUNCPTR(SetClassLongA);
 #endif
-
-MAKE_FUNCPTR(CreateAcceleratorTableA);
-MAKE_FUNCPTR(TranslateAcceleratorA);
-
-MAKE_FUNCPTR(DefWindowProcA);
-MAKE_FUNCPTR(CallWindowProcA);
-
-MAKE_FUNCPTR(SendMessageA);
-BOOL isSendMessageUnicode = 0;
-MAKE_FUNCPTR(GetMessageA);
-MAKE_FUNCPTR(PeekMessageA);
-
-MAKE_FUNCPTR(IsDialogMessageA);
-MAKE_FUNCPTR(DispatchMessageA);
 
 
 /**
@@ -546,6 +548,8 @@ int WINAPI w32u_init(void)
 	
 	InitFuncPtrs(hUser32, "IsDialogMessage", pIsDialogMessageA);
 	InitFuncPtrs(hUser32, "DispatchMessage", pDispatchMessageA);
+	
+	InitFuncPtrs(hUser32, "GetWindowTextLength", pGetWindowTextLengthA);
 	
 #ifdef _WIN64
 	InitFuncPtrs(hUser32, "GetWindowLongPtr", pGetWindowLongPtrA);

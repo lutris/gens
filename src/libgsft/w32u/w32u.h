@@ -160,6 +160,9 @@ MAKE_EXTFUNCPTR(SetClassLongA);
 #define pSetClassLongPtrU pSetClassLongA
 #endif
 
+MAKE_EXTFUNCPTR(GetWindowTextLengthA);
+#define pGetWindowTextLengthU pGetWindowTextLengthA
+
 int WINAPI w32u_init(void);
 int WINAPI w32u_end(void);
 
