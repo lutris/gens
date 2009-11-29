@@ -1278,6 +1278,7 @@ void Options::setGameName(int system)
 		else
 			systemName = "Genesis";
 		gameName = ROM::getRomName(Game, Game_Mode);
+		emptyGameName = string(ROM_Filename);
 	}
 	else if (_32X_Started || system == 2)
 	{
@@ -1286,6 +1287,7 @@ void Options::setGameName(int system)
 		else
 			systemName = "32X (NTSC)";
 		gameName = ROM::getRomName(Game, Game_Mode);
+		emptyGameName = string(ROM_Filename);
 	}
 	else if (SegaCD_Started || system == 1)
 	{
