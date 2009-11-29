@@ -212,8 +212,9 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 	
 	// Create the string.
 	// TODO: Allow the user to customize this.
-	szprintf(irc_rom_string, sizeof(irc_rom_string), "[%s] %s (%s%s%d megabits)",
-		 system, rom_name, build_date, (build_date[0] != 0 ? "; " : ""), mbits);
+	szprintf(irc_rom_string, sizeof(irc_rom_string), "[%s] %s (%s%s%d megabit%s)",
+			system, rom_name, build_date, (build_date[0] != 0 ? "; " : ""),
+			mbits, (mbits != 1 ? "s" : ""));
 	
 	// Indicate that a ROM is loaded.
 	irc_is_rom_loaded = 1;
