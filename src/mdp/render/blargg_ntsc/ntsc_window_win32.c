@@ -108,7 +108,7 @@ void ntsc_window_show(void *parent)
 	
 	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
 	if (!ntsc_hInstance)
-		ntsc_hInstance = GetModuleHandle(NULL);
+		ntsc_hInstance = pGetModuleHandleU(NULL);
 	
 	// Create the window class.
 	if (ntsc_window_wndclass.lpfnWndProc != ntsc_window_wndproc)
