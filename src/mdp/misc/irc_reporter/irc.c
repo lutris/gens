@@ -153,9 +153,15 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 	{
 		case MDP_SYSTEM_MD:
 		case MDP_SYSTEM_32X:
+		case MDP_SYSTEM_MCD:
+		case MDP_SYSTEM_MCD32X:
+		case MDP_SYSTEM_PICO:
 			// MD or 32X ROM. Read the header.
 			// TODO: Get the emulated country code to determine if we should use Domestic or Overseas.
 			// For now, just use Overseas.
+			// TODO: MCD and MCD32X will show the SegaCD firmware ROM name instead of the
+			// actual game name, since MDP v1.0 doesn't support reading data from
+			// the CD-ROM. This may be added in MDP v1.1.
 			irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x150, (uint8_t*)rom_name_raw, 0x30);
 			gsft_space_elim(rom_name_raw, 0x30, rom_name);
 			break;
