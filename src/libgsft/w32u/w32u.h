@@ -49,6 +49,9 @@ MAKE_EXTFUNCPTR(WideCharToMultiByte);
 MAKE_EXTFUNCPTR(GetModuleFileNameA);
 #define pGetModuleFileNameU pGetModuleFileNameA
 
+MAKE_EXTFUNCPTR(GetModuleHandleA);
+#define pGetModuleHandleU pGetModuleHandleA
+
 MAKE_EXTFUNCPTR(SetCurrentDirectoryA);
 #define pSetCurrentDirectoryU pSetCurrentDirectoryA
 

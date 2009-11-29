@@ -73,6 +73,25 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameU(HMODULE hModule, LPSTR lpFilen
 }
 
 
+MAKE_FUNCPTR(GetModuleHandleA);
+MAKE_STFUNCPTR(GetModuleHandleW);
+static WINBASEAPI HMODULE WINAPI GetModuleHandleU(LPCSTR lpModuleName)
+{
+	if (!lpModuleName)
+	{
+		// String not specified. Don't bother converting anything.
+		return pGetModuleHandleW((LPCWSTR)lpModuleName);
+	}
+	
+	// Convert lpModuleName from UTF-8 to UTF-16.
+	wchar_t *lpwModuleName = w32u_mbstowcs(lpModuleName);
+	
+	HMODULE hRet = pGetModuleHandleW(lpwModuleName);
+	free(lpwModuleName);
+	return hRet;
+}
+
+
 MAKE_FUNCPTR(SetCurrentDirectoryA);
 MAKE_STFUNCPTR(SetCurrentDirectoryW);
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
@@ -497,6 +516,7 @@ int WINAPI w32u_init(void)
 	InitFuncPtr(hKernel32, WideCharToMultiByte);
 	
 	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
+	InitFuncPtrsU(hKernel32, "GetModuleHandle", pGetModuleHandleW, pGetModuleHandleA, GetModuleHandleU);
 	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
 	InitFuncPtrsU(hKernel32, "GetVersionEx", pGetVersionExW, pGetVersionExA, GetVersionExU);
 	
