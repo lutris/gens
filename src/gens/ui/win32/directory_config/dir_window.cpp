@@ -97,7 +97,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 
 // Widget creation functions.
 static void	dir_window_create_child_windows(HWND hWnd);
-static HWND	dir_window_create_dir_widgets(const char *title, HWND parent
+static HWND	dir_window_create_dir_widgets(const char *title, HWND parent,
 						int y, unsigned int id);
 
 // Directory configuration load/save functions.
