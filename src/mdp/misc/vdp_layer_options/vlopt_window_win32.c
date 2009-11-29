@@ -158,6 +158,9 @@ void vlopt_window_close(void)
 	// Delete the font.
 	DeleteFont(vlopt_hfont);
 	vlopt_hfont = NULL;
+	
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
 }
 
 
