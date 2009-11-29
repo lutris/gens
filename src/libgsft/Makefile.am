@@ -20,7 +20,8 @@ endif
 
 libgsft_la_SOURCES = \
 		gsft_byteswap.c \
-		gsft_file.c
+		gsft_file.c \
+		gsft_space_elim.c
 
 noinst_HEADERS = \
 		gsft_fncall.h \
@@ -32,7 +33,8 @@ noinst_HEADERS = \
 		gsft_unused.h \
 		gsft_file.h \
 		gsft_szprintf.h \
-		gsft_strlcpy.h
+		gsft_strlcpy.h \
+		gsft_space_elim.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
