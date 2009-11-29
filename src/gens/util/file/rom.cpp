@@ -1102,7 +1102,14 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 #if defined(HAVE_ICONV) || defined(_WIN32)
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
-		return SJIStoUTF8(RomName, sizeof(RomName));
+	{
+		string s_utf8 = SJIStoUTF8(RomName, sizeof(RomName));
+		if (!s_utf8.empty())
+		{
+			// The ROM name was converted successfully.
+			return s_utf8;
+		}
+	}
 #endif
 	
 	return string(RomName);
@@ -1126,12 +1133,12 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	// TODO: This seems to produce the wrong result for Mega Anser.
 	// It results in 5 Japanese characters, but it should be 8 Japanese characters.
 	if (!pMultiByteToWideChar || !pWideCharToMultiByte)
-		return string(sjis);
+		return "";
 	
 	// Convert Shift-JIS to UTF-16.
 	int wcs_len = pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, NULL, 0);
 	if (wcs_len <= 0)
-		return string(sjis);
+		return "";
 	
 	wchar_t *wcs = (wchar_t*)malloc(wcs_len * sizeof(wchar_t));
 	pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, wcs, wcs_len);
@@ -1141,7 +1148,7 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	if (mbs_len <= 0)
 	{
 		free(wcs);
-		return string(sjis);
+		return "";
 	}
 	
 	char *mbs = (char*)malloc(mbs_len * sizeof(char) + 1);
