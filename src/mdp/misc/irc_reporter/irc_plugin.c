@@ -28,7 +28,7 @@ static mdp_desc_t mdp_desc =
 	.name = "IRC Reporter",
 	.author_mdp = "David Korth",
 	.author_orig = NULL,
-	.description = "Reports loaded games to IRC clients.",
+	.description = "Reports loaded games to IRC clients using the D-Bus protocol.",
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
 	
