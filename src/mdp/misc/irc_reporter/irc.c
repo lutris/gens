@@ -31,6 +31,7 @@
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
 #include "libgsft/gsft_strlcpy.h"
+#include "libgsft/gsft_space_elim.h"
 
 // MDP includes.
 #include "mdp/mdp_stdint.h"
@@ -146,8 +147,8 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 	}
 	
 	// Get the ROM name from the ROM header.
-	// TODO: Remove excess spaces from the ROM header name.
-	char rom_name[512];
+	char rom_name_raw[128];
+	char rom_name[129];
 	switch (system_id)
 	{
 		case MDP_SYSTEM_MD:
@@ -155,8 +156,8 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 			// MD or 32X ROM. Read the header.
 			// TODO: Get the emulated country code to determine if we should use Domestic or Overseas.
 			// For now, just use Overseas.
-			irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x150, (uint8_t*)rom_name, 0x30);
-			rom_name[0x30] = 0x00;
+			irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x150, (uint8_t*)rom_name_raw, 0x30);
+			gsft_space_elim(rom_name_raw, 0x30, rom_name);
 			break;
 		default:
 			// Not sure how to get the ROM name for this system ID.
