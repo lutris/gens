@@ -4,8 +4,9 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libminizip.la
 
-libminizip_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
-libminizip_la_LDFLAGS	= $(AM_LDFLAGS) -static
+libminizip_la_CFLAGS		= $(AM_CFLAGS) -O3 -funroll-loops
+libminizip_la_LDFLAGS		= $(AM_LDFLAGS)
+libminizip_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
 if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/

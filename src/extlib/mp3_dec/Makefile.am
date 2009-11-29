@@ -4,8 +4,9 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libmp3_dec.la
 
-libmp3_dec_la_CFLAGS	= $(AM_CFLAGS) -static
-libmp3_dec_la_LDFLAGS	= $(AM_LDFLAGS) -static
+libmp3_dec_la_CFLAGS		= $(AM_CFLAGS)
+libmp3_dec_la_LDFLAGS		= $(AM_LDFLAGS)
+libmp3_dec_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
 libmp3_dec_la_SOURCES = \
 		common.c \
