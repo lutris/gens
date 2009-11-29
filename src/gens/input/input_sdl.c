@@ -235,9 +235,9 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	}
 	
 	// Convert this keypress from GDK to SDL.
-	// TODO: Use GENS key defines instead.
+	// TODO: Use Gens key defines instead?
 	sdlev.key.keysym.sym = (SDLKey)input_sdl_gdk_to_gens_keyval(event->keyval);
-	if (sdlev.key.keysym.sym != -1)
+	if (sdlev.key.keysym.sym != 0)
 		SDL_PushEvent(&sdlev);
 	
 	// Allow GTK+ to process this key.
