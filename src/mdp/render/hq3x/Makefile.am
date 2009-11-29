@@ -17,6 +17,7 @@ mdp_LTLIBRARIES = mdp_render_hq3x.la
 
 mdp_render_hq3x_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_hq3x_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_hq3x_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 mdp_render_hq3x_la_SOURCES = \
 		mdp_render_hq3x_plugin.c \

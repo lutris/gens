@@ -6,11 +6,12 @@ mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_scanline.la
 
 INCLUDES = -I@top_srcdir@/src/
-mdp_render_scanline_la_CCASFLAGS = $(INCLUDES)
+mdp_render_scanline_la_CCASFLAGS	= $(INCLUDES)
 
-mdp_render_scanline_la_CFLAGS    = $(AM_CFLAGS)
-mdp_render_scanline_la_CXXFLAGS  = $(AM_CXXFLAGS)
-mdp_render_scanline_la_LDFLAGS   = $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_scanline_la_CFLAGS    	= $(AM_CFLAGS)
+mdp_render_scanline_la_CXXFLAGS  	= $(AM_CXXFLAGS)
+mdp_render_scanline_la_LDFLAGS   	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_scanline_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 mdp_render_scanline_la_SOURCES = \
 		mdp_render_scanline_plugin.c \

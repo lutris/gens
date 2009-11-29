@@ -10,6 +10,7 @@ mdp_LTLIBRARIES = mdp_render_blargg_ntsc.la
 mdp_render_blargg_ntsc_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_blargg_ntsc_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_render_blargg_ntsc_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_blargg_ntsc_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 mdp_render_blargg_ntsc_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_render_blargg_ntsc_la_SOURCES = \

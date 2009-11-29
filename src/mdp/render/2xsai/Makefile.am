@@ -8,8 +8,9 @@ mdp_LTLIBRARIES = mdp_render_2xsai.la
 INCLUDES = -I@top_srcdir@/src/
 mdp_render_2xsai_la_CCASFLAGS	= $(INCLUDES)
 
-mdp_render_2xsai_la_CFLAGS	= $(AM_CFLAGS)
-mdp_render_2xsai_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_2xsai_la_CFLAGS		= $(AM_CFLAGS)
+mdp_render_2xsai_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_2xsai_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 NASM += -I@srcdir@/../
 

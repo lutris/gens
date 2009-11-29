@@ -11,10 +11,11 @@ INCLUDES = -I@top_srcdir@/src/
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_misc_game_genie.la
 
-mdp_misc_game_genie_la_CFLAGS	= $(AM_CFLAGS)
-mdp_misc_game_genie_la_CXXFLAGS	= $(AM_CXXFLAGS)
-mdp_misc_game_genie_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_misc_game_genie_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
+mdp_misc_game_genie_la_CFLAGS		= $(AM_CFLAGS)
+mdp_misc_game_genie_la_CXXFLAGS		= $(AM_CXXFLAGS)
+mdp_misc_game_genie_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_misc_game_genie_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
+mdp_misc_game_genie_la_LIBADD		= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_game_genie_la_SOURCES = \
 		gg_plugin.c \

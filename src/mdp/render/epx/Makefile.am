@@ -10,6 +10,7 @@ INCLUDES = -I@top_srcdir@/src/
 mdp_render_epx_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_epx_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_render_epx_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_epx_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 mdp_render_epx_la_SOURCES = \
 		mdp_render_epx_plugin.c \

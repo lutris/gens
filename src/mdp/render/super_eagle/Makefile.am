@@ -10,6 +10,7 @@ mdp_render_super_eagle_la_CCASFLAGS	= $(INCLUDES)
 
 mdp_render_super_eagle_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_super_eagle_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_super_eagle_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 NASM += -I@srcdir@/../
 

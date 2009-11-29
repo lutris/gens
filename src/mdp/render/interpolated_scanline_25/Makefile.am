@@ -15,9 +15,10 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_interpolated_scanline_25.la
 
-mdp_render_interpolated_scanline_25_la_CFLAGS	= $(AM_CFLAGS)
-mdp_render_interpolated_scanline_25_la_CXXFLAGS	= $(AM_CXXFLAGS)
-mdp_render_interpolated_scanline_25_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_interpolated_scanline_25_la_CFLAGS		= $(AM_CFLAGS)
+mdp_render_interpolated_scanline_25_la_CXXFLAGS		= $(AM_CXXFLAGS)
+mdp_render_interpolated_scanline_25_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_interpolated_scanline_25_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 
 mdp_render_interpolated_scanline_25_la_SOURCES = \
 		mdp_render_interpolated_scanline_25_plugin.c \
