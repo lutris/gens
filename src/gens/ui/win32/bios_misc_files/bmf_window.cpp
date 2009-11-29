@@ -40,19 +40,14 @@
 using std::string;
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windowsx.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_szprintf.h"
 
 
 // Window.
@@ -111,18 +106,17 @@ void bmf_window_show(void)
 		bmf_wndclass.hCursor = NULL;
 		bmf_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		bmf_wndclass.lpszMenuName = NULL;
-		bmf_wndclass.lpszClassName = TEXT("bmf_window");
+		bmf_wndclass.lpszClassName = "bmf_window";
 		
-		RegisterClass(&bmf_wndclass);
+		pRegisterClassU(&bmf_wndclass);
 	}
 	
 	// Create the window.
-	// Create the window.
-	bmf_window = CreateWindow(TEXT("bmf_window"), TEXT("BIOS/Misc Files"),
-				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
-				  gens_window, NULL, ghInstance, NULL);
+	bmf_window = pCreateWindowU("bmf_window", "BIOS/Misc Files",
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
+					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	gsft_win32_set_actual_window_size(bmf_window, BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT);
@@ -158,11 +152,11 @@ static void bmf_window_create_child_windows(HWND hWnd)
 			grpBox_Height = 24;
 			grpBox_Entry = 0;
 			
-			grpBox = CreateWindow(WC_BUTTON, bmf_entries[file].title,
-					      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					      grpBox_Left, grpBox_Top,
-					      BMF_FRAME_WIDTH, grpBox_Height,
-					      hWnd, NULL, ghInstance, NULL);
+			grpBox = pCreateWindowU(WC_BUTTON, bmf_entries[file].title,
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						grpBox_Left, grpBox_Top,
+						BMF_FRAME_WIDTH, grpBox_Height,
+						hWnd, NULL, ghInstance, NULL);
 			SetWindowFont(grpBox, fntMain, true);
 		}
 		else
@@ -173,28 +167,28 @@ static void bmf_window_create_child_windows(HWND hWnd)
 			SetWindowPos(grpBox, NULL, 0, 0, BMF_FRAME_WIDTH, grpBox_Height, SWP_NOMOVE | SWP_NOZORDER);
 			
 			// Create the label for the file.
-			HWND lblFile = CreateWindow(WC_STATIC, bmf_entries[file].title,
-						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    grpBox_Left + 8, grpBox_Top + entryTop,
-						    64, 16,
-						    hWnd, NULL, ghInstance, NULL);
+			HWND lblFile = pCreateWindowU(WC_STATIC, bmf_entries[file].title,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							grpBox_Left + 8, grpBox_Top + entryTop,
+							64, 16,
+							hWnd, NULL, ghInstance, NULL);
 			SetWindowFont(lblFile, fntMain, true);
 			
 			// Create the textbox for the file.
-			txtFile[file] = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
-						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-						  grpBox_Left+8+56+8, grpBox_Top+entryTop,
-						  BMF_FRAME_WIDTH-(8+64+8+72+8), 20,
-						  hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
+			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
+								WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
+								grpBox_Left+8+56+8, grpBox_Top+entryTop,
+								BMF_FRAME_WIDTH-(8+64+8+72+8), 20,
+								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
 			SetWindowFont(txtFile[file], fntMain, true);
-			SendMessage(txtFile[file], EM_LIMITTEXT, GENS_PATH_MAX-1, 0);
+			Edit_LimitTextU(txtFile[file], GENS_PATH_MAX-1);
 			
 			// Create the "Change..." button for the file.
-			HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
-						      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						      grpBox_Left+BMF_FRAME_WIDTH-(8+72), grpBox_Top + entryTop,
-						      72, 20,
-						      hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
+			HWND btnChange = pCreateWindowU(WC_BUTTON, TEXT("Change..."),
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+							grpBox_Left+BMF_FRAME_WIDTH-(8+72), grpBox_Top + entryTop,
+							72, 20,
+							hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 			SetWindowFont(btnChange, fntMain, true);
 			
 			// Next entry.
@@ -205,15 +199,15 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
-					75, 23,
-					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
+				75, 23,
+				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, true);
 	
 	// Cancel button.
-	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -221,7 +215,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, true);
 	
 	// Apply button.
-	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -265,7 +259,7 @@ static void bmf_window_init(void)
 			continue;
 		
 		// Set the entry text.
-		SetWindowText(txtFile[file], bmf_entries[file].entry);
+		Edit_SetTextU(txtFile[file], bmf_entries[file].entry);
 	}
 	
 	// Disable the "Apply" button initially.
@@ -285,7 +279,7 @@ static void bmf_window_save(void)
 			continue;
 		
 		// Save the entry text.
-		GetWindowText(txtFile[file], bmf_entries[file].entry, GENS_PATH_MAX);
+		Edit_GetTextU(txtFile[file], bmf_entries[file].entry, GENS_PATH_MAX-1);
 		bmf_entries[file].entry[GENS_PATH_MAX-1] = 0x00;
 	}
 	
@@ -351,9 +345,12 @@ static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 			
 			bmf_window = NULL;
 			break;
+		
+		default:
+			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -367,15 +364,13 @@ static void bmf_window_callback_btnChange_clicked(int file)
 	if (!bmf_entries[file].entry)
 		return;
 	
-	TCHAR tmp[64];
-	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-			TEXT("Select %s File"), bmf_entries[file].title);
-	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
+	char tmp[64];
+	szprintf(tmp, sizeof(tmp), "Select %s File", bmf_entries[file].title);
 	
 	// Get the currently entered filename.
-	TCHAR cur_file[GENS_PATH_MAX];
-	GetWindowText(txtFile[file], cur_file, (sizeof(cur_file)/sizeof(TCHAR)));
-	cur_file[(sizeof(cur_file)/sizeof(TCHAR))-1] = 0x00;
+	char cur_file[GENS_PATH_MAX];
+	Edit_GetTextU(txtFile[file], cur_file, sizeof(cur_file));
+	cur_file[sizeof(cur_file)-1] = 0x00;
 	
 	// Request a new file.
 	string new_file = GensUI::openFile(tmp, cur_file, bmf_entries[file].filter, bmf_window);
@@ -385,7 +380,7 @@ static void bmf_window_callback_btnChange_clicked(int file)
 		return;
 	
 	// Set the new file.
-	SetWindowText(txtFile[file], new_file.c_str());
+	Edit_SetTextU(txtFile[file], new_file.c_str());
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, true);

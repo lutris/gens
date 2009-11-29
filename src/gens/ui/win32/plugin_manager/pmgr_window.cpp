@@ -35,17 +35,11 @@
 #include <string.h>
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
-#include "charset/cp1252.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
@@ -105,7 +99,7 @@ static HWND	lstPluginList[PMGR_MAX];
 // Widget creation functions.
 static void	pmgr_window_create_child_windows(HWND hWnd);
 static void	pmgr_window_create_plugin_list_tab_control(HWND container);
-static void	pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, int id);
+static void	pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id);
 static void	pmgr_window_create_plugin_info_frame(HWND container);
 static void	pmgr_window_populate_plugin_lists(void);
 static void	pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename = "");
@@ -155,21 +149,21 @@ void pmgr_window_show(void)
 		pmgr_wndclass.cbClsExtra = 0;
 		pmgr_wndclass.cbWndExtra = 0;
 		pmgr_wndclass.hInstance = ghInstance;
-		pmgr_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		pmgr_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		pmgr_wndclass.hCursor = NULL;
 		pmgr_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		pmgr_wndclass.lpszMenuName = NULL;
-		pmgr_wndclass.lpszClassName = TEXT("pmgr_window");
+		pmgr_wndclass.lpszClassName = "pmgr_window";
 		
-		RegisterClass(&pmgr_wndclass);
+		pRegisterClassU(&pmgr_wndclass);
 	}
 	
 	// Create the window.
-	pmgr_window = CreateWindow(TEXT("pmgr_window"), TEXT("Plugin Manager"),
-				   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				   CW_USEDEFAULT, CW_USEDEFAULT,
-				   PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT,
-				   gens_window, NULL, ghInstance, NULL);
+	pmgr_window = pCreateWindowU("pmgr_window", "Plugin Manager",
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT,
+					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	gsft_win32_set_actual_window_size(pmgr_window, PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT);
@@ -195,12 +189,12 @@ static void pmgr_window_create_child_windows(HWND hWnd)
 	pmgr_window_create_plugin_info_frame(hWnd);
 	
 	// Create the "OK" button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  PMGR_WINDOW_WIDTH-8-75, PMGR_WINDOW_HEIGHT-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					PMGR_WINDOW_WIDTH-8-75, PMGR_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, true);
 	
 	// Populate the plugin lists.
 	pmgr_window_populate_plugin_lists();
@@ -217,12 +211,12 @@ static void pmgr_window_create_child_windows(HWND hWnd)
 static void pmgr_window_create_plugin_list_tab_control(HWND container)
 {
 	// Create the plugin list tab control.
-	tabPluginList = CreateWindow(WC_TABCONTROL, NULL,
-				     WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-				     8, 8,
-				     PMGR_FRAME_PLUGIN_LIST_WIDTH,
-				     PMGR_FRAME_PLUGIN_LIST_HEIGHT,
-				     container, NULL, ghInstance, NULL);
+	tabPluginList = pCreateWindowU(WC_TABCONTROL, NULL,
+					WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+					8, 8,
+					PMGR_FRAME_PLUGIN_LIST_WIDTH,
+					PMGR_FRAME_PLUGIN_LIST_HEIGHT,
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(tabPluginList, fntMain, true);
 	
 #ifdef GENS_PNG
@@ -249,9 +243,9 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
 #endif
 	
 	// Create the tabs.
-	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&Internal"), PMGR_INTERNAL);
-	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("&External"), PMGR_EXTERNAL);
-	pmgr_window_create_plugin_list_tab(tabPluginList, TEXT("I&ncompatible"), PMGR_INCOMPAT);
+	pmgr_window_create_plugin_list_tab(tabPluginList, "&Internal", PMGR_INTERNAL);
+	pmgr_window_create_plugin_list_tab(tabPluginList, "&External", PMGR_EXTERNAL);
+	pmgr_window_create_plugin_list_tab(tabPluginList, "I&ncompatible", PMGR_INCOMPAT);
 }
 
 
@@ -261,24 +255,24 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
  * @param title Title of the tab.
  * @param id Tab ID.
  */
-static void pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, int id)
+static void pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id)
 {
 	// Insert a tab.
 	TCITEM tabItem;
 	tabItem.mask = TCIF_TEXT;
-	tabItem.pszText = const_cast<LPTSTR>(title);
+	tabItem.pszText = const_cast<char*>(title);
 	TabCtrl_InsertItem(container, id, &tabItem);
 	
 	// Create the plugin ListView.
-	lstPluginList[id] = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
-					   WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
-					   LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
-					   8, 16+8+4,
-					   PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
-					   PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
-					   container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
+	lstPluginList[id] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
+						WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
+						LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
+						8, 16+8+4,
+						PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
+						PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
+						container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
 	SetWindowFont(lstPluginList[id], fntMain, true);
-	ListView_SetExtendedListViewStyle(lstPluginList[id], LVS_EX_FULLROWSELECT);
+	ListView_SetExtendedListViewStyleU(lstPluginList[id], LVS_EX_FULLROWSELECT);
 	
 	if (id == PMGR_INTERNAL)
 	{
@@ -289,8 +283,8 @@ static void pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, in
 #ifdef GENS_PNG
 	// Set the ListView's ImageList.
 	// "Small" is set in addition to "Normal", since LVS_REPORT uses "Small" icons.
-	ListView_SetImageList(lstPluginList[id], imglPluginIcons, LVSIL_NORMAL);
-	ListView_SetImageList(lstPluginList[id], imglPluginIcons, LVSIL_SMALL);
+	ListView_SetImageListU(lstPluginList[id], imglPluginIcons, LVSIL_NORMAL);
+	ListView_SetImageListU(lstPluginList[id], imglPluginIcons, LVSIL_SMALL);
 #endif
 	
 	// Create the ListView columns.
@@ -299,22 +293,22 @@ static void pmgr_window_create_plugin_list_tab(HWND container, LPCTSTR title, in
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 	
 	// Icon.
-	lvCol.pszText = TEXT("Icon");
+	lvCol.pszText = "Icon";
 #ifdef GENS_PNG
 	lvCol.cx = 32;
 #else
 	lvCol.cx = 0;
 #endif
-	ListView_InsertColumn(lstPluginList[id], 0, &lvCol);
+	ListView_InsertColumnU(lstPluginList[id], 0, &lvCol);
 	
 	// Plugin name.
-	lvCol.pszText = TEXT("Plugin Name");
+	lvCol.pszText = "Plugin Name";
 #ifdef GENS_PNG
 	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-32-24;
 #else
 	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-24;
 #endif
-	ListView_InsertColumn(lstPluginList[id], 1, &lvCol);
+	ListView_InsertColumnU(lstPluginList[id], 1, &lvCol);
 }
 
 
@@ -326,11 +320,11 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
 {
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
 	
-	HWND fraPluginInfo = CreateWindow(WC_BUTTON, TEXT("Plugin Information"),
-					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					  8, top,
-					  PMGR_FRAME_PLUGIN_INFO_WIDTH, PMGR_FRAME_PLUGIN_INFO_HEIGHT,
-					  container, NULL, ghInstance, NULL);
+	HWND fraPluginInfo = pCreateWindowU(WC_BUTTON, "Plugin Information",
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						8, top,
+						PMGR_FRAME_PLUGIN_INFO_WIDTH, PMGR_FRAME_PLUGIN_INFO_HEIGHT,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(fraPluginInfo, fntMain, true);
 	
 #ifdef GENS_PNG
@@ -346,36 +340,36 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
 #endif /* GENS_PNG */
 	const int lblPluginMainInfo_Height = 96;
 	
-	lblPluginMainInfo = CreateWindow(WC_EDIT, NULL,
-					 WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-					 lblPluginMainInfo_Left, top+16,
-					 PMGR_FRAME_PLUGIN_INFO_WIDTH - lblPluginMainInfo_Left,
-					 lblPluginMainInfo_Height,
-					 container, NULL, ghInstance, NULL);
+	lblPluginMainInfo = pCreateWindowU(WC_EDIT, NULL,
+						WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
+						lblPluginMainInfo_Left, top+16,
+						PMGR_FRAME_PLUGIN_INFO_WIDTH - lblPluginMainInfo_Left,
+						lblPluginMainInfo_Height,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(lblPluginMainInfo, fntMain, true);
-	Edit_SetReadOnly(lblPluginMainInfo, true);
+	Edit_SetReadOnlyU(lblPluginMainInfo, true);
 	
 	// Label for secondary plugin info.
 	const int lblPluginSecInfo_Height = 40;
-	lblPluginSecInfo = CreateWindow(WC_EDIT, NULL,
-					WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-					8+8, top+16+lblPluginMainInfo_Height+8,
-					PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
-					lblPluginSecInfo_Height,
-					container, NULL, ghInstance, NULL);
+	lblPluginSecInfo = pCreateWindowU(WC_EDIT, NULL,
+						WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
+						8+8, top+16+lblPluginMainInfo_Height+8,
+						PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
+						lblPluginSecInfo_Height,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(lblPluginSecInfo, fntMain, true);
-	Edit_SetReadOnly(lblPluginSecInfo, true);
+	Edit_SetReadOnlyU(lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
 	const int lblPluginDesc_Height = 72;
-	lblPluginDesc = CreateWindow(WC_EDIT, NULL,
-				     WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-				     8+8, top+16+lblPluginMainInfo_Height+8+lblPluginSecInfo_Height+8,
-				     PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
-				     lblPluginDesc_Height,
-				     container, NULL, ghInstance, NULL);
+	lblPluginDesc = pCreateWindowU(WC_EDIT, NULL,
+					WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
+					8+8, top+16+lblPluginMainInfo_Height+8+lblPluginSecInfo_Height+8,
+					PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
+					lblPluginDesc_Height,
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(lblPluginDesc, fntMain, true);
-	Edit_SetReadOnly(lblPluginDesc, true);
+	Edit_SetReadOnlyU(lblPluginDesc, true);
 }
 
 
@@ -389,7 +383,7 @@ static void pmgr_window_populate_plugin_lists(void)
 	{
 		if (!lstPluginList[i])
 			return;
-		ListView_DeleteAllItems(lstPluginList[i]);
+		ListView_DeleteAllItemsU(lstPluginList[i]);
 	}
 	mapMdpErrs.clear();
 	
@@ -505,7 +499,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	// First column: Icon.
 	lviPlugin.iSubItem = 0;
 	lviPlugin.pszText = NULL;
-	ListView_InsertItem(lstPluginList[pmType], &lviPlugin);
+	ListView_InsertItemU(lstPluginList[pmType], &lviPlugin);
 	
 	// lParam doesn't need to be set for the subitems.
 	lviPlugin.mask = LVIF_TEXT;
@@ -513,8 +507,8 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	
 	// Second column: Plugin name.
 	lviPlugin.iSubItem = 1;
-	lviPlugin.pszText = const_cast<LPTSTR>(pluginName.c_str());
-	ListView_SetItem(lstPluginList[pmType], &lviPlugin);
+	lviPlugin.pszText = const_cast<char*>(pluginName.c_str());
+	ListView_SetItemU(lstPluginList[pmType], &lviPlugin);
 }
 
 
@@ -648,7 +642,7 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -659,16 +653,16 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 {
 	// Check which plugin is clicked.
-	int index = ListView_GetNextItem(lstPluginList[id], -1, LVNI_SELECTED);
+	int index = ListView_GetNextItemU(lstPluginList[id], -1, LVNI_SELECTED);
 	
 	if (index == -1)
 	{
 		// No plugin selected.
-		Edit_SetText(lblPluginMainInfo, TEXT("No plugin selected."));
-		Edit_SetText(lblPluginSecInfo, NULL);
-		Edit_SetText(lblPluginDesc, NULL);
+		Edit_SetTextU(lblPluginMainInfo, "No plugin selected.");
+		Edit_SetTextU(lblPluginSecInfo, NULL);
+		Edit_SetTextU(lblPluginDesc, NULL);
 #ifdef GENS_PNG
-		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+		pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
 #endif
 		return;
 	}
@@ -683,7 +677,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 #else
 	lvItem.mask = LVIF_PARAM;
 #endif
-	int rval = ListView_GetItem(lstPluginList[id], &lvItem);
+	int rval = ListView_GetItemU(lstPluginList[id], &lvItem);
 	
 	mdp_t *plugin = reinterpret_cast<mdp_t*>(lvItem.lParam);
 	
@@ -691,22 +685,22 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	if (!rval || !plugin)
 	{
 		// Invalid plugin.
-		Edit_SetText(lblPluginMainInfo, TEXT("Invalid plugin selected."));
-		Edit_SetText(lblPluginSecInfo, NULL);
-		Edit_SetText(lblPluginDesc, NULL);
+		Edit_SetTextU(lblPluginMainInfo, TEXT("Invalid plugin selected."));
+		Edit_SetTextU(lblPluginSecInfo, NULL);
+		Edit_SetTextU(lblPluginDesc, NULL);
 #ifdef GENS_PNG
-		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+		pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
 #endif
 		return;
 	}
 	
 	if (!plugin->desc)
 	{
-		Edit_SetText(lblPluginMainInfo, TEXT("This plugin does not have a valid description field."));
-		Edit_SetText(lblPluginSecInfo, NULL);
-		Edit_SetText(lblPluginDesc, NULL);
+		Edit_SetTextU(lblPluginMainInfo, TEXT("This plugin does not have a valid description field."));
+		Edit_SetTextU(lblPluginSecInfo, NULL);
+		Edit_SetTextU(lblPluginDesc, NULL);
 #ifdef GENS_PNG
-		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+		pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
 #endif
 		return;
 	}
@@ -716,7 +710,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	stringstream ssMainInfo;
 	
 	// Plugin name.
-	ssMainInfo << "Name: " << (desc->name ? charset_utf8_to_cp1252(desc->name) : "(none)") << WIN32_ENDL;
+	ssMainInfo << "Name: " << (desc->name ? desc->name : "(none)") << WIN32_ENDL;
 	
 	// Plugin version.
 	ssMainInfo << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
@@ -724,25 +718,25 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << WIN32_ENDL;
 	
 	// Plugin author.
-	ssMainInfo << "MDP Author: " + (desc->author_mdp ? charset_utf8_to_cp1252(desc->author_mdp) : "(none)") << WIN32_ENDL;
+	ssMainInfo << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << WIN32_ENDL;
 	
 	// Original code author.
 	if (desc->author_orig)
 	{
-		ssMainInfo << "Original Author: " << charset_utf8_to_cp1252(desc->author_orig) << WIN32_ENDL;
+		ssMainInfo << "Original Author: " << desc->author_orig << WIN32_ENDL;
 	}
 	
 	// Website.
 	if (desc->website)
 	{
-		ssMainInfo << "Website: " << charset_utf8_to_cp1252(desc->website) << WIN32_ENDL;
+		ssMainInfo << "Website: " << desc->website << WIN32_ENDL;
 	}
 	
 	// License.
-	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? charset_utf8_to_cp1252(desc->license) : "(none)");
+	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? string(desc->license) : "(none)");
 	
 	// Set the main plugin information.
-	Edit_SetText(lblPluginMainInfo, ssMainInfo.str().c_str());
+	Edit_SetTextU(lblPluginMainInfo, ssMainInfo.str().c_str());
 	
 	// UUID.
 	string sUUID = UUIDtoString(plugin->uuid);
@@ -754,12 +748,12 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 		  << GetCPUFlags_string(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, false);
 	
 	// Set the secondary information label.
-	Edit_SetText(lblPluginSecInfo, ssSecInfo.str().c_str());
+	Edit_SetTextU(lblPluginSecInfo, ssSecInfo.str().c_str());
 	
 	// Plugin description.
 	string pluginDesc;
 	if (desc->description)
-		pluginDesc = string("Description:") + WIN32_ENDL + charset_utf8_to_cp1252(desc->description);
+		pluginDesc = string("Description:") + WIN32_ENDL + desc->description;
 	
 	// Check for an MDP error code.
 	mapMdpErrs_t::iterator errIter = mapMdpErrs.find(plugin);
@@ -775,7 +769,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 		pluginDesc += "MDP error code: " + string(err_code);
 	}
 	
-	Edit_SetText(lblPluginDesc, pluginDesc.c_str());
+	Edit_SetTextU(lblPluginDesc, pluginDesc.c_str());
 	
 #ifdef GENS_PNG
 	// Set the plugin icon.
@@ -784,7 +778,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 	if (lvItem.iImage >= 0 && lvItem.iImage < vectPluginIcons.size())
 		hbmpIcon = vectPluginIcons[lvItem.iImage];
 	
-	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpIcon);
+	pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpIcon);
 #endif
 }
 
@@ -804,7 +798,7 @@ static void pmgr_window_create_plugin_icon_widget(HWND container)
 				     container, NULL, ghInstance, NULL);
 	
 	// Clear the icon.
-	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+	pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
 }
 
 

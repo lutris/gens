@@ -32,6 +32,11 @@
 #include "libgsft/gsft_szprintf.h"
 #include "libgsft/gsft_strlcpy.h"
 
+#ifdef _WIN32
+// Win32 includes.
+#include "libgsft/w32u/w32u.h"
+#endif
+
 // MDP includes.
 #include "mdp/mdp_stdint.h"
 #include "mdp/mdp_cpuflags.h"
@@ -70,6 +75,11 @@ int MDP_FNCALL ips_init(const mdp_host_t *host_srv)
 	// If this fails, gg_dir_id will be less than 0.
 	ips_dir_id = ips_host_srv->dir_register(&mdp, "IPS Patches", ips_dir_get, ips_dir_set);
 	
+#ifdef _WIN32
+	// Initialize the Win32 Unicode Translation Layer.
+	w32u_init();
+#endif
+	
 	// Register the event handlers.
 	ips_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
 	ips_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
@@ -98,6 +108,11 @@ int MDP_FNCALL ips_end(void)
 	// Unregister the event handlers.
 	ips_host_srv->event_unregister(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
 	ips_host_srv->event_unregister(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
+	
+#ifdef _WIN32
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
+#endif
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

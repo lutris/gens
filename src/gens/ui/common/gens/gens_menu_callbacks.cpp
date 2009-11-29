@@ -88,12 +88,9 @@
 
 // Win32 includes.
 #ifdef GENS_OS_WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <shellapi.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_shellapi.h"
+#include "libgsft/w32u/w32u_libc.h"
 #endif
 
 // For some reason, these aren't extern'd anywhere...
@@ -213,7 +210,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			Settings.Paused = 1;
 			//Pause_Screen();
 			audio_clear_sound_buffer();
-			ShellExecute(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
+			pShellExecuteU(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
 			break;
 #endif /* GENS_OS_WIN32 */
 		

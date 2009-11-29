@@ -42,6 +42,9 @@ using std::list;
 #include "sighandler.h"
 #endif
 
+// Win32 Unicode support.
+#include "libgsft/w32u/w32u.h"
+
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
 #include <io.h>
@@ -104,18 +107,18 @@ int win32_CommCtrlEx = 0;
 void get_default_save_path(char *buf, size_t size)
 {
 	// Win32 needs the program's pathname.
-	GetModuleFileName(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
+	pGetModuleFileNameU(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
 	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path)-1] = 0x00;
 	
 	// Remove the filename portion of the pathname. (_tcsrchr() == strrchr())
-	TCHAR *last_backslash = _tcsrchr(PathNames.Gens_EXE_Path, '\\');
+	char *last_backslash = strrchr(PathNames.Gens_EXE_Path, '\\');
 	if (last_backslash)
 	{
 		*(last_backslash + 1) = 0x00;
 	}
 	
 	// Set the current directory.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	// Set the default save path.
 	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
@@ -137,6 +140,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Save hInst for other functions.
 	ghInstance = hInst;
+	
+	// Initialize the Win32 Unicode Translation Layer.
+	w32u_init();
 	
 	// Initialize the PRNG.
 	Init_PRNG();
@@ -279,6 +285,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Shut down the signal handler.
 	gens_sighandler_end();
 #endif
+	
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
 	return 0;

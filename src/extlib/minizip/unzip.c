@@ -416,7 +416,11 @@ extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
         return NULL;
 
     if (pzlib_filefunc_def==NULL)
+#if !defined(_WIN32)
         fill_fopen_filefunc(&us.z_filefunc);
+#else
+        fill_win32_filefunc(&us.z_filefunc);
+#endif
     else
         us.z_filefunc = *pzlib_filefunc_def;
 

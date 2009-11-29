@@ -23,11 +23,7 @@
 #ifndef GENS_UI_WIN32_FONTS_H
 #define GENS_UI_WIN32_FONTS_H
 
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +32,6 @@ extern "C" {
 extern HFONT fntMain;
 extern HFONT fntTitle;
 extern HFONT fntMono;
-extern HFONT fntDebug;
 
 void fonts_init(void);
 void fonts_end(void);

@@ -131,7 +131,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 	g_free(unescaped);
 	
 	// Check that the file actually exists.
-	if (gsft_file_exists(filename.c_str()))
+	if (!access(filename.c_str(), F_OK))
 	{
 		// File exists. Open it as a ROM image.
 		ROM::openROM(filename);
@@ -250,6 +250,7 @@ gboolean gens_window_sdlsock_button_press(GtkWidget *widget, GdkEventButton *eve
 {
 	GSFT_UNUSED_PARAMETER(widget);
 	GSFT_UNUSED_PARAMETER(event);
+	GSFT_UNUSED_PARAMETER(user_data);
 	
 	if (!GTK_IS_MENU(gens_menu_bar))
 	{

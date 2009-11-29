@@ -33,19 +33,15 @@
 #include <string.h>
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_szprintf.h"
 
 // Gens input variables.
 #include "gens_core/io/io.h"
@@ -187,17 +183,17 @@ void cc_window_show(void)
 		cc_wndclass.hCursor = NULL;
 		cc_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		cc_wndclass.lpszMenuName = NULL;
-		cc_wndclass.lpszClassName = TEXT("cc_window");
+		cc_wndclass.lpszClassName = "cc_window";
 		
-		RegisterClass(&cc_wndclass);
+		pRegisterClassU(&cc_wndclass);
 	}
 	
 	// Create the window.
-	cc_window = CreateWindow(TEXT("cc_window"), TEXT("Controller Configuration"),
-				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				 CW_USEDEFAULT, CW_USEDEFAULT,
-				 CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT,
-				 gens_window, NULL, ghInstance, NULL);
+	cc_window = pCreateWindowU("cc_window", "Controller Configuration",
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT,
+					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	gsft_win32_set_actual_window_size(cc_window, CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT);
@@ -233,15 +229,15 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
-					75, 23,
-					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
+				75, 23,
+				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
+	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -249,7 +245,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
+	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
 					75, 23,
@@ -278,32 +274,30 @@ static void cc_window_create_child_windows(HWND hWnd)
  */
 static void cc_window_create_controller_port_frame(HWND container, int port)
 {
-	TCHAR tmp[32];
+	char tmp[32];
 	
 	// Top of the frame.
 	const int fraPort_top = 8 + ((port-1)*(CC_FRAME_PORT_HEIGHT + 8));
 	
 	// Create the frame.
-	// NOTE: _sntprintf() is the TCHAR version of snprintf().
-	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)), TEXT("Port %d"), port);
-	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
-	HWND fraPort = CreateWindow(WC_BUTTON, tmp,
-				    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				    8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
-				    container, NULL, ghInstance, NULL);
+	szprintf(tmp, sizeof(tmp), "Port %d", port);
+	HWND fraPort = pCreateWindowU(WC_BUTTON, tmp,
+					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(fraPort, fntMain, TRUE);
 	
 	// Checkbox for enabling teamplayer.
-	const TCHAR *tp_label;
+	const char *tp_label;
 	if (port == 1)
-		tp_label = TEXT("Use Teamplayer / 4-Way Play");
+		tp_label = "Use Teamplayer / 4-Way Play";
 	else
-		tp_label = TEXT("Use Teamplayer");
-	chkTeamplayer[port-1] = CreateWindow(WC_BUTTON, tp_label,
-					     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					     8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
-					     container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
-					     ghInstance, NULL);
+		tp_label = "Use Teamplayer";
+	chkTeamplayer[port-1] = pCreateWindowU(WC_BUTTON, tp_label,
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
+						container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
+						ghInstance, NULL);
 	SetWindowFont(chkTeamplayer[port-1], fntMain, TRUE);
 	
 	// Player inputs.
@@ -311,10 +305,9 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 	
 	for (i = 0; i < 4; i++)
 	{
-		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-				TEXT("Player %d%c"),
+		szprintf(tmp, sizeof(tmp),
+				"Player %d%c",
 				port, (i == 0 ? 0x00 : 'A' + i));
-		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
 		
 		// Determine the player number to use for the callback and widget pointer storage.
 		if (i == 0)
@@ -328,30 +321,30 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 		}
 		
 		// Player label.
-		lblPlayer[player] = CreateWindow(WC_STATIC, tmp,
-						 WS_CHILD | WS_VISIBLE | SS_LEFT,
-						 8+8, fraPort_top+16+16+4+(i*24)+2, 48, 16,
-						 container, NULL, ghInstance, NULL);
+		lblPlayer[player] = pCreateWindowU(WC_STATIC, tmp,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							8+8, fraPort_top+16+16+4+(i*24)+2, 48, 16,
+							container, NULL, ghInstance, NULL);
 		SetWindowFont(lblPlayer[player], fntMain, TRUE);
 		
 		// Pad type dropdown.
-		cboPadType[player] = CreateWindow(WC_COMBOBOX, tmp,
-						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
-						  8+8+48+8, fraPort_top+16+16+4+(i*24), 80, 23*2,
-						  container, (HMENU)(IDC_CC_CBOPADTYPE + player),
-						  ghInstance, NULL);
+		cboPadType[player] = pCreateWindowU(WC_COMBOBOX, tmp,
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
+							8+8+48+8, fraPort_top+16+16+4+(i*24), 80, 23*2,
+							container, (HMENU)(IDC_CC_CBOPADTYPE + player),
+							ghInstance, NULL);
 		SetWindowFont(cboPadType[player], fntMain, TRUE);
 		
 		// Pad type dropdown entries.
-		ComboBox_AddString(cboPadType[player], TEXT("3 buttons"));
-		ComboBox_AddString(cboPadType[player], TEXT("6 buttons"));
+		ComboBox_AddStringU(cboPadType[player], "3 buttons");
+		ComboBox_AddStringU(cboPadType[player], "6 buttons");
 		
 		// "Configure" button.
-		optConfigure[player] = CreateWindow(WC_BUTTON, TEXT("Configure"),
-						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
-						    8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
-						    container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
-						    ghInstance, NULL);
+		optConfigure[player] = pCreateWindowU(WC_BUTTON, "Configure",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
+							8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
+							container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
+							ghInstance, NULL);
 		SetWindowFont(optConfigure[player], fntMain, TRUE);
 	}
 }
@@ -366,19 +359,19 @@ static void cc_window_create_input_devices_frame(HWND container)
 	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
 	
 	// "Input Devices" frame.
-	HWND fraInputDevices = CreateWindow(WC_BUTTON, TEXT("Detected Input Devices"),
-					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					    8, fraInputDevices_top,
-					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
-					    container, NULL, ghInstance, NULL);
+	HWND fraInputDevices = pCreateWindowU(WC_BUTTON, "Detected Input Devices",
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						8, fraInputDevices_top,
+						CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(fraInputDevices, fntMain, TRUE);
 	
 	// Create a listbox for the list of input devices.
-	lstInputDevices = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
-					 8+8, fraInputDevices_top+16,
-					 CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
-					 container, NULL, ghInstance, NULL);
+	lstInputDevices = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
+						8+8, fraInputDevices_top+16,
+						CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(lstInputDevices, fntMain, TRUE);
 }
 
@@ -390,10 +383,10 @@ static void cc_window_create_input_devices_frame(HWND container)
 static void cc_window_populate_input_devices(HWND lstBox)
 {
 	// Clear the listbox.
-	ListBox_ResetContent(lstBox);
+	ListBox_ResetContentU(lstBox);
 	
 	// Add "Keyboard" as the first entry.
-	ListBox_AddString(lstBox, TEXT("Keyboard"));
+	ListBox_AddStringU(lstBox, "Keyboard");
 	
 	// Add any detected joysticks to the list model.
 	// TODO: This is DirectInput-specific.
@@ -412,68 +405,66 @@ static void cc_window_create_configure_controller_frame(HWND container)
 	static const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
-	fraConfigure = CreateWindow(WC_BUTTON, NULL,
-				    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				    fraConfigure_left, fraConfigure_top,
-				    CC_FRAME_CONFIGURE_WIDTH, CC_FRAME_CONFIGURE_HEIGHT,
-				    container, NULL, ghInstance, NULL);
+	fraConfigure = pCreateWindowU(WC_BUTTON, NULL,
+					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					fraConfigure_left, fraConfigure_top,
+					CC_FRAME_CONFIGURE_WIDTH, CC_FRAME_CONFIGURE_HEIGHT,
+					container, NULL, ghInstance, NULL);
 	SetWindowFont(fraConfigure, fntMain, TRUE);
 	
 	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
-	TCHAR tmp[16];
+	char tmp[16];
 	for (button = 0; button < 12; button++)
 	{
 		// Button label.
-		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-			   TEXT("%s:"), input_key_names[button]);
-		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
-		lblButton[button] = CreateWindow(WC_STATIC, tmp,
-						 WS_CHILD | WS_VISIBLE | SS_RIGHT,
-						 fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
-						 36, 16,
-						 container, NULL, ghInstance, NULL);
+		szprintf(tmp, sizeof(tmp), "%s:", input_key_names[button]);
+		lblButton[button] = pCreateWindowU(WC_STATIC, tmp,
+							WS_CHILD | WS_VISIBLE | SS_RIGHT,
+							fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
+							36, 16,
+							container, NULL, ghInstance, NULL);
 		SetWindowFont(lblButton[button], fntMain, TRUE);
 		
 		// Current configuration label.
-		lblCurConfig[button] = CreateWindow(WC_STATIC, NULL,
-						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    fraConfigure_left+8+36+8, fraConfigure_top+16+(button*24)+2,
-						    CC_FRAME_CONFIGURE_WIDTH-8-36-8-75-8-8, 16,
-						    container, NULL, ghInstance, NULL);
+		lblCurConfig[button] = pCreateWindowU(WC_STATIC, NULL,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							fraConfigure_left+8+36+8, fraConfigure_top+16+(button*24)+2,
+							CC_FRAME_CONFIGURE_WIDTH-8-36-8-75-8-8, 16,
+							container, NULL, ghInstance, NULL);
 		
 		// "Change" button.
-		btnChange[button] = CreateWindow(WC_BUTTON, TEXT("Change"),
-						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						 fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-75,
-						 fraConfigure_top+16+(button*24),
-						 75, 23,
-						 container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
+		btnChange[button] = pCreateWindowU(WC_BUTTON, "Change",
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+							fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-75,
+							fraConfigure_top+16+(button*24),
+							75, 23,
+							container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
 		SetWindowFont(btnChange[button], fntMain, TRUE);
 	}
 	
 	// Separator between the table and the miscellaneous buttons.
-	CreateWindow(WC_STATIC, NULL,
-		     WS_CHILD | WS_VISIBLE | SS_ETCHEDHORZ,
-		     fraConfigure_left+8, fraConfigure_top+16+12*24+8,
-		     CC_FRAME_CONFIGURE_WIDTH-16, 2,
-		     container, NULL, ghInstance, NULL);
+	pCreateWindowU(WC_STATIC, NULL,
+			WS_CHILD | WS_VISIBLE | SS_ETCHEDHORZ,
+			fraConfigure_left+8, fraConfigure_top+16+12*24+8,
+			CC_FRAME_CONFIGURE_WIDTH-16, 2,
+			container, NULL, ghInstance, NULL);
 	
 	// "Change All Buttons" button.
-	btnChangeAll = CreateWindow(WC_BUTTON, TEXT("Change All Buttons"),
-				    WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				    fraConfigure_left+8, fraConfigure_top+16+12*24+8+2+8,
-				    127, 23,
-				    container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
+	btnChangeAll = pCreateWindowU(WC_BUTTON, "Change All Buttons",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					fraConfigure_left+8, fraConfigure_top+16+12*24+8+2+8,
+					127, 23,
+					container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
 	SetWindowFont(btnChangeAll, fntMain, TRUE);
 	
 	// "Clear All Buttons" button.
-	btnClearAll = CreateWindow(WC_BUTTON, TEXT("Clear All Buttons"),
-				   WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				   fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-128,
-				   fraConfigure_top+16+12*24+8+2+8,
-				   127, 23,
-				   container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
+	btnClearAll = pCreateWindowU(WC_BUTTON, "Clear All Buttons",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-128,
+					fraConfigure_top+16+12*24+8+2+8,
+					127, 23,
+					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
 	SetWindowFont(btnClearAll, fntMain, TRUE);
 }
 
@@ -489,19 +480,19 @@ static void cc_window_create_options_frame(HWND container)
 	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
-	HWND fraOptions = CreateWindow(WC_BUTTON, TEXT("Options"),
-				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				       fraOptions_left, fraOptions_top,
-				       CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
-				       container, NULL, ghInstance, NULL);
+	HWND fraOptions = pCreateWindowU(WC_BUTTON, "Options",
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						fraOptions_left, fraOptions_top,
+						CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
+						container, NULL, ghInstance, NULL);
 	SetWindowFont(fraOptions, fntMain, TRUE);
 	
 	// "Restrict Input" checkbox.
-	chkRestrictInput = CreateWindow(WC_BUTTON, TEXT("&Restrict Input\n(Disables Up+Down, Left+Right)"),
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX | BS_MULTILINE,
-					fraOptions_left+8, fraOptions_top+16,
-					CC_FRAME_OPTIONS_WIDTH-16, 32,
-					container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
+	chkRestrictInput = pCreateWindowU(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX | BS_MULTILINE,
+						fraOptions_left+8, fraOptions_top+16,
+						CC_FRAME_OPTIONS_WIDTH-16, 32,
+						container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
 	SetWindowFont(chkRestrictInput, fntMain, TRUE);
 }
 
@@ -539,25 +530,25 @@ static void cc_window_init(void)
 	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
 	
 	// Set the Teamplayer checkboxes.
-	Button_SetCheck(chkTeamplayer[0], ((Controller_1_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkTeamplayer[1], ((Controller_2_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkTeamplayer[0], ((Controller_1_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkTeamplayer[1], ((Controller_2_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Set the pad type dropdowns.
-	ComboBox_SetCurSel(cboPadType[0], (Controller_1_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[1], (Controller_2_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[2], (Controller_1B_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[3], (Controller_1C_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[4], (Controller_1D_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[5], (Controller_2B_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[6], (Controller_2C_Type & 0x01));
-	ComboBox_SetCurSel(cboPadType[7], (Controller_2D_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[0], (Controller_1_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[1], (Controller_2_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[2], (Controller_1B_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[3], (Controller_1C_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[4], (Controller_1D_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[5], (Controller_2B_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[6], (Controller_2C_Type & 0x01));
+	ComboBox_SetCurSelU(cboPadType[7], (Controller_2D_Type & 0x01));
 	
 	// Run the teamplayer callbacks.
 	cc_window_callback_teamplayer_toggled(0);
 	cc_window_callback_teamplayer_toggled(1);
 	
 	// Restrict Input.
-	Button_SetCheck(chkRestrictInput, (Settings.restrict_input ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkRestrictInput, (Settings.restrict_input ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -583,21 +574,21 @@ static void cc_window_save(void)
 	Controller_2D_Type = 0;
 	
 	// Save the Teamplayer settings.
-	Controller_1_Type  |= ((Button_GetCheck(chkTeamplayer[0]) == BST_CHECKED) ? 0x10 : 0x00);
-	Controller_2_Type  |= ((Button_GetCheck(chkTeamplayer[1]) == BST_CHECKED) ? 0x10 : 0x00);
+	Controller_1_Type  |= ((Button_GetCheckU(chkTeamplayer[0]) == BST_CHECKED) ? 0x10 : 0x00);
+	Controller_2_Type  |= ((Button_GetCheckU(chkTeamplayer[1]) == BST_CHECKED) ? 0x10 : 0x00);
 	
 	// Save the pad type settings.
-	Controller_1_Type  |= (ComboBox_GetCurSel(cboPadType[0]) ? 0x01 : 0x00);
-	Controller_2_Type  |= (ComboBox_GetCurSel(cboPadType[1]) ? 0x01 : 0x00);
-	Controller_1B_Type |= (ComboBox_GetCurSel(cboPadType[2]) ? 0x01 : 0x00);
-	Controller_1C_Type |= (ComboBox_GetCurSel(cboPadType[3]) ? 0x01 : 0x00);
-	Controller_1D_Type |= (ComboBox_GetCurSel(cboPadType[4]) ? 0x01 : 0x00);
-	Controller_2B_Type |= (ComboBox_GetCurSel(cboPadType[5]) ? 0x01 : 0x00);
-	Controller_2C_Type |= (ComboBox_GetCurSel(cboPadType[6]) ? 0x01 : 0x00);
-	Controller_2D_Type |= (ComboBox_GetCurSel(cboPadType[7]) ? 0x01 : 0x00);
+	Controller_1_Type  |= (ComboBox_GetCurSelU(cboPadType[0]) ? 0x01 : 0x00);
+	Controller_2_Type  |= (ComboBox_GetCurSelU(cboPadType[1]) ? 0x01 : 0x00);
+	Controller_1B_Type |= (ComboBox_GetCurSelU(cboPadType[2]) ? 0x01 : 0x00);
+	Controller_1C_Type |= (ComboBox_GetCurSelU(cboPadType[3]) ? 0x01 : 0x00);
+	Controller_1D_Type |= (ComboBox_GetCurSelU(cboPadType[4]) ? 0x01 : 0x00);
+	Controller_2B_Type |= (ComboBox_GetCurSelU(cboPadType[5]) ? 0x01 : 0x00);
+	Controller_2C_Type |= (ComboBox_GetCurSelU(cboPadType[6]) ? 0x01 : 0x00);
+	Controller_2D_Type |= (ComboBox_GetCurSelU(cboPadType[7]) ? 0x01 : 0x00);
 	
 	// Restrict Input.
-	Settings.restrict_input = ((Button_GetCheck(chkRestrictInput) == BST_CHECKED) ? TRUE : FALSE);
+	Settings.restrict_input = ((Button_GetCheckU(chkRestrictInput) == BST_CHECKED) ? TRUE : FALSE);
 	
 	// Rebuild the Teamplayer I/O table.
 	Make_IO_Table();
@@ -614,19 +605,17 @@ static void cc_window_save(void)
  */
 static inline void cc_window_display_key_name(HWND label, uint16_t key)
 {
-	TCHAR key_name[32];
+	char key_name[32];
 	
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
 	
-	#ifdef GENS_DEBUG
-		TCHAR tmp[64];
-		_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-				TEXT("0x%04X: %s"), key, key_name);
-		tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
-		Static_SetText(label, tmp);
-	#else
-		Static_SetText(label, key_name);
-	#endif
+#ifdef GENS_DEBUG
+	char tmp[64];
+	szprintf(tmp, sizeof(tmp), "0x%04X: %s", key, key_name);
+	Static_SetTextU(label, tmp);
+#else
+	Static_SetTextU(label, key_name);
+#endif
 	
 	SetWindowFont(label, fntMono, TRUE);
 }
@@ -641,16 +630,14 @@ static void cc_window_show_configuration(int player)
 	if (player < 0 || player > 8)
 		return;
 	
-	TCHAR tmp[64];
+	char tmp[64];
 	
 	// Set the current player number.
 	cc_cur_player = player;
 	
 	// Set the "Configure Controller" frame title.
-	_sntprintf(tmp, (sizeof(tmp)/sizeof(TCHAR)),
-			TEXT("Configure Player %s"), &input_player_names[player][1]);
-	tmp[(sizeof(tmp)/sizeof(TCHAR))-1] = 0x00;
-	Button_SetText(fraConfigure, tmp);
+	szprintf(tmp, sizeof(tmp), "Configure Player %s", &input_player_names[player][1]);
+	Button_SetTextU(fraConfigure, tmp);
 	
 	// Make sure the "Change All Buttons" and "Clear All Buttons" buttons aren't
 	// obscured by the frame label. Not sure if this is intended behavior or
@@ -667,7 +654,7 @@ static void cc_window_show_configuration(int player)
 	}
 	
 	// Enable/Disable the Mode/X/Y/Z buttons, depending on whether the pad is set to 3-button or 6-button.
-	BOOL is6button = (ComboBox_GetCurSel(cboPadType[player]) == 1);
+	BOOL is6button = (ComboBox_GetCurSelU(cboPadType[player]) == 1);
 	for (button = 8; button < 12; button++)
 	{
 		Static_Enable(lblButton[button], is6button);
@@ -790,7 +777,7 @@ static void cc_window_callback_teamplayer_toggled(int port)
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, TRUE);
 	
-	BOOL active = (Button_GetCheck(chkTeamplayer[port]) == BST_CHECKED);
+	BOOL active = (Button_GetCheckU(chkTeamplayer[port]) == BST_CHECKED);
 	int startPort = (port == 0 ? 2 : 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
@@ -800,7 +787,7 @@ static void cc_window_callback_teamplayer_toggled(int port)
 		{
 			// One of the teamplayer players is selected.
 			// Select the main player for the port.
-			Button_SetCheck(optConfigure[port], BST_CHECKED);
+			Button_SetCheckU(optConfigure[port], BST_CHECKED);
 			cc_window_show_configuration(port);
 		}
 	}
@@ -829,7 +816,7 @@ static void cc_window_callback_padtype_changed(int player)
 	Button_Enable(btnApply, TRUE);
 	
 	// Check if this player is currently being configured.
-	if (Button_GetCheck(optConfigure[player]) != BST_CHECKED)
+	if (Button_GetCheckU(optConfigure[player]) != BST_CHECKED)
 	{
 		// Player is not currently being configured.
 		return;
@@ -838,7 +825,7 @@ static void cc_window_callback_padtype_changed(int player)
 	// Player is currently being configured.
 	// Enable/Disable the appropriate widgets in the table.
 	unsigned int button;
-	BOOL is6button = (ComboBox_GetCurSel(cboPadType[player]) == 1);
+	BOOL is6button = (ComboBox_GetCurSelU(cboPadType[player]) == 1);
 	for (button = 8; button < 12; button++)
 	{
 		Static_Enable(lblButton[button], is6button);
@@ -863,7 +850,7 @@ static BOOL cc_window_configure_key(int player, int button)
 		return FALSE;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
-	if (ComboBox_GetCurSel(cboPadType[player]) == 0)
+	if (ComboBox_GetCurSelU(cboPadType[player]) == 0)
 	{
 		if (button >= 8)
 			return FALSE;
@@ -873,7 +860,7 @@ static BOOL cc_window_configure_key(int player, int button)
 	cc_cur_player_button = button;
 	
 	// Set the current configure text.
-	Static_SetText(lblCurConfig[button], TEXT("Press a Key..."));
+	Static_SetTextU(lblCurConfig[button], "Press a Key...");
 	
 	// Set the blink timer for 500 ms.
 	SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
@@ -901,9 +888,9 @@ static BOOL cc_window_configure_key(int player, int button)
 	
 	// Remove various dialog messages from the window message queue.
 	MSG msg;
-	while (PeekMessage(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
-	while (PeekMessage(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
-	while (PeekMessage(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
+	while (pPeekMessageU(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
+	while (pPeekMessageU(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
+	while (pPeekMessageU(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
 	
 	return key_changed;
 }
@@ -953,7 +940,7 @@ static void cc_window_callback_btnChangeAll_clicked(void)
 		return;
 	
 	// Number of buttons to configure.
-	int btnCount = (ComboBox_GetCurSel(cboPadType[cc_cur_player]) == 1 ? 12 : 8);
+	int btnCount = (ComboBox_GetCurSelU(cboPadType[cc_cur_player]) == 1 ? 12 : 8);
 	
 	// Set the "Configuring" flag.
 	cc_window_is_configuring = TRUE;
@@ -968,14 +955,14 @@ static void cc_window_callback_btnChangeAll_clicked(void)
 		if (i != 0)
 		{
 			// Process WM_PAINT messages.
-			while (PeekMessage(&msg, NULL, WM_PAINT, WM_PAINT, PM_NOREMOVE))
+			while (pPeekMessageU(&msg, NULL, WM_PAINT, WM_PAINT, PM_NOREMOVE))
 			{
-				if (!GetMessage(&msg, NULL, 0, 0))
+				if (!pGetMessageU(&msg, NULL, 0, 0))
 					close_gens();
 				
 				// Process the message.
 				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				pDispatchMessageU(&msg);
 			}
 			
 			// Sleep for 250 ms.
