@@ -203,6 +203,9 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 			// Return the ROM name.
 			return string(rom_name);
 		}
+		
+		default:
+			break;
 	}
 	
 	// Couldn't read the ROM title.
@@ -307,13 +310,13 @@ static inline string irc_format_Z(int system_id, uint32_t modifier)
 
 
 /**
- * irc_format_entry(): Process an IRC format entry.
+ * irc_format_code(): Process an IRC format code.
  * @param system_id System ID.
  * @param modifier Modifier.
  * @param chr Character.
  * @return Formatted string, or empty string on error.
  */
-static inline string irc_format_entry(int system_id, uint32_t modifier, char chr)
+static inline string irc_format_code(int system_id, uint32_t modifier, char chr)
 {
 	printf("ENTRY: sysid == %d, modifier == 0x%08X, chr == %c\n", system_id, modifier, chr);
 	switch (chr)
@@ -340,8 +343,6 @@ static inline string irc_format_entry(int system_id, uint32_t modifier, char chr
 			return irc_format_Z(system_id, modifier);
 		
 		case 'D':
-		case '[':
-		case ']':
 			// TODO
 			break;
 		
@@ -367,6 +368,9 @@ string irc_format(int system_id, const char *str)
 	fmt_status status = FMT_NORMAL;
 	char chr;
 	
+	// Set to true if in %[ %] and ROM isn't locked on.
+	bool quiet = false;
+	
 	while ((chr = *str++))
 	{
 		switch (status)
@@ -380,7 +384,7 @@ string irc_format(int system_id, const char *str)
 				}
 				else if (chr == '\\')
 					status = FMT_IN_ESC;
-				else
+				else if (!quiet)
 					ss << chr;
 				break;
 			
@@ -395,7 +399,23 @@ string irc_format(int system_id, const char *str)
 				else
 				{
 					// Format code.
-					ss << irc_format_entry(system_id, modifier, chr);
+					if (chr == '[')
+					{
+						// Beginning of Lock-On Only string.
+						if (!is_locked_on())
+							quiet = true;
+					}
+					else if (chr == ']')
+					{
+						// End of Lock-On Only string.
+						quiet = false;
+					}
+					else if (!quiet)
+					{
+						// Format Code.
+						ss << irc_format_code(system_id, modifier, chr);
+					}
+					
 					status = FMT_NORMAL;
 				}
 				break;
