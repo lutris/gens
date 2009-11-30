@@ -22,12 +22,12 @@ EXTRA_DIST = dbus-service.xml
 
 mdp_misc_irc_reporter_la_SOURCES = \
 		irc_plugin.c	\
-		irc.c		\
+		irc.cpp		\
 		dbus-service.c
 		
 
 noinst_HEADERS = \
 		irc_plugin.h	\
-		irc.h		\
+		irc.hpp		\
 		dbus-service.h	\
 		$(BUILT_SOURCES)

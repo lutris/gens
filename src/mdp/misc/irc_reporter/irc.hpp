@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_MISC_IRC_REPORTER_H
-#define MDP_MISC_IRC_REPORTER_H
+#ifndef MDP_MISC_IRC_REPORTER_HPP
+#define MDP_MISC_IRC_REPORTER_HPP
 
 // C includes.
 #include <time.h>
@@ -45,4 +45,4 @@ DLL_LOCAL extern char	irc_rom_string[1024];
 }
 #endif
 
-#endif /* MDP_MISC_IRC_REPORTER_H */
+#endif /* MDP_MISC_IRC_REPORTER_HPP */

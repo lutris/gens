@@ -1,5 +1,5 @@
 #include "dbus-service.h"
-#include "irc.h"
+#include "irc.hpp"
 
 #include <dbus/dbus-glib.h>
 #include <stdio.h>
@@ -128,7 +128,8 @@ int irc_dbus_init(void)
 	
 	dbus_g_connection_register_g_object(bus, "/IrcReporter", G_OBJECT(obj));
 	
-	printf("service running\n");
+	printf("IRC Reporter D-Bus service running.\n");
+	return 0;
 }
 
 

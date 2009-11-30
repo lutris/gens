@@ -24,7 +24,7 @@
 #include <time.h>
 #include <stdint.h>
 
-#include "irc.h"
+#include "irc.hpp"
 #include "irc_plugin.h"
 #include "dbus-service.h"
 

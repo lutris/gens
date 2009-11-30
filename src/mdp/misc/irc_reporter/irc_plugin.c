@@ -21,7 +21,7 @@
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"
 
-#include "irc.h"
+#include "irc.hpp"
 
 static mdp_desc_t mdp_desc =
 {
