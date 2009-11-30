@@ -115,6 +115,10 @@ static int MDP_FNCALL irc_event_handler(int event_id, void *event_info)
 		string fmt_str = irc_format(openROM->system_id, "[%adS] %T%[ + %lT%] (%D; %zZ)");
 		printf("str: %s\n", fmt_str.c_str());
 		strlcpy(irc_rom_string, fmt_str.c_str(), sizeof(irc_rom_string));
+		
+		// Indicate that a ROM is loaded.
+		irc_is_rom_loaded = 1;
+		irc_last_modified = time(NULL);
 	}
 	else if (event_id == MDP_EVENT_CLOSE_ROM)
 	{
