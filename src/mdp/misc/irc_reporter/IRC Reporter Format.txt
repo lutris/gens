@@ -1,0 +1,41 @@
+IRC Reporter Plugin v0.1.0
+Copyright 2009 by David Korth.
+
+================================================================
+
+1. Format Characters
+
+The IRC Reporter supports format strings. Each format entry starts with
+a percent sign ('%'), followed by zero or more lowercase letter modifiers,
+and ending with an uppercase letter or special character as the format code.
+
+Format entries available:
+
+%	Literal percent sign.
+
+S	System name.
+	'a': Use an abbreviation instead of the full name.
+
+T	ROM title as given by the ROM header. Uses the emulator's country
+	code settings to determine which title to use as first priority.
+	'd': Use domestic as default.
+	'l': Use the locked-on ROM, if available.
+
+C	CRC32 checksum.
+N	Serial number.
+	'l': Use the locked-on ROM, if available.
+
+S	ROM size, in megabits.
+	'k': Use kilobits.
+	'b': Use bits.
+	'c': Use bytes instead of bits. (affects both 'k' and 'b')
+
+D	Build date, if available.
+
+[	Only display if a ROM is locked on.
+]	End of previous.
+
+Some escape sequences are also supported:
+
+\\	Literal backslash.
+\xFF	Hexadecimal byte.
