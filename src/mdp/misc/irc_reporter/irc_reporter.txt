@@ -9,7 +9,7 @@ The IRC Reporter supports format strings. Each format entry starts with
 a percent sign ('%'), followed by zero or more lowercase letter modifiers,
 and ending with an uppercase letter or special character as the format code.
 
-Format entries available:
+Format codes available:
 
 %	Literal percent sign.
 
@@ -25,10 +25,12 @@ C	CRC32 checksum.
 N	Serial number.
 	'l': Use the locked-on ROM, if available.
 
-S	ROM size, in megabits.
+Z	ROM size, in megabits.
 	'k': Use kilobits.
 	'b': Use bits.
 	'c': Use bytes instead of bits. (affects both 'k' and 'b')
+	'y': Print units.
+	'z': Print unit abbreviations. (takes priority over 'y')
 
 D	Build date, if available.
 
