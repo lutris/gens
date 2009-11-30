@@ -48,6 +48,25 @@ typedef enum
 
 
 /**
+ * is_locked_on(): Check if a ROM is locked on at 2 MB.
+ * @return True if a ROM is locked on; false otherwise.
+ */
+static inline bool is_locked_on(void)
+{
+	uint8_t lockon_hdr[4];
+	static const uint8_t lockon_hdr_def[4] = {'S', 'E', 'G', 'A'};
+	if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x200100, &lockon_hdr[0], sizeof(lockon_hdr)) != MDP_ERR_OK)
+		return false;
+	
+	if (memcmp(lockon_hdr_def, lockon_hdr, sizeof(lockon_hdr)) != 0)
+		return false;
+	
+	// ROM is locked on.
+	return true;
+}
+
+
+/**
  * irc_format_S(): System name.
  * @param system_id System ID.
  * @param modifier Modifier.
@@ -154,12 +173,7 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 			if (modifier & MODIFIER('l'))
 			{
 				// Check if this ROM has another ROM locked on at 2 MB.
-				uint8_t lockon_hdr[4];
-				static const uint8_t lockon_hdr_def[4] = {'S', 'E', 'G', 'A'};
-				if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x200100, &lockon_hdr[0], sizeof(lockon_hdr)) != MDP_ERR_OK)
-					return "none";
-				
-				if (memcmp(lockon_hdr_def, lockon_hdr, sizeof(lockon_hdr)) != 0)
+				if (!is_locked_on())
 					return "none";
 				
 				// ROM is locked on.
