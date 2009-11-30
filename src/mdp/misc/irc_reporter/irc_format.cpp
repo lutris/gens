@@ -45,6 +45,74 @@ typedef enum
 
 
 /**
+ * irc_format_S(): System name.
+ * @param system_id System ID.
+ * @param modifier Modifier.
+ * @return System name, or empty string on error.
+ */
+static inline string irc_format_S(int system_id, uint32_t modifier)
+{
+	static const char *sysIDs_D[] =
+	{
+		"???", "MD", "MCD",
+		"32X", "MCD/32X", "SMS",
+		"GG", "SG-1000", "PICO", NULL
+	};
+	
+	static const char *sysIDs_O[] =
+	{
+		"???", "GEN", "SCD",
+		"32X", "SCD/32X", "SMS",
+		"GG", "SG-1000", "PICO", NULL
+	};
+	
+	static const char *sysNames_D[] =
+	{
+		"Unknown", "Mega Drive", "Mega CD",
+		"32X", "Mega CD 32X", "Master System",
+		"Game Gear", "SG-1000", "Pico", NULL
+	};
+	
+	static const char *sysNames_O[] =
+	{
+		"Unknown", "Genesis", "Sega CD",
+		"32X", "Sega CD 32X", "Master System",
+		"Game Gear", "SG-1000", "Pico", NULL
+	};
+	
+	// TODO: Get the emulator's region.
+	// For now, default to:
+	// - Abbreviation: Domestic (Japanese)
+	// - System Name: Overseas (American)
+	const char **strTable;
+	
+	if (modifier & MODIFIER('a'))
+	{
+		if (modifier & MODIFIER('o'))
+			strTable = sysIDs_O;
+		else
+			strTable = sysIDs_D;
+	}
+	else
+	{
+		if (modifier & MODIFIER('d'))
+			strTable = sysNames_D;
+		else
+			strTable = sysNames_O;
+	}
+	
+	if (system_id >= MDP_SYSTEM_UNKNOWN &&
+	    system_id < MDP_SYSTEM_MAX)
+	{
+		return string(strTable[system_id]);
+	}
+	
+	// Unknown system ID.
+	return string(strTable[0]);
+}
+
+
+/**
  * irc_format_Z(): ROM size.
  * @param system_id System ID.
  * @param modifier Modifier.
@@ -157,6 +225,9 @@ static inline string irc_format_entry(int system_id, uint32_t modifier, char chr
 			return "%";
 		
 		case 'S':
+			// System name.
+			return irc_format_S(system_id, modifier);
+		
 		case 'T':
 		case 'C':
 		case 'N':
