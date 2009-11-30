@@ -45,6 +45,102 @@ typedef enum
 
 
 /**
+ * irc_format_Z(): ROM size.
+ * @param system_id System ID.
+ * @param modifier Modifier.
+ * @return ROM size, or empty string on error.
+ */
+static inline string irc_format_Z(int system_id, uint32_t modifier)
+{
+	int rom_size;
+	switch (system_id)
+	{
+		case MDP_SYSTEM_MD:
+		case MDP_SYSTEM_MCD:	// TODO: This will get the SegaCD firmware size.
+		case MDP_SYSTEM_32X:
+		case MDP_SYSTEM_MCD32X:	// TODO: This will get the SegaCD firmware size.
+		case MDP_SYSTEM_PICO:
+			rom_size = irc_host_srv->mem_size_get(MDP_MEM_MD_ROM);
+			break;
+		
+		default:
+			return "unknown";
+	}
+	
+	if (rom_size < 0)
+		return "unknown";
+	
+	// Multiply by 8 for bits.
+	rom_size *= 8;
+	
+	// Check how the size should be formatted.
+	string unit_prefix = "mega";
+	string unit_suffix = "bit";
+	char unit_ap = 'M';
+	char unit_as = 'b';
+	int rem;
+	if (modifier & MODIFIER('k'))
+	{
+		// Kilobits.
+		rem = rom_size % 1024;
+		rom_size /= 1024;
+		if (rem)
+			rom_size++;
+		unit_prefix = "kilo";
+		unit_ap = 'K';
+	}
+	else if (modifier & MODIFIER('b'))
+	{
+		// Bits. Do nothing.
+		unit_prefix = "";
+		unit_ap = 0;
+	}
+	else
+	{
+		// Default. Use megabits.
+		rem = rom_size % 1048576;
+		rom_size /= 1048576;
+		if (rem)
+			rom_size++;
+	}
+	
+	double rom_size_D;
+	if (modifier & MODIFIER('c'))
+	{
+		// Bytes.
+		rom_size_D = ((double)rom_size / 8.0);
+		unit_suffix = "byte";
+		unit_as = 'B';
+	}
+	
+	// Build the string.
+	stringstream ss;
+	if (unit_as == 'B')
+		ss << rom_size_D;
+	else
+		ss << rom_size;
+	
+	if (modifier & MODIFIER('z'))
+	{
+		// Unit abbreviations.
+		ss << ' ';
+		if (unit_ap)
+			ss << unit_ap;
+		ss << unit_as;
+	}
+	else if (modifier & MODIFIER('y'))
+	{
+		// Unit names.
+		ss << ' ' << unit_prefix << unit_suffix;
+		if (rom_size > 1)
+			ss << 's';
+	}
+	
+	return ss.str();
+}
+
+
+/**
  * irc_format_entry(): Process an IRC format entry.
  * @param system_id System ID.
  * @param modifier Modifier.
@@ -68,94 +164,8 @@ static inline string irc_format_entry(int system_id, uint32_t modifier, char chr
 			break;
 			
 		case 'Z':
-		{
 			// ROM size.
-			int rom_size;
-			switch (system_id)
-			{
-				case MDP_SYSTEM_MD:
-				case MDP_SYSTEM_MCD:	// TODO: This will get the SegaCD firmware size.
-				case MDP_SYSTEM_32X:
-				case MDP_SYSTEM_MCD32X:	// TODO: This will get the SegaCD firmware size.
-				case MDP_SYSTEM_PICO:
-					rom_size = irc_host_srv->mem_size_get(MDP_MEM_MD_ROM);
-					break;
-				
-				default:
-					return "unknown";
-			}
-			
-			if (rom_size < 0)
-				return "unknown";
-			
-			// Multiply by 8 for bits.
-			rom_size *= 8;
-			
-			// Check how the size should be formatted.
-			string unit_prefix = "mega";
-			string unit_suffix = "bit";
-			char unit_ap = 'M';
-			char unit_as = 'b';
-			int rem;
-			if (modifier & MODIFIER('k'))
-			{
-				// Kilobits.
-				rem = rom_size % 1024;
-				rom_size /= 1024;
-				if (rem)
-					rom_size++;
-				unit_prefix = "kilo";
-				unit_ap = 'K';
-			}
-			else if (modifier & MODIFIER('b'))
-			{
-				// Bits. Do nothing.
-				unit_prefix = "";
-				unit_ap = 0;
-			}
-			else
-			{
-				// Default. Use megabits.
-				rem = rom_size % 1048576;
-				rom_size /= 1048576;
-				if (rem)
-					rom_size++;
-			}
-			
-			double rom_size_D;
-			if (modifier & MODIFIER('c'))
-			{
-				// Bytes.
-				rom_size_D = ((double)rom_size / 8.0);
-				unit_suffix = "byte";
-				unit_as = 'B';
-			}
-			
-			// Build the string.
-			stringstream ss;
-			if (unit_as == 'B')
-				ss << rom_size_D;
-			else
-				ss << rom_size;
-			
-			if (modifier & MODIFIER('z'))
-			{
-				// Unit abbreviations.
-				ss << ' ';
-				if (unit_ap)
-					ss << unit_ap;
-				ss << unit_as;
-			}
-			else if (modifier & MODIFIER('y'))
-			{
-				// Unit names.
-				ss << ' ' << unit_prefix << unit_suffix;
-				if (rom_size > 1)
-					ss << 's';
-			}
-			
-			return ss.str();
-		}
+			return irc_format_Z(system_id, modifier);
 		
 		case 'D':
 		case '[':
