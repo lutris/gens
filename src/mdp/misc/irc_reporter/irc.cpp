@@ -241,7 +241,7 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 			build_date, (build_date[0] != 0 ? "; " : ""),
 			mbits, (mbits != 1 ? "s" : ""));
 #endif
-	string fmt_str = irc_format(system_id, "ROMs: [%T] - %N%[; [%lT] - %lN%]");
+	string fmt_str = irc_format(system_id, "[%adS] %T%[ + %lT%] (%D; %zZ)");
 	printf("str: %s\n", fmt_str.c_str());
 	strlcpy(irc_rom_string, fmt_str.c_str(), sizeof(irc_rom_string));
 	
