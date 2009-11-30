@@ -18,15 +18,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "irc.hpp"
+#include "irc_plugin.h"
+#include "dbus-service.h"
+#include "irc_format.hpp"
+
 // C includes.
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
 
-#include "irc.hpp"
-#include "irc_plugin.h"
-#include "dbus-service.h"
+// C++ includes.
+#include <string>
+using std::string;
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
@@ -226,6 +231,7 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 	if (remainder != 0)
 		mbits++;
 	
+#if 0
 	// Create the string.
 	// TODO: Allow the user to customize this.
 	szprintf(irc_rom_string, sizeof(irc_rom_string), "[%s] %s%s%s (%s%s%d megabit%s)",
@@ -234,6 +240,10 @@ static void MDP_FNCALL irc_init_rom(int system_id)
 			(!is_locked_on ? "" : rom_name2),
 			build_date, (build_date[0] != 0 ? "; " : ""),
 			mbits, (mbits != 1 ? "s" : ""));
+#endif
+	string fmt_str = irc_format(system_id, "omg: %% %kyZ %zZ %zcZ");
+	printf("str: %s\n", fmt_str.c_str());
+	strlcpy(irc_rom_string, fmt_str.c_str(), sizeof(irc_rom_string));
 	
 	// Indicate that a ROM is loaded.
 	irc_is_rom_loaded = 1;
