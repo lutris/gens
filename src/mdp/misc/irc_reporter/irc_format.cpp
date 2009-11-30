@@ -214,6 +214,54 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 
 
 /**
+ * irc_format_N(): ROM serial number.
+ * @param system_id System ID.
+ * @param modifier Modifier.
+ * @return ROM serial number, or empty string on error.
+ */
+static inline string irc_format_N(int system_id, uint32_t modifier)
+{
+	uint32_t sn_addr;
+	
+	switch (system_id)
+	{
+		case MDP_SYSTEM_MD:
+		case MDP_SYSTEM_32X:
+		case MDP_SYSTEM_MCD:
+		case MDP_SYSTEM_MCD32X:
+		case MDP_SYSTEM_PICO:
+		{
+			// MD or 32X ROM. Read the header.
+			// TODO: MCD and MCD32X will show the SegaCD firmware ROM name instead of the
+			// actual game name, since MDP v1.0 doesn't support reading data from
+			// the CD-ROM. This may be added in MDP v1.1.
+			
+			sn_addr = 0x180;
+			if (modifier & MODIFIER('l'))
+			{
+				if (!is_locked_on())
+					return "none";
+				sn_addr |= 0x200000;
+			}
+			
+			char serial_number[15];
+			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, sn_addr, (uint8_t*)serial_number, 14) != MDP_ERR_OK)
+				return "unknown";
+			
+			serial_number[sizeof(serial_number)-1] = 0;
+			return string(serial_number);
+		}
+		
+		default:
+			break;
+	}
+	
+	// Couldn't read the serial number.
+	return "unknown";
+}
+
+
+/**
  * irc_format_Z(): ROM size.
  * @param system_id System ID.
  * @param modifier Modifier.
@@ -334,9 +382,12 @@ static inline string irc_format_code(int system_id, uint32_t modifier, char chr)
 			return irc_format_T(system_id, modifier);
 		
 		case 'C':
-		case 'N':
 			// TODO
 			break;
+			
+		case 'N':
+			// ROM serial number.
+			return irc_format_N(system_id, modifier);
 			
 		case 'Z':
 			// ROM size.
