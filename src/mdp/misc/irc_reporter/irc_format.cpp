@@ -33,6 +33,9 @@ using std::stringstream;
 #include "mdp/mdp_constants.h"
 #include "mdp/mdp_mem.h"
 
+// libgsft includes.
+#include "libgsft/gsft_space_elim.h"
+
 // Current format status.
 typedef enum
 {
@@ -90,14 +93,14 @@ static inline string irc_format_S(int system_id, uint32_t modifier)
 	{
 		if (modifier & MODIFIER('o'))
 			strTable = sysIDs_O;
-		else
+		else //if (modifier & MODIFIER('d'))	// TODO: Get the emulator's region settings.
 			strTable = sysIDs_D;
 	}
 	else
 	{
 		if (modifier & MODIFIER('d'))
 			strTable = sysNames_D;
-		else
+		else //if (modifier & MODIFIER('o'))	// TODO: Get the emulator's region settings.
 			strTable = sysNames_O;
 	}
 	
@@ -109,6 +112,87 @@ static inline string irc_format_S(int system_id, uint32_t modifier)
 	
 	// Unknown system ID.
 	return string(strTable[0]);
+}
+
+
+/**
+ * irc_format_T(): ROM title.
+ * @param system_id System ID.
+ * @param modifier Modifier.
+ * @return ROM title, or empty string on error.
+ */
+static inline string irc_format_T(int system_id, uint32_t modifier)
+{
+	switch (system_id)
+	{
+		case MDP_SYSTEM_MD:
+		case MDP_SYSTEM_32X:
+		case MDP_SYSTEM_MCD:
+		case MDP_SYSTEM_MCD32X:
+		case MDP_SYSTEM_PICO:
+		{
+			// MD or 32X ROM. Read the header.
+			// TODO: MCD and MCD32X will show the SegaCD firmware ROM name instead of the
+			// actual game name, since MDP v1.0 doesn't support reading data from
+			// the CD-ROM. This may be added in MDP v1.1.
+			
+			uint32_t cc_prio[2];
+			if (modifier & MODIFIER('o'))
+			{
+				// Use Overseas as default.
+				cc_prio[0] = 0x120;
+				cc_prio[1] = 0x150;
+			}
+			else //if (modifier & MODIFIER('d'))	// TODO: Get the emulator's region settings.
+			{
+				// Use Domestic as default.
+				cc_prio[0] = 0x150;
+				cc_prio[1] = 0x120;
+			}
+				
+			
+			if (modifier & MODIFIER('l'))
+			{
+				// Check if this ROM has another ROM locked on at 2 MB.
+				uint8_t lockon_hdr[4];
+				static const uint8_t lockon_hdr_def[4] = {'S', 'E', 'G', 'A'};
+				if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, 0x200100, &lockon_hdr[0], sizeof(lockon_hdr)) != MDP_ERR_OK)
+					return "none";
+				
+				if (memcmp(lockon_hdr_def, lockon_hdr, sizeof(lockon_hdr)) != 0)
+					return "none";
+				
+				// ROM is locked on.
+				cc_prio[0] |= 0x200000;
+				cc_prio[1] |= 0x200000;
+			}
+			
+			// Attempt to get the ROM name.
+			char rom_name_raw[48];
+			char rom_name[49];
+			
+			irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, cc_prio[0], (uint8_t*)rom_name_raw, 0x30);
+			gsft_space_elim(rom_name_raw, 0x30, rom_name);
+			if (rom_name[0] == 0x00)
+			{
+				// Name at first address is blank. Try second address.
+				irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, cc_prio[1], (uint8_t*)rom_name_raw, 0x30);
+				gsft_space_elim(rom_name_raw, 0x30, rom_name);
+				if (rom_name[0] == 0x00)
+				{
+					// Domestic name is blank.
+					// TODO: Show the ROM filename.
+					return "unknown";
+				}
+			}
+			
+			// Return the ROM name.
+			return string(rom_name);
+		}
+	}
+	
+	// Couldn't read the ROM title.
+	return "unknown";
 }
 
 
@@ -229,6 +313,9 @@ static inline string irc_format_entry(int system_id, uint32_t modifier, char chr
 			return irc_format_S(system_id, modifier);
 		
 		case 'T':
+			// ROM title.
+			return irc_format_T(system_id, modifier);
+		
 		case 'C':
 		case 'N':
 			// TODO
