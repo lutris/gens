@@ -87,27 +87,33 @@ static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 	
 	static HMODULE hKernel32 = NULL;
 	MAKE_STFUNCPTR(CreateFileW);
-	MAKE_STFUNCPTR(MultiByteToWideChar);
 	
 	if (!isUnicodeChecked)
 	{
-		hKernel32 = LoadLibrary("kernel32.dll");
-		if (hKernel32)
+		// Enable Unicode on Windows NT only.
+		// TODO: MSLU support.
+		OSVERSIONINFOA osv;
+		memset(&osv, 0x00, sizeof(osv));
+		osv.dwOSVersionInfoSize = sizeof(osv);
+		GetVersionExA(&osv);
+	
+		if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
 		{
-			InitFuncPtr_minizip(hKernel32, CreateFileW);
-			InitFuncPtr_minizip(hKernel32, MultiByteToWideChar);
+			// Windows NT. Enable Unicode.
+			isUnicodeAvailable = TRUE;
 			
-			isUnicodeAvailable = (pCreateFileW && pMultiByteToWideChar);
-			if (!isUnicodeAvailable)
-			{
-				// Unicode is not enabled.
-				// Unload kernel32.dll and NULL out the pointers.
-				FreeLibrary(hKernel32);
-				hKernel32 = NULL;
-				pCreateFileW = NULL;
-				pMultiByteToWideChar = NULL;
-			}
+			// Get the CreateFileW() pointer.
+			hKernel32 = LoadLibrary("kernel32.dll");
+			InitFuncPtr_minizip(hKernel32, CreateFileW);
 		}
+		else
+		{
+			// Windows 9x. Disable Unicode.
+			// TODO: MSLU support.
+			// TODO: UTF-8 to ANSI translation.
+			isUnicodeAvailable = FALSE;
+		}
+		
 		isUnicodeChecked = TRUE;
 	}
 	
@@ -117,11 +123,11 @@ static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 		
 		// Convert the name from UTF-8 to UTF-16.
 		wchar_t *lpwFileName = NULL;
-		int lpwFileName_len = pMultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, NULL, 0);
+		int lpwFileName_len = MultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, NULL, 0);
 		if (lpwFileName_len > 0)
 		{
 			lpwFileName = (wchar_t*)malloc(lpwFileName_len * sizeof(wchar_t));
-			pMultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, lpwFileName, lpwFileName_len);
+			MultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, lpwFileName, lpwFileName_len);
 		}
 		
 		HANDLE hRet = pCreateFileW(lpwFileName,
