@@ -245,7 +245,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 							8+8+NTSC_WIDGETNAME_WIDTH+8+NTSC_VALUELABEL_WIDTH, hscTop,
 							NTSC_TRACKBAR_WIDTH, NTSC_TRACKBAR_HEIGHT,
 							hWnd, (HMENU)(IDC_NTSC_TRACKBAR + i), ntsc_hInstance, NULL);
-		pSendMessageU(hscCtrlValues[i], TBM_SETUNICODEFORMAT, isSendMessageUnicode, 0);
+		pSendMessageU(hscCtrlValues[i], TBM_SETUNICODEFORMAT, w32u_is_unicode, 0);
 		pSendMessageU(hscCtrlValues[i], TBM_SETPAGESIZE, 0, ntsc_controls[i].step);
 		pSendMessageU(hscCtrlValues[i], TBM_SETRANGE, TRUE, MAKELONG(ntsc_controls[i].min, ntsc_controls[i].max));
 		pSendMessageU(hscCtrlValues[i], TBM_SETPOS, TRUE, 0);

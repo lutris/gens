@@ -38,15 +38,12 @@
 extern "C" {
 #endif
 
-extern BOOL is_unicode;
+extern BOOL w32u_is_unicode;
 
 /** DLL versions. (0xMMNNRRRR) **/
 extern DWORD shell32_dll_version;
 
 /** kernel32.dll **/
-
-MAKE_EXTFUNCPTR(MultiByteToWideChar);
-MAKE_EXTFUNCPTR(WideCharToMultiByte);
 
 MAKE_EXTFUNCPTR(GetModuleFileNameA);
 #define pGetModuleFileNameU pGetModuleFileNameA
@@ -111,7 +108,6 @@ MAKE_EXTFUNCPTR(CallWindowProcA);
 #define pCallWindowProcU pCallWindowProcA
 
 MAKE_EXTFUNCPTR(SendMessageA);
-extern BOOL isSendMessageUnicode;
 #define pSendMessageU pSendMessageA
 WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam);
 

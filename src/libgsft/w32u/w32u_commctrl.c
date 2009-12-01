@@ -29,7 +29,7 @@
 
 int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hWnd, TCM_INSERTITEMA, iItem, (LPARAM)pItem);
 	
 	// Convert pItem->pszText from UTF-8 to UTF-16.
@@ -55,7 +55,7 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 
 int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hWnd, LVM_GETITEMA, 0, (LPARAM)pItem);
 	
 	if (!(pItem->mask & LVIF_TEXT) || !pItem->pszText || pItem->cchTextMax <= 0)
@@ -84,7 +84,7 @@ int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 	// Convert the text to UTF-8.
 	// TODO Verify characters vs. bytes.
 	char *utf8_buf = pItem->pszText;
-	pWideCharToMultiByte(CP_UTF8, 0, wbuf, -1, utf8_buf, pItem->cchTextMax, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, utf8_buf, pItem->cchTextMax, NULL, NULL);
 	
 	// Copy the LVITEM struct back to pItem.
 	memcpy(pItem, &wItem, sizeof(*pItem));
@@ -97,7 +97,7 @@ int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem)
 
 int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hWnd, LVM_INSERTCOLUMNA, iCol, (LPARAM)pCol);
 	
 	// Convert pCol->pszText from UTF-8 to UTF-16.
@@ -120,7 +120,7 @@ int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 
 int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hWnd, LVM_INSERTITEMA, 0, (LPARAM)pItem);
 	
 	if (!(pItem->mask & LVIF_TEXT) || !pItem->pszText)
@@ -144,7 +144,7 @@ int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 
 int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hWnd, LVM_SETITEMA, 0, (LPARAM)pItem);
 	
 	if (!(pItem->mask & LVIF_TEXT) || !pItem->pszText)

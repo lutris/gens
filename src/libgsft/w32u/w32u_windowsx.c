@@ -32,7 +32,7 @@
 
 int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return pSendMessageU(hwndCtl, LB_GETTEXT, (WPARAM)index, (LPARAM)lpszBuffer);
 	
 	// Allocate a buffer for the string.
@@ -64,7 +64,7 @@ int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer)
 	// NOTE: No boundary checking is performed here!
 	// textLength * 4 is assumed as the worst-case buffer size, since UTF-8
 	// allows up to 4-byte characters.
-	pWideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, lpszBuffer, textLength * 4, NULL, NULL);
 	free(wbuf);
 	return lRet;
 }

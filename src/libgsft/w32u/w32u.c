@@ -38,12 +38,10 @@
 static int init_counter = 0;
 
 // Is this Unicode?
-BOOL is_unicode = 0;
+BOOL w32u_is_unicode = 0;
 
 // DLLs.
 static HMODULE hKernel32 = NULL;
-MAKE_FUNCPTR(MultiByteToWideChar);
-MAKE_FUNCPTR(WideCharToMultiByte);
 
 static HMODULE hUser32 = NULL;
 static HMODULE hShell32 = NULL;
@@ -70,7 +68,7 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameU(HMODULE hModule, LPSTR lpFilen
 	DWORD dwRet = pGetModuleFileNameW(hModule, lpwFilename, nSize);
 	
 	// Convert the filename from UTF-16 to UTF-8.
-	pWideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
 	free(lpwFilename);
 	return dwRet;
 }
@@ -132,7 +130,7 @@ static WINBASEAPI BOOL WINAPI GetVersionExU(LPOSVERSIONINFOA lpVersionInfo)
 	lpVersionInfo->dwPlatformId = wVersionInfo.dwPlatformId;
 	
 	// Convert szCSDVersion from UTF-16 to UTF-8.
-	pWideCharToMultiByte(CP_UTF8, 0, wVersionInfo.szCSDVersion, 
+	WideCharToMultiByte(CP_UTF8, 0, wVersionInfo.szCSDVersion, 
 				sizeof(wVersionInfo.szCSDVersion) / sizeof(wVersionInfo.szCSDVersion[0]),
 				lpVersionInfo->szCSDVersion,
 				sizeof(lpVersionInfo->szCSDVersion) / sizeof(lpVersionInfo->szCSDVersion[0]),
@@ -243,7 +241,7 @@ static WINUSERAPI int WINAPI GetWindowTextU(HWND hWnd, LPSTR lpString, int nMaxC
 	int ret = pGetWindowTextW(hWnd, lpwString, nMaxCount);
 	
 	// Convert the window text to UTF-8.
-	pWideCharToMultiByte(CP_UTF8, 0, lpwString, nMaxCount, lpString, nMaxCount, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, lpwString, nMaxCount, lpString, nMaxCount, NULL, NULL);
 	
 	// Free the buffer.
 	free(lpwString);
@@ -421,7 +419,7 @@ static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCapt
  */
 WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
 {
-	if (!isSendMessageUnicode)
+	if (!w32u_is_unicode)
 		return SendMessageA(hWnd, msgA, wParam, lParam);
 	if (!lParam)
 		return pSendMessageU(hWnd, msgW, wParam, lParam);
@@ -448,7 +446,6 @@ MAKE_FUNCPTR(DefWindowProcA);
 MAKE_FUNCPTR(CallWindowProcA);
 
 MAKE_FUNCPTR(SendMessageA);
-BOOL isSendMessageUnicode = 0;
 MAKE_FUNCPTR(GetMessageA);
 MAKE_FUNCPTR(PeekMessageA);
 
@@ -514,19 +511,16 @@ int WINAPI w32u_init(void)
 	// TODO: Error handling.
 	hKernel32 = LoadLibrary("kernel32.dll");
 	
-	// TODO: If either of these GetProcAddress()'s fails, revert to ANSI.
-	InitFuncPtr(hKernel32, MultiByteToWideChar);
-	InitFuncPtr(hKernel32, WideCharToMultiByte);
-	
 	// Enable Unicode on NT only.
 	OSVERSIONINFOA osv;
 	memset(&osv, 0x00, sizeof(osv));
 	osv.dwOSVersionInfoSize = sizeof(osv);
 	GetVersionExA(&osv);
 	
-	printf("dwPlatformId: %d\n", osv.dwPlatformId);
 	if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		is_unicode = 1;
+		w32u_is_unicode = 1;
+	else
+		w32u_is_unicode = 0;
 	
 	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
 	InitFuncPtrsU(hKernel32, "GetModuleHandle", pGetModuleHandleW, pGetModuleHandleA, GetModuleHandleU);
@@ -551,6 +545,7 @@ int WINAPI w32u_init(void)
 	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
 	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
 	
+	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
 	InitFuncPtrs(hUser32, "GetMessage", pGetMessageA);
 	InitFuncPtrs(hUser32, "PeekMessage", pPeekMessageA);
 	
@@ -578,13 +573,6 @@ int WINAPI w32u_init(void)
 	InitFuncPtrs(hUser32, "SetClassLong", pSetClassLongA);
 #endif
 	
-	// Check if SendMessage is Unicode.
-	pSendMessageA = (typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageW");
-	if ((typeof(pSendMessageA))GetProcAddress(hUser32, "SendMessageA") == &SendMessageA)
-		isSendMessageUnicode = 0;
-	else
-		isSendMessageUnicode = 1;
-	
 	// Other DLLs.
 	hShell32 = LoadLibrary("shell32.dll");
 	
@@ -611,7 +599,7 @@ int WINAPI w32u_end(void)
 		return 0;
 	
 	// Disable Unicode.
-	is_unicode = 0;
+	w32u_is_unicode = 0;
 	
 	// Unload the libraries.
 	FreeLibrary(hKernel32);

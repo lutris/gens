@@ -60,7 +60,7 @@ static LPITEMIDLIST WINAPI SHBrowseForFolderU(PBROWSEINFO lpbi)
 	// Convert the non-constant strings from UTF-16 to UTF-8.
 	if (wbi.pszDisplayName)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wbi.pszDisplayName, MAX_PATH,
+		WideCharToMultiByte(CP_UTF8, 0, wbi.pszDisplayName, MAX_PATH,
 				     lpbi->pszDisplayName, MAX_PATH, NULL, NULL);
 	}
 	
@@ -89,7 +89,7 @@ static BOOL WINAPI SHGetPathFromIDListU(LPCITEMIDLIST pidl, LPSTR pszPath)
 	BOOL bRet = pSHGetPathFromIDListW(pidl, pszwPath);
 	
 	// Convert the text to UTF-8.
-	pWideCharToMultiByte(CP_UTF8, 0, pszwPath, MAX_PATH, pszPath, MAX_PATH, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, pszwPath, MAX_PATH, pszPath, MAX_PATH, NULL, NULL);
 	
 	// Free the buffer.
 	free(pszwPath);

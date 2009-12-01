@@ -84,7 +84,7 @@ int WINAPI w32u_libc_init(void)
 	// TODO: Error handling.
 	hMsvcrt = LoadLibrary("msvcrt.dll");
 	
-	InitFuncPtrsU_libc(hMsvcrt, "access", "_waccess", p_waccess, paccess, Uaccess);
+	InitFuncPtrsU_libc(hMsvcrt, "_access", "_waccess", p_waccess, paccess, Uaccess);
 	InitFuncPtrsU_libc(hMsvcrt, "fopen", "_wfopen", p_wfopen, pfopen, Ufopen);
 	
 	InitFuncPtr(hMsvcrt, _wcsicmp);

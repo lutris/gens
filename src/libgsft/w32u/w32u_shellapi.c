@@ -42,7 +42,7 @@ static UINT WINAPI DragQueryFileU(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT 
 	UINT uRet = DragQueryFileW(hDrop, iFile, lpszwFile, cch);
 	
 	// Convert the filename from UTF-16 to UTF-8.
-	pWideCharToMultiByte(CP_UTF8, 0, lpszwFile, -1, lpszFile, cch, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, lpszwFile, -1, lpszFile, cch, NULL, NULL);
 	free(lpszwFile);
 	return uRet;
 }

@@ -41,7 +41,7 @@ do { \
  */
 #define InitFuncPtrsU(hDll, fn, pW, pA, pU) \
 do { \
-	if (is_unicode) \
+	if (w32u_is_unicode) \
 	{ \
 		pW = (typeof(pW))GetProcAddress(hDll, fn "W"); \
 		pA = &pU; \
@@ -55,7 +55,7 @@ do { \
  */
 #define InitFuncPtrs(hDll, fn, pA) \
 do { \
-	if (is_unicode) \
+	if (w32u_is_unicode) \
 		pA = (typeof(pA))GetProcAddress(hDll, fn "W"); \
 	else \
 		pA = (typeof(pA))GetProcAddress(hDll, fn "A"); \
@@ -66,7 +66,7 @@ do { \
  */
 #define InitFuncPtrsU_libc(hDll, fnA, fnW, pW, pA, pU) \
 do { \
-	if (is_unicode) \
+	if (w32u_is_unicode) \
 	{ \
 		pW = (typeof(pW))GetProcAddress(hDll, fnW); \
 		pA = &pU; \

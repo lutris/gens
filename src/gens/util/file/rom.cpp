@@ -1125,19 +1125,17 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	// Win32-based Shift-JIS to UTF-8 conversion code.
 	// TODO: This seems to produce the wrong result for Mega Anser.
 	// It results in 5 Japanese characters, but it should be 8 Japanese characters.
-	if (!pMultiByteToWideChar || !pWideCharToMultiByte)
-		return string(sjis);
 	
 	// Convert Shift-JIS to UTF-16.
-	int wcs_len = pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, NULL, 0);
+	int wcs_len = MultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, NULL, 0);
 	if (wcs_len <= 0)
 		return string(sjis);
 	
 	wchar_t *wcs = (wchar_t*)malloc(wcs_len * sizeof(wchar_t));
-	pMultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, wcs, wcs_len);
+	MultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, wcs, wcs_len);
 	
 	// Convert UTF-16 to UTF-8.
-	int mbs_len = pWideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, NULL, 0, NULL, NULL);
+	int mbs_len = WideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, NULL, 0, NULL, NULL);
 	if (mbs_len <= 0)
 	{
 		free(wcs);
@@ -1145,7 +1143,7 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	}
 	
 	char *mbs = (char*)malloc(mbs_len * sizeof(char) + 1);
-	pWideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, mbs, mbs_len, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, mbs, mbs_len, NULL, NULL);
 	mbs[mbs_len * sizeof(char)] = 0x00;
 	
 	string s_utf8 = string(mbs);

@@ -58,8 +58,8 @@ static BOOL WINAPI GetOpenFileNameU(LPOPENFILENAMEA lpofn)
 		if (lpstrFilter_len > 0)
 		{
 			lpstrwFilter = (wchar_t*)malloc(lpstrFilter_len * sizeof(wchar_t));
-			pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, lpstrFilter_len,
-					     lpstrwFilter, lpstrFilter_len);
+			MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, lpstrFilter_len,
+						lpstrwFilter, lpstrFilter_len);
 			wofn.lpstrFilter = lpstrwFilter;
 		}
 	}
@@ -88,24 +88,24 @@ static BOOL WINAPI GetOpenFileNameU(LPOPENFILENAMEA lpofn)
 	if (lpofn->lpstrCustomFilter && lpofn->nMaxCustFilter > 0)
 	{
 		lpstrwCustomFilter = (wchar_t*)malloc(lpofn->nMaxCustFilter * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
-				     lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
+					lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
 		wofn.lpstrCustomFilter = lpstrwCustomFilter;
 	}
 	
 	if (lpofn->lpstrFile && lpofn->nMaxFile > 0)
 	{
 		lpstrwFile = (wchar_t*)malloc(lpofn->nMaxFile * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
-				     lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
+					lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
 		wofn.lpstrFile = lpstrwFile;
 	}
 	
 	if (lpofn->lpstrFileTitle && lpofn->nMaxFileTitle > 0)
 	{
 		lpstrwFileTitle = (wchar_t*)malloc(lpofn->nMaxFileTitle * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
-				     lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
+					lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
 		wofn.lpstrFileTitle = lpstrwFileTitle;
 	}
 	
@@ -115,18 +115,18 @@ static BOOL WINAPI GetOpenFileNameU(LPOPENFILENAMEA lpofn)
 	// Convert the non-constant strings from UTF-16 to UTF-8.
 	if (wofn.lpstrCustomFilter && wofn.nMaxCustFilter > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
-				     lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
+					lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
 	}
 	if (wofn.lpstrFile && wofn.nMaxFile > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
-				     lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
+					lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
 	}
 	if (wofn.lpstrFileTitle && wofn.nMaxFileTitle > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
-				     lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
+					lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
 	}
 	
 	// Free the constant strings.
@@ -168,8 +168,8 @@ static BOOL WINAPI GetSaveFileNameU(LPOPENFILENAMEA lpofn)
 		if (lpstrFilter_len > 0)
 		{
 			lpstrwFilter = (wchar_t*)malloc(lpstrFilter_len * sizeof(wchar_t));
-			pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, lpstrFilter_len,
-					     lpstrwFilter, lpstrFilter_len);
+			MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, lpstrFilter_len,
+						lpstrwFilter, lpstrFilter_len);
 			wofn.lpstrFilter = lpstrwFilter;
 		}
 	}
@@ -198,24 +198,24 @@ static BOOL WINAPI GetSaveFileNameU(LPOPENFILENAMEA lpofn)
 	if (lpofn->lpstrCustomFilter && lpofn->nMaxCustFilter > 0)
 	{
 		lpstrwCustomFilter = (wchar_t*)malloc(lpofn->nMaxCustFilter * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
-				     lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
+					lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
 		wofn.lpstrCustomFilter = lpstrwCustomFilter;
 	}
 	
 	if (lpofn->lpstrFile && lpofn->nMaxFile > 0)
 	{
 		lpstrwFile = (wchar_t*)malloc(lpofn->nMaxFile * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
-				     lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
+					lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
 		wofn.lpstrFile = lpstrwFile;
 	}
 	
 	if (lpofn->lpstrFileTitle && lpofn->nMaxFileTitle > 0)
 	{
 		lpstrwFileTitle = (wchar_t*)malloc(lpofn->nMaxFileTitle * sizeof(wchar_t));
-		pMultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
-				     lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
+					lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
 		wofn.lpstrFileTitle = lpstrwFileTitle;
 	}
 	
@@ -225,18 +225,18 @@ static BOOL WINAPI GetSaveFileNameU(LPOPENFILENAMEA lpofn)
 	// Convert the non-constant strings from UTF-16 to UTF-8.
 	if (wofn.lpstrCustomFilter && wofn.nMaxCustFilter > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
-				     lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
+					lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
 	}
 	if (wofn.lpstrFile && wofn.nMaxFile > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
-				     lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
+					lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
 	}
 	if (wofn.lpstrFileTitle && wofn.nMaxFileTitle > 0)
 	{
-		pWideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
-				     lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
+					lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
 	}
 	
 	// Free the constant strings.

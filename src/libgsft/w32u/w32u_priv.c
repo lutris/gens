@@ -36,13 +36,13 @@
  */
 wchar_t* WINAPI w32u_mbstowcs(const char *mbs)
 {
-	int len = pMultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
 	if (len <= 0)
 		return NULL;
 	
 	len *= sizeof(wchar_t);
 	wchar_t *wcs = (wchar_t*)malloc(len);
 	
-	pMultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, len);
+	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, len);
 	return wcs;
 }

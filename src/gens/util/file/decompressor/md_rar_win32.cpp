@@ -93,7 +93,6 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	HANDLE hRar;
 	char *filenameA = NULL;
 	wchar_t *filenameW = NULL;
-	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte);
 	
 	// Open the RAR file.
 	struct RAROpenArchiveDataEx rar_open;
@@ -101,7 +100,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	rar_open.CmtBuf = NULL;
 	rar_open.CmtBufSize = 0;
 	
-	if (doUnicode)
+	if (w32u_is_unicode)
 	{
 		// Unicode mode.
 		filenameW = w32u_mbstowcs(filename);
@@ -143,10 +142,10 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		z_entry_cur->next = NULL;
 		
 		// Check which filename should be used.
-		if (doUnicode)
+		if (w32u_is_unicode)
 		{
 			// Use the Unicode filename. (rar_header.FileNameW)
-			pWideCharToMultiByte(CP_UTF8, 0, rar_header.FileNameW, -1,
+			WideCharToMultiByte(CP_UTF8, 0, rar_header.FileNameW, -1,
 						utf8_buf, sizeof(utf8_buf), NULL, NULL);
 			z_entry_cur->filename = strdup(utf8_buf);
 		}
@@ -255,7 +254,6 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	HANDLE hRar;
 	char *filenameA = NULL;
 	wchar_t *filenameW = NULL;
-	BOOL doUnicode = (isSendMessageUnicode && pMultiByteToWideChar && pWideCharToMultiByte && p_wcsicmp);
 	
 	// Open the RAR file.
 	struct RAROpenArchiveDataEx rar_open;
@@ -263,7 +261,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	rar_open.CmtBuf = NULL;
 	rar_open.CmtBufSize = 0;
 	
-	if (doUnicode)
+	if (w32u_is_unicode)
 	{
 		// Unicode mode.
 		filenameW = w32u_mbstowcs(filename);
@@ -288,7 +286,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	
 	// If we're using Unicode, convert the selected filename to Unicode.
 	wchar_t *z_filenameW = NULL;
-	if (doUnicode)
+	if (w32u_is_unicode)
 		z_filenameW = w32u_mbstowcs(z_entry->filename);
 	
 	// Search for the file.
@@ -297,7 +295,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	int ret, cmp;
 	while ((ret = dll.pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
-		if (doUnicode)
+		if (w32u_is_unicode)
 		{
 			// Unicode mode.
 			cmp = p_wcsicmp(z_filenameW, rar_header.FileNameW);
