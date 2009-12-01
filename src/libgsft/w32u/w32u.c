@@ -87,7 +87,8 @@ int WINAPI w32u_init(void)
 		return 0;
 	}
 	
-	// Enable Unicode on NT only.
+	// Enable Unicode on Windows NT only.
+	// TODO: MSLU support.
 	OSVERSIONINFOA osv;
 	memset(&osv, 0x00, sizeof(osv));
 	osv.dwOSVersionInfoSize = sizeof(osv);
