@@ -37,11 +37,10 @@
 #include "libgsft/gsft_unused.h"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_shellapi.h"
 #include "libgsft/w32u/w32u_shlobj.h"
-#include <tchar.h>	// TODO: Get rid of this.
 #include "libgsft/w32u/w32u_commdlg.h"
 
 // commctrl.h doesn't define ICC_STANDARD_CLASSES

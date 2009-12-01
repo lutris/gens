@@ -25,7 +25,7 @@
 
 #include "ui/common/gens/gens_menu.h"
 
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 
 #ifdef __cplusplus
 extern "C" {

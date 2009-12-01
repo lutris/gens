@@ -21,6 +21,7 @@
 
 #include "w32u.h"
 #include "w32u_priv.h"
+#include "w32u_windows.h"
 #include "w32u_shellapi.h"
 #include "w32u_libc.h"
 #include "w32u_commdlg.h"
@@ -42,7 +43,6 @@ BOOL w32u_is_unicode = 0;
 
 // DLLs.
 static HMODULE hKernel32 = NULL;
-
 static HMODULE hUser32 = NULL;
 static HMODULE hShell32 = NULL;
 
@@ -50,440 +50,19 @@ static HMODULE hShell32 = NULL;
 DWORD shell32_dll_version = 0;
 
 
-/** kernel32.dll **/
-
-
-MAKE_FUNCPTR(GetModuleFileNameA);
-MAKE_STFUNCPTR(GetModuleFileNameW);
-static WINBASEAPI DWORD WINAPI GetModuleFileNameU(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
-{
-	if (!lpFilename || nSize == 0)
-	{
-		// String not specified. Don't bother converting anything.
-		return pGetModuleFileNameW(hModule, (LPWSTR)lpFilename, nSize);
-	}
-	
-	// Allocate a buffer for the filename.
-	wchar_t *lpwFilename = (wchar_t*)malloc(nSize * sizeof(wchar_t));
-	DWORD dwRet = pGetModuleFileNameW(hModule, lpwFilename, nSize);
-	
-	// Convert the filename from UTF-16 to UTF-8.
-	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
-	free(lpwFilename);
-	return dwRet;
-}
-
-
-MAKE_FUNCPTR(GetModuleHandleA);
-MAKE_STFUNCPTR(GetModuleHandleW);
-static WINBASEAPI HMODULE WINAPI GetModuleHandleU(LPCSTR lpModuleName)
-{
-	if (!lpModuleName)
-	{
-		// String not specified. Don't bother converting anything.
-		return pGetModuleHandleW((LPCWSTR)lpModuleName);
-	}
-	
-	// Convert lpModuleName from UTF-8 to UTF-16.
-	wchar_t *lpwModuleName = w32u_mbstowcs(lpModuleName);
-	
-	HMODULE hRet = pGetModuleHandleW(lpwModuleName);
-	free(lpwModuleName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(SetCurrentDirectoryA);
-MAKE_STFUNCPTR(SetCurrentDirectoryW);
-static WINUSERAPI BOOL WINAPI SetCurrentDirectoryU(LPCSTR lpPathName)
-{
-	if (!lpPathName)
-	{
-		// String not specified. Don't bother converting anything.
-		return pSetCurrentDirectoryW((LPCWSTR)lpPathName);
-	}
-	
-	// Convert lpPathName from UTF-8 to UTF-16.
-	wchar_t *lpwPathName = w32u_mbstowcs(lpPathName);
-	
-	BOOL bRet = pSetCurrentDirectoryW(lpwPathName);
-	free(lpwPathName);
-	return bRet;
-}
-
-
-MAKE_FUNCPTR(GetVersionExA);
-MAKE_STFUNCPTR(GetVersionExW);
-static WINBASEAPI BOOL WINAPI GetVersionExU(LPOSVERSIONINFOA lpVersionInfo)
-{
-	// Get the version information.
-	OSVERSIONINFOEXW wVersionInfo;
-	wVersionInfo.dwOSVersionInfoSize = lpVersionInfo->dwOSVersionInfoSize + sizeof(lpVersionInfo->szCSDVersion);
-	BOOL bRet = pGetVersionExW((OSVERSIONINFOW*)&wVersionInfo);
-	if (bRet == 0)
-		return bRet;
-	
-	// Copy the OSVERSIONINFO struct data.
-	lpVersionInfo->dwMajorVersion = wVersionInfo.dwMajorVersion;
-	lpVersionInfo->dwMinorVersion = wVersionInfo.dwMinorVersion;
-	lpVersionInfo->dwBuildNumber = wVersionInfo.dwBuildNumber;
-	lpVersionInfo->dwPlatformId = wVersionInfo.dwPlatformId;
-	
-	// Convert szCSDVersion from UTF-16 to UTF-8.
-	WideCharToMultiByte(CP_UTF8, 0, wVersionInfo.szCSDVersion, 
-				sizeof(wVersionInfo.szCSDVersion) / sizeof(wVersionInfo.szCSDVersion[0]),
-				lpVersionInfo->szCSDVersion,
-				sizeof(lpVersionInfo->szCSDVersion) / sizeof(lpVersionInfo->szCSDVersion[0]),
-				NULL, NULL);
-	
-	if (lpVersionInfo->dwOSVersionInfoSize + sizeof(lpVersionInfo->szCSDVersion) == sizeof(OSVERSIONINFOEXW))
-	{
-		// OSVERSIONINFOEXW.
-		LPOSVERSIONINFOEXA lpVersionInfoEx = (OSVERSIONINFOEXA*)lpVersionInfo;
-		lpVersionInfoEx->wServicePackMajor = wVersionInfo.wServicePackMajor;
-		lpVersionInfoEx->wServicePackMinor = wVersionInfo.wServicePackMinor;
-		lpVersionInfoEx->wSuiteMask = wVersionInfo.wSuiteMask;
-		lpVersionInfoEx->wProductType = wVersionInfo.wProductType;
-		lpVersionInfoEx->wReserved = wVersionInfo.wReserved;
-	}
-	
-	return bRet;
-}
-
-
-/** user32.dll **/
-
-
-MAKE_FUNCPTR(RegisterClassA);
-MAKE_STFUNCPTR(RegisterClassW);
-static WINUSERAPI ATOM WINAPI RegisterClassU(CONST WNDCLASSA* lpWndClass)
-{
-	// Convert lpWndClass from WNDCLASSA to WNDCLASSW.
-	WNDCLASSW wWndClass;
-	memcpy(&wWndClass, lpWndClass, sizeof(wWndClass));
-	
-	// Convert the ANSI strings to Unicode.
-	wchar_t *lpszwMenuName = NULL, *lpszwClassName = NULL;
-	
-	if (lpWndClass->lpszMenuName)
-	{
-		lpszwMenuName = w32u_mbstowcs(lpWndClass->lpszMenuName);
-		wWndClass.lpszMenuName = lpszwMenuName;
-	}
-	
-	if (lpWndClass->lpszClassName)
-	{
-		lpszwClassName = w32u_mbstowcs(lpWndClass->lpszClassName);
-		wWndClass.lpszClassName = lpszwClassName;
-	}
-	
-	ATOM aRet = pRegisterClassW(&wWndClass);
-	free(lpszwMenuName);
-	free(lpszwClassName);
-	return aRet;
-}
-
-
-MAKE_FUNCPTR(CreateWindowExA);
-MAKE_STFUNCPTR(CreateWindowExW);
-static WINUSERAPI HWND WINAPI CreateWindowExU(
-		DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName,
-		DWORD dwStyle, int x, int y, int nWidth, int nHeight,
-		HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
-{
-	// Convert lpClassName and lpWindowName from UTF-8 to UTF-16.
-	wchar_t *lpwClassName = NULL, *lpwWindowName = NULL;
-	
-	if (lpClassName)
-		lpwClassName = w32u_mbstowcs(lpClassName);
-	
-	if (lpWindowName)
-		lpwWindowName = w32u_mbstowcs(lpWindowName);
-	
-	HWND hRet = pCreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
-					dwStyle, x, y, nWidth, nHeight,
-					hWndParent, hMenu, hInstance, lpParam);
-	
-	free(lpwClassName);
-	free(lpwWindowName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(SetWindowTextA);
-MAKE_STFUNCPTR(SetWindowTextW);
-static WINUSERAPI BOOL WINAPI SetWindowTextU(HWND hWnd, LPCSTR lpString)
-{
-	// Convert lpString from UTF-8 to UTF-16.
-	wchar_t *lpwString = NULL;
-	
-	if (lpString)
-		lpwString = w32u_mbstowcs(lpString);
-	
-	BOOL bRet = pSetWindowTextW(hWnd, lpwString);
-	free(lpwString);
-	return bRet;
-}
-
-
-MAKE_FUNCPTR(GetWindowTextA);
-MAKE_STFUNCPTR(GetWindowTextW);
-static WINUSERAPI int WINAPI GetWindowTextU(HWND hWnd, LPSTR lpString, int nMaxCount)
-{
-	if (!lpString || nMaxCount <= 0)
-	{
-		// No return buffer specified.
-		return pGetWindowTextW(hWnd, (LPWSTR)lpString, nMaxCount);
-	}
-	
-	// Allocate a temporary UTF-16 return buffer.
-	wchar_t *lpwString = (wchar_t*)malloc(nMaxCount * sizeof(wchar_t));
-	int ret = pGetWindowTextW(hWnd, lpwString, nMaxCount);
-	
-	// Convert the window text to UTF-8.
-	WideCharToMultiByte(CP_UTF8, 0, lpwString, nMaxCount, lpString, nMaxCount, NULL, NULL);
-	
-	// Free the buffer.
-	free(lpwString);
-	return ret;
-}
-
-
-MAKE_FUNCPTR(InsertMenuA);
-MAKE_STFUNCPTR(InsertMenuW);
-static WINUSERAPI BOOL WINAPI InsertMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
-{
-	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
-	{
-		// String not specified. Don't bother converting anything.
-		return pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
-	}
-	
-	// Convert lpNewItem from UTF-8 to UTF-16.
-	wchar_t *lpwNewItem = NULL;
-	
-	if (lpNewItem)
-		lpwNewItem = w32u_mbstowcs(lpNewItem);
-	
-	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
-	free(lpwNewItem);
-	return bRet;
-}
-
-
-MAKE_FUNCPTR(ModifyMenuA);
-MAKE_STFUNCPTR(ModifyMenuW);
-static WINUSERAPI BOOL WINAPI ModifyMenuU(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
-{
-	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
-	{
-		// String not specified. Don't bother converting anything.
-		return pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
-	}
-	
-	// Convert lpNewItem from UTF-8 to UTF-16.
-	wchar_t *lpwNewItem = NULL;
-	
-	if (lpNewItem)
-		lpwNewItem = w32u_mbstowcs(lpNewItem);
-	
-	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
-	free(lpwNewItem);
-	return bRet;
-}
-
-
-MAKE_FUNCPTR(LoadAcceleratorsA);
-MAKE_STFUNCPTR(LoadAcceleratorsW);
-static WINUSERAPI HACCEL WINAPI LoadAcceleratorsU(HINSTANCE hInstance, LPCSTR lpTableName)
-{
-	if ((DWORD_PTR)lpTableName < 0x10000)
-	{
-		// lpTableName is a resource ID.
-		return pLoadAcceleratorsW(hInstance, (LPCWSTR)lpTableName);
-	}
-	
-	// lpTableName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwTableName = w32u_mbstowcs(lpTableName);
-	
-	HACCEL hRet = pLoadAcceleratorsW(hInstance, lpwTableName);
-	free(lpwTableName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(LoadBitmapA);
-MAKE_STFUNCPTR(LoadBitmapW);
-static WINUSERAPI HBITMAP WINAPI LoadBitmapU(HINSTANCE hInstance, LPCSTR lpBitmapName)
-{
-	if ((DWORD_PTR)lpBitmapName < 0x10000)
-	{
-		// lpBitmapName is a resource ID.
-		return pLoadBitmapW(hInstance, (LPCWSTR)lpBitmapName);
-	}
-	
-	// lpBitmapName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwBitmapName = w32u_mbstowcs(lpBitmapName);
-	
-	HBITMAP hRet = pLoadBitmapW(hInstance, lpwBitmapName);
-	free(lpwBitmapName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(LoadCursorA);
-MAKE_STFUNCPTR(LoadCursorW);
-static WINUSERAPI HCURSOR WINAPI LoadCursorU(HINSTANCE hInstance, LPCSTR lpCursorName)
-{
-	if ((DWORD_PTR)lpCursorName < 0x10000)
-	{
-		// lpCursorName is a resource ID.
-		return pLoadCursorW(hInstance, (LPCWSTR)lpCursorName);
-	}
-	
-	// lpCursorName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwCursorName = w32u_mbstowcs(lpCursorName);
-	
-	HCURSOR hRet = pLoadCursorW(hInstance, lpwCursorName);
-	free(lpwCursorName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(LoadIconA);
-MAKE_STFUNCPTR(LoadIconW);
-static WINUSERAPI HICON WINAPI LoadIconU(HINSTANCE hInstance, LPCSTR lpIconName)
-{
-	if ((DWORD_PTR)lpIconName < 0x10000)
-	{
-		// lpIconName is a resource ID.
-		return pLoadIconW(hInstance, (LPCWSTR)lpIconName);
-	}
-	
-	// lpIconName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwIconName = w32u_mbstowcs(lpIconName);
-	
-	HICON hRet = pLoadIconW(hInstance, lpwIconName);
-	free(lpwIconName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(LoadImageA);
-MAKE_STFUNCPTR(LoadImageW);
-static WINUSERAPI HANDLE WINAPI LoadImageU(HINSTANCE hInst, LPCSTR lpszName, UINT uType,
-					   int cxDesired, int cyDesired, UINT fuLoad)
-{
-	if ((DWORD_PTR)lpszName < 0x10000)
-	{
-		// lpszName is a resource ID.
-		return pLoadImageW(hInst, (LPCWSTR)lpszName, uType, cxDesired, cyDesired, fuLoad);
-	}
-	
-	// lpszName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpszwName = w32u_mbstowcs(lpszName);
-	
-	HANDLE hRet = pLoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
-	free(lpszwName);
-	return hRet;
-}
-
-
-MAKE_FUNCPTR(MessageBoxA);
-MAKE_STFUNCPTR(MessageBoxW);
-static WINUSERAPI int WINAPI MessageBoxU(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
-{
-	// Convert lpText and lpCaption from UTF-8 to UTF-16.
-	wchar_t *lpwText = NULL, *lpwCaption = NULL;
-	
-	if (lpText)
-		lpwText = w32u_mbstowcs(lpText);
-	if (lpCaption)
-		lpwCaption = w32u_mbstowcs(lpCaption);
-	
-	int ret = pMessageBoxW(hWnd, lpwText, lpwCaption, uType);
-	free(lpwText);
-	free(lpwCaption);
-	return ret;
-}
-
-
-/**
- * SendMessageU_LPCSTR(): Convert LPARAM from UTF-8 to UTF-16, then call SendMessageW().
- * @param hWnd hWnd.
- * @param msgA ANSI message.
- * @param msgW Unicode message.
- * @param wParam wParam.
- * @param lParam lParam. (LPCSTR)
- * @return Result.
- */
-WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
-{
-	if (!w32u_is_unicode)
-		return SendMessageA(hWnd, msgA, wParam, lParam);
-	if (!lParam)
-		return pSendMessageU(hWnd, msgW, wParam, lParam);
-	
-	// Convert lParam from UTF-8 to UTF-16.
-	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
-	
-	// Send the message.
-	LRESULT lRet = pSendMessageU(hWnd, msgW, wParam, (LPARAM)lwParam);
-	free(lwParam);
-	return lRet;
-}
-
-
-/**
- * These functions don't need reimplementation (no string processing),
- * but they have separate A/W versions.
- */
-
-MAKE_FUNCPTR(CreateAcceleratorTableA);
-MAKE_FUNCPTR(TranslateAcceleratorA);
-
-MAKE_FUNCPTR(DefWindowProcA);
-MAKE_FUNCPTR(CallWindowProcA);
-
-MAKE_FUNCPTR(SendMessageA);
-MAKE_FUNCPTR(GetMessageA);
-MAKE_FUNCPTR(PeekMessageA);
-
-MAKE_FUNCPTR(IsDialogMessageA);
-MAKE_FUNCPTR(DispatchMessageA);
-
-MAKE_FUNCPTR(GetWindowTextLengthA);
-
-#ifdef _WIN64
-MAKE_FUNCPTR(GetWindowLongPtrA);
-MAKE_FUNCPTR(SetWindowLongPtrA);
-#else
-MAKE_FUNCPTR(GetWindowLongA);
-MAKE_FUNCPTR(SetWindowLongA);
-#endif
-
-#ifdef _WIN64
-MAKE_FUNCPTR(GetClassLongPtrA);
-MAKE_FUNCPTR(SetClassLongPtrA);
-#else
-MAKE_FUNCPTR(GetClassLongA);
-MAKE_FUNCPTR(SetClassLongA);
-#endif
-
-
 /**
  * GetDllVersionNumber(): Get a DLL's version number via DllGetVersion().
  * @param hDLL Handle to DLL.
  * @return DLL version number, or 0 on error.
  */
-static DWORD WINAPI GetDllVersionNumber(HMODULE hDLL)
+DWORD WINAPI GetDllVersionNumber(HMODULE hDll)
 {
 	DLLVERSIONINFO dllvi;
 	DLLGETVERSIONPROC dllviproc;
 	HRESULT hRet;
 	dllvi.cbSize = sizeof(dllvi);
 	
-	dllviproc = (DLLGETVERSIONPROC)GetProcAddress(hDLL, "DllGetVersion");
+	dllviproc = (DLLGETVERSIONPROC)GetProcAddress(hDll, "DllGetVersion");
 	if (!dllviproc)
 		return 0;
 	
@@ -508,73 +87,34 @@ int WINAPI w32u_init(void)
 		return 0;
 	}
 	
-	// TODO: Error handling.
-	hKernel32 = LoadLibrary("kernel32.dll");
-	
 	// Enable Unicode on NT only.
 	OSVERSIONINFOA osv;
 	memset(&osv, 0x00, sizeof(osv));
 	osv.dwOSVersionInfoSize = sizeof(osv);
 	GetVersionExA(&osv);
 	
+#ifndef W32U_NO_UNICODE
 	if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
+	{
+		// Windows NT. Enable Unicode.
 		w32u_is_unicode = 1;
+	}
 	else
+#endif
+	{
+		// Windows 9x. Disable Unicode.
+		// TODO: MSLU support.
 		w32u_is_unicode = 0;
+	}
 	
-	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
-	InitFuncPtrsU(hKernel32, "GetModuleHandle", pGetModuleHandleW, pGetModuleHandleA, GetModuleHandleU);
-	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
-	InitFuncPtrsU(hKernel32, "GetVersionEx", pGetVersionExW, pGetVersionExA, GetVersionExU);
-	
+	// Load the DLLs.
+	// TODO: Error handling.
+	hKernel32 = LoadLibrary("kernel32.dll");
 	hUser32 = LoadLibrary("user32.dll");
-	
-	InitFuncPtrsU(hUser32, "RegisterClass", pRegisterClassW, pRegisterClassA, RegisterClassU);
-	InitFuncPtrsU(hUser32, "CreateWindowEx", pCreateWindowExW, pCreateWindowExA, CreateWindowExU);
-	InitFuncPtrsU(hUser32, "SetWindowText", pSetWindowTextW, pSetWindowTextA, SetWindowTextU);
-	InitFuncPtrsU(hUser32, "GetWindowText", pGetWindowTextW, pGetWindowTextA, GetWindowTextU);
-	InitFuncPtrsU(hUser32, "InsertMenu", pInsertMenuW, pInsertMenuA, InsertMenuU);
-	InitFuncPtrsU(hUser32, "ModifyMenu", pModifyMenuW, pModifyMenuA, ModifyMenuU);
-	InitFuncPtrsU(hUser32, "LoadAccelerators", pLoadAcceleratorsW, pLoadAcceleratorsA, LoadAcceleratorsU);
-	InitFuncPtrsU(hUser32, "LoadBitmap", pLoadBitmapW, pLoadBitmapA, LoadBitmapU);
-	InitFuncPtrsU(hUser32, "LoadCursor", pLoadCursorW, pLoadCursorA, LoadCursorU);
-	InitFuncPtrsU(hUser32, "LoadIcon", pLoadIconW, pLoadIconA, LoadIconU);
-	InitFuncPtrsU(hUser32, "LoadImage", pLoadImageW, pLoadImageA, LoadImageU);
-	InitFuncPtrsU(hUser32, "MessageBox", pMessageBoxW, pMessageBoxA, MessageBoxU);
-	
-	InitFuncPtrs(hUser32, "DefWindowProc", pDefWindowProcA);
-	InitFuncPtrs(hUser32, "CallWindowProc", pCallWindowProcA);
-	
-	InitFuncPtrs(hUser32, "SendMessage", pSendMessageA);
-	InitFuncPtrs(hUser32, "GetMessage", pGetMessageA);
-	InitFuncPtrs(hUser32, "PeekMessage", pPeekMessageA);
-	
-	InitFuncPtrs(hUser32, "CreateAcceleratorTable", pCreateAcceleratorTableA);
-	InitFuncPtrs(hUser32, "TranslateAccelerator", pTranslateAcceleratorA);
-	
-	InitFuncPtrs(hUser32, "IsDialogMessage", pIsDialogMessageA);
-	InitFuncPtrs(hUser32, "DispatchMessage", pDispatchMessageA);
-	
-	InitFuncPtrs(hUser32, "GetWindowTextLength", pGetWindowTextLengthA);
-	
-#ifdef _WIN64
-	InitFuncPtrs(hUser32, "GetWindowLongPtr", pGetWindowLongPtrA);
-	InitFuncPtrs(hUser32, "SetWindowLongPtr", pSetWindowLongPtrA);
-#else
-	InitFuncPtrs(hUser32, "GetWindowLong", pGetWindowLongA);
-	InitFuncPtrs(hUser32, "SetWindowLong", pSetWindowLongA);
-#endif
-	
-#ifdef _WIN64
-	InitFuncPtrs(hUser32, "GetClassLongPtr", pGetClassLongPtrA);
-	InitFuncPtrs(hUser32, "SetClassLongPtr", pSetClassLongPtrA);
-#else
-	InitFuncPtrs(hUser32, "GetClassLong", pGetClassLongA);
-	InitFuncPtrs(hUser32, "SetClassLong", pSetClassLongA);
-#endif
-	
-	// Other DLLs.
 	hShell32 = LoadLibrary("shell32.dll");
+	
+	// Initialize windows.h
+	w32u_windows_init(hKernel32, hUser32);
 	
 	// Get DLL version numbers.
 	shell32_dll_version = GetDllVersionNumber(hShell32);

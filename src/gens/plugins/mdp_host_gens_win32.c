@@ -23,7 +23,7 @@
 #include "mdp_host_gens_win32.h"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 
 // g_main_win32.hpp has winVersion, which has the OS version.
 #include "emulator/g_main_win32.hpp"

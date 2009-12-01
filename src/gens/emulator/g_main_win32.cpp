@@ -43,7 +43,7 @@ using std::list;
 #endif
 
 // Win32 Unicode support.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)

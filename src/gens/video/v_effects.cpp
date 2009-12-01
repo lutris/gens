@@ -34,7 +34,7 @@
 #endif
 
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #include "ui/win32/resource.h"
 #endif
 

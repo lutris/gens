@@ -106,7 +106,7 @@ using std::list;
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #endif /* GENS_OS_WIN32 */
 
 // RAR stuff.

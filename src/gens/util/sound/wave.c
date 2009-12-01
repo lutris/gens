@@ -33,7 +33,7 @@
 #include <unistd.h>
 
 #ifdef _WIN32
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_libc.h"
 #endif
 

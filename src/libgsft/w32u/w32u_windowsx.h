@@ -23,6 +23,8 @@
 #define GSFT_W32U_WINDOWSX_H
 
 #include "w32u.h"
+#include "w32u_windows.h"
+
 #include <windowsx.h>
 #include <commctrl.h>
 

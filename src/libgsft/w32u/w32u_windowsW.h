@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: UnRAR.dll Management Class.                                       *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_windows.c: windows.h (Unicode version)                             *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,44 +19,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_DECOMPRESSOR_UNRAR_DLL_HPP
-#define GENS_DECOMPRESSOR_UNRAR_DLL_HPP
+#ifndef GSFT_W32U_WINDOWSW_H
+#define GSFT_W32U_WINDOWSW_H
 
-#ifndef _WIN32
-#error unrar_dll.cpp only works on Win32.
-#endif
-
-#include "libgsft/w32u/w32u_windows.h"
-#include "unrar.h"
+#include "w32u_windows.h"
 
 #ifdef __cplusplus
-
-#ifndef MAKE_CLASSFUNCPTR
-#define MAKE_CLASSFUNCPTR(f) typeof(f) * p##f
+extern "C" {
 #endif
 
-class UnRAR_dll
-{
-	public:
-		UnRAR_dll(const char *base_path, const char *filename);
-		~UnRAR_dll();
-		
-		bool isLoaded(void) { return m_isLoaded; }
-		
-		MAKE_CLASSFUNCPTR(RAROpenArchiveEx);
-		MAKE_CLASSFUNCPTR(RARCloseArchive);
-		MAKE_CLASSFUNCPTR(RARReadHeaderEx);
-		MAKE_CLASSFUNCPTR(RARProcessFile);
-		MAKE_CLASSFUNCPTR(RARSetCallback);
-		MAKE_CLASSFUNCPTR(RARGetDllVersion);
-	
-	private:
-		bool m_isLoaded;
-		HINSTANCE hUnrarDll;
-		
-		void unload(void);
-};
+int WINAPI w32u_windowsW_init(HMODULE hKernel32, HMODULE hUser32);
+int WINAPI w32u_windowsW_end(void);
 
+#ifdef __cplusplus
+}
 #endif
 
-#endif /* GENS_DECOMPRESSOR_UNRAR_DLL_HPP */
+#endif /* GSFT_W32U_WINDOWSW_H */

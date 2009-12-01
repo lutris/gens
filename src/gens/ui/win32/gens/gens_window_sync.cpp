@@ -69,7 +69,7 @@
 #include "audio/audio.h"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 
 // C++ includes
 #include <string>
