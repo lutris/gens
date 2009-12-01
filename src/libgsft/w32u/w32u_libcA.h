@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_libc.c: libc translation.                                          *
+ * w32u_libcA.h: libc translation. (ANSI version)                          *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,34 +19,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u.h"
-#include "w32u_priv.h"
-#include "w32u_libc.h"
+#ifndef GSFT_W32U_LIBCA_H
+#define GSFT_W32U_LIBCA_H
 
-#include "w32u_libcW.h"
-#include "w32u_libcA.h"
+#include "w32u_windows.h"
 
-/** Unicode wrappers. **/
-MAKE_FUNCPTR(access);
-MAKE_FUNCPTR(fopen);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/** Unicode functions that are accessed directly. **/
-MAKE_FUNCPTR(_wcsicmp);
+int WINAPI w32u_libcA_init(void);
+int WINAPI w32u_libcA_end(void);
 
-
-int WINAPI w32u_libc_init(void)
-{
-	if (w32u_is_unicode)
-		return w32u_libcW_init();
-	else
-		return w32u_libcA_init();
+#ifdef __cplusplus
 }
+#endif
 
-
-int WINAPI w32u_libc_end(void)
-{
-	if (w32u_is_unicode)
-		return w32u_libcW_end();
-	else
-		return w32u_libcA_end();
-}
+#endif /* GSFT_W32U_LIBCA_H */

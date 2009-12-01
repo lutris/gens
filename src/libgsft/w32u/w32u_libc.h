@@ -32,7 +32,6 @@ extern "C" {
 #endif
 
 /** Unicode wrappers. **/
-
 MAKE_EXTFUNCPTR(access);
 #define access(path, mode) paccess(path, mode)
 

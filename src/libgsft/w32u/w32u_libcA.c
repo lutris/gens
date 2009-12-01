@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_libc.c: libc translation.                                          *
+ * w32u_libcA.c: libc translation. (ANSI version)                          *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,34 +19,74 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u.h"
+#include "w32u_windows.h"
 #include "w32u_priv.h"
-#include "w32u_libc.h"
-
-#include "w32u_libcW.h"
 #include "w32u_libcA.h"
 
-/** Unicode wrappers. **/
-MAKE_FUNCPTR(access);
-MAKE_FUNCPTR(fopen);
+#include "w32u_libc.h"
 
-/** Unicode functions that are accessed directly. **/
-MAKE_FUNCPTR(_wcsicmp);
+// C includes.
+#include <stdlib.h>
+
+// Initialization counter.
+static int init_counter = 0;
+
+// DLLs.
+static HMODULE hMsvcrt = NULL;
 
 
-int WINAPI w32u_libc_init(void)
+MAKE_STFUNCPTR2(access, accessA);
+static int accessUA(const char *path, int mode)
 {
-	if (w32u_is_unicode)
-		return w32u_libcW_init();
-	else
-		return w32u_libcA_init();
+	// TODO: ANSI conversion.
+	return paccessA(path, mode);
 }
 
 
-int WINAPI w32u_libc_end(void)
+MAKE_STFUNCPTR2(fopen, fopenA);
+static FILE* fopenUA(const char *path, const char *mode)
 {
-	if (w32u_is_unicode)
-		return w32u_libcW_end();
-	else
-		return w32u_libcA_end();
+	// TODO: ANSI conversion.
+	return pfopenA(path, mode);
+}
+
+
+int WINAPI w32u_libcA_init(void)
+{
+	if (init_counter++ != 0)
+		return 0;
+	
+	// TODO: Error handling.
+	hMsvcrt = LoadLibrary("msvcrt.dll");
+	
+	paccessA = (typeof(paccessA))GetProcAddress(hMsvcrt, "_access");
+	if (!paccessA)
+		paccessA = (typeof(paccessA))GetProcAddress(hMsvcrt, "access");
+	paccess = &accessUA;
+	
+	pfopenA = (typeof(pfopenA))GetProcAddress(hMsvcrt, "fopen");
+	if (!pfopenA)
+		pfopenA = (typeof(pfopenA))GetProcAddress(hMsvcrt, "_fopen");
+	pfopen = &fopenUA;
+	
+	InitFuncPtr(hMsvcrt, _wcsicmp);
+	
+	return 0;
+}
+
+
+int WINAPI w32u_libcA_end(void)
+{
+	if (init_counter <= 0)
+		return 0;
+	
+	init_counter--;
+	if (init_counter > 0)
+		return 0;
+	
+	FreeLibrary(hMsvcrt);
+	hMsvcrt = NULL;
+	
+	// TODO: Should the function pointers be NULL'd?
+	return 0;
 }
