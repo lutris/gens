@@ -400,18 +400,6 @@ static WINUSERAPI LRESULT WINAPI SendMessageUW_LPCSTR(HWND hWnd, UINT msgA, UINT
 }
 
 
-#define InitFuncPtrUW(hDll, fnU, fnW) \
-do { \
-	p##fnW = (typeof(p##fnW))GetProcAddress(hDll, #fnW); \
-	p##fnU = &(fnU##W); \
-} while (0)
-
-#define InitFuncPtrU(hDll, fnU, fn) \
-do { \
-	p##fnU = (typeof(p##fnU))GetProcAddress(hDll, #fn); \
-} while (0)
-
-
 int WINAPI w32u_windowsW_init(HMODULE hKernel32, HMODULE hUser32)
 {
 	if (init_counter++ != 0)

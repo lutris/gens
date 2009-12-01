@@ -28,6 +28,23 @@
 #define MAKE_FUNCPTR2(f1, f2) typeof(f1) * p##f2 = NULL
 #define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
 
+#define InitFuncPtrUW(hDll, fnU, fnW) \
+do { \
+	p##fnW = (typeof(p##fnW))GetProcAddress(hDll, #fnW); \
+	p##fnU = &(fnU##W); \
+} while (0)
+
+#define InitFuncPtrUA(hDll, fnU, fnA) \
+do { \
+	p##fnA = (typeof(p##fnA))GetProcAddress(hDll, #fnA); \
+	p##fnU = &(fnU##A); \
+} while (0)
+
+#define InitFuncPtrU(hDll, fnU, fn) \
+do { \
+	p##fnU = (typeof(p##fnU))GetProcAddress(hDll, #fn); \
+} while (0)
+
 /**
  * InitFuncPtr(): Initialize a function pointer.
  */
