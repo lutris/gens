@@ -25,9 +25,6 @@
 #include "w32u_windowsW.h"
 #include "w32u_windowsA.h"
 
-// C includes.
-#include <stdlib.h>
-
 
 /** kernel32.dll **/
 MAKE_FUNCPTR2(GetModuleFileNameA,	GetModuleFileNameU);
