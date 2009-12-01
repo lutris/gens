@@ -23,7 +23,7 @@
 #include "w32u_priv.h"
 
 #include "w32u_windowsW.h"
-//#include "w32u_windowsA.h"
+#include "w32u_windowsA.h"
 
 // C includes.
 #include <stdlib.h>
@@ -122,11 +122,8 @@ int WINAPI w32u_windows_init(HMODULE hKernel32, HMODULE hUser32)
 {
 	if (w32u_is_unicode)
 		return w32u_windowsW_init(hKernel32, hUser32);
-#if 0
 	else
 		return w32u_windowsA_init(hKernel32, hUser32);
-#endif
-	return 0;
 }
 
 
@@ -134,9 +131,6 @@ int WINAPI w32u_windows_end(void)
 {
 	if (w32u_is_unicode)
 		return w32u_windowsW_end();
-#if 0
 	else
 		return w32u_windowsA_end();
-#endif
-	return 0;
 }

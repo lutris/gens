@@ -13,6 +13,7 @@ libgsft_w32u_la_SOURCES = \
 		w32u.c \
 		w32u_priv.c \
 		w32u_windows.c \
+		w32u_windowsA.c \
 		w32u_windowsW.c \
 		w32u_windowsx.c \
 		w32u_commctrl.c \
@@ -25,6 +26,7 @@ noinst_HEADERS = \
 		w32u.h \
 		w32u_priv.h \
 		w32u_windows.h \
+		w32u_windowsA.h \
 		w32u_windowsW.h \
 		w32u_windowsx.h \
 		w32u_commctrl.h \
