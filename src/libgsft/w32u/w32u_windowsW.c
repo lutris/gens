@@ -452,6 +452,6 @@ int WINAPI w32u_windowsW_end(void)
 	if (init_counter > 0)
 		return 0;
 	
-	// TODO: Should function pointers be NULL'd?
+	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }
