@@ -72,7 +72,6 @@ endif
 
 if GENS_PNG_INTERNAL
 INCLUDES += -I@top_srcdir@/src/extlib/libpng/
-libgsft_png_la_LIBADD	+= $(top_builddir)/src/extlib/libpng/libpng.la
 endif
 
 libgsft_png_la_SOURCES	= gsft_png.c
