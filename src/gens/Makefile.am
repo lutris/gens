@@ -344,7 +344,7 @@ gens_LDADD += $(top_builddir)/src/extlib/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
 gens_LDADD += $(top_builddir)/src/extlib/zlib/libz.la
 else
-gens_LDADD += -lz
+gens_LDADD += @ZLIB_LIBS@
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 

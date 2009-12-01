@@ -449,6 +449,8 @@ AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
 AC_ARG_WITH(internal_zlib, AC_HELP_STRING([--with-internal-zlib], [Use internal zlib [[default=no]]]), with_internal_zlib=$withval, with_internal_zlib=no)
 
+ZLIB_LIBS=""
+
 # If internal zlib was enabled, but zlib was disabled, enable zlib.
 # The user may have thought that the plain zlib option was for shared zlib.
 if test x$with_internal_zlib = xyes; then
@@ -460,25 +462,29 @@ if test x$with_zlib = xno; then
 	with_internal_zlib=no
 else
 	# zlib enabled; check if internal zlib library is eanbled.
-if test x$with_internal_zlib = xno; then
-AC_MSG_CHECKING(for system zlib)
-	with_zlib=no
-	AC_TRY_COMPILE([
-		#include <zlib.h>
-	],[
-		gzFile gzfd;
-	],[
-		with_zlib=yes
-	])
-	AC_MSG_RESULT($with_zlib)
-	if test x$with_zlib = xno; then
-		# External zlib not found. Use the internal version.
-		with_zlib=yes
-		with_internal_zlib=yes
+	if test x$with_internal_zlib = xno; then
+		AC_MSG_CHECKING(for system zlib)
+		with_zlib=no
+		AC_TRY_COMPILE([
+			#include <zlib.h>
+		],[
+			gzFile gzfd;
+		],[
+			with_zlib=yes
+		])
+		AC_MSG_RESULT($with_zlib)
+		if test x$with_zlib = xyes; then
+			# External zlib found.
+			ZLIB_LIBS="-lz"
+		else
+			# External zlib not found. Use the internal version.
+			with_zlib=yes
+			with_internal_zlib=yes
+		fi
 	fi
 fi
 
-fi
+AC_SUBST(ZLIB_LIBS)
 
 if test x$with_zlib = xyes; then
 AC_DEFINE(GENS_ZLIB, 1, Compression support via zlib)
