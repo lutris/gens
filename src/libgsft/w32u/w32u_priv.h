@@ -39,51 +39,41 @@ do { \
 /**
  * InitFuncPtrsU(): Initialize function pointers for functions that need text conversions.
  */
-#ifdef W32U_NO_UNICODE
-#define InitFuncPtrsU(hDll, fn, pW, pA, pU) \
-do { pA = (typeof(pA))GetProcAddress(hDll, fn "A"); } while (0)
-#else
 #define InitFuncPtrsU(hDll, fn, pW, pA, pU) \
 do { \
-	pW = (typeof(pW))GetProcAddress(hDll, fn "W"); \
-	if (pW) \
+	if (is_unicode) \
+	{ \
+		pW = (typeof(pW))GetProcAddress(hDll, fn "W"); \
 		pA = &pU; \
+	} \
 	else \
 		pA = (typeof(pA))GetProcAddress(hDll, fn "A"); \
 } while (0)
-#endif
 
 /**
  * InitFuncPtrs(): Initialize function pointers for functions that don't need text conversions.
  */
-#ifdef W32U_NO_UNICODE
-#define InitFuncPtrs(hDll, fn, pA) \
-do { pA = (typeof(pA))GetProcAddress(hDll, fn "A"); } while (0)
-#else
 #define InitFuncPtrs(hDll, fn, pA) \
 do { \
-	pA = (typeof(pA))GetProcAddress(hDll, fn "W"); \
-	if (!pA) \
+	if (is_unicode) \
+		pA = (typeof(pA))GetProcAddress(hDll, fn "W"); \
+	else \
 		pA = (typeof(pA))GetProcAddress(hDll, fn "A"); \
 } while (0)
-#endif
 
 /**
  * InitFuncPtrsU_libc(): Initialize function pointers for functions that need text conversions. (libc version)
  */
-#ifdef W32U_NO_UNICODE
-#define InitFuncPtrsU_libc(hDll, fnA, fnW, pW, pA, pU) \
-do { pA = (typeof(pA))GetProcAddress(hDll, fnA); } while (0)
-#else
 #define InitFuncPtrsU_libc(hDll, fnA, fnW, pW, pA, pU) \
 do { \
-	pW = (typeof(pW))GetProcAddress(hDll, fnW); \
-	if (pW) \
+	if (is_unicode) \
+	{ \
+		pW = (typeof(pW))GetProcAddress(hDll, fnW); \
 		pA = &pU; \
+	} \
 	else \
 		pA = (typeof(pA))GetProcAddress(hDll, fnA); \
 } while (0)
-#endif
 
 #ifdef __cplusplus
 extern "C" {

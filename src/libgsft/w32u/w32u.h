@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+extern BOOL is_unicode;
+
 /** DLL versions. (0xMMNNRRRR) **/
 extern DWORD shell32_dll_version;
 

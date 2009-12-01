@@ -37,6 +37,9 @@
 // Initialization counter.
 static int init_counter = 0;
 
+// Is this Unicode?
+BOOL is_unicode = 0;
+
 // DLLs.
 static HMODULE hKernel32 = NULL;
 MAKE_FUNCPTR(MultiByteToWideChar);
@@ -515,6 +518,16 @@ int WINAPI w32u_init(void)
 	InitFuncPtr(hKernel32, MultiByteToWideChar);
 	InitFuncPtr(hKernel32, WideCharToMultiByte);
 	
+	// Enable Unicode on NT only.
+	OSVERSIONINFOA osv;
+	memset(&osv, 0x00, sizeof(osv));
+	osv.dwOSVersionInfoSize = sizeof(osv);
+	GetVersionExA(&osv);
+	
+	printf("dwPlatformId: %d\n", osv.dwPlatformId);
+	if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		is_unicode = 1;
+	
 	InitFuncPtrsU(hKernel32, "GetModuleFileName", pGetModuleFileNameW, pGetModuleFileNameA, GetModuleFileNameU);
 	InitFuncPtrsU(hKernel32, "GetModuleHandle", pGetModuleHandleW, pGetModuleHandleA, GetModuleHandleU);
 	InitFuncPtrsU(hKernel32, "SetCurrentDirectory", pSetCurrentDirectoryW, pSetCurrentDirectoryA, SetCurrentDirectoryU);
@@ -596,6 +609,9 @@ int WINAPI w32u_end(void)
 	init_counter--;
 	if (init_counter > 0)
 		return 0;
+	
+	// Disable Unicode.
+	is_unicode = 0;
 	
 	// Unload the libraries.
 	FreeLibrary(hKernel32);
