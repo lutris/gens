@@ -60,6 +60,7 @@ MAKE_FUNCPTR2(CallWindowProcA,		CallWindowProcU);
 MAKE_FUNCPTR2(SendMessageA,		SendMessageU);
 MAKE_FUNCPTR2(GetMessageA,		GetMessageU);
 MAKE_FUNCPTR2(PeekMessageA,		PeekMessageU);
+SNDMSGU_LPCSTR pSendMessageU_LPCSTR = NULL;
 
 MAKE_FUNCPTR2(CreateAcceleratorTableA,	CreateAcceleratorTableU);
 MAKE_FUNCPTR2(TranslateAcceleratorA,	TranslateAcceleratorU);
@@ -89,33 +90,6 @@ MAKE_FUNCPTR2(SetClassLongA,		SetClassLongU);
 #endif
 
 MAKE_FUNCPTR2(GetWindowTextLengthA,	GetWindowTextLengthU);
-
-
-/**
- * SendMessageU_LPCSTR(): Convert LPARAM from UTF-8 to UTF-16, then call SendMessageW().
- * @param hWnd hWnd.
- * @param msgA ANSI message.
- * @param msgW Unicode message.
- * @param wParam wParam.
- * @param lParam lParam. (LPCSTR)
- * @return Result.
- */
-WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
-{
-	// TODO: Make UW and UA versions of this function.
-	if (!w32u_is_unicode)
-		return SendMessageA(hWnd, msgA, wParam, lParam);
-	if (!lParam)
-		return pSendMessageU(hWnd, msgW, wParam, lParam);
-	
-	// Convert lParam from UTF-8 to UTF-16.
-	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
-	
-	// Send the message.
-	LRESULT lRet = pSendMessageU(hWnd, msgW, wParam, (LPARAM)lwParam);
-	free(lwParam);
-	return lRet;
-}
 
 
 int WINAPI w32u_windows_init(HMODULE hKernel32, HMODULE hUser32)

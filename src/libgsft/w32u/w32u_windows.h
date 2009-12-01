@@ -57,9 +57,11 @@ MAKE_EXTFUNCPTR2(DefWindowProcA,	DefWindowProcU);
 MAKE_EXTFUNCPTR2(CallWindowProcA,	CallWindowProcU);
 
 MAKE_EXTFUNCPTR2(SendMessageA,		SendMessageU);
-WINUSERAPI LRESULT WINAPI SendMessageU_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam);
 MAKE_EXTFUNCPTR2(GetMessageA,		GetMessageU);
 MAKE_EXTFUNCPTR2(PeekMessageA,		PeekMessageU);
+
+typedef WINUSERAPI LRESULT WINAPI (*SNDMSGU_LPCSTR)(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam);
+extern SNDMSGU_LPCSTR pSendMessageU_LPCSTR;
 
 MAKE_EXTFUNCPTR2(CreateAcceleratorTableA,	CreateAcceleratorTableU);
 MAKE_EXTFUNCPTR2(TranslateAcceleratorA,		TranslateAcceleratorU);

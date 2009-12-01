@@ -39,7 +39,7 @@ extern "C" {
 #define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ComboBox macros. **/
-#define ComboBox_AddStringU(hwndCtl, lpsz)	((int)(DWORD)SendMessageU_LPCSTR((hwndCtl),CB_ADDSTRING,CB_ADDSTRING,0,(LPARAM)(lpsz)))
+#define ComboBox_AddStringU(hwndCtl, lpsz)	((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl),CB_ADDSTRING,CB_ADDSTRING,0,(LPARAM)(lpsz)))
 #define ComboBox_GetCurSelU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_GETCURSEL,0,0))
 #define ComboBox_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
 #define ComboBox_ResetContentU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),CB_RESETCONTENT,0,0))
@@ -54,14 +54,14 @@ extern "C" {
 #define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ListBox macros. **/
-#define ListBox_AddStringU(hwndCtl, lpsz)		((int)(DWORD)SendMessageU_LPCSTR((hwndCtl),LB_ADDSTRING,LB_ADDSTRING,0,(LPARAM)(lpsz)))
+#define ListBox_AddStringU(hwndCtl, lpsz)		((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl),LB_ADDSTRING,LB_ADDSTRING,0,(LPARAM)(lpsz)))
 #define ListBox_DeleteStringU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_DELETESTRING,(WPARAM)(int)(index),0))
 #define ListBox_GetCountU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCOUNT,0,0))
 #define ListBox_GetCurSelU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCURSEL,0,0))
 #define ListBox_GetItemDataU(hwndCtl,index)		((LRESULT)(DWORD)pSendMessageU((hwndCtl),LB_GETITEMDATA,(WPARAM)(int)(index),0))
 int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
 #define ListBox_GetTextLenU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_GETTEXTLEN,(WPARAM)(int)(index),0))
-#define ListBox_InsertStringU(hwndCtl,index,lpsz)	((int)(DWORD)SendMessageU_LPCSTR((hwndCtl), LB_INSERTSTRING, LB_INSERTSTRING, \
+#define ListBox_InsertStringU(hwndCtl,index,lpsz)	((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl), LB_INSERTSTRING, LB_INSERTSTRING, \
 								(WPARAM)(int)(index), (LPARAM)(LPCTSTR)(lpsz)))
 #define ListBox_ResetContentU(hwndCtl)			((BOOL)(DWORD)pSendMessageU((hwndCtl),LB_RESETCONTENT,0,0))
 #define ListBox_SetCurSelU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_SETCURSEL,(WPARAM)(int)(index),0))

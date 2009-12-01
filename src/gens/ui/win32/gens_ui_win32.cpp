@@ -638,7 +638,7 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 	GSFT_UNUSED_PARAMETER(lParam);
 	
 	if (uMsg == BFFM_INITIALIZED)
-		SendMessageU_LPCSTR(hWnd, BFFM_SETSELECTIONA, BFFM_SETSELECTIONW, true, lpData);
+		pSendMessageU_LPCSTR(hWnd, BFFM_SETSELECTIONA, BFFM_SETSELECTIONW, true, lpData);
 	
 	return 0;
 }

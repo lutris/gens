@@ -21,6 +21,7 @@
 
 #include "w32u_windowsW.h"
 #include "w32u_priv.h"
+#include "../gsft_unused.h"
 
 #include "w32u_windows.h"
 
@@ -373,6 +374,32 @@ static WINUSERAPI int WINAPI MessageBoxUW(HWND hWnd, LPCSTR lpText, LPCSTR lpCap
 }
 
 
+/**
+ * SendMessageUW_LPCSTR(): Convert LPARAM from UTF-8 to UTF-16, then call SendMessageW().
+ * @param hWnd hWnd.
+ * @param msgA ANSI message.
+ * @param msgW Unicode message.
+ * @param wParam wParam.
+ * @param lParam lParam. (LPCSTR)
+ * @return Result.
+ */
+static WINUSERAPI LRESULT WINAPI SendMessageUW_LPCSTR(HWND hWnd, UINT msgA, UINT msgW, WPARAM wParam, LPARAM lParam)
+{
+	GSFT_UNUSED_PARAMETER(msgA);
+	
+	if (!lParam)
+		return pSendMessageU(hWnd, msgW, wParam, lParam);
+	
+	// Convert lParam from UTF-8 to UTF-16.
+	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
+	
+	// Send the message.
+	LRESULT lRet = pSendMessageU(hWnd, msgW, wParam, (LPARAM)lwParam);
+	free(lwParam);
+	return lRet;
+}
+
+
 #define InitFuncPtrUW(hDll, fnU, fnW) \
 do { \
 	p##fnW = (typeof(p##fnW))GetProcAddress(hDll, #fnW); \
@@ -415,6 +442,7 @@ int WINAPI w32u_windowsW_init(HMODULE hKernel32, HMODULE hUser32)
 	InitFuncPtrU(hUser32, SendMessageU, SendMessageW);
 	InitFuncPtrU(hUser32, GetMessageU, GetMessageW);
 	InitFuncPtrU(hUser32, PeekMessageU, PeekMessageW);
+	pSendMessageU_LPCSTR = &SendMessageUW_LPCSTR;
 	
 	InitFuncPtrU(hUser32, CreateAcceleratorTableU, CreateAcceleratorTableW);
 	InitFuncPtrU(hUser32, TranslateAcceleratorU, TranslateAcceleratorW);
