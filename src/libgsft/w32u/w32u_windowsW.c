@@ -408,7 +408,7 @@ int WINAPI w32u_windowsW_init(void)
 	
 	pSendMessageU		= &SendMessageW;
 	pGetMessageU		= &GetMessageW;
-	pPeekMessageU		= PeekMessageW;
+	pPeekMessageU		= &PeekMessageW;
 	pSendMessageU_LPCSTR	= &SendMessageUW_LPCSTR;
 	
 	pCreateAcceleratorTableU	= &CreateAcceleratorTableW;
