@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_windowsA.c: windows.h (ANSI version)                               *
+ * w32u_windowsA.c: windows.h translation. (ANSI version)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *

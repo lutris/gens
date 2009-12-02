@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_windows.c: windows.h (common code)                                 *
+ * w32u_windows.c: windows.h translation. (common code)                    *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
