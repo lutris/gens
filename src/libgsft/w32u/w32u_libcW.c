@@ -28,32 +28,24 @@
 // C includes.
 #include <stdlib.h>
 
-// Initialization counter.
-static int init_counter = 0;
 
-// DLLs.
-static HMODULE hMsvcrt = NULL;
-
-
-MAKE_STFUNCPTR(_waccess);
 static int accessUW(const char *path, int mode)
 {
 	if (!path)
 	{
 		// String not specified. Don't bother converting anything.
-		return p_waccess((const wchar_t*)path, mode);
+		return _waccess((const wchar_t*)path, mode);
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
 	wchar_t *wpath = w32u_mbstowcs(path);
 	
-	UINT uRet = p_waccess(wpath, mode);
+	UINT uRet = _waccess(wpath, mode);
 	free(wpath);
 	return uRet;
 }
 
 
-MAKE_STFUNCPTR(_wfopen);
 static FILE* fopenUW(const char *path, const char *mode)
 {
 	// Convert path and mode from UTF-8 to UTF-16.
@@ -65,7 +57,7 @@ static FILE* fopenUW(const char *path, const char *mode)
 	if (mode)
 		wmode = w32u_mbstowcs(mode);
 	
-	FILE *fRet = p_wfopen(wpath, wmode);
+	FILE *fRet = _wfopen(wpath, wmode);
 	free(wpath);
 	free(wmode);
 	return fRet;
@@ -74,19 +66,11 @@ static FILE* fopenUW(const char *path, const char *mode)
 
 int WINAPI w32u_libcW_init(void)
 {
-	if (init_counter++ != 0)
-		return 0;
-	
 	// TODO: Error handling.
-	hMsvcrt = LoadLibrary("msvcrt.dll");
 	
-	p_waccess = (typeof(p_waccess))GetProcAddress(hMsvcrt, "_waccess");
-	paccess = &accessUW;
-	
-	p_wfopen = (typeof(p_wfopen))GetProcAddress(hMsvcrt, "_wfopen");
-	pfopen = &fopenUW;
-	
-	InitFuncPtr(hMsvcrt, _wcsicmp);
+	paccess		= &accessUW;
+	pfopen		= &fopenUW;
+	p_wcsicmp	= &_wcsicmp;
 	
 	return 0;
 }
@@ -94,16 +78,6 @@ int WINAPI w32u_libcW_init(void)
 
 int WINAPI w32u_libcW_end(void)
 {
-	if (init_counter <= 0)
-		return 0;
-	
-	init_counter--;
-	if (init_counter > 0)
-		return 0;
-	
-	FreeLibrary(hMsvcrt);
-	hMsvcrt = NULL;
-	
 	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }

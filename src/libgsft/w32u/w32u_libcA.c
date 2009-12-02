@@ -28,48 +28,33 @@
 // C includes.
 #include <stdlib.h>
 
-// Initialization counter.
-static int init_counter = 0;
+// Make sure fopen isn't defined as a macro.
+#ifdef fopen
+#undef fopen
+#endif
 
-// DLLs.
-static HMODULE hMsvcrt = NULL;
 
-
-MAKE_STFUNCPTR2(access, accessA);
 static int accessUA(const char *path, int mode)
 {
 	// TODO: ANSI conversion.
-	return paccessA(path, mode);
+	return _access(path, mode);
 }
 
 
-MAKE_STFUNCPTR2(fopen, fopenA);
 static FILE* fopenUA(const char *path, const char *mode)
 {
 	// TODO: ANSI conversion.
-	return pfopenA(path, mode);
+	return fopen(path, mode);
 }
 
 
 int WINAPI w32u_libcA_init(void)
 {
-	if (init_counter++ != 0)
-		return 0;
-	
 	// TODO: Error handling.
-	hMsvcrt = LoadLibrary("msvcrt.dll");
 	
-	paccessA = (typeof(paccessA))GetProcAddress(hMsvcrt, "_access");
-	if (!paccessA)
-		paccessA = (typeof(paccessA))GetProcAddress(hMsvcrt, "access");
-	paccess = &accessUA;
-	
-	pfopenA = (typeof(pfopenA))GetProcAddress(hMsvcrt, "fopen");
-	if (!pfopenA)
-		pfopenA = (typeof(pfopenA))GetProcAddress(hMsvcrt, "_fopen");
-	pfopen = &fopenUA;
-	
-	InitFuncPtr(hMsvcrt, _wcsicmp);
+	paccess		= &accessUA;
+	pfopen		= &fopenUA;
+	p_wcsicmp	= &_wcsicmp;
 	
 	return 0;
 }
@@ -77,16 +62,6 @@ int WINAPI w32u_libcA_init(void)
 
 int WINAPI w32u_libcA_end(void)
 {
-	if (init_counter <= 0)
-		return 0;
-	
-	init_counter--;
-	if (init_counter > 0)
-		return 0;
-	
-	FreeLibrary(hMsvcrt);
-	hMsvcrt = NULL;
-	
 	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }
