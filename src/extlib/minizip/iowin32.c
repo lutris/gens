@@ -70,9 +70,6 @@ typedef struct
 #include <stdlib.h>
 #include <string.h>
 
-#define InitFuncPtr_minizip(hDll, fn) p##fn = (typeof(p##fn))GetProcAddress((hDll), #fn)
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
-
 static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 		LPCSTR lpFileName,
 		DWORD dwDesiredAccess,
@@ -85,34 +82,14 @@ static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 	static BOOL isUnicodeChecked = FALSE;
 	static BOOL isUnicodeAvailable = FALSE;
 	
-	static HMODULE hKernel32 = NULL;
-	MAKE_STFUNCPTR(CreateFileW);
-	
 	if (!isUnicodeChecked)
 	{
-		// Enable Unicode on Windows NT only.
-		// TODO: MSLU support.
-		OSVERSIONINFOA osv;
-		memset(&osv, 0x00, sizeof(osv));
-		osv.dwOSVersionInfoSize = sizeof(osv);
-		GetVersionExA(&osv);
-	
-		if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		{
-			// Windows NT. Enable Unicode.
-			isUnicodeAvailable = TRUE;
-			
-			// Get the CreateFileW() pointer.
-			hKernel32 = LoadLibrary("kernel32.dll");
-			InitFuncPtr_minizip(hKernel32, CreateFileW);
-		}
-		else
-		{
-			// Windows 9x. Disable Unicode.
-			// TODO: MSLU support.
-			// TODO: UTF-8 to ANSI translation.
+		// On ANSI systems, GetModuleHandleW(NULL) returns NULL.
+		// On Unicode systems, GetModuleHandleW(NULL) returns the executable's handle.
+		if (!GetModuleHandleW(NULL))
 			isUnicodeAvailable = FALSE;
-		}
+		else
+			isUnicodeAvailable = TRUE;
 		
 		isUnicodeChecked = TRUE;
 	}
@@ -130,7 +107,7 @@ static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 			MultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, lpwFileName, lpwFileName_len);
 		}
 		
-		HANDLE hRet = pCreateFileW(lpwFileName,
+		HANDLE hRet = CreateFileW(lpwFileName,
 					dwDesiredAccess,
 					dwShareMode,
 					lpSecurityAttributes,
