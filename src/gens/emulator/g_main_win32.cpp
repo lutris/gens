@@ -44,6 +44,7 @@ using std::list;
 
 // Win32 Unicode support.
 #include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_priv.h"
 
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
@@ -177,12 +178,36 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	}
 	
 	// Parse command line arguments.
-	argc_argv arg;
 	Gens_StartupInfo_t *startup;
+	argc_argv arg;
 	
-	convertCmdLineToArgv(lpCmdLine, &arg);
-	startup = parse_args(arg.c, arg.v);
-	deleteArgcArgv(&arg);
+	if (!w32u_is_unicode)
+	{
+		// ANSI version.
+		// TODO: Convert the command line from ANSI to UTF-8.
+		// NOTE: lpCmdLine does not contain the program name.
+		convertCmdLineToArgv(lpCmdLine, &arg, true);
+		startup = parse_args(arg.c, arg.v);
+		deleteArgcArgv(&arg);
+	}
+	else
+	{
+		// Unicode version.
+		const wchar_t *lpwCmdLine = GetCommandLineW();
+		int cchCmdLine_utf8 = WideCharToMultiByte(CP_UTF8, 0, lpwCmdLine, -1, NULL, 0, NULL, NULL);
+		if (cchCmdLine_utf8 > 0)
+		{
+			char *lpCmdLine_utf8 = (char*)malloc(cchCmdLine_utf8);
+			WideCharToMultiByte(CP_UTF8, 0, lpwCmdLine, -1, lpCmdLine_utf8, cchCmdLine_utf8, NULL, NULL);
+			
+			// NOTE: lpwCmdLine contains the program name, whereas lpCmdLine does not.
+			convertCmdLineToArgv(lpCmdLine_utf8, &arg, false);
+			startup = parse_args(arg.c, arg.v);
+			deleteArgcArgv(&arg);
+			
+			free(lpCmdLine_utf8);
+		}
+	}
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();

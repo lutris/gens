@@ -26,11 +26,7 @@
 #include "argc_argv.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u_windows.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -41,8 +37,9 @@
  * Originally from http://www.cmake.org/pipermail/cmake/2004-June/005172.html
  * @param lpCmdLine Command line.
  * @param arg Pointer to argc_argv struct.
+ * @param add_exe If non-zero, add the EXE filename as argv[0].
  */
-void convertCmdLineToArgv(LPSTR lpCmdLine, argc_argv* arg)
+void convertCmdLineToArgv(const char *lpCmdLine, argc_argv* arg, int add_exe)
 {
 	if (!arg)
 		return;
@@ -54,7 +51,7 @@ void convertCmdLineToArgv(LPSTR lpCmdLine, argc_argv* arg)
 	// parse a few of the command line arguments 
 	// a space delimites an argument except when it is inside a quote 
 	
-	arg->c = 1;
+	arg->c = (add_exe ? 1 : 0);
 	int pos = 0; 
 	for (i = 0; i < cmdLen; i++) 
 	{ 
@@ -87,20 +84,23 @@ void convertCmdLineToArgv(LPSTR lpCmdLine, argc_argv* arg)
 	
 	arg->v = (char**)malloc(sizeof(char*)*(arg->c + 1));
 	
-	arg->v[0] = (char*)malloc(1024);
-	GetModuleFileName(NULL, arg->v[0], 1024); 
+	if (add_exe)
+	{
+		arg->v[0] = (char*)malloc(1024);
+		pGetModuleFileNameU(NULL, arg->v[0], 1024); 
+	}
 	
-	for (j = 1; j < arg->c; j++)
+	for (j = (add_exe ? 1 : 0); j < arg->c; j++)
 	{
 		arg->v[j] = (char*)malloc(cmdLen + 10);
 	}
 	arg->v[arg->c] = NULL;
 	
-	arg->c = 1;
+	arg->c = (add_exe ? 1 : 0);
 	pos = 0;
-	for (i = 0; i < strlen(lpCmdLine); i++)
+	for (i = 0; i < cmdLen; i++)
 	{
-		while (lpCmdLine[i] == ' ' && i < strlen(lpCmdLine))
+		while (lpCmdLine[i] == ' ' && i < cmdLen)
 		{
 			i++;
 		}
@@ -119,7 +119,7 @@ void convertCmdLineToArgv(LPSTR lpCmdLine, argc_argv* arg)
 		}
 		else 
 		{
-			while (lpCmdLine[i] != ' ' && i < strlen(lpCmdLine))
+			while (lpCmdLine[i] != ' ' && i < cmdLen)
 			{
 				arg->v[arg->c][pos] = lpCmdLine[i];
 				i++;
