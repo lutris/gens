@@ -120,6 +120,7 @@ static WINBASEAPI HANDLE WINAPI CreateFileU_int(
 	}
 	
 	// Unicode is not available. Use ANSI.
+	// TODO: Convert UTF-8 to ANSI.
 	return CreateFileA(lpFileName,
 			dwDesiredAccess,
 			dwShareMode,

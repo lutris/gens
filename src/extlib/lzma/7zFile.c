@@ -83,6 +83,7 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 	else
 	{
 		// Unicode is not available. Use ANSI.
+		// TODO: Convert UTF-8 to ANSI.
 		p->handle = CreateFileA(name,
 				writeMode ? GENERIC_WRITE : GENERIC_READ,
 				FILE_SHARE_READ, NULL,
