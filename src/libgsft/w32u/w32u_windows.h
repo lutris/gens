@@ -92,7 +92,7 @@ MAKE_EXTFUNCPTR2(SetClassLongA,		SetClassLongU);
 
 MAKE_EXTFUNCPTR2(GetWindowTextLengthA,	GetWindowTextLengthU);
 
-int WINAPI w32u_windows_init(HMODULE hKernel32, HMODULE hUser32);
+int WINAPI w32u_windows_init(void);
 int WINAPI w32u_windows_end(void);
 
 #ifdef __cplusplus

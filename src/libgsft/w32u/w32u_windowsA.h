@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-int WINAPI w32u_windowsA_init(HMODULE hKernel32, HMODULE hUser32);
+int WINAPI w32u_windowsA_init(void);
 int WINAPI w32u_windowsA_end(void);
 
 #ifdef __cplusplus

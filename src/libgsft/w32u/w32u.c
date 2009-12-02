@@ -52,26 +52,32 @@ DWORD shell32_dll_version = 0;
 
 /**
  * GetDllVersionNumber(): Get a DLL's version number via DllGetVersion().
- * @param hDLL Handle to DLL.
+ * @param filename DLL filename.
  * @return DLL version number, or 0 on error.
  */
-DWORD WINAPI GetDllVersionNumber(HMODULE hDll)
+DWORD WINAPI GetDllVersionNumber(const char *filename)
 {
-	DLLVERSIONINFO dllvi;
-	DLLGETVERSIONPROC dllviproc;
-	HRESULT hRet;
-	dllvi.cbSize = sizeof(dllvi);
+	HMODULE hDll = LoadLibrary(filename);
+	if (!hDll)
+		return 0;
 	
+	DLLGETVERSIONPROC dllviproc;
 	dllviproc = (DLLGETVERSIONPROC)GetProcAddress(hDll, "DllGetVersion");
 	if (!dllviproc)
 		return 0;
 	
 	// DllGetVersion() found.
-	hRet = dllviproc(&dllvi);
+	DLLVERSIONINFO dllvi;
+	dllvi.cbSize = sizeof(dllvi);
+	
+	HRESULT hRet = dllviproc(&dllvi);
 	if (hRet != S_OK)
 		return 0;
 	
 	// Received the version number.
+	FreeLibrary(hDll);
+	
+	// Return the version number.
 	return  (dllvi.dwMajorVersion & 0xFF) << 24 |
 		(dllvi.dwMinorVersion & 0xFF) << 16 |
 		(dllvi.dwBuildNumber & 0xFFFF);
@@ -87,38 +93,29 @@ int WINAPI w32u_init(void)
 		return 0;
 	}
 	
-#ifndef W32U_NO_UNICODE
-	// Enable Unicode on Windows NT only.
-	// TODO: MSLU support.
-	OSVERSIONINFOA osv;
-	memset(&osv, 0x00, sizeof(osv));
-	osv.dwOSVersionInfoSize = sizeof(osv);
-	GetVersionExA(&osv);
-	
-	if (osv.dwPlatformId == VER_PLATFORM_WIN32_NT)
+	// Check if the system supports Unicode.
+	if (!GetModuleHandleW(NULL))
 	{
-		// Windows NT. Enable Unicode.
-		w32u_is_unicode = 1;
+		// GetModuleHandleW(NULL) returnd NULL.
+		// This means the system doesn't support Unicode.
+		w32u_is_unicode = 0;
 	}
 	else
-#endif
 	{
-		// Windows 9x. Disable Unicode.
-		// TODO: MSLU support.
-		w32u_is_unicode = 0;
+		// GetModuleHandleW() returned gens.exe's module handle.
+		// This means the system supports Unicode.
+		w32u_is_unicode = 1;
 	}
 	
 	// Load the DLLs.
 	// TODO: Error handling.
-	hKernel32 = LoadLibrary("kernel32.dll");
-	hUser32 = LoadLibrary("user32.dll");
 	hShell32 = LoadLibrary("shell32.dll");
 	
 	// Initialize windows.h
-	w32u_windows_init(hKernel32, hUser32);
+	w32u_windows_init();
 	
 	// Get DLL version numbers.
-	shell32_dll_version = GetDllVersionNumber(hShell32);
+	shell32_dll_version = GetDllVersionNumber("shell32.dll");
 	
 	// Other Win32 Unicode modules.
 	w32u_shellapi_init(hShell32);

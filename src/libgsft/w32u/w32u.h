@@ -43,7 +43,7 @@ extern BOOL w32u_is_unicode;
 /** DLL versions. (0xMMNNRRRR) **/
 extern DWORD shell32_dll_version;
 
-DWORD WINAPI GetDllVersionNumber(HMODULE hDll);
+DWORD WINAPI GetDllVersionNumber(const char *filename);
 
 int WINAPI w32u_init(void);
 int WINAPI w32u_end(void);

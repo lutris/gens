@@ -89,12 +89,12 @@ MAKE_FUNCPTR2(SetClassLongA,		SetClassLongU);
 MAKE_FUNCPTR2(GetWindowTextLengthA,	GetWindowTextLengthU);
 
 
-int WINAPI w32u_windows_init(HMODULE hKernel32, HMODULE hUser32)
+int WINAPI w32u_windows_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_windowsW_init(hKernel32, hUser32);
+		return w32u_windowsW_init();
 	else
-		return w32u_windowsA_init(hKernel32, hUser32);
+		return w32u_windowsA_init();
 }
 
 

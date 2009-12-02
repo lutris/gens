@@ -28,25 +28,21 @@
 // C includes.
 #include <stdlib.h>
 
-// Initialization counter.
-static int init_counter = 0;
-
 
 /** kernel32.dll **/
 
 
-MAKE_STFUNCPTR(GetModuleFileNameW);
 static WINBASEAPI DWORD WINAPI GetModuleFileNameUW(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 {
 	if (!lpFilename || nSize == 0)
 	{
 		// String not specified. Don't bother converting anything.
-		return pGetModuleFileNameW(hModule, (LPWSTR)lpFilename, nSize);
+		return GetModuleFileNameW(hModule, (LPWSTR)lpFilename, nSize);
 	}
 	
 	// Allocate a buffer for the filename.
 	wchar_t *lpwFilename = (wchar_t*)malloc(nSize * sizeof(wchar_t));
-	DWORD dwRet = pGetModuleFileNameW(hModule, lpwFilename, nSize);
+	DWORD dwRet = GetModuleFileNameW(hModule, lpwFilename, nSize);
 	
 	// Convert the filename from UTF-16 to UTF-8.
 	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
@@ -55,49 +51,46 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameUW(HMODULE hModule, LPSTR lpFile
 }
 
 
-MAKE_STFUNCPTR(GetModuleHandleW);
 static WINBASEAPI HMODULE WINAPI GetModuleHandleUW(LPCSTR lpModuleName)
 {
 	if (!lpModuleName)
 	{
 		// String not specified. Don't bother converting anything.
-		return pGetModuleHandleW((LPCWSTR)lpModuleName);
+		return GetModuleHandleW((LPCWSTR)lpModuleName);
 	}
 	
 	// Convert lpModuleName from UTF-8 to UTF-16.
 	wchar_t *lpwModuleName = w32u_mbstowcs(lpModuleName);
 	
-	HMODULE hRet = pGetModuleHandleW(lpwModuleName);
+	HMODULE hRet = GetModuleHandleW(lpwModuleName);
 	free(lpwModuleName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(SetCurrentDirectoryW);
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryUW(LPCSTR lpPathName)
 {
 	if (!lpPathName)
 	{
 		// String not specified. Don't bother converting anything.
-		return pSetCurrentDirectoryW((LPCWSTR)lpPathName);
+		return SetCurrentDirectoryW((LPCWSTR)lpPathName);
 	}
 	
 	// Convert lpPathName from UTF-8 to UTF-16.
 	wchar_t *lpwPathName = w32u_mbstowcs(lpPathName);
 	
-	BOOL bRet = pSetCurrentDirectoryW(lpwPathName);
+	BOOL bRet = SetCurrentDirectoryW(lpwPathName);
 	free(lpwPathName);
 	return bRet;
 }
 
 
-MAKE_STFUNCPTR(GetVersionExW);
 static WINBASEAPI BOOL WINAPI GetVersionExUW(LPOSVERSIONINFOA lpVersionInfo)
 {
 	// Get the version information.
 	OSVERSIONINFOEXW wVersionInfo;
 	wVersionInfo.dwOSVersionInfoSize = lpVersionInfo->dwOSVersionInfoSize + sizeof(lpVersionInfo->szCSDVersion);
-	BOOL bRet = pGetVersionExW((OSVERSIONINFOW*)&wVersionInfo);
+	BOOL bRet = GetVersionExW((OSVERSIONINFOW*)&wVersionInfo);
 	if (bRet == 0)
 		return bRet;
 	
@@ -132,7 +125,6 @@ static WINBASEAPI BOOL WINAPI GetVersionExUW(LPOSVERSIONINFOA lpVersionInfo)
 /** user32.dll **/
 
 
-MAKE_STFUNCPTR(RegisterClassW);
 static WINUSERAPI ATOM WINAPI RegisterClassUW(CONST WNDCLASSA* lpWndClass)
 {
 	// Convert lpWndClass from WNDCLASSA to WNDCLASSW.
@@ -154,14 +146,13 @@ static WINUSERAPI ATOM WINAPI RegisterClassUW(CONST WNDCLASSA* lpWndClass)
 		wWndClass.lpszClassName = lpszwClassName;
 	}
 	
-	ATOM aRet = pRegisterClassW(&wWndClass);
+	ATOM aRet = RegisterClassW(&wWndClass);
 	free(lpszwMenuName);
 	free(lpszwClassName);
 	return aRet;
 }
 
 
-MAKE_STFUNCPTR(CreateWindowExW);
 static WINUSERAPI HWND WINAPI CreateWindowExUW(
 			DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName,
 			DWORD dwStyle, int x, int y, int nWidth, int nHeight,
@@ -176,9 +167,9 @@ static WINUSERAPI HWND WINAPI CreateWindowExUW(
 	if (lpWindowName)
 		lpwWindowName = w32u_mbstowcs(lpWindowName);
 	
-	HWND hRet = pCreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
-				     dwStyle, x, y, nWidth, nHeight,
-	 hWndParent, hMenu, hInstance, lpParam);
+	HWND hRet = CreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
+					dwStyle, x, y, nWidth, nHeight,
+					hWndParent, hMenu, hInstance, lpParam);
 	
 	free(lpwClassName);
 	free(lpwWindowName);
@@ -186,7 +177,6 @@ static WINUSERAPI HWND WINAPI CreateWindowExUW(
 }
 
 
-MAKE_STFUNCPTR(SetWindowTextW);
 static WINUSERAPI BOOL WINAPI SetWindowTextUW(HWND hWnd, LPCSTR lpString)
 {
 	// Convert lpString from UTF-8 to UTF-16.
@@ -195,24 +185,23 @@ static WINUSERAPI BOOL WINAPI SetWindowTextUW(HWND hWnd, LPCSTR lpString)
 	if (lpString)
 		lpwString = w32u_mbstowcs(lpString);
 	
-	BOOL bRet = pSetWindowTextW(hWnd, lpwString);
+	BOOL bRet = SetWindowTextW(hWnd, lpwString);
 	free(lpwString);
 	return bRet;
 }
 
 
-MAKE_STFUNCPTR(GetWindowTextW);
 static WINUSERAPI int WINAPI GetWindowTextUW(HWND hWnd, LPSTR lpString, int nMaxCount)
 {
 	if (!lpString || nMaxCount <= 0)
 	{
 		// No return buffer specified.
-		return pGetWindowTextW(hWnd, (LPWSTR)lpString, nMaxCount);
+		return GetWindowTextW(hWnd, (LPWSTR)lpString, nMaxCount);
 	}
 	
 	// Allocate a temporary UTF-16 return buffer.
 	wchar_t *lpwString = (wchar_t*)malloc(nMaxCount * sizeof(wchar_t));
-	int ret = pGetWindowTextW(hWnd, lpwString, nMaxCount);
+	int ret = GetWindowTextW(hWnd, lpwString, nMaxCount);
 	
 	// Convert the window text to UTF-8.
 	WideCharToMultiByte(CP_UTF8, 0, lpwString, nMaxCount, lpString, nMaxCount, NULL, NULL);
@@ -223,13 +212,12 @@ static WINUSERAPI int WINAPI GetWindowTextUW(HWND hWnd, LPSTR lpString, int nMax
 }
 
 
-MAKE_STFUNCPTR(InsertMenuW);
 static WINUSERAPI BOOL WINAPI InsertMenuUW(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
 	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
 	{
 		// String not specified. Don't bother converting anything.
-		return pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
+		return InsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
@@ -238,19 +226,18 @@ static WINUSERAPI BOOL WINAPI InsertMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 	if (lpNewItem)
 		lpwNewItem = w32u_mbstowcs(lpNewItem);
 	
-	BOOL bRet = pInsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
+	BOOL bRet = InsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
 	return bRet;
 }
 
 
-MAKE_STFUNCPTR(ModifyMenuW);
 static WINUSERAPI BOOL WINAPI ModifyMenuUW(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
 	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
 	{
 		// String not specified. Don't bother converting anything.
-		return pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
+		return ModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, (LPCWSTR)lpNewItem);
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
@@ -259,104 +246,98 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 	if (lpNewItem)
 		lpwNewItem = w32u_mbstowcs(lpNewItem);
 	
-	BOOL bRet = pModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
+	BOOL bRet = ModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
 	return bRet;
 }
 
 
-MAKE_STFUNCPTR(LoadAcceleratorsW);
 static WINUSERAPI HACCEL WINAPI LoadAcceleratorsUW(HINSTANCE hInstance, LPCSTR lpTableName)
 {
 	if ((DWORD_PTR)lpTableName < 0x10000)
 	{
 		// lpTableName is a resource ID.
-		return pLoadAcceleratorsW(hInstance, (LPCWSTR)lpTableName);
+		return LoadAcceleratorsW(hInstance, (LPCWSTR)lpTableName);
 	}
 	
 	// lpTableName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpwTableName = w32u_mbstowcs(lpTableName);
 	
-	HACCEL hRet = pLoadAcceleratorsW(hInstance, lpwTableName);
+	HACCEL hRet = LoadAcceleratorsW(hInstance, lpwTableName);
 	free(lpwTableName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(LoadBitmapW);
 static WINUSERAPI HBITMAP WINAPI LoadBitmapUW(HINSTANCE hInstance, LPCSTR lpBitmapName)
 {
 	if ((DWORD_PTR)lpBitmapName < 0x10000)
 	{
 		// lpBitmapName is a resource ID.
-		return pLoadBitmapW(hInstance, (LPCWSTR)lpBitmapName);
+		return LoadBitmapW(hInstance, (LPCWSTR)lpBitmapName);
 	}
 	
 	// lpBitmapName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpwBitmapName = w32u_mbstowcs(lpBitmapName);
 	
-	HBITMAP hRet = pLoadBitmapW(hInstance, lpwBitmapName);
+	HBITMAP hRet = LoadBitmapW(hInstance, lpwBitmapName);
 	free(lpwBitmapName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(LoadCursorW);
 static WINUSERAPI HCURSOR WINAPI LoadCursorUW(HINSTANCE hInstance, LPCSTR lpCursorName)
 {
 	if ((DWORD_PTR)lpCursorName < 0x10000)
 	{
 		// lpCursorName is a resource ID.
-		return pLoadCursorW(hInstance, (LPCWSTR)lpCursorName);
+		return LoadCursorW(hInstance, (LPCWSTR)lpCursorName);
 	}
 	
 	// lpCursorName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpwCursorName = w32u_mbstowcs(lpCursorName);
 	
-	HCURSOR hRet = pLoadCursorW(hInstance, lpwCursorName);
+	HCURSOR hRet = LoadCursorW(hInstance, lpwCursorName);
 	free(lpwCursorName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(LoadIconW);
 static WINUSERAPI HICON WINAPI LoadIconUW(HINSTANCE hInstance, LPCSTR lpIconName)
 {
 	if ((DWORD_PTR)lpIconName < 0x10000)
 	{
 		// lpIconName is a resource ID.
-		return pLoadIconW(hInstance, (LPCWSTR)lpIconName);
+		return LoadIconW(hInstance, (LPCWSTR)lpIconName);
 	}
 	
 	// lpIconName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpwIconName = w32u_mbstowcs(lpIconName);
 	
-	HICON hRet = pLoadIconW(hInstance, lpwIconName);
+	HICON hRet = LoadIconW(hInstance, lpwIconName);
 	free(lpwIconName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(LoadImageW);
 static WINUSERAPI HANDLE WINAPI LoadImageUW(HINSTANCE hInst, LPCSTR lpszName, UINT uType,
 						int cxDesired, int cyDesired, UINT fuLoad)
 {
 	if ((DWORD_PTR)lpszName < 0x10000)
 	{
 		// lpszName is a resource ID.
-		return pLoadImageW(hInst, (LPCWSTR)lpszName, uType, cxDesired, cyDesired, fuLoad);
+		return LoadImageW(hInst, (LPCWSTR)lpszName, uType, cxDesired, cyDesired, fuLoad);
 	}
 	
 	// lpszName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpszwName = w32u_mbstowcs(lpszName);
 	
-	HANDLE hRet = pLoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
+	HANDLE hRet = LoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
 	free(lpszwName);
 	return hRet;
 }
 
 
-MAKE_STFUNCPTR(MessageBoxW);
 static WINUSERAPI int WINAPI MessageBoxUW(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
 	// Convert lpText and lpCaption from UTF-8 to UTF-16.
@@ -367,7 +348,7 @@ static WINUSERAPI int WINAPI MessageBoxUW(HWND hWnd, LPCSTR lpText, LPCSTR lpCap
 	if (lpCaption)
 		lpwCaption = w32u_mbstowcs(lpCaption);
 	
-	int ret = pMessageBoxW(hWnd, lpwText, lpwCaption, uType);
+	int ret = MessageBoxW(hWnd, lpwText, lpwCaption, uType);
 	free(lpwText);
 	free(lpwCaption);
 	return ret;
@@ -388,72 +369,69 @@ static WINUSERAPI LRESULT WINAPI SendMessageUW_LPCSTR(HWND hWnd, UINT msgA, UINT
 	GSFT_UNUSED_PARAMETER(msgA);
 	
 	if (!lParam)
-		return pSendMessageU(hWnd, msgW, wParam, lParam);
+		return SendMessageW(hWnd, msgW, wParam, lParam);
 	
 	// Convert lParam from UTF-8 to UTF-16.
 	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
 	
 	// Send the message.
-	LRESULT lRet = pSendMessageU(hWnd, msgW, wParam, (LPARAM)lwParam);
+	LRESULT lRet = SendMessageW(hWnd, msgW, wParam, (LPARAM)lwParam);
 	free(lwParam);
 	return lRet;
 }
 
 
-int WINAPI w32u_windowsW_init(HMODULE hKernel32, HMODULE hUser32)
+int WINAPI w32u_windowsW_init(void)
 {
-	if (init_counter++ != 0)
-		return 0;
-	
 	// TODO: Error handling.
-	InitFuncPtrUW(hKernel32, GetModuleFileNameU, GetModuleFileNameW);
-	InitFuncPtrUW(hKernel32, GetModuleHandleU, GetModuleHandleW);
-	InitFuncPtrUW(hKernel32, SetCurrentDirectoryU, SetCurrentDirectoryW);
-	InitFuncPtrUW(hKernel32, GetVersionExU, GetVersionExW);
+	pGetModuleFileNameU	= &GetModuleFileNameUW;
+	pGetModuleHandleU	= &GetModuleHandleUW;
+	pSetCurrentDirectoryU	= &SetCurrentDirectoryUW;
+	pGetVersionExU		= &GetVersionExUW;
 	
-	InitFuncPtrUW(hUser32, RegisterClassU, RegisterClassW);
-	InitFuncPtrUW(hUser32, CreateWindowExU, CreateWindowExW);
-	InitFuncPtrUW(hUser32, SetWindowTextU, SetWindowTextW);
-	InitFuncPtrUW(hUser32, GetWindowTextU, GetWindowTextW);
-	InitFuncPtrUW(hUser32, InsertMenuU, InsertMenuW);
-	InitFuncPtrUW(hUser32, ModifyMenuU, ModifyMenuW);
-	InitFuncPtrUW(hUser32, LoadAcceleratorsU, LoadAcceleratorsW);
-	InitFuncPtrUW(hUser32, LoadBitmapU, LoadBitmapW);
-	InitFuncPtrUW(hUser32, LoadCursorU, LoadCursorW);
-	InitFuncPtrUW(hUser32, LoadIconU, LoadIconW);
-	InitFuncPtrUW(hUser32, LoadImageU, LoadImageW);
-	InitFuncPtrUW(hUser32, MessageBoxU, MessageBoxW);
+	pRegisterClassU		= &RegisterClassUW;
+	pCreateWindowExU	= &CreateWindowExUW;
+	pSetWindowTextU		= &SetWindowTextUW;
+	pGetWindowTextU		= &GetWindowTextUW;
+	pInsertMenuU		= &InsertMenuUW;
+	pModifyMenuU		= &ModifyMenuUW;
+	pLoadAcceleratorsU	= &LoadAcceleratorsUW;
+	pLoadBitmapU		= &LoadBitmapUW;
+	pLoadCursorU		= &LoadCursorUW;
+	pLoadIconU		= &LoadIconUW;
+	pLoadImageU		= &LoadImageUW;
+	pMessageBoxU		= &MessageBoxUW;
 	
-	InitFuncPtrU(hUser32, DefWindowProcU, DefWindowProcW);
-	InitFuncPtrU(hUser32, CallWindowProcU, CallWindowProcW);
+	pDefWindowProcU		= &DefWindowProcW;
+	pCallWindowProcU	= &CallWindowProcW;
 	
-	InitFuncPtrU(hUser32, SendMessageU, SendMessageW);
-	InitFuncPtrU(hUser32, GetMessageU, GetMessageW);
-	InitFuncPtrU(hUser32, PeekMessageU, PeekMessageW);
-	pSendMessageU_LPCSTR = &SendMessageUW_LPCSTR;
+	pSendMessageU		= &SendMessageW;
+	pGetMessageU		= &GetMessageW;
+	pPeekMessageU		= PeekMessageW;
+	pSendMessageU_LPCSTR	= &SendMessageUW_LPCSTR;
 	
-	InitFuncPtrU(hUser32, CreateAcceleratorTableU, CreateAcceleratorTableW);
-	InitFuncPtrU(hUser32, TranslateAcceleratorU, TranslateAcceleratorW);
+	pCreateAcceleratorTableU	= &CreateAcceleratorTableW;
+	pTranslateAcceleratorU		= &TranslateAcceleratorW;
 	
-	InitFuncPtrU(hUser32, IsDialogMessageU, IsDialogMessageW);
-	InitFuncPtrU(hUser32, DispatchMessageU, DispatchMessageW);
+	pIsDialogMessageU	= &IsDialogMessageW;
+	pDispatchMessageU	= &DispatchMessageW;
 	
-	InitFuncPtrU(hUser32, GetWindowTextLengthU, GetWindowTextLengthW);
+	pGetWindowTextLengthU	= &GetWindowTextLengthW;
 	
 #ifdef _WIN64
-	InitFuncPtrU(hUser32, GetWindowLongPtrU, GetWindowLongPtrW);
-	InitFuncPtrU(hUser32, SetWindowLongPtrU, SetWindowLongPtrW);
+	pGetWindowLongPtrU	= &GetWindowLongPtrW;
+	pSetWindowLongPtrU	= &SetWindowLongPtrW;
 #else
-	InitFuncPtrU(hUser32, GetWindowLongU, GetWindowLongW);
-	InitFuncPtrU(hUser32, SetWindowLongU, SetWindowLongW);
+	pGetWindowLongU		= &GetWindowLongW;
+	pSetWindowLongU		= &SetWindowLongW;
 #endif
 	
 #ifdef _WIN64
-	InitFuncPtrU(hUser32, GetClassLongPtrU, GetClassLongPtrW);
-	InitFuncPtrU(hUser32, SetClassLongPtrU, SetClassLongPtrW);
+	pGetClassLongPtrU	= &GetClassLongPtrW;
+	pSetClassLongPtrU	= &SetClassLongPtrW;
 #else
-	InitFuncPtrU(hUser32, GetClassLongU, GetClassLongW);
-	InitFuncPtrU(hUser32, SetClassLongU, SetClassLongW);
+	pGetClassLongU		= &GetClassLongW;
+	pSetClassLongU		= &SetClassLongW;
 #endif
 	
 	return 0;
@@ -461,13 +439,6 @@ int WINAPI w32u_windowsW_init(HMODULE hKernel32, HMODULE hUser32)
 
 int WINAPI w32u_windowsW_end(void)
 {
-	if (init_counter <= 0)
-		return 0;
-	
-	init_counter--;
-	if (init_counter > 0)
-		return 0;
-	
 	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }
