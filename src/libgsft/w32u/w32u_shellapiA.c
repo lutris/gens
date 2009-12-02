@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shellapi.h: shellapi.h translation. (common code)                  *
+ * w32u_shellapiA.c: shellapi.h translation. (ANSI version)                *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,23 +19,37 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHELLAPI_H
-#define GSFT_W32U_SHELLAPI_H
+#include "w32u_windows.h"
+#include "w32u_priv.h"
+#include "w32u_shellapiA.h"
 
-#include "w32u.h"
-#include <shellapi.h>
+#include "w32u_shellapi.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// C includes.
+#include <stdlib.h>
 
-MAKE_EXTFUNCPTR2(DragQueryFileA,	DragQueryFileU);
-MAKE_EXTFUNCPTR2(ShellExecuteA,		ShellExecuteU);
 
-int WINAPI w32u_shellapi_init(void);
-
-#ifdef __cplusplus
+static UINT WINAPI DragQueryFileUA(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT cch)
+{
+	// TODO: ANSI conversion.
+	return DragQueryFileA(hDrop, iFile, lpszFile, cch);
 }
-#endif
 
-#endif /* GSFT_W32U_SHELLAPI_H */
+
+static HINSTANCE WINAPI ShellExecuteUA(HWND hWnd, LPCSTR lpOperation, LPCSTR lpFile,
+					LPCSTR lpParameters, LPCSTR lpDirectory, INT nShowCmd)
+{
+	// TODO: ANSI conversion.
+	return ShellExecuteA(hWnd, lpOperation, lpFile, lpParameters, lpDirectory, nShowCmd);
+}
+
+
+int WINAPI w32u_shellapiA_init(void)
+{
+	// TODO: Error handling.
+	
+	pDragQueryFileU		= &DragQueryFileUA;
+	pShellExecuteU		= &ShellExecuteUA;
+	
+	return 0;
+}

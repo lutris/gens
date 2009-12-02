@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shellapi.c: shellapi.h translation.                                *
+ * w32u_shellapi.c: shellapi.h translation. (common code)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,66 +19,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u.h"
-#include "w32u_priv.h"
 #include "w32u_shellapi.h"
+#include "w32u_priv.h"
 
-// C includes.
-#include <stdlib.h>
+#include "w32u_shellapiW.h"
+#include "w32u_shellapiA.h"
 
 
-MAKE_FUNCPTR(DragQueryFileA);
-MAKE_STFUNCPTR(DragQueryFileW);
-static UINT WINAPI DragQueryFileU(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT cch)
+MAKE_FUNCPTR2(DragQueryFileA,	DragQueryFileU);
+MAKE_FUNCPTR2(ShellExecuteA,	ShellExecuteU);
+
+
+int WINAPI w32u_shellapi_init(void)
 {
-	if (!lpszFile || cch == 0)
-	{
-		// String not specified. Don't bother converting anything.
-		return pDragQueryFileW(hDrop, iFile, (LPWSTR)lpszFile, cch);
-	}
-	
-	// Allocate a buffer for the filename.
-	wchar_t *lpszwFile = (wchar_t*)malloc(cch * sizeof(wchar_t));
-	UINT uRet = DragQueryFileW(hDrop, iFile, lpszwFile, cch);
-	
-	// Convert the filename from UTF-16 to UTF-8.
-	WideCharToMultiByte(CP_UTF8, 0, lpszwFile, -1, lpszFile, cch, NULL, NULL);
-	free(lpszwFile);
-	return uRet;
-}
-
-
-MAKE_FUNCPTR(ShellExecuteA);
-MAKE_STFUNCPTR(ShellExecuteW);
-static HINSTANCE WINAPI ShellExecuteU(HWND hWnd, LPCSTR lpOperation, LPCSTR lpFile,
-				      LPCSTR lpParameters, LPCSTR lpDirectory, INT nShowCmd)
-{
-	// Convert the four strings from UTF-8 to UTF-16.
-	wchar_t *lpwOperation = NULL, *lpwFile = NULL;
-	wchar_t *lpwParameters = NULL, *lpwDirectory = NULL;
-	
-	if (lpOperation)
-		lpwOperation = w32u_mbstowcs(lpOperation);
-	if (lpFile)
-		lpwFile = w32u_mbstowcs(lpFile);
-	if (lpParameters)
-		lpwParameters = w32u_mbstowcs(lpParameters);
-	if (lpDirectory)
-		lpwDirectory = w32u_mbstowcs(lpDirectory);
-	
-	HINSTANCE hRet = pShellExecuteW(hWnd, lpwOperation, lpwFile, lpwParameters, lpwDirectory, nShowCmd);
-	free(lpwOperation);
-	free(lpwFile);
-	free(lpwParameters);
-	free(lpwDirectory);
-	return hRet;
-}
-
-
-int WINAPI w32u_shellapi_init(HMODULE hShell32)
-{
-	InitFuncPtrsU(hShell32, "DragQueryFile", pDragQueryFileW, pDragQueryFileA, DragQueryFileU);
-	InitFuncPtrsU(hShell32, "ShellExecute", pShellExecuteW, pShellExecuteA, ShellExecuteU);
-	
-	return 0;
+	if (w32u_is_unicode)
+		return w32u_shellapiW_init();
+	else
+		return w32u_shellapiA_init();
 }

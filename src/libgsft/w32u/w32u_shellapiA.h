@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shellapi.h: shellapi.h translation. (common code)                  *
+ * w32u_shellapiA.h: shellapi.h translation. (ANSI version)                *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,23 +19,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHELLAPI_H
-#define GSFT_W32U_SHELLAPI_H
+#ifndef GSFT_W32U_SHELLAPIA_H
+#define GSFT_W32U_SHELLAPIA_H
 
 #include "w32u.h"
-#include <shellapi.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAKE_EXTFUNCPTR2(DragQueryFileA,	DragQueryFileU);
-MAKE_EXTFUNCPTR2(ShellExecuteA,		ShellExecuteU);
-
-int WINAPI w32u_shellapi_init(void);
+int WINAPI w32u_shellapiA_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GSFT_W32U_SHELLAPI_H */
+#endif /* GSFT_W32U_SHELLAPIA_H */

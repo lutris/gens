@@ -96,7 +96,7 @@ int WINAPI w32u_init(void)
 	// Check if the system supports Unicode.
 	if (!GetModuleHandleW(NULL))
 	{
-		// GetModuleHandleW(NULL) returnd NULL.
+		// GetModuleHandleW(NULL) returned NULL.
 		// This means the system doesn't support Unicode.
 		w32u_is_unicode = 0;
 	}
@@ -107,10 +107,6 @@ int WINAPI w32u_init(void)
 		w32u_is_unicode = 1;
 	}
 	
-	// Load the DLLs.
-	// TODO: Error handling.
-	hShell32 = LoadLibrary("shell32.dll");
-	
 	// Initialize windows.h
 	w32u_windows_init();
 	
@@ -118,7 +114,7 @@ int WINAPI w32u_init(void)
 	shell32_dll_version = GetDllVersionNumber("shell32.dll");
 	
 	// Other Win32 Unicode modules.
-	w32u_shellapi_init(hShell32);
+	w32u_shellapi_init();
 	w32u_libc_init();
 	w32u_commdlg_init();
 	w32u_shlobj_init();
