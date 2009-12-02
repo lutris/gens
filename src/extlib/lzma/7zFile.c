@@ -30,15 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
-static HMODULE hKernel32 = NULL;
-MAKE_STFUNCPTR(CreateFileW);
-MAKE_STFUNCPTR(MultiByteToWideChar);
-static BOOL isUnicodeChecked = FALSE;
-static BOOL isUnicodeAvailable = FALSE;
-
-#define InitFuncPtr_lzma(hDll, fn) p##fn = (typeof(p##fn))GetProcAddress((hDll), #fn)
-
 #endif
 
 void File_Construct(CSzFile *p)
@@ -53,26 +44,18 @@ void File_Construct(CSzFile *p)
 static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 {
 #ifdef USE_WINDOWS_FILE
-	// Check for Unicode.
+	static BOOL isUnicodeChecked = FALSE;
+	static BOOL isUnicodeAvailable = FALSE;
+	
 	if (!isUnicodeChecked)
 	{
-		hKernel32 = LoadLibrary("kernel32.dll");
-		if (hKernel32)
-		{
-			InitFuncPtr_lzma(hKernel32, CreateFileW);
-			InitFuncPtr_lzma(hKernel32, MultiByteToWideChar);
-			
-			isUnicodeAvailable = (pCreateFileW && pMultiByteToWideChar);
-			if (!isUnicodeAvailable)
-			{
-				// Unicode is not enabled.
-				// Unload kernel32.dll and NULL out the pointers.
-				FreeLibrary(hKernel32);
-				hKernel32 = NULL;
-				pCreateFileW = NULL;
-				pMultiByteToWideChar = NULL;
-			}
-		}
+		// On ANSI systems, GetModuleHandleW(NULL) returns NULL.
+		// On Unicode systems, GetModuleHandleW(NULL) returns the executable's handle.
+		if (!GetModuleHandleW(NULL))
+			isUnicodeAvailable = FALSE;
+		else
+			isUnicodeAvailable = TRUE;
+		
 		isUnicodeChecked = TRUE;
 	}
 	
@@ -82,14 +65,14 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 		
 		// Convert the name from UTF-8 to UTF-16.
 		wchar_t *wname = NULL;
-		int name_len = pMultiByteToWideChar(CP_UTF8, 0, name, -1, NULL, 0);
+		int name_len = MultiByteToWideChar(CP_UTF8, 0, name, -1, NULL, 0);
 		if (name_len > 0)
 		{
 			wname = (wchar_t*)malloc(name_len * sizeof(wchar_t));
-			pMultiByteToWideChar(CP_UTF8, 0, name, -1, wname, name_len);
+			MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, name_len);
 		}
 		
-		p->handle = pCreateFileW(wname,
+		p->handle = CreateFileW(wname,
 				writeMode ? GENERIC_WRITE : GENERIC_READ,
 				FILE_SHARE_READ, NULL,
 				writeMode ? CREATE_ALWAYS : OPEN_EXISTING,
