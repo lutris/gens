@@ -121,7 +121,7 @@ int WINAPI w32u_init(void)
 	w32u_shellapi_init(hShell32);
 	w32u_libc_init();
 	w32u_commdlg_init();
-	w32u_shlobj_init(hShell32);
+	w32u_shlobj_init();
 	
 	return 0;
 }

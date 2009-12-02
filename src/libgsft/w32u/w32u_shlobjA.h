@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shlobj.h: shlobj.h translation. (common code)                      *
+ * w32u_shlobjA.h: shlobj.h translation. (ANSI version)                    *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,23 +19,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHLOBJ_H
-#define GSFT_W32U_SHLOBJ_H
+#ifndef GSFT_W32U_SHLOBJA_H
+#define GSFT_W32U_SHLOBJA_H
 
 #include "w32u.h"
-#include <shlobj.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAKE_EXTFUNCPTR2(SHBrowseForFolderA,	SHBrowseForFolderU);
-MAKE_EXTFUNCPTR2(SHGetPathFromIDListA,	SHGetPathFromIDListU);
-
-int WINAPI w32u_shlobj_init(void);
+int WINAPI w32u_shlobjA_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GSFT_W32U_SHLOBJ_H */
+#endif /* GSFT_W32U_SHLOBJA_H */

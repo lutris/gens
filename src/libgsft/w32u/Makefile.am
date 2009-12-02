@@ -22,7 +22,9 @@ libgsft_w32u_la_SOURCES = \
 		w32u_libcW.c \
 		w32u_libcA.c \
 		w32u_commdlg.c \
-		w32u_shlobj.c
+		w32u_shlobj.c \
+		w32u_shlobjW.c \
+		w32u_shlobjA.c
 
 noinst_HEADERS = \
 		w32u.h \
@@ -37,4 +39,6 @@ noinst_HEADERS = \
 		w32u_libcW.h \
 		w32u_libcA.h \
 		w32u_commdlg.h \
-		w32u_shlobj.h
+		w32u_shlobj.h \
+		w32u_shlobjW.h \
+		w32u_shlobjA.h

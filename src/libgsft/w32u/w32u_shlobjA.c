@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shlobj.h: shlobj.h translation. (common code)                      *
+ * w32u_shlobjA.c: shlobj.h translation. (ANSI version)                    *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,23 +19,34 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHLOBJ_H
-#define GSFT_W32U_SHLOBJ_H
-
 #include "w32u.h"
-#include <shlobj.h>
+#include "w32u_priv.h"
+#include "w32u_shlobj.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// C includes.
+#include <stdlib.h>
 
-MAKE_EXTFUNCPTR2(SHBrowseForFolderA,	SHBrowseForFolderU);
-MAKE_EXTFUNCPTR2(SHGetPathFromIDListA,	SHGetPathFromIDListU);
 
-int WINAPI w32u_shlobj_init(void);
-
-#ifdef __cplusplus
+static LPITEMIDLIST WINAPI SHBrowseForFolderUA(PBROWSEINFO lpbi)
+{
+	// TODO: ANSI conversion.
+	return SHBrowseForFolderA(lpbi);
 }
-#endif
 
-#endif /* GSFT_W32U_SHLOBJ_H */
+
+static BOOL WINAPI SHGetPathFromIDListUA(LPCITEMIDLIST pidl, LPSTR pszPath)
+{
+	// TODO: ANSI conversion.
+	return SHGetPathFromIDListA(pidl, pszPath);
+}
+
+
+int WINAPI w32u_shlobjA_init(void)
+{
+	// TODO: Error handling.
+	
+	pSHBrowseForFolderU	= &SHBrowseForFolderUA;
+	pSHGetPathFromIDListU	= &SHGetPathFromIDListUA;
+	
+	return 0;
+}
