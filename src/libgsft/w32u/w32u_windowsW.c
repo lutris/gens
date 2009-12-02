@@ -384,6 +384,7 @@ static WINUSERAPI LRESULT WINAPI SendMessageUW_LPCSTR(HWND hWnd, UINT msgA, UINT
 int WINAPI w32u_windowsW_init(void)
 {
 	// TODO: Error handling.
+	
 	pGetModuleFileNameU	= &GetModuleFileNameUW;
 	pGetModuleHandleU	= &GetModuleHandleUW;
 	pSetCurrentDirectoryU	= &SetCurrentDirectoryUW;
