@@ -637,6 +637,9 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 {
 	GSFT_UNUSED_PARAMETER(lParam);
 	
+	// TODO: Translate lpData from UTF-8 to Unicode, if necessary.
+	// TODO: This doesn't seem to work properly on Windows 98 SE.
+	//       (Original installation, i.e. no updates.)
 	if (uMsg == BFFM_INITIALIZED)
 		pSendMessageU_LPCSTR(hWnd, BFFM_SETSELECTIONA, BFFM_SETSELECTIONW, true, lpData);
 	
