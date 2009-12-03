@@ -16,6 +16,8 @@ libgsft_w32u_la_SOURCES = \
 		w32u_windowsW.c \
 		w32u_windowsA.c \
 		w32u_windowsx.c \
+		w32u_windowsxW.c \
+		w32u_windowsxA.c \
 		w32u_commctrl.c \
 		w32u_shellapi.c \
 		w32u_shellapiW.c \
@@ -35,6 +37,8 @@ noinst_HEADERS = \
 		w32u_windowsW.h \
 		w32u_windowsA.h \
 		w32u_windowsx.h \
+		w32u_windowsxW.h \
+		w32u_windowsxA.h \
 		w32u_commctrl.h \
 		w32u_shellapi.h \
 		w32u_shellapiW.h \

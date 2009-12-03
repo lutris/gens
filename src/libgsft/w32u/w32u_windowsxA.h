@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_windowsx.c: windowsx.h translation. (common code)                  *
+ * w32u_windowsxA.h: windowsx.h translation. (ANSI version)                *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,20 +19,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windowsx.h"
+#ifndef GSFT_W32U_WINDOWSXA_H
+#define GSFT_W32U_WINDOWSXA_H
 
-#include "w32u_windowsxW.h"
-#include "w32u_windowsxA.h"
+#include "w32u.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/** ListBox functions. **/
-int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer);
+int WINAPI w32u_windowsxA_init(void);
 
-
-int WINAPI w32u_windowsx_init(void)
-{
-	if (w32u_is_unicode)
-		return w32u_windowsxW_init();
-	else
-		return w32u_windowsxA_init();
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* GSFT_W32U_WINDOWSXA_H */

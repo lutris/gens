@@ -22,6 +22,7 @@
 #include "w32u.h"
 #include "w32u_priv.h"
 #include "w32u_windows.h"
+#include "w32u_windowsx.h"
 #include "w32u_shellapi.h"
 #include "w32u_libc.h"
 #include "w32u_commdlg.h"
@@ -107,13 +108,12 @@ int WINAPI w32u_init(void)
 		w32u_is_unicode = 1;
 	}
 	
-	// Initialize windows.h
-	w32u_windows_init();
-	
 	// Get DLL version numbers.
 	shell32_dll_version = GetDllVersionNumber("shell32.dll");
 	
-	// Other Win32 Unicode modules.
+	// Initialize the Unicode modules.
+	w32u_windows_init();
+	w32u_windowsx_init();
 	w32u_shellapi_init();
 	w32u_libc_init();
 	w32u_commdlg_init();

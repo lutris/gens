@@ -154,7 +154,7 @@ static WINUSERAPI int WINAPI MessageBoxUA(HWND hWnd, LPCSTR lpText, LPCSTR lpCap
 
 
 /**
- * SendMessageUA_LPCSTR(): Convert LPARAM from UTF-8 to ANSI, then call SendMessageW().
+ * SendMessageUA_LPCSTR(): Convert LPARAM from UTF-8 to ANSI, then call SendMessageA().
  * @param hWnd hWnd.
  * @param msgA ANSI message.
  * @param msgW Unicode message.

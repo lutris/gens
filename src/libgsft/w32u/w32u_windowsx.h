@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_windowsx.h: windowsx.h translation.                                *
+ * w32u_windowsx.h: windowsx.h translation. (common code)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -24,9 +24,7 @@
 
 #include "w32u.h"
 #include "w32u_windows.h"
-
 #include <windowsx.h>
-#include <commctrl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,12 +52,12 @@ extern "C" {
 #define Edit_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ListBox macros. **/
-#define ListBox_AddStringU(hwndCtl, lpsz)		((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl),LB_ADDSTRING,LB_ADDSTRING,0,(LPARAM)(lpsz)))
+#define ListBox_AddStringU(hwndCtl,lpsz)		((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl),LB_ADDSTRING,LB_ADDSTRING,0,(LPARAM)(lpsz)))
 #define ListBox_DeleteStringU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_DELETESTRING,(WPARAM)(int)(index),0))
 #define ListBox_GetCountU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCOUNT,0,0))
 #define ListBox_GetCurSelU(hwndCtl)			((int)(DWORD)pSendMessageU((hwndCtl),LB_GETCURSEL,0,0))
 #define ListBox_GetItemDataU(hwndCtl,index)		((LRESULT)(DWORD)pSendMessageU((hwndCtl),LB_GETITEMDATA,(WPARAM)(int)(index),0))
-int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
+extern int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer);
 #define ListBox_GetTextLenU(hwndCtl,index)		((int)(DWORD)pSendMessageU((hwndCtl),LB_GETTEXTLEN,(WPARAM)(int)(index),0))
 #define ListBox_InsertStringU(hwndCtl,index,lpsz)	((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl), LB_INSERTSTRING, LB_INSERTSTRING, \
 								(WPARAM)(int)(index), (LPARAM)(LPCTSTR)(lpsz)))
@@ -70,6 +68,8 @@ int WINAPI ListBox_GetTextU(HWND hwndCtl, int index, LPSTR lpszBuffer);
 /** Static macros. **/
 #define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 #define Static_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
+
+int WINAPI w32u_windowsx_init(void);
 
 #ifdef __cplusplus
 }
