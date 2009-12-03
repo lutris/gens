@@ -30,6 +30,7 @@ extern "C" {
 #endif
 
 /** TabCtrl macros. **/
+#define TabCtrl_GetCurSelU(w)			(int)pSendMessageU((w),TCM_GETCURSEL,0,0)
 int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 
 /** ListView macros. **/
