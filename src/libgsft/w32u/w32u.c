@@ -95,17 +95,19 @@ int WINAPI w32u_init(void)
 	}
 	
 	// Check if the system supports Unicode.
-	if (!GetModuleHandleW(NULL))
-	{
-		// GetModuleHandleW(NULL) returned NULL.
-		// This means the system doesn't support Unicode.
-		w32u_is_unicode = 0;
-	}
-	else
+#ifndef W32U_NO_UNICODE
+	if (GetModuleHandleW(NULL) != NULL)
 	{
 		// GetModuleHandleW() returned gens.exe's module handle.
 		// This means the system supports Unicode.
 		w32u_is_unicode = 1;
+	}
+	else
+#endif
+	{
+		// GetModuleHandleW(NULL) returned NULL.
+		// This means the system doesn't support Unicode.
+		w32u_is_unicode = 0;
 	}
 	
 	// Get DLL version numbers.
