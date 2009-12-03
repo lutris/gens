@@ -96,12 +96,6 @@ static WINUSERAPI HWND WINAPI CreateWindowExUA(
 			DWORD dwStyle, int x, int y, int nWidth, int nHeight,
 			HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
-#if 0
-	// TODO: ANSI conversion.
-	return CreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle,
-				x, y, nWidth, nHeight,
-				hWndParent, hMenu, hInstance, lpParam);
-#endif
 	// Convert lpClassName and lpWindowName from UTF-8 to ANSI.
 	char *lpaClassName = NULL, *lpaWindowName = NULL;
 	
