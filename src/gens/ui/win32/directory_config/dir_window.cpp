@@ -48,6 +48,7 @@ using std::list;
 // Win32 includes.
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
