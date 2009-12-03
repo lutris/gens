@@ -47,7 +47,7 @@ wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs)
 
 
 /**
- * w32u_UTF8toUTF16(): Convert a UTF-8 string to the local ANSI code page.
+ * w32u_UTF8toANSI(): Convert a UTF-8 string to the local ANSI code page.
  * @param mbs UTF-8 string.
  * @return ANSI string. (MUST BE free()'d AFTER USE!)
  */
