@@ -31,18 +31,16 @@
 
 /**
  * w32u_UTF8toUTF16(): Convert a UTF-8 string to UTF-16 (wchar_t*).
- * @param mbs UTF-8 string..
+ * @param mbs UTF-8 string.
  * @return UTF-16 (wchar_t*) string. (MUST BE free()'d AFTER USE!)
  */
 wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs)
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
-	if (len <= 0)
+	int cchWcs = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
+	if (cchWcs <= 0)
 		return NULL;
 	
-	len *= sizeof(wchar_t);
-	wchar_t *wcs = (wchar_t*)malloc(len);
-	
-	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, len);
+	wchar_t *wcs = (wchar_t*)malloc(cchWcs * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, cchWcs);
 	return wcs;
 }
