@@ -37,7 +37,7 @@ static int accessUW(const char *path, int mode)
 		return _waccess((const wchar_t*)path, mode);
 	}
 	
-	// Convert lpNewItem from UTF-8 to UTF-16.
+	// Convert path from UTF-8 to UTF-16.
 	wchar_t *wpath = w32u_UTF8toUTF16(path);
 	
 	UINT uRet = _waccess(wpath, mode);
