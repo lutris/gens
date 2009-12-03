@@ -103,7 +103,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	if (w32u_is_unicode)
 	{
 		// Unicode mode.
-		filenameW = w32u_mbstowcs(filename);
+		filenameW = w32u_UTF8toUTF16(filename);
 		rar_open.ArcName = NULL;
 		rar_open.ArcNameW = filenameW;
 	}
@@ -264,7 +264,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	if (w32u_is_unicode)
 	{
 		// Unicode mode.
-		filenameW = w32u_mbstowcs(filename);
+		filenameW = w32u_UTF8toUTF16(filename);
 		rar_open.ArcName = NULL;
 		rar_open.ArcNameW = filenameW;
 	}
@@ -287,7 +287,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	// If we're using Unicode, convert the selected filename to Unicode.
 	wchar_t *z_filenameW = NULL;
 	if (w32u_is_unicode)
-		z_filenameW = w32u_mbstowcs(z_entry->filename);
+		z_filenameW = w32u_UTF8toUTF16(z_entry->filename);
 	
 	// Search for the file.
 	struct RARHeaderDataEx rar_header;
