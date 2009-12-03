@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_commdlg.c: commdlg.h translation. (common code)                    *
+ * w32u_commdlgA.h: commdlg.h translation. (ANSI version)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,30 +19,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_commdlg.h"
-#include "w32u_priv.h"
+#ifndef GSFT_W32U_COMMDLGA_H
+#define GSFT_W32U_COMMDLGA_H
 
-#include "w32u_commdlgW.h"
-#include "w32u_commdlgA.h"
+#include "w32u.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-MAKE_FUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
-MAKE_FUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
+int WINAPI w32u_commdlgA_init(void);
+int WINAPI w32u_commdlgA_end(void);
 
-
-int WINAPI w32u_commdlg_init(void)
-{
-	if (w32u_is_unicode)
-		return w32u_commdlgW_init();
-	else
-		return w32u_commdlgA_init();
+#ifdef __cplusplus
 }
+#endif
 
-
-int WINAPI w32u_commdlg_end(void)
-{
-	if (w32u_is_unicode)
-		return w32u_commdlgW_end();
-	else
-		return w32u_commdlgA_end();
-}
+#endif /* GSFT_W32U_COMMDLGA_H */

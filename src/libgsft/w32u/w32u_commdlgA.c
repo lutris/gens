@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_commdlg.c: commdlg.h translation. (common code)                    *
+ * w32u_commdlgA.c: commdlg.h translation. (ANSI version)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,30 +19,50 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_commdlg.h"
+#include "w32u_windows.h"
 #include "w32u_priv.h"
-
 #include "w32u_commdlgW.h"
-#include "w32u_commdlgA.h"
+
+#include "w32u_commdlg.h"
+
+// C includes.
+#include <stdlib.h>
+#include <string.h>
 
 
-MAKE_FUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
-MAKE_FUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
-
-
-int WINAPI w32u_commdlg_init(void)
+typedef BOOL (WINAPI *GETOPENFILENAME_PROC)(void *lpofn);
+static inline BOOL WINAPI GetOpenFileNameUA_int(LPOPENFILENAMEA lpofn, GETOPENFILENAME_PROC fn)
 {
-	if (w32u_is_unicode)
-		return w32u_commdlgW_init();
-	else
-		return w32u_commdlgA_init();
+	// TODO: ANSI conversion.
+	return fn(lpofn);
 }
 
 
-int WINAPI w32u_commdlg_end(void)
+static BOOL WINAPI GetOpenFileNameUA(LPOPENFILENAMEA lpofn)
 {
-	if (w32u_is_unicode)
-		return w32u_commdlgW_end();
-	else
-		return w32u_commdlgA_end();
+	return GetOpenFileNameUA_int(lpofn, &GetOpenFileNameA);
+}
+
+
+static BOOL WINAPI GetSaveFileNameUA(LPOPENFILENAMEA lpofn)
+{
+	return GetOpenFileNameUA_int(lpofn, &GetSaveFileNameA);
+}
+
+
+int WINAPI w32u_commdlgA_init(void)
+{
+	// TODO: Error handling.
+	
+	pGetOpenFileNameU	= &GetOpenFileNameUA;
+	pGetSaveFileNameU	= &GetSaveFileNameUA;
+	
+	return 0;
+}
+
+
+int WINAPI w32u_commdlgA_end(void)
+{
+	// TODO: Should function pointers be NULL'd?
+	return 0;
 }

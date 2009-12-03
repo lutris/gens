@@ -7,7 +7,7 @@ noinst_LTLIBRARIES = libgsft_w32u.la
 libgsft_w32u_la_CFLAGS		= $(AM_CFLAGS) -static -O3 -funroll-loops
 libgsft_w32u_la_CXXFLAGS	= $(AM_CXXFLAGS) -static -O3 -funroll-loops
 libgsft_w32u_la_LDFLAGS		= $(AM_LDFLAGS) -static
-libgsft_w32u_la_LIBADD		= -lkernel32
+libgsft_w32u_la_LIBADD		= -lkernel32 -luser32 -lshell32 -lcomdlg32
 
 libgsft_w32u_la_SOURCES = \
 		w32u.c \
@@ -26,6 +26,8 @@ libgsft_w32u_la_SOURCES = \
 		w32u_libcW.c \
 		w32u_libcA.c \
 		w32u_commdlg.c \
+		w32u_commdlgW.c \
+		w32u_commdlgA.c \
 		w32u_shlobj.c \
 		w32u_shlobjW.c \
 		w32u_shlobjA.c
@@ -47,6 +49,8 @@ noinst_HEADERS = \
 		w32u_libcW.h \
 		w32u_libcA.h \
 		w32u_commdlg.h \
+		w32u_commdlgW.h \
+		w32u_commdlgA.h \
 		w32u_shlobj.h \
 		w32u_shlobjW.h \
 		w32u_shlobjA.h
