@@ -43,6 +43,11 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameUW(HMODULE hModule, LPSTR lpFile
 	// Allocate a buffer for the filename.
 	wchar_t *lpwFilename = (wchar_t*)malloc(nSize * sizeof(wchar_t));
 	DWORD dwRet = GetModuleFileNameW(hModule, lpwFilename, nSize);
+	if (dwRet == 0)
+	{
+		free(lpwFilename);
+		return dwRet;
+	}
 	
 	// Convert the filename from UTF-16 to UTF-8.
 	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, -1, lpFilename, nSize, NULL, NULL);
