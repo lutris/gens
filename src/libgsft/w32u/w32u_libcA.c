@@ -36,15 +36,35 @@
 
 static int accessUA(const char *path, int mode)
 {
-	// TODO: ANSI conversion.
-	return _access(path, mode);
+	if (!path)
+	{
+		// String not specified. Don't bother converting anything.
+		return _access(path, mode);
+	}
+	
+	// Convert path from UTF-8 to ANSI.
+	char *apath = w32u_UTF8toANSI(path);
+	UINT uRet = _access(apath, mode);
+	free(apath);
+	return uRet;
 }
 
 
 static FILE* fopenUA(const char *path, const char *mode)
 {
-	// TODO: ANSI conversion.
-	return fopen(path, mode);
+	// Convert path from UTF-8 to ANSI.
+	// mode doesn't need any conversion, since it's ASCII.
+	
+	if (!path)
+	{
+		// String not specified. Don't bother converting anything.
+		return fopen(path, mode);
+	}
+	
+	char *apath = w32u_UTF8toANSI(path);
+	FILE *fRet = fopen(apath, mode);
+	free(apath);
+	return fRet;
 }
 
 
