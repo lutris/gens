@@ -499,8 +499,8 @@ static void ccode_window_callback_btnUp_clicked(void)
 	char curItem[32];   int curItemData;
 	
 	// Get the current text and data for each item.
-	ListBox_GetTextU(lstCountryCodes, curIndex - 1, aboveItem);
-	ListBox_GetTextU(lstCountryCodes, curIndex, curItem);
+	pListBox_GetTextU(lstCountryCodes, curIndex - 1, aboveItem);
+	pListBox_GetTextU(lstCountryCodes, curIndex, curItem);
 	aboveItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex - 1);
 	curItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex);
 	
@@ -535,8 +535,8 @@ static void ccode_window_callback_btnDown_clicked(void)
 	char belowItem[32]; int belowItemData;
 	
 	// Get the current text and data for each item.
-	ListBox_GetTextU(lstCountryCodes, curIndex, curItem);
-	ListBox_GetTextU(lstCountryCodes, curIndex + 1, belowItem);
+	pListBox_GetTextU(lstCountryCodes, curIndex, curItem);
+	pListBox_GetTextU(lstCountryCodes, curIndex + 1, belowItem);
 	curItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex);
 	belowItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex + 1);
 	
