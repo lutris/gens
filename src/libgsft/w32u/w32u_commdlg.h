@@ -39,4 +39,4 @@ int WINAPI w32u_commdlg_end(void);
 }
 #endif
 
-#endif /* GSFT_W32U_COMMCTRL_H */
+#endif /* GSFT_W32U_COMMDLG_H */
