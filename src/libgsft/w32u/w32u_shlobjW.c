@@ -41,7 +41,7 @@ static LPITEMIDLIST WINAPI SHBrowseForFolderUW(PBROWSEINFO lpbi)
 	
 	if (lpbi->lpszTitle)
 	{
-		lpszwTitle = w32u_mbstowcs(lpbi->lpszTitle);
+		lpszwTitle = w32u_UTF8toUTF16(lpbi->lpszTitle);
 		wbi.lpszTitle = lpszwTitle;
 	}
 	

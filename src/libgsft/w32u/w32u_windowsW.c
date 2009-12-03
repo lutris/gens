@@ -60,7 +60,7 @@ static WINBASEAPI HMODULE WINAPI GetModuleHandleUW(LPCSTR lpModuleName)
 	}
 	
 	// Convert lpModuleName from UTF-8 to UTF-16.
-	wchar_t *lpwModuleName = w32u_mbstowcs(lpModuleName);
+	wchar_t *lpwModuleName = w32u_UTF8toUTF16(lpModuleName);
 	
 	HMODULE hRet = GetModuleHandleW(lpwModuleName);
 	free(lpwModuleName);
@@ -77,7 +77,7 @@ static WINUSERAPI BOOL WINAPI SetCurrentDirectoryUW(LPCSTR lpPathName)
 	}
 	
 	// Convert lpPathName from UTF-8 to UTF-16.
-	wchar_t *lpwPathName = w32u_mbstowcs(lpPathName);
+	wchar_t *lpwPathName = w32u_UTF8toUTF16(lpPathName);
 	
 	BOOL bRet = SetCurrentDirectoryW(lpwPathName);
 	free(lpwPathName);
@@ -136,13 +136,13 @@ static WINUSERAPI ATOM WINAPI RegisterClassUW(CONST WNDCLASSA* lpWndClass)
 	
 	if (lpWndClass->lpszMenuName)
 	{
-		lpszwMenuName = w32u_mbstowcs(lpWndClass->lpszMenuName);
+		lpszwMenuName = w32u_UTF8toUTF16(lpWndClass->lpszMenuName);
 		wWndClass.lpszMenuName = lpszwMenuName;
 	}
 	
 	if (lpWndClass->lpszClassName)
 	{
-		lpszwClassName = w32u_mbstowcs(lpWndClass->lpszClassName);
+		lpszwClassName = w32u_UTF8toUTF16(lpWndClass->lpszClassName);
 		wWndClass.lpszClassName = lpszwClassName;
 	}
 	
@@ -162,10 +162,10 @@ static WINUSERAPI HWND WINAPI CreateWindowExUW(
 	wchar_t *lpwClassName = NULL, *lpwWindowName = NULL;
 	
 	if (lpClassName)
-		lpwClassName = w32u_mbstowcs(lpClassName);
+		lpwClassName = w32u_UTF8toUTF16(lpClassName);
 	
 	if (lpWindowName)
-		lpwWindowName = w32u_mbstowcs(lpWindowName);
+		lpwWindowName = w32u_UTF8toUTF16(lpWindowName);
 	
 	HWND hRet = CreateWindowExW(dwExStyle, lpwClassName, lpwWindowName,
 					dwStyle, x, y, nWidth, nHeight,
@@ -183,7 +183,7 @@ static WINUSERAPI BOOL WINAPI SetWindowTextUW(HWND hWnd, LPCSTR lpString)
 	wchar_t *lpwString = NULL;
 	
 	if (lpString)
-		lpwString = w32u_mbstowcs(lpString);
+		lpwString = w32u_UTF8toUTF16(lpString);
 	
 	BOOL bRet = SetWindowTextW(hWnd, lpwString);
 	free(lpwString);
@@ -224,7 +224,7 @@ static WINUSERAPI BOOL WINAPI InsertMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 	wchar_t *lpwNewItem = NULL;
 	
 	if (lpNewItem)
-		lpwNewItem = w32u_mbstowcs(lpNewItem);
+		lpwNewItem = w32u_UTF8toUTF16(lpNewItem);
 	
 	BOOL bRet = InsertMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -244,7 +244,7 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 	wchar_t *lpwNewItem = NULL;
 	
 	if (lpNewItem)
-		lpwNewItem = w32u_mbstowcs(lpNewItem);
+		lpwNewItem = w32u_UTF8toUTF16(lpNewItem);
 	
 	BOOL bRet = ModifyMenuW(hMenu, uPosition, uFlags, uIDNewItem, lpwNewItem);
 	free(lpwNewItem);
@@ -261,7 +261,7 @@ static WINUSERAPI HACCEL WINAPI LoadAcceleratorsUW(HINSTANCE hInstance, LPCSTR l
 	}
 	
 	// lpTableName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwTableName = w32u_mbstowcs(lpTableName);
+	wchar_t *lpwTableName = w32u_UTF8toUTF16(lpTableName);
 	
 	HACCEL hRet = LoadAcceleratorsW(hInstance, lpwTableName);
 	free(lpwTableName);
@@ -278,7 +278,7 @@ static WINUSERAPI HBITMAP WINAPI LoadBitmapUW(HINSTANCE hInstance, LPCSTR lpBitm
 	}
 	
 	// lpBitmapName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwBitmapName = w32u_mbstowcs(lpBitmapName);
+	wchar_t *lpwBitmapName = w32u_UTF8toUTF16(lpBitmapName);
 	
 	HBITMAP hRet = LoadBitmapW(hInstance, lpwBitmapName);
 	free(lpwBitmapName);
@@ -295,7 +295,7 @@ static WINUSERAPI HCURSOR WINAPI LoadCursorUW(HINSTANCE hInstance, LPCSTR lpCurs
 	}
 	
 	// lpCursorName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwCursorName = w32u_mbstowcs(lpCursorName);
+	wchar_t *lpwCursorName = w32u_UTF8toUTF16(lpCursorName);
 	
 	HCURSOR hRet = LoadCursorW(hInstance, lpwCursorName);
 	free(lpwCursorName);
@@ -312,7 +312,7 @@ static WINUSERAPI HICON WINAPI LoadIconUW(HINSTANCE hInstance, LPCSTR lpIconName
 	}
 	
 	// lpIconName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwIconName = w32u_mbstowcs(lpIconName);
+	wchar_t *lpwIconName = w32u_UTF8toUTF16(lpIconName);
 	
 	HICON hRet = LoadIconW(hInstance, lpwIconName);
 	free(lpwIconName);
@@ -330,7 +330,7 @@ static WINUSERAPI HANDLE WINAPI LoadImageUW(HINSTANCE hInst, LPCSTR lpszName, UI
 	}
 	
 	// lpszName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpszwName = w32u_mbstowcs(lpszName);
+	wchar_t *lpszwName = w32u_UTF8toUTF16(lpszName);
 	
 	HANDLE hRet = LoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
 	free(lpszwName);
@@ -344,9 +344,9 @@ static WINUSERAPI int WINAPI MessageBoxUW(HWND hWnd, LPCSTR lpText, LPCSTR lpCap
 	wchar_t *lpwText = NULL, *lpwCaption = NULL;
 	
 	if (lpText)
-		lpwText = w32u_mbstowcs(lpText);
+		lpwText = w32u_UTF8toUTF16(lpText);
 	if (lpCaption)
-		lpwCaption = w32u_mbstowcs(lpCaption);
+		lpwCaption = w32u_UTF8toUTF16(lpCaption);
 	
 	int ret = MessageBoxW(hWnd, lpwText, lpwCaption, uType);
 	free(lpwText);
@@ -372,7 +372,7 @@ static WINUSERAPI LRESULT WINAPI SendMessageUW_LPCSTR(HWND hWnd, UINT msgA, UINT
 		return SendMessageW(hWnd, msgW, wParam, lParam);
 	
 	// Convert lParam from UTF-8 to UTF-16.
-	wchar_t *lwParam = w32u_mbstowcs((char*)lParam);
+	wchar_t *lwParam = w32u_UTF8toUTF16((char*)lParam);
 	
 	// Send the message.
 	LRESULT lRet = SendMessageW(hWnd, msgW, wParam, (LPARAM)lwParam);

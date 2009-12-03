@@ -81,7 +81,7 @@ extern "C" {
 #endif
 
 /** Functions. **/
-wchar_t* WINAPI w32u_mbstowcs(const char *mbs);
+wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs);
 
 #ifdef __cplusplus
 }

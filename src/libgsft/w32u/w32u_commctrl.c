@@ -41,7 +41,7 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem)
 	
 	if (wItem.pszText)
 	{
-		pszwText = w32u_mbstowcs(pItem->pszText);
+		pszwText = w32u_UTF8toUTF16(pItem->pszText);
 		wItem.pszText = pszwText;
 	}
 	
@@ -109,7 +109,7 @@ int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol)
 	
 	if (wCol.pszText)
 	{
-		pszwText = w32u_mbstowcs(pCol->pszText);
+		pszwText = w32u_UTF8toUTF16(pCol->pszText);
 		wCol.pszText = pszwText;
 	}
 	
@@ -134,7 +134,7 @@ int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	wchar_t *pszwText = w32u_mbstowcs(pItem->pszText);
+	wchar_t *pszwText = w32u_UTF8toUTF16(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_INSERTITEMW, 0, (LPARAM)&wItem);
@@ -158,7 +158,7 @@ int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem)
 	LVITEMW wItem;
 	memcpy(&wItem, pItem, sizeof(wItem));
 	
-	wchar_t *pszwText = w32u_mbstowcs(pItem->pszText);
+	wchar_t *pszwText = w32u_UTF8toUTF16(pItem->pszText);
 	wItem.pszText = pszwText;
 	
 	LRESULT lRet = pSendMessageU(hWnd, LVM_SETITEMW, 0, (LPARAM)&wItem);

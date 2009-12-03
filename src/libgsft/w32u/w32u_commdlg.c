@@ -67,17 +67,17 @@ static BOOL WINAPI GetOpenFileNameU(LPOPENFILENAMEA lpofn)
 	// Convert the rest of the constant strings.
 	if (lpofn->lpstrInitialDir)
 	{
-		lpstrwInitialDir = w32u_mbstowcs(lpofn->lpstrInitialDir);
+		lpstrwInitialDir = w32u_UTF8toUTF16(lpofn->lpstrInitialDir);
 		wofn.lpstrInitialDir = lpstrwInitialDir;
 	}
 	if (lpofn->lpstrTitle)
 	{
-		lpstrwTitle = w32u_mbstowcs(lpofn->lpstrTitle);
+		lpstrwTitle = w32u_UTF8toUTF16(lpofn->lpstrTitle);
 		wofn.lpstrTitle = lpstrwTitle;
 	}
 	if (lpofn->lpstrDefExt)
 	{
-		lpstrwDefExt = w32u_mbstowcs(lpofn->lpstrDefExt);
+		lpstrwDefExt = w32u_UTF8toUTF16(lpofn->lpstrDefExt);
 		wofn.lpstrDefExt = lpstrwDefExt;
 	}
 	
@@ -177,17 +177,17 @@ static BOOL WINAPI GetSaveFileNameU(LPOPENFILENAMEA lpofn)
 	// Convert the rest of the constant strings.
 	if (lpofn->lpstrInitialDir)
 	{
-		lpstrwInitialDir = w32u_mbstowcs(lpofn->lpstrInitialDir);
+		lpstrwInitialDir = w32u_UTF8toUTF16(lpofn->lpstrInitialDir);
 		wofn.lpstrInitialDir = lpstrwInitialDir;
 	}
 	if (lpofn->lpstrTitle)
 	{
-		lpstrwTitle = w32u_mbstowcs(lpofn->lpstrTitle);
+		lpstrwTitle = w32u_UTF8toUTF16(lpofn->lpstrTitle);
 		wofn.lpstrTitle = lpstrwTitle;
 	}
 	if (lpofn->lpstrDefExt)
 	{
-		lpstrwDefExt = w32u_mbstowcs(lpofn->lpstrDefExt);
+		lpstrwDefExt = w32u_UTF8toUTF16(lpofn->lpstrDefExt);
 		wofn.lpstrDefExt = lpstrwDefExt;
 	}
 	

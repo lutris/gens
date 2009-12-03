@@ -30,11 +30,11 @@
 
 
 /**
- * w32u_mbstowcs(): Convert a multibyte (UTF-8) string to a wide-character (UTF-16) string.
- * @param mbs Multibyte string.
- * @return Wide-character string. (MUST BE free()'d AFTER USE!)
+ * w32u_UTF8toUTF16(): Convert a UTF-8 string to UTF-16 (wchar_t*).
+ * @param mbs UTF-8 string..
+ * @return UTF-16 (wchar_t*) string. (MUST BE free()'d AFTER USE!)
  */
-wchar_t* WINAPI w32u_mbstowcs(const char *mbs)
+wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs)
 {
 	int len = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
 	if (len <= 0)

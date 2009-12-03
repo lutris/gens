@@ -56,13 +56,13 @@ static HINSTANCE WINAPI ShellExecuteUW(HWND hWnd, LPCSTR lpOperation, LPCSTR lpF
 	wchar_t *lpwParameters = NULL, *lpwDirectory = NULL;
 	
 	if (lpOperation)
-		lpwOperation = w32u_mbstowcs(lpOperation);
+		lpwOperation = w32u_UTF8toUTF16(lpOperation);
 	if (lpFile)
-		lpwFile = w32u_mbstowcs(lpFile);
+		lpwFile = w32u_UTF8toUTF16(lpFile);
 	if (lpParameters)
-		lpwParameters = w32u_mbstowcs(lpParameters);
+		lpwParameters = w32u_UTF8toUTF16(lpParameters);
 	if (lpDirectory)
-		lpwDirectory = w32u_mbstowcs(lpDirectory);
+		lpwDirectory = w32u_UTF8toUTF16(lpDirectory);
 	
 	HINSTANCE hRet = ShellExecuteW(hWnd, lpwOperation, lpwFile, lpwParameters, lpwDirectory, nShowCmd);
 	free(lpwOperation);

@@ -38,7 +38,7 @@ static int accessUW(const char *path, int mode)
 	}
 	
 	// Convert lpNewItem from UTF-8 to UTF-16.
-	wchar_t *wpath = w32u_mbstowcs(path);
+	wchar_t *wpath = w32u_UTF8toUTF16(path);
 	
 	UINT uRet = _waccess(wpath, mode);
 	free(wpath);
@@ -52,10 +52,10 @@ static FILE* fopenUW(const char *path, const char *mode)
 	wchar_t *wpath = NULL, *wmode = NULL;
 	
 	if (path)
-		wpath = w32u_mbstowcs(path);
+		wpath = w32u_UTF8toUTF16(path);
 	
 	if (mode)
-		wmode = w32u_mbstowcs(mode);
+		wmode = w32u_UTF8toUTF16(mode);
 	
 	FILE *fRet = _wfopen(wpath, wmode);
 	free(wpath);
