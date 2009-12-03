@@ -34,8 +34,29 @@
 
 static WINBASEAPI DWORD WINAPI GetModuleFileNameUA(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 {
-	// TODO: ANSI conversion.
-	return GetModuleFileNameA(hModule, lpFilename, nSize);
+	if (!lpFilename || nSize == 0)
+	{
+		// String not specified. Don't bother converting anything.
+		return GetModuleFileNameA(hModule, lpFilename, nSize);
+	}
+	
+	// Get the filename.
+	DWORD dwRet = GetModuleFileNameA(hModule, lpFilename, nSize);
+	if (dwRet == 0)
+		return dwRet;
+	
+	// Convert the filename from ANSI to UTF-16.
+	int cchwFilename = MultiByteToWideChar(CP_ACP, 0, lpFilename, -1, NULL, 0);
+	if (cchwFilename <= 0)
+		return 0;
+	
+	wchar_t *lpwFilename = (wchar_t*)malloc(cchwFilename * sizeof(wchar_t));
+	MultiByteToWideChar(CP_ACP, 0, lpFilename, -1, lpwFilename, cchwFilename);
+	
+	// Convert the filename from UTF-16 to UTF-8.
+	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, cchwFilename, lpFilename, nSize, NULL, NULL);
+	free(lpwFilename);
+	return dwRet;
 }
 
 
@@ -75,10 +96,28 @@ static WINUSERAPI HWND WINAPI CreateWindowExUA(
 			DWORD dwStyle, int x, int y, int nWidth, int nHeight,
 			HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
+#if 0
 	// TODO: ANSI conversion.
 	return CreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle,
 				x, y, nWidth, nHeight,
 				hWndParent, hMenu, hInstance, lpParam);
+#endif
+	// Convert lpClassName and lpWindowName from UTF-8 to ANSI.
+	char *lpaClassName = NULL, *lpaWindowName = NULL;
+	
+	if (lpClassName)
+		lpaClassName = w32u_UTF8toANSI(lpClassName);
+	
+	if (lpWindowName)
+		lpaWindowName = w32u_UTF8toANSI(lpWindowName);
+	
+	HWND hRet = CreateWindowExA(dwExStyle, lpaClassName, lpaWindowName,
+					dwStyle, x, y, nWidth, nHeight,
+					hWndParent, hMenu, hInstance, lpParam);
+	
+	free(lpaClassName);
+	free(lpaWindowName);
+	return hRet;
 }
 
 
