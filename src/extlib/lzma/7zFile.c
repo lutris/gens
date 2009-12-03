@@ -51,10 +51,10 @@ static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 	{
 		// On ANSI systems, GetModuleHandleW(NULL) returns NULL.
 		// On Unicode systems, GetModuleHandleW(NULL) returns the executable's handle.
-		if (!GetModuleHandleW(NULL))
-			isUnicodeAvailable = FALSE;
-		else
+		if (GetModuleHandleW(NULL) != NULL)
 			isUnicodeAvailable = TRUE;
+		else
+			isUnicodeAvailable = FALSE;
 		
 		isUnicodeChecked = TRUE;
 	}
