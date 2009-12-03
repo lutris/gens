@@ -37,8 +37,10 @@
 #include <string.h>
 
 // C++ includes.
-#include <string.h>
+#include <string>
+#include <sstream>
 using std::string;
+using std::stringstream;
 
 // Win32 includes.
 #include "libgsft/w32u/w32u_windows.h"
@@ -93,8 +95,13 @@ static WNDCLASS about_wndclass;
 // Window procedure.
 static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-// Subclassed window procedure for the tab groupbox.
+// Tab callbacks.
 static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void WINAPI about_window_tabInfo_selChanged(void);
+
+// Debug Info.
+static string sDebugInfo;
+static void WINAPI about_window_buildDebugInfoString(void);
 
 // Widgets.
 static HWND	tabInfo;
@@ -221,6 +228,9 @@ static void about_window_create_child_windows(HWND hWnd)
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, true);
 	
+	// Build the debug information string.
+	about_window_buildDebugInfoString();
+	
 	// Tab control.
 	tabInfo = pCreateWindowU(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
 				8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
@@ -230,7 +240,7 @@ static void about_window_create_child_windows(HWND hWnd)
 	// Make sure the tab control is in front of all other windows.
 	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 	
-	// Add tabs for "Copyright" and "Included Libraries".
+	// Add the tabs.
 	TCITEM tab;
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
@@ -238,6 +248,8 @@ static void about_window_create_child_windows(HWND hWnd)
 	TabCtrl_InsertItemU(tabInfo, 0, &tab);
 	tab.pszText = "Included &Libraries";
 	TabCtrl_InsertItemU(tabInfo, 1, &tab);
+	tab.pszText = "&Debug Info";
+	TabCtrl_InsertItemU(tabInfo, 2, &tab);
 	
 	// Calculate the tab's display area.
 	RECT rectTab;
@@ -361,31 +373,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 		
 		case WM_NOTIFY:
 			if (((LPNMHDR)lParam)->code == TCN_SELCHANGE)
-			{
-				// Tab change.
-				const char *sTabContents;
-				
-				switch (TabCtrl_GetCurSel(tabInfo))
-				{
-					case 0:
-						// Copyright.
-						sTabContents = about_window_copyright;
-						break;
-					case 1:
-						// Included Libraries.
-						sTabContents = about_window_included_libs;
-						break;
-					default:
-						// Unknown.
-						break;
-				}
-				
-				Static_SetTextU(lblTabContents, sTabContents);
-				
-				// Invalidate the tab contents groupbox.
-				InvalidateRect(tabInfo, NULL, true);
-				UpdateWindow(about_window);
-			}
+				about_window_tabInfo_selChanged();
 			break;
 			
 		case WM_DESTROY:
@@ -441,6 +429,93 @@ static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT mess
 	
 	return pCallWindowProcU(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
 }
+
+
+static void WINAPI about_window_tabInfo_selChanged(void)
+{
+	// Tab change.
+	const char *sTabContents = NULL;
+	
+	switch (TabCtrl_GetCurSelU(tabInfo))
+	{
+		case 0:
+			// Copyright.
+			sTabContents = about_window_copyright;
+			break;
+		case 1:
+			// Included Libraries.
+			sTabContents = about_window_included_libs;
+			break;
+		case 2:
+			// Debug Information.
+			sTabContents = sDebugInfo.c_str();
+			break;
+		default:
+			// Unknown tab.
+			sTabContents = "";
+			break;
+	}
+	
+	// Set the text.
+	Static_SetTextU(lblTabContents, sTabContents);
+	
+	// Invalidate the tab contents groupbox.
+	InvalidateRect(tabInfo, NULL, true);
+	UpdateWindow(about_window);
+}
+
+
+static void WINAPI about_window_buildDebugInfoString(void)
+{
+	// Build the debug information string.
+	stringstream ss;
+	
+	// Print the current code page.
+	// TODO: Add a w32u version of GetCPInfoExU().
+	ss << "System code page: ";
+	CPINFOEX cpix;
+	BOOL bRet = GetCPInfoExA(CP_ACP, 0, &cpix);
+	if (!bRet)
+		ss << "Unknown [GetCPInfoEx() failed]\n";
+	else
+	{
+		ss << cpix.CodePage << " (";
+		
+		// Windows XP has the code page number in cpix.CodePageName,
+		// followed by two spaces, and then the code page name in parentheses.
+		char *parenStart = strchr(cpix.CodePageName, '(');
+		if (!parenStart)
+		{
+			// No parentheses. Use the code page name as-is.
+			ss << cpix.CodePageName;
+		}
+		else
+		{
+			// Found starting parenthesis. Check for ending parenthesis.
+			char *parenEnd = strrchr(parenStart, ')');
+			if (parenEnd)
+			{
+				// Found ending parenthesis. Null it out.
+				*parenEnd = 0x00;
+			}
+			
+			ss << (parenStart + 1);
+		}
+		ss << ")\n";
+	}
+	
+	// Is Gens/GS using Unicode?
+	if (w32u_is_unicode)
+		ss << "Using Unicode strings for Win32 API.\n";
+	else
+		ss << "Using ANSI strings for Win32 API.\n";
+	
+	// Save the debug information.
+	sDebugInfo = ss.str();
+}
+
+
+/** ICE stuff. **/
 
 
 #define ICE_RGB(r, g, b) (((r) << 16) | ((g) << 8) | (b))
