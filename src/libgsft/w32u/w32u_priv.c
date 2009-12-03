@@ -44,3 +44,34 @@ wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs)
 	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, cchWcs);
 	return wcs;
 }
+
+
+/**
+ * w32u_UTF8toUTF16(): Convert a UTF-8 string to the local ANSI code page.
+ * @param mbs UTF-8 string.
+ * @return ANSI string. (MUST BE free()'d AFTER USE!)
+ */
+char* WINAPI w32u_UTF8toANSI(const char *mbs)
+{
+	// Convert from UTF-8 to UTF-16 first.
+	int cchWcs = MultiByteToWideChar(CP_UTF8, 0, mbs, -1, NULL, 0);
+	if (cchWcs <= 0)
+		return NULL;
+	
+	wchar_t *wcs = (wchar_t*)malloc(cchWcs * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, mbs, -1, wcs, cchWcs);
+	
+	// Convert from UTF-16 to ANSI.
+	// TODO: Use GetCPInfo() to get the system default replacement character.
+	int cbAcs = WideCharToMultiByte(CP_ACP, 0, wcs, -1, NULL, 0, NULL, NULL);
+	if (cbAcs <= 0)
+	{
+		free(wcs);
+		return NULL;
+	}
+	
+	char *acs = (char*)malloc(cbAcs);
+	WideCharToMultiByte(CP_ACP, 0, wcs, -1, acs, cbAcs, NULL, NULL);
+	free(wcs);
+	return acs;
+}
