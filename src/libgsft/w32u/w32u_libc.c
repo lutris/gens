@@ -19,10 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u.h"
-#include "w32u_priv.h"
 #include "w32u_libc.h"
-
 #include "w32u_libcW.h"
 #include "w32u_libcA.h"
 
@@ -40,13 +37,4 @@ int WINAPI w32u_libc_init(void)
 		return w32u_libcW_init();
 	else
 		return w32u_libcA_init();
-}
-
-
-int WINAPI w32u_libc_end(void)
-{
-	if (w32u_is_unicode)
-		return w32u_libcW_end();
-	else
-		return w32u_libcA_end();
 }

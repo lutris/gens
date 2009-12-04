@@ -20,8 +20,6 @@
  ***************************************************************************/
 
 #include "w32u_winnls.h"
-#include "w32u_priv.h"
-
 #include "w32u_winnlsW.h"
 #include "w32u_winnlsA.h"
 

@@ -20,11 +20,10 @@
  ***************************************************************************/
 
 #include "w32u_windowsA.h"
-#include "w32u_priv.h"
+#include "w32u_windows.h"
 #include "w32u_charset.h"
 #include "../gsft_unused.h"
 
-#include "w32u_windows.h"
 
 // C includes.
 #include <stdlib.h>
@@ -322,11 +321,5 @@ int WINAPI w32u_windowsA_init(void)
 	pSetClassLongU		= &SetClassLongA;
 #endif
 	
-	return 0;
-}
-
-int WINAPI w32u_windowsA_end(void)
-{
-	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }

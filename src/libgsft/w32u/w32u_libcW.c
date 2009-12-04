@@ -19,11 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windows.h"
-#include "w32u_charset.h"
 #include "w32u_libcW.h"
-
 #include "w32u_libc.h"
+#include "w32u_charset.h"
 
 // C includes.
 #include <stdlib.h>
@@ -72,12 +70,5 @@ int WINAPI w32u_libcW_init(void)
 	pfopen		= &fopenUW;
 	p_wcsicmp	= &_wcsicmp;
 	
-	return 0;
-}
-
-
-int WINAPI w32u_libcW_end(void)
-{
-	// TODO: Should the function pointers be NULL'd?
 	return 0;
 }

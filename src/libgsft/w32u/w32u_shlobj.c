@@ -20,8 +20,6 @@
  ***************************************************************************/
 
 #include "w32u_shlobj.h"
-#include "w32u_priv.h"
-
 #include "w32u_shlobjW.h"
 #include "w32u_shlobjA.h"
 

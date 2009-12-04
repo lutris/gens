@@ -19,12 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windows.h"
-#include "w32u_priv.h"
-#include "w32u_charset.h"
 #include "w32u_shellapiW.h"
-
 #include "w32u_shellapi.h"
+#include "w32u_charset.h"
 
 // C includes.
 #include <stdlib.h>

@@ -20,8 +20,6 @@
  ***************************************************************************/
 
 #include "w32u_windows.h"
-#include "w32u_priv.h"
-
 #include "w32u_windowsW.h"
 #include "w32u_windowsA.h"
 
@@ -95,13 +93,4 @@ int WINAPI w32u_windows_init(void)
 		return w32u_windowsW_init();
 	else
 		return w32u_windowsA_init();
-}
-
-
-int WINAPI w32u_windows_end(void)
-{
-	if (w32u_is_unicode)
-		return w32u_windowsW_end();
-	else
-		return w32u_windowsA_end();
 }

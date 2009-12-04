@@ -20,8 +20,6 @@
  ***************************************************************************/
 
 #include "w32u_commdlg.h"
-#include "w32u_priv.h"
-
 #include "w32u_commdlgW.h"
 #include "w32u_commdlgA.h"
 
@@ -36,13 +34,4 @@ int WINAPI w32u_commdlg_init(void)
 		return w32u_commdlgW_init();
 	else
 		return w32u_commdlgA_init();
-}
-
-
-int WINAPI w32u_commdlg_end(void)
-{
-	if (w32u_is_unicode)
-		return w32u_commdlgW_end();
-	else
-		return w32u_commdlgA_end();
 }

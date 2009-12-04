@@ -37,7 +37,6 @@ libgsft_w32u_la_SOURCES = \
 
 noinst_HEADERS = \
 		w32u.h \
-		w32u_priv.h \
 		w32u_charset.h \
 		w32u_windows.h \
 		w32u_windowsW.h \

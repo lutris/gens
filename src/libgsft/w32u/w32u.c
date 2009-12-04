@@ -20,7 +20,6 @@
  ***************************************************************************/
 
 #include "w32u.h"
-#include "w32u_priv.h"
 #include "w32u_windows.h"
 #include "w32u_windowsx.h"
 #include "w32u_shellapi.h"
@@ -42,11 +41,6 @@ static int init_counter = 0;
 
 // Is this Unicode?
 BOOL w32u_is_unicode = 0;
-
-// DLLs.
-static HMODULE hKernel32 = NULL;
-static HMODULE hUser32 = NULL;
-static HMODULE hShell32 = NULL;
 
 /** DLL versions. (0xMMNNRRRR) **/
 DWORD shell32_dll_version = 0;
@@ -139,23 +133,9 @@ int WINAPI w32u_end(void)
 	// Disable Unicode.
 	w32u_is_unicode = 0;
 	
-	// Unload the libraries.
-	FreeLibrary(hKernel32);
-	hKernel32 = NULL;
-	FreeLibrary(hUser32);
-	hUser32 = NULL;
-	FreeLibrary(hShell32);
-	hShell32 = NULL;
-	
 	// Clear the DLL versions.
 	shell32_dll_version = 0;
 	
 	// TODO: Should function pointers be NULL'd?
-	// TODO: Should shellapi and shlobj have end functions?
-	//w32u_shellapi_end();
-	w32u_libc_end();
-	w32u_commdlg_end();
-	//w32u_shlobj_end();
-	
 	return 0;
 }

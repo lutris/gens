@@ -19,10 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windows.h"
-#include "w32u_priv.h"
-#include "w32u_winnlsW.h"
-
+#include "w32u_winnlsA.h"
 #include "w32u_winnls.h"
 
 // C includes.

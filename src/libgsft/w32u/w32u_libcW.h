@@ -22,14 +22,13 @@
 #ifndef GSFT_W32U_LIBCW_H
 #define GSFT_W32U_LIBCW_H
 
-#include "w32u_windows.h"
+#include "w32u.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 int WINAPI w32u_libcW_init(void);
-int WINAPI w32u_libcW_end(void);
 
 #ifdef __cplusplus
 }

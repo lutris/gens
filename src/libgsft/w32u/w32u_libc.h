@@ -42,7 +42,6 @@ MAKE_EXTFUNCPTR(fopen);
 MAKE_EXTFUNCPTR(_wcsicmp);
 
 int WINAPI w32u_libc_init(void);
-int WINAPI w32u_libc_end(void);
 
 #ifdef __cplusplus
 }

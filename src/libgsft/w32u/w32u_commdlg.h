@@ -33,7 +33,6 @@ MAKE_EXTFUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
 MAKE_EXTFUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
 
 int WINAPI w32u_commdlg_init(void);
-int WINAPI w32u_commdlg_end(void);
 
 #ifdef __cplusplus
 }

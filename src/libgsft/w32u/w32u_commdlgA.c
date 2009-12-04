@@ -19,12 +19,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windows.h"
-#include "w32u_priv.h"
-#include "w32u_charset.h"
 #include "w32u_commdlgA.h"
-
 #include "w32u_commdlg.h"
+#include "w32u_charset.h"
 
 // C includes.
 #include <stdlib.h>
@@ -165,12 +162,5 @@ int WINAPI w32u_commdlgA_init(void)
 	pGetOpenFileNameU	= &GetOpenFileNameUA;
 	pGetSaveFileNameU	= &GetSaveFileNameUA;
 	
-	return 0;
-}
-
-
-int WINAPI w32u_commdlgA_end(void)
-{
-	// TODO: Should function pointers be NULL'd?
 	return 0;
 }
