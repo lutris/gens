@@ -31,6 +31,7 @@ extern "C" {
 /** Multibyte to Wide Character string functions. **/
 wchar_t* WINAPI w32u_mbstowcs_alloc(const char *lpSrc, int cchMinSize, UINT cpFrom);
 char* WINAPI w32u_wcstombs_alloc(const wchar_t *lpSrc, int cbMinSize, UINT cpTo);
+int WINAPI w32u_wcstombs_copy(char *lpDest, const wchar_t *lpSrc, int cbDest, UINT cpTo);
 
 /** Multibyte to Multibyte string functions. **/
 char* WINAPI w32u_mbstombs_alloc(const char *lpSrc, int cbMinSize, UINT cpFrom, UINT cpTo);
@@ -44,6 +45,9 @@ int WINAPI w32u_mbstombs_ip(char *lpBuf, int cbBuf, UINT cpFrom, UINT cpTo);
 #define w32u_ANSItoUTF8(lpSrc)		w32u_mbstombs_alloc((lpSrc), 0, CP_ACP, CP_UTF8)
 
 #define w32u_UTF8toANSI_sz(lpSrc, cbMinSize)		w32u_mbstombs_alloc((lpSrc), (cbMinSize), CP_UTF8, CP_ACP)
+
+#define w32u_UTF16toUTF8_copy(lpDest, lpSrc, cbDest)	w32u_wcstombs_copy((lpDest), (lpSrc), (cbDest), CP_UTF8)
+//#define w32u_UTF8toUTF16_copy(lpDest, lpSrc, cchDest)	w32u_mbstowcs_copy((lpDest), (lpSrc), (cchDest), CP_UTF8)
 
 #define w32u_UTF8toANSI_copy(lpDest, lpSrc, cbDest)	w32u_mbstombs_copy((lpDest), (lpSrc), (cbDest), CP_UTF8, CP_ACP)
 #define w32u_ANSItoUTF8_copy(lpDest, lpSrc, cbDest)	w32u_mbstombs_copy((lpDest), (lpSrc), (cbDest), CP_ACP, CP_UTF8)

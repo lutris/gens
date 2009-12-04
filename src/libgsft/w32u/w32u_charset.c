@@ -59,15 +59,35 @@ wchar_t* WINAPI w32u_mbstowcs_alloc(const char *lpSrc, int cchMinSize, UINT cpFr
  */
 char* WINAPI w32u_wcstombs_alloc(const wchar_t *lpSrc, int cbMinSize, UINT cpTo)
 {
-	int cbAcs = WideCharToMultiByte(cpTo, 0, lpSrc, -1, NULL, 0, NULL, NULL);
-	if (cbAcs <= 0)
+	int cbMbs = WideCharToMultiByte(cpTo, 0, lpSrc, -1, NULL, 0, NULL, NULL);
+	if (cbMbs <= 0)
 		return NULL;
-	if (cbAcs < cbMinSize)
-		cbAcs = cbMinSize;
+	if (cbMbs < cbMinSize)
+		cbMbs = cbMinSize;
 	
-	char *mbs = (char*)malloc(cbAcs);
-	WideCharToMultiByte(cpTo, 0, lpSrc, -1, mbs, cbAcs, NULL, NULL);
+	char *mbs = (char*)malloc(cbMbs);
+	WideCharToMultiByte(cpTo, 0, lpSrc, -1, mbs, cbMbs, NULL, NULL);
 	return mbs;
+}
+
+
+/**
+ * w32u_wcstombs_copy(): Convert a UTF-16 (wchar_t*) string to multibyte.
+ * @param lpDest Destination buffer.
+ * @param lpSrc Source buffer.
+ * @param cbDest Size of the destination buffer, in bytes.
+ * @param cpTo Code page to convert to.
+ * @return 0 on success; non-zero on error.
+ */
+int WINAPI w32u_wcstombs_copy(char *lpDest, const wchar_t *lpSrc, int cbDest, UINT cpTo)
+{
+	// Convert from UTF-16 to cpTo.
+	int cbMbs = WideCharToMultiByte(cpTo, 0, lpSrc, -1, NULL, 0, NULL, NULL);
+	if (cbMbs <= 0 || cbMbs > cbDest)
+		return -2;
+	
+	WideCharToMultiByte(cpTo, 0, lpSrc, -1, lpDest, cbMbs, NULL, NULL);
+	return 0;
 }
 
 
@@ -90,17 +110,17 @@ char* WINAPI w32u_mbstombs_alloc(const char *lpSrc, int cbMinSize, UINT cpFrom, 
 	MultiByteToWideChar(cpFrom, 0, lpSrc, -1, wcs, cchWcs);
 	
 	// Convert from UTF-16 to cpTo.
-	int cbAcs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
-	if (cbAcs <= 0)
+	int cbMbs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
+	if (cbMbs <= 0)
 	{
 		free(wcs);
 		return NULL;
 	}
-	if (cbAcs < cbMinSize)
-		cbAcs = cbMinSize;
+	if (cbMbs < cbMinSize)
+		cbMbs = cbMinSize;
 	
-	char *acs = (char*)malloc(cbAcs);
-	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, acs, cbAcs, NULL, NULL);
+	char *acs = (char*)malloc(cbMbs);
+	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, acs, cbMbs, NULL, NULL);
 	free(wcs);
 	return acs;
 }
@@ -117,7 +137,7 @@ char* WINAPI w32u_mbstombs_alloc(const char *lpSrc, int cbMinSize, UINT cpFrom, 
  */
 int WINAPI w32u_mbstombs_copy(char *lpDest, const char *lpSrc, int cbDest, UINT cpFrom, UINT cpTo)
 {
-	// Convert from cpFromx to UTF-16 first.
+	// Convert from cpFrom to UTF-16 first.
 	int cchWcs = MultiByteToWideChar(cpFrom, 0, lpSrc, -1, NULL, 0);
 	if (cchWcs <= 0)
 		return -1;
@@ -126,21 +146,21 @@ int WINAPI w32u_mbstombs_copy(char *lpDest, const char *lpSrc, int cbDest, UINT 
 	MultiByteToWideChar(cpFrom, 0, lpSrc, -1, wcs, cchWcs);
 	
 	// Convert from UTF-16 to cpTo.
-	int cbAcs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
-	if (cbAcs <= 0 || cbAcs > cbDest)
+	int cbMbs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
+	if (cbMbs <= 0 || cbMbs > cbDest)
 	{
 		free(wcs);
 		return -2;
 	}
 	
-	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, lpDest, cbAcs, NULL, NULL);
+	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, lpDest, cbMbs, NULL, NULL);
 	free(wcs);
 	return 0;
 }
 
 
 /**
- * w32u_mbstombs_alloc(): Convert a multibyte string to a different multibyte encoding.
+ * w32u_mbstombs_ip(): Convert a multibyte string to a different multibyte encoding.
  * @param lpSrc String buffer to convert. (Must be null-terminated!)
  * @param cbBuf Size of the string buffer.
  * @param cpFrom Code page to convert from.
@@ -158,14 +178,14 @@ int WINAPI w32u_mbstombs_ip(char *lpBuf, int cbBuf, UINT cpFrom, UINT cpTo)
 	MultiByteToWideChar(cpFrom, 0, lpBuf, -1, wcs, cchWcs);
 	
 	// Convert from UTF-16 to cpTo.
-	int cbAcs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
-	if (cbAcs <= 0 || cbAcs > cbBuf)
+	int cbMbs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
+	if (cbMbs <= 0 || cbMbs > cbBuf)
 	{
 		free(wcs);
 		return -2;
 	}
 	
-	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, lpBuf, cbAcs, NULL, NULL);
+	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, lpBuf, cbMbs, NULL, NULL);
 	free(wcs);
 	return 0;
 }
