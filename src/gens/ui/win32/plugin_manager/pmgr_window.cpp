@@ -118,7 +118,7 @@ typedef std::pair<mdp_t*, int> pairMdpErr_t;
 #include "libgsft/gsft_png.h"
 #include "libgsft/gsft_png_dll.h"
 
-static HWND	imgPluginIcon;
+static HWND		imgPluginIcon;
 static HIMAGELIST	imglPluginIcons = NULL;
 static vector<HBITMAP>	vectPluginIcons;
 
@@ -219,20 +219,6 @@ static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container)
 	SetWindowFont(tabPluginList, fntMain, true);
 	
 #ifdef GENS_PNG
-	// Make sure the image list is empty.
-	if (imglPluginIcons)
-	{
-		ImageList_Destroy(imglPluginIcons);
-		imglPluginIcons = NULL;
-	}
-	
-	// Make sure vectPluginIcons is empty.
-	for (int i = vectPluginIcons.size() - 1; i >= 0; i--)
-	{
-		DeleteBitmap(vectPluginIcons[i]);
-	}
-	vectPluginIcons.clear();
-	
 	// Create the ImageList.
 	imglPluginIcons = ImageList_Create(32, 32, ILC_MASK | ILC_COLOR32,
 					   PluginMgr::lstMDP.size(),
@@ -265,7 +251,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 	// Create the plugin ListView.
 	lstPluginList[id] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
 						WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
-						LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
+						LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS,
 						8, 16+8+4,
 						PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
 						PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
@@ -527,6 +513,13 @@ void pmgr_window_close(void)
 	mapMdpErrs.clear();
 	
 #ifdef GENS_PNG
+	// Make sure the ListViews are destroyed first.
+	for (int i = 0; i < PMGR_MAX; i++)
+	{
+		DestroyWindow(lstPluginList[i]);
+		lstPluginList[i] = NULL;
+	}
+	
 	// Destroy the image list.
 	if (imglPluginIcons)
 	{
@@ -623,6 +616,13 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 			mapMdpErrs.clear();
 			
 #ifdef GENS_PNG
+			// Make sure the ListViews are destroyed first.
+			for (int i = 0; i < PMGR_MAX; i++)
+			{
+				DestroyWindow(lstPluginList[i]);
+				lstPluginList[i] = NULL;
+			}
+			
 			// Destroy the image list.
 			if (imglPluginIcons)
 			{
