@@ -188,7 +188,7 @@ typedef struct
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
-	int	(*set_cooperative_level)(HWND hWnd);
+	int	WINAPI (*set_cooperative_level)(HWND hWnd);
 #endif /* GENS_OS_WIN32 */
 } input_backend_t;
 
@@ -205,7 +205,7 @@ extern BOOL			(*input_check_key_pressed)(uint16_t key);
 extern uint16_t			(*input_get_key)(void);
 extern const input_keymap_t	*input_keymap_default;
 #ifdef GENS_OS_WIN32
-extern int			(*input_set_cooperative_level)(HWND hWnd);
+extern int WINAPI		(*input_set_cooperative_level)(HWND hWnd);
 #endif /* GENS_OS_WIN32 */
 
 // Current keymap.

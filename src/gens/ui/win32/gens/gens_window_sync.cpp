@@ -81,10 +81,10 @@ using std::deque;
 
 
 // Internal functions.
-static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position);
-static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position);
+static void WINAPI Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position);
+static void WINAPI Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position);
 #ifdef GENS_DEBUGGER
-static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position);
+static void WINAPI Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position);
 #endif /* GENS_DEBUGGER */
 
 
@@ -280,7 +280,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
  * @param parent Parent menu.
  * @param position Position in the parent menu.
  */
-static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
+static void WINAPI Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 {
 	// Find the Backend submenu.
 	HMENU mnuBackend = gens_menu_find_item(IDM_GRAPHICS_BACKEND);
@@ -327,7 +327,7 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
  * @param parent Parent menu.
  * @param position Position in the parent menu.
  */
-static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
+static void WINAPI Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
 	// Find the Render submenu.
 	HMENU mnuRender = gens_menu_find_item(IDM_GRAPHICS_RENDER);
@@ -441,7 +441,7 @@ void Sync_Gens_Window_CPUMenu(void)
  * @param parent Parent menu.
  * @param position Position in the parent menu.
  */
-static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
+static void WINAPI Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 {
 	// Debug submenu
 	unsigned int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;

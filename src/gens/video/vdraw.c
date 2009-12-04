@@ -109,16 +109,16 @@ VDRAW_BACKEND vdraw_cur_backend_id = -1;
 uint32_t vdraw_cur_backend_flags = 0;
 
 // Function pointers.
-int		(*vdraw_init_subsystem)(void) = NULL;
-int		(*vdraw_shutdown)(void) = NULL;
-void		(*vdraw_clear_screen)(void) = NULL;
-void		(*vdraw_update_vsync)(const int data) = NULL;
-int		(*vdraw_reinit_gens_window)(void) = NULL;
+int	(*vdraw_init_subsystem)(void) = NULL;
+int	(*vdraw_shutdown)(void) = NULL;
+void	(*vdraw_clear_screen)(void) = NULL;
+void	(*vdraw_update_vsync)(const int data) = NULL;
+int	(*vdraw_reinit_gens_window)(void) = NULL;
 #ifdef GENS_OS_WIN32
-int		(*vdraw_clear_primary_screen)(void) = NULL;
-int		(*vdraw_clear_back_screen)(void) = NULL;
-int		(*vdraw_restore_primary)(void) = NULL;
-int		(*vdraw_set_cooperative_level)(void) = NULL;
+int WINAPI (*vdraw_clear_primary_screen)(void) = NULL;
+int WINAPI (*vdraw_clear_back_screen)(void) = NULL;
+int WINAPI (*vdraw_restore_primary)(void) = NULL;
+int WINAPI (*vdraw_set_cooperative_level)(void) = NULL;
 #endif /* GENS_OS_WIN32 */
 
 // Render functions.

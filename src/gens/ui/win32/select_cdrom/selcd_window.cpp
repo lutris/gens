@@ -72,10 +72,10 @@ static HWND	btnOK, btnCancel, btnApply;
 #define IDC_SELCD_CBODEVICENAME 0x2000
 
 // Widget creation functions.
-static void	selcd_window_create_child_windows(HWND hWnd);
+static void WINAPI selcd_window_create_child_windows(HWND hWnd);
 // Select CD-ROM Drive load/save functions.
-static void	selcd_window_init(void);
-static int	selcd_window_save(void);
+static void WINAPI selcd_window_init(void);
+static int WINAPI selcd_window_save(void);
 
 
 /**
@@ -129,7 +129,7 @@ void selcd_window_show(void)
  * selcd_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void selcd_window_create_child_windows(HWND hWnd)
+static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 {
 	HWND lblDeviceName = pCreateWindowU(WC_STATIC, "CD-ROM Drive:",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
@@ -187,7 +187,7 @@ void selcd_window_close(void)
 /**
  * selcd_window_init(): Initialize the Select CD-ROM Drive window.
  */
-static void selcd_window_init(void)
+static void WINAPI selcd_window_init(void)
 {
 	// Clear the CD-ROM device name dropdown.
 	ComboBox_ResetContentU(cboDeviceName);
@@ -227,7 +227,7 @@ static void selcd_window_init(void)
  * selcd_window_save(): Save the CD-ROM device name.
  * @return 0 if the settings were saved; non-zero on error.
  */
-static int selcd_window_save(void)
+static int WINAPI selcd_window_save(void)
 {
 	if (Num_CD_Drive == 0)
 	{

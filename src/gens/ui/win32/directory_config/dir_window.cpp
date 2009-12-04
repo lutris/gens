@@ -97,15 +97,15 @@ static vector<dir_widget_t> vectDirs;
 static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 // Widget creation functions.
-static void	dir_window_create_child_windows(HWND hWnd);
-static HWND	dir_window_create_dir_widgets(const char *title, HWND parent, int y, int id);
+static void WINAPI dir_window_create_child_windows(HWND hWnd);
+static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND parent, int y, int id);
 
 // Directory configuration load/save functions.
-static void	dir_window_init(void);
-static void	dir_window_save(void);
+static void WINAPI dir_window_init(void);
+static void WINAPI dir_window_save(void);
 
 // Callbacks.
-static void	dir_window_callback_btnChange_clicked(int dir);
+static void WINAPI dir_window_callback_btnChange_clicked(int dir);
 
 
 /**
@@ -154,7 +154,7 @@ void dir_window_show(void)
  * cc_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void dir_window_create_child_windows(HWND hWnd)
+static void WINAPI dir_window_create_child_windows(HWND hWnd)
 {
 	// Create the internal directory entry frame.
 	HWND fraInternalDirs = pCreateWindowU(WC_BUTTON, "Gens/GS Directories",
@@ -265,7 +265,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 }
 
 
-static HWND dir_window_create_dir_widgets(const char *title, HWND container, int y, int id)
+static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND container, int y, int id)
 {
 	// Create the label for the directory.
 	HWND lblTitle = pCreateWindowU(WC_STATIC, title,
@@ -312,7 +312,7 @@ void dir_window_close(void)
 /**
  * dir_window_init(): Initialize the Directory Configuration entries.
  */
-static void dir_window_init(void)
+static void WINAPI dir_window_init(void)
 {
 	char dir_buf[GENS_PATH_MAX];
 	char dir_buf_rel[GENS_PATH_MAX];
@@ -358,7 +358,7 @@ static void dir_window_init(void)
 /**
  * dir_window_save(): Save the Directory Configuration entries.
  */
-static void dir_window_save(void)
+static void WINAPI dir_window_save(void)
 {
 	size_t len;
 	char dir_buf[GENS_PATH_MAX];
@@ -498,7 +498,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
  * dir_window_callback_btnChange_clicked(): A "Change" button was clicked.
  * @param dir Directory number.
  */
-static void dir_window_callback_btnChange_clicked(int dir)
+static void WINAPI dir_window_callback_btnChange_clicked(int dir)
 {
 	char dir_buf[GENS_PATH_MAX];
 	char dir_buf_abs[GENS_PATH_MAX];

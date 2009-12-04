@@ -39,7 +39,7 @@
  * cc6_check(): Check for Common Controls v6.0.
  * @return Common Controls v6.0 status.
  */
-CC6_STATUS_T cc6_check(void)
+CC6_STATUS_T WINAPI cc6_check(void)
 {
 	// TODO: Check the version of COMCTL32.DLL currently loaded in memory.
 	// If the program's manifest isn't set up properly, then this will return

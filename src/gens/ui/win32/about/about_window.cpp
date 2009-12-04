@@ -120,7 +120,7 @@ static LPBYTE	pbmpData = NULL;
 static HDC	hdcComp = NULL;
 
 // Widget creation functions.
-static void	about_window_create_child_windows(HWND hWnd);
+static void WINAPI about_window_create_child_windows(HWND hWnd);
 
 // ice variables and functions.
 static uint8_t		ax, bx, cx;
@@ -182,7 +182,7 @@ void about_window_show(void)
  * about_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void about_window_create_child_windows(HWND hWnd)
+static void WINAPI about_window_create_child_windows(HWND hWnd)
 {
 	cx = 0; iceLastTicks = 0;
 	if (ice != 3)

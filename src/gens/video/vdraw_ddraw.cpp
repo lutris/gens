@@ -85,15 +85,14 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static void vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
-static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
+static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
 
 // Border drawing.
-static void vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest);
+static void WINAPI vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest);
 static DDBLTFX ddbltfx_Border_Color;
 
 
-static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
+static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
 {
 	if (lock)
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
@@ -505,7 +504,7 @@ void vdraw_ddraw_clear_screen(void)
  * vdraw_ddraw_clear_primary_screen(): Clear the primary screen.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_ddraw_clear_primary_screen(void)
+int WINAPI vdraw_ddraw_clear_primary_screen(void)
 {
 	if (!lpDD || !lpDDS_Primary)
 		return -1;
@@ -563,7 +562,7 @@ int vdraw_ddraw_clear_primary_screen(void)
  * vdraw_ddraw_clear_back_screen(): Clear the back buffer.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_ddraw_clear_back_screen(void)
+int WINAPI vdraw_ddraw_clear_back_screen(void)
 {
 	if (!lpDD || !lpDDS_Back)
 		return -1;
@@ -592,7 +591,7 @@ int vdraw_ddraw_clear_back_screen(void)
  * @param Ratio_Y [out] Y ratio.
  * @param Dep [out] Horizontal border.
  */
-static void vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
+static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
 {
 	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
 	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
@@ -1097,7 +1096,7 @@ cleanup_flip:
  * @param lpDDS_Surface
  * @param RectDest Destination rectangle.
  */
-static void vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest)
+static void WINAPI vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest)
 {
 	uint8_t stretch = vdraw_get_stretch();
 	if (stretch == STRETCH_FULL)
@@ -1256,7 +1255,7 @@ HRESULT vdraw_ddraw_restore_graphics(void)
  * vdraw_ddraw_restore_primary(): Restore the primary DirectDraw surface.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_ddraw_restore_primary(void)
+int WINAPI vdraw_ddraw_restore_primary(void)
 {
 	if (!lpDD)
 		return -1;
@@ -1275,7 +1274,7 @@ int vdraw_ddraw_restore_primary(void)
  * vdraw_ddraw_set_cooperative_level(): Sets the DirectDraw cooperative level.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_ddraw_set_cooperative_level(void)
+int WINAPI vdraw_ddraw_set_cooperative_level(void)
 {
 	if (!gens_window || !lpDD)
 		return -1;

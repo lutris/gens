@@ -96,10 +96,10 @@ extern "C"
 
 static bool paintsEnabled = true;
 
-static void on_gens_window_close(void);
-static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void showPopupMenu(HWND hWnd, bool adjustMousePointer);
-static void dragDropFile(HDROP hDrop);
+static void WINAPI on_gens_window_close(void);
+static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer);
+static void WINAPI dragDropFile(HDROP hDrop);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -242,7 +242,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 /**
  * Window is closed.
  */
-static void on_gens_window_close(void)
+static void WINAPI on_gens_window_close(void)
 {
 	//Modif N - making sure sound doesn't stutter on exit
 	if (audio_initialized)
@@ -259,7 +259,7 @@ static void on_gens_window_close(void)
  * @param wParam LOWORD(wParam) == Command.
  * @param lParam
  */
-static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GSFT_UNUSED_PARAMETER(hWnd);
 	GSFT_UNUSED_PARAMETER(message);
@@ -453,7 +453,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
  * @param hWnd Window handle.
  * @param adjustMousePointer If true, adjusts the mouse pointer.
  */
-static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
+static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer)
 {
 	// Clear the sound buffer to prevent stuttering.
 	audio_clear_sound_buffer();
@@ -486,7 +486,7 @@ static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 /**
  * dragDropFile(): Called when a file is dragged onto the Gens window.
  */
-static void dragDropFile(HDROP hDrop)
+static void WINAPI dragDropFile(HDROP hDrop)
 {
 	char filename[GENS_PATH_MAX];
 	unsigned int rval;

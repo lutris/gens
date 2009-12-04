@@ -72,17 +72,17 @@ static HWND	lstCountryCodes;
 static HWND	btnOK, btnCancel, btnApply;
 
 // Widget creation functions.
-static void	ccode_window_create_child_windows(HWND hWnd);
-static void	ccode_window_create_lstCountryCodes(HWND container);
-static void	ccode_window_create_up_down_buttons(HWND container);
+static void WINAPI ccode_window_create_child_windows(HWND hWnd);
+static void WINAPI ccode_window_create_lstCountryCodes(HWND container);
+static void WINAPI ccode_window_create_up_down_buttons(HWND container);
 
 // Configuration load/save functions.
-static void	ccode_window_init(void);
-static void	ccode_window_save(void);
+static void WINAPI ccode_window_init(void);
+static void WINAPI ccode_window_save(void);
 
 // Callbacks.
-static void	ccode_window_callback_btnUp_clicked(void);
-static void	ccode_window_callback_btnDown_clicked(void);
+static void WINAPI ccode_window_callback_btnUp_clicked(void);
+static void WINAPI ccode_window_callback_btnDown_clicked(void);
 
 /** BEGIN: Common Controls v6.0 **/
 
@@ -154,7 +154,7 @@ void ccode_window_show(void)
  * ccode_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void ccode_window_create_child_windows(HWND hWnd)
+static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 {
 	// Add a frame for country code selection.
 	HWND fraCountry = pCreateWindowU(WC_BUTTON, "Country Code Order",
@@ -226,7 +226,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
  * ccode_window_create_lstCountryCodes(): Create the Country Codes listbox.
  * @param container Container for the listbox.
  */
-static void ccode_window_create_lstCountryCodes(HWND container)
+static void WINAPI ccode_window_create_lstCountryCodes(HWND container)
 {
 	// Create the listbox.
 	lstCountryCodes = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
@@ -251,7 +251,7 @@ static void ccode_window_create_lstCountryCodes(HWND container)
  * ccode_window_create_up_down_buttons(): Create the Up/Down buttons.
  * @param container Container for the buttons.
  */
-static void ccode_window_create_up_down_buttons(HWND container)
+static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 {
 	// Create the Up/Down buttons.
 	// TODO: BS_ICON apparently doesn't work on NT4 and earlier.
@@ -367,7 +367,7 @@ void ccode_window_close(void)
 /**
  * ccode_window_init(): Initialize the file text boxes.
  */
-static void ccode_window_init(void)
+static void WINAPI ccode_window_init(void)
 {
 	// Set up the country order listbox.
 	// Elements in Country_Order[3] can have one of three values:
@@ -401,7 +401,7 @@ static void ccode_window_init(void)
 /**
  * ccode_window_save(): Save the Country Code order.
  */
-static void ccode_window_save(void)
+static void WINAPI ccode_window_save(void)
 {
 	// Save settings.
 	int i;
@@ -488,7 +488,7 @@ static LRESULT CALLBACK ccode_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 /**
  * ccode_window_callback_btnUp_clicked(): "Up" button was clicked.
  */
-static void ccode_window_callback_btnUp_clicked(void)
+static void WINAPI ccode_window_callback_btnUp_clicked(void)
 {
 	int curIndex = ListBox_GetCurSelU(lstCountryCodes);
 	if (curIndex == -1 || curIndex == 0)
@@ -524,7 +524,7 @@ static void ccode_window_callback_btnUp_clicked(void)
 /**
  * ccode_window_callback_btnDown_clicked(): "Down" button was clicked.
  */
-static void ccode_window_callback_btnDown_clicked(void)
+static void WINAPI ccode_window_callback_btnDown_clicked(void)
 {
 	int curIndex = ListBox_GetCurSelU(lstCountryCodes);
 	if (curIndex == -1 || curIndex >= (ListBox_GetCountU(lstCountryCodes) - 1))

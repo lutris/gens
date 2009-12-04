@@ -33,8 +33,8 @@ extern HFONT fntMain;
 extern HFONT fntTitle;
 extern HFONT fntMono;
 
-void fonts_init(void);
-void fonts_end(void);
+void WINAPI fonts_init(void);
+void WINAPI fonts_end(void);
 
 #ifdef __cplusplus
 }

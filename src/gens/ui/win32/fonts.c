@@ -38,7 +38,7 @@ HFONT fntMono;
 /**
  * fonts_init(): Initialize the Win32 fonts.
  */
-void fonts_init(void)
+void WINAPI fonts_init(void)
 {
 	/** NOTE: This function does not need Unicode translation,
 	 *  since it passes the text directly from SystemParametersInfo().
@@ -66,7 +66,7 @@ void fonts_init(void)
 /**
  * fonts_end(): Delete all Win32 fonts.
  */
-void fonts_end(void)
+void WINAPI fonts_end(void)
 {
 	DeleteFont(fntMain);
 	fntMain = NULL;

@@ -118,17 +118,18 @@ static HBRUSH	brushIntroEffect[8][2];
 static HPEN	penIntroEffect[8][2];
 
 // Widget creation functions.
-static void	genopt_window_create_child_windows(HWND hWnd);
-static void	genopt_window_create_osd_frame(HWND container, const char* title, const int index,
-					       const int x, const int y, const int w, const int h);
+static void WINAPI genopt_window_create_child_windows(HWND hWnd);
+static void WINAPI genopt_window_create_osd_frame(HWND container, const char* title, const int index,
+							const int x, const int y,
+							const int w, const int h);
 
 // Configuration load/save functions.
-static void	genopt_window_init(void);
-static void	genopt_window_save(void);
+static void WINAPI genopt_window_init(void);
+static void WINAPI genopt_window_save(void);
 
 // Callbacks.
-static void	genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);
-static void	genopt_window_callback_selectRadioButton(int identifier);
+static void WINAPI genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);
+static void WINAPI genopt_window_callback_selectRadioButton(int identifier);
 
 
 /**
@@ -184,7 +185,7 @@ void genopt_window_show(void)
  * genopt_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void genopt_window_create_child_windows(HWND hWnd)
+static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 {
 	HWND grpBox;
 	
@@ -361,8 +362,9 @@ static void genopt_window_create_child_windows(HWND hWnd)
 }
 
 
-static void genopt_window_create_osd_frame(HWND container, const char* title, const int index,
-					   const int x, const int y, const int w, const int h)
+static void WINAPI genopt_window_create_osd_frame(HWND container, const char* title, const int index,
+							const int x, const int y,
+							const int w, const int h)
 {
 	// Message frame
 	HWND grpBox, lblColor;
@@ -449,7 +451,7 @@ void genopt_window_close(void)
 /**
  * genopt_window_init(): Initialize the internal variables.
  */
-static void genopt_window_init(void)
+static void WINAPI genopt_window_init(void)
 {
 	// Get the current options.
 	unsigned char curFPSStyle, curMsgStyle;
@@ -489,7 +491,7 @@ static void genopt_window_init(void)
 /**
  * genopt_window_save(): Save the settings.
  */
-static void genopt_window_save(void)
+static void WINAPI genopt_window_save(void)
 {
 	// Save the current options.
 	unsigned char curFPSStyle, curMsgStyle;
@@ -612,7 +614,7 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 }
 
 
-static void genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem)
+static void WINAPI genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem)
 {
 	int index, button;
 	
@@ -662,7 +664,7 @@ static void genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEM
 }
 
 
-static void genopt_window_callback_selectRadioButton(int identifier)
+static void WINAPI genopt_window_callback_selectRadioButton(int identifier)
 {
 	int index, button;
 	

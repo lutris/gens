@@ -97,15 +97,15 @@ static HWND	tabPluginList;
 static HWND	lstPluginList[PMGR_MAX];
 
 // Widget creation functions.
-static void	pmgr_window_create_child_windows(HWND hWnd);
-static void	pmgr_window_create_plugin_list_tab_control(HWND container);
-static void	pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id);
-static void	pmgr_window_create_plugin_info_frame(HWND container);
-static void	pmgr_window_populate_plugin_lists(void);
-static void	pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename = "");
+static void WINAPI pmgr_window_create_child_windows(HWND hWnd);
+static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container);
+static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id);
+static void WINAPI pmgr_window_create_plugin_info_frame(HWND container);
+static void WINAPI pmgr_window_populate_plugin_lists(void);
+static void WINAPI pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename = "");
 
 // Callbacks.
-static void	pmgr_window_callback_lstPluginList_cursor_changed(int id);
+static void WINAPI pmgr_window_callback_lstPluginList_cursor_changed(int id);
 
 // Hashtable of error codes.
 #include "libgsft/gsft_hashtable.hpp"
@@ -122,9 +122,8 @@ static HWND	imgPluginIcon;
 static HIMAGELIST	imglPluginIcons = NULL;
 static vector<HBITMAP>	vectPluginIcons;
 
-static void	pmgr_window_create_plugin_icon_widget(HWND container);
-static HBITMAP	pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength);
-static inline unsigned int pmgr_window_get_bg_color(void);
+static void WINAPI pmgr_window_create_plugin_icon_widget(HWND container);
+static HBITMAP WINAPI pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength);
 #endif
 
 
@@ -180,7 +179,7 @@ void pmgr_window_show(void)
  * cc_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void pmgr_window_create_child_windows(HWND hWnd)
+static void WINAPI pmgr_window_create_child_windows(HWND hWnd)
 {
 	// Create the plugin list tab control.
 	pmgr_window_create_plugin_list_tab_control(hWnd);
@@ -208,7 +207,7 @@ static void pmgr_window_create_child_windows(HWND hWnd)
  * pmgr_window_create_plugin_list_tabs(): Create the plugin list tab control.
  * @param container Container for the tabs.
  */
-static void pmgr_window_create_plugin_list_tab_control(HWND container)
+static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container)
 {
 	// Create the plugin list tab control.
 	tabPluginList = pCreateWindowU(WC_TABCONTROL, NULL,
@@ -255,7 +254,7 @@ static void pmgr_window_create_plugin_list_tab_control(HWND container)
  * @param title Title of the tab.
  * @param id Tab ID.
  */
-static void pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id)
+static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char* title, int id)
 {
 	// Insert a tab.
 	TCITEM tabItem;
@@ -316,7 +315,7 @@ static void pmgr_window_create_plugin_list_tab(HWND container, const char* title
  * pmgr_window_create_plugin_info_frame(): Create the plugin information frame.
  * @param container Container for the frame.
  */
-static void pmgr_window_create_plugin_info_frame(HWND container)
+static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 {
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
 	
@@ -376,7 +375,7 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
 /**
  * pmgr_window_populate_plugin_lists(): Populate the plugin list.
  */
-static void pmgr_window_populate_plugin_lists(void)
+static void WINAPI pmgr_window_populate_plugin_lists(void)
 {
 	// Clear the plugin lists.
 	for (int i = 0; i < PMGR_MAX; i++)
@@ -411,7 +410,7 @@ static void pmgr_window_populate_plugin_lists(void)
  * @param err MDP error code. If not MDP_ERR_OK, the plugin is added to PMGR_INCOMPAT.
  * @param filename Filename of the plugin, if available.
  */
-static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename)
+static void WINAPI pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string& filename)
 {
 	if (!plugin)
 		return;
@@ -650,7 +649,7 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
  * pmgr_window_callback_lstPluginList_cursor_changed(): Cursor position has changed.
  * @param id Plugin list ID.
  */
-static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
+static void WINAPI pmgr_window_callback_lstPluginList_cursor_changed(int id)
 {
 	// Check which plugin is clicked.
 	int index = ListView_GetNextItemU(lstPluginList[id], -1, LVNI_SELECTED);
@@ -788,7 +787,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
  * pmgr_window_create_plugin_icon_widget(): Create the plugin icon widget and bitmap.
  * @param container Container for the plugin icon widget.
  */
-static void pmgr_window_create_plugin_icon_widget(HWND container)
+static void WINAPI pmgr_window_create_plugin_icon_widget(HWND container)
 {
 	// Plugin icon widget.
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
@@ -802,13 +801,38 @@ static void pmgr_window_create_plugin_icon_widget(HWND container)
 }
 
 
+#if 0
+// NOTE: This function isn't being used right now.
+// TODO: Implement transparency for systems that don't support it natively:
+// - Windows 9x, NT 4.0
+// - Wine
+/**
+ * pmgr_window_get_bg_color() Get the background color.
+ * @return Background color.
+ */
+static inline unsigned int WINAPI pmgr_window_get_bg_color(void)
+{
+	// Get the background color.
+	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
+	
+	// Byteswap the lower 24 bits.
+	bgColor = ((bgColor & 0xFF000000)) |
+		  ((bgColor & 0x00FF0000) >> 16) |
+		  ((bgColor & 0x0000FF00)) |
+		  ((bgColor & 0x000000FF) << 16);
+	
+	return bgColor;
+}
+#endif
+
+
 /**
  * pmgr_window_create_bitmap_from_png(): Create a bitmap from a PNG image.
  * @param icon Icon data. (PNG format)
  * @param iconLength Length of the icon data.
  * @return Bitmap containing the icon, or NULL on error.
  */
-static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength)
+static HBITMAP WINAPI pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength)
 {
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
@@ -959,24 +983,5 @@ static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const uns
 	
 	// Return the bitmap.
 	return hbmpPluginIcon;
-}
-
-
-/**
- * pmgr_window_get_bg_color() Get the background color.
- * @return Background color.
- */
-static inline unsigned int pmgr_window_get_bg_color(void)
-{
-	// Get the background color.
-	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
-	
-	// Byteswap the lower 24 bits.
-	bgColor = ((bgColor & 0xFF000000)) |
-		  ((bgColor & 0x00FF0000) >> 16) |
-		  ((bgColor & 0x0000FF00)) |
-		  ((bgColor & 0x000000FF) << 16);
-	
-	return bgColor;
 }
 #endif /* GENS_PNG */

@@ -80,11 +80,11 @@ static HWND	chkInverted;
 static HWND	cboColorScaleMethod;
 
 // Widget creation functions.
-static void	ca_window_create_child_windows(HWND hWnd);
+static void WINAPI ca_window_create_child_windows(HWND hWnd);
 
 // Color adjustment load/save functions.
-static void	ca_window_init(void);
-static void	ca_window_save(void);
+static void WINAPI ca_window_init(void);
+static void WINAPI ca_window_save(void);
 
 
 /**
@@ -140,7 +140,7 @@ void ca_window_show(void)
  * ca_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void ca_window_create_child_windows(HWND hWnd)
+static void WINAPI ca_window_create_child_windows(HWND hWnd)
 {
 	// Style for the trackbars.
 	static const unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
@@ -287,7 +287,7 @@ void ca_window_close(void)
 /**
  * ca_window_init(): Initialize the Color Adjustment window widgets.
  */
-static void ca_window_init(void)
+static void WINAPI ca_window_init(void)
 {
 	char buf[16];
 	
@@ -311,7 +311,7 @@ static void ca_window_init(void)
 /**
  * ca_window_save(): Save the color adjustment settings.
  */
-static void ca_window_save(void)
+static void WINAPI ca_window_save(void)
 {
 	Contrast_Level = (pSendMessageU(trkContrast, TBM_GETPOS, 0, 0) + 100);
 	Brightness_Level = (pSendMessageU(trkBrightness, TBM_GETPOS, 0, 0) + 100);

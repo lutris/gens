@@ -96,10 +96,10 @@ typedef struct
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
-	int	(*clear_primary_screen)(void);
-	int	(*clear_back_screen)(void);
-	int	(*restore_primary)(void);
-	int	(*set_cooperative_level)(void);
+	int	WINAPI (*clear_primary_screen)(void);
+	int	WINAPI (*clear_back_screen)(void);
+	int	WINAPI (*restore_primary)(void);
+	int	WINAPI (*set_cooperative_level)(void);
 #endif /* GENS_OS_WIN32 */
 	
 } vdraw_backend_t;
@@ -126,12 +126,12 @@ extern int	(*vdraw_init_subsystem)(void);
 extern int	(*vdraw_shutdown)(void);
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
-#ifdef GENS_OS_WIN32
 extern int	(*vdraw_reinit_gens_window)(void);
-extern int	(*vdraw_clear_primary_screen)(void);
-extern int	(*vdraw_clear_back_screen)(void);
-extern int	(*vdraw_restore_primary)(void);
-extern int	(*vdraw_set_cooperative_level)(void);
+#ifdef GENS_OS_WIN32
+extern int	WINAPI (*vdraw_clear_primary_screen)(void);
+extern int	WINAPI (*vdraw_clear_back_screen)(void);
+extern int	WINAPI (*vdraw_restore_primary)(void);
+extern int	WINAPI (*vdraw_set_cooperative_level)(void);
 #endif /* GENS_OS_WIN32 */
 
 // Message variables used externally.

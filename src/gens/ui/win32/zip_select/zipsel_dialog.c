@@ -43,7 +43,7 @@
  * @param hWndDlg hWnd of the Zip Select dialog.
  * @param z_list File list.
  */
-static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
+static void WINAPI zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
 {
 	gsft_win32_center_on_window(hWndDlg, gens_window);
 	
@@ -72,7 +72,7 @@ static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *z_list)
  * @param nIDDlgItem ID of the listbox.
  * @return Data of the selected list item. (-1 if nothing is selected.)
  */
-static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem)
+static inline int WINAPI getCurListItemData(HWND hWndDlg, int nIDDlgItem)
 {
 	HWND lstBox = GetDlgItem(hWndDlg, nIDDlgItem);
 	int index = ListBox_GetCurSelU(lstBox);

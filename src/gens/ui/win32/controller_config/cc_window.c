@@ -130,29 +130,29 @@ static HWND	btnClearAll;
 static HWND	chkRestrictInput;
 
 // Widget creation functions.
-static void	cc_window_create_child_windows(HWND hWnd);
-static void	cc_window_create_controller_port_frame(HWND container, int port);
-static void	cc_window_create_input_devices_frame(HWND container);
-static void	cc_window_populate_input_devices(HWND lstBox);
-static void	cc_window_create_configure_controller_frame(HWND container);
-static void	cc_window_create_options_frame(HWND container);
+static void WINAPI cc_window_create_child_windows(HWND hWnd);
+static void WINAPI cc_window_create_controller_port_frame(HWND container, int port);
+static void WINAPI cc_window_create_input_devices_frame(HWND container);
+static void WINAPI cc_window_populate_input_devices(HWND lstBox);
+static void WINAPI cc_window_create_configure_controller_frame(HWND container);
+static void WINAPI cc_window_create_options_frame(HWND container);
 
 // Display key name function.
-static inline void cc_window_display_key_name(HWND label, uint16_t key);
+static inline void  WINAPI cc_window_display_key_name(HWND label, uint16_t key);
 
 // Configuration load/save functions.
-static void	cc_window_init(void);
-static void	cc_window_save(void);
-static void	cc_window_show_configuration(int player);
+static void WINAPI cc_window_init(void);
+static void WINAPI cc_window_save(void);
+static void WINAPI cc_window_show_configuration(int player);
 
 // Callbacks.
-static void	cc_window_callback_teamplayer_toggled(int port);
-static void	cc_window_callback_padtype_changed(int player);
-static void	cc_window_callback_btnChangeAll_clicked(void);
-static void	cc_window_callback_btnClearAll_clicked(void);
+static void WINAPI cc_window_callback_teamplayer_toggled(int port);
+static void WINAPI cc_window_callback_padtype_changed(int player);
+static void WINAPI cc_window_callback_btnChangeAll_clicked(void);
+static void WINAPI cc_window_callback_btnClearAll_clicked(void);
 
 // Configure a key.
-static BOOL	cc_window_configure_key(int player, int button);
+static BOOL WINAPI cc_window_configure_key(int player, int button);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -210,7 +210,7 @@ void cc_window_show(void)
  * cc_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void cc_window_create_child_windows(HWND hWnd)
+static void WINAPI cc_window_create_child_windows(HWND hWnd)
 {
 	// Create the controller port frames.
 	cc_window_create_controller_port_frame(hWnd, 1);
@@ -272,7 +272,7 @@ static void cc_window_create_child_windows(HWND hWnd)
  * @param container Container for the frame.
  * @param port Port number.
  */
-static void cc_window_create_controller_port_frame(HWND container, int port)
+static void WINAPI cc_window_create_controller_port_frame(HWND container, int port)
 {
 	char tmp[32];
 	
@@ -354,7 +354,7 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
  * cc_window_create_input_devices_frame(): Create the "Input Devices" frame.
  * @param container Container for the frame.
  */
-static void cc_window_create_input_devices_frame(HWND container)
+static void WINAPI cc_window_create_input_devices_frame(HWND container)
 {
 	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
 	
@@ -380,7 +380,7 @@ static void cc_window_create_input_devices_frame(HWND container)
  * cc_window_populate_input_devices(): Populate the "Input Devices" listbox.
  * @param lstBox Listbox to store the input devices in.
  */
-static void cc_window_populate_input_devices(HWND lstBox)
+static void WINAPI cc_window_populate_input_devices(HWND lstBox)
 {
 	// Clear the listbox.
 	ListBox_ResetContentU(lstBox);
@@ -398,7 +398,7 @@ static void cc_window_populate_input_devices(HWND lstBox)
  * cc_window_create_configure_controller_frame(): Create the "Configure Controller" frame.
  * @param container Container for the frame.
  */
-static void cc_window_create_configure_controller_frame(HWND container)
+static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 {
 	// Top and left sides of the frame.
 	static const int fraConfigure_top = 8;
@@ -473,7 +473,7 @@ static void cc_window_create_configure_controller_frame(HWND container)
  * cc_window_create_options_frame(): Create the "Options" frame.
  * @param container Container for the frame.
  */
-static void cc_window_create_options_frame(HWND container)
+static void WINAPI cc_window_create_options_frame(HWND container)
 {
 	// Top and left sides of the frame.
 	static const int fraOptions_top = 8+CC_FRAME_CONFIGURE_HEIGHT+8;
@@ -524,7 +524,7 @@ void cc_window_close(void)
 /**
  * cc_window_init(): Initialize the internal variables.
  */
-static void cc_window_init(void)
+static void WINAPI cc_window_init(void)
 {
 	// Copy the current controller configuration into the internal input_keymap_t array.
 	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
@@ -558,7 +558,7 @@ static void cc_window_init(void)
 /**
  * cc_window_save(): Save the controller configuration.
  */
-static void cc_window_save(void)
+static void WINAPI cc_window_save(void)
 {
 	// Copy the modified controller configuration into the Gens keymap array.
 	memcpy(&input_keymap, &cc_key_config, sizeof(input_keymap));
@@ -603,7 +603,7 @@ static void cc_window_save(void)
  * @param label Label widget.
  * @param key Key value.
  */
-static inline void cc_window_display_key_name(HWND label, uint16_t key)
+static inline void WINAPI cc_window_display_key_name(HWND label, uint16_t key)
 {
 	char key_name[32];
 	
@@ -625,7 +625,7 @@ static inline void cc_window_display_key_name(HWND label, uint16_t key)
  * cc_window_show_configuration(): Show controller configuration.
  * @param player Player number.
  */
-static void cc_window_show_configuration(int player)
+static void WINAPI cc_window_show_configuration(int player)
 {
 	if (player < 0 || player > 8)
 		return;
@@ -769,7 +769,7 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
  * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
  * @param port Port number of the checkbox that was toggled.
  */
-static void cc_window_callback_teamplayer_toggled(int port)
+static void WINAPI cc_window_callback_teamplayer_toggled(int port)
 {
 	if (port < 0 || port > 1)
 		return;
@@ -807,7 +807,7 @@ static void cc_window_callback_teamplayer_toggled(int port)
  * cc_window_callback_padtype_changed(): Pad type for a player was changed.
  * @param player Player number.
  */
-static void cc_window_callback_padtype_changed(int player)
+static void WINAPI cc_window_callback_padtype_changed(int player)
 {
 	if (player < 0 || player > 8)
 		return;
@@ -841,7 +841,7 @@ static void cc_window_callback_padtype_changed(int player)
  * @param button Button ID.
  * @return TRUE if the button was changed; FALSE if it wasn't.
  */
-static BOOL cc_window_configure_key(int player, int button)
+static BOOL WINAPI cc_window_configure_key(int player, int button)
 {
 	if (!cc_window_is_configuring)
 		return FALSE;
@@ -931,7 +931,7 @@ static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idE
 /**
  * cc_window_callback_btnChangeAll_clicked(): "Change All Buttons" button was clicked.
  */
-static void cc_window_callback_btnChangeAll_clicked(void)
+static void WINAPI cc_window_callback_btnChangeAll_clicked(void)
 {
 	if (cc_window_is_configuring)
 		return;
@@ -994,7 +994,7 @@ static void cc_window_callback_btnChangeAll_clicked(void)
 /**
  * cc_window_callback_btnClearAll_clicked(): "Clear All Buttons" button was clicked.
  */
-static void cc_window_callback_btnClearAll_clicked(void)
+static void WINAPI cc_window_callback_btnClearAll_clicked(void)
 {
 	if (cc_cur_player < 0 || cc_cur_player > 8)
 		return;

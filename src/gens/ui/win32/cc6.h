@@ -54,7 +54,7 @@ typedef enum _CC6_STATUS_T
 	CC6_STATUS_V6      = 2		// Newer version of comctl32.dll. (6.0 or later)
 } CC6_STATUS_T;
 
-CC6_STATUS_T cc6_check(void);
+CC6_STATUS_T WINAPI cc6_check(void);
 
 #ifdef __cplusplus
 }

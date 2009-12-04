@@ -72,14 +72,14 @@ static HWND	btnOK, btnCancel, btnApply;
 static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 // Widget creation functions.
-static void	bmf_window_create_child_windows(HWND hWnd);
+static void WINAPI bmf_window_create_child_windows(HWND hWnd);
 
 // Configuration load/save functions.
-static void	bmf_window_init(void);
-static void	bmf_window_save(void);
+static void WINAPI bmf_window_init(void);
+static void WINAPI bmf_window_save(void);
 
 // Callbacks.
-static void	bmf_window_callback_btnChange_clicked(int file);
+static void WINAPI bmf_window_callback_btnChange_clicked(int file);
 
 
 /**
@@ -134,7 +134,7 @@ void bmf_window_show(void)
  * bmf_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void bmf_window_create_child_windows(HWND hWnd)
+static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 {
 	// Create all frames.
 	HWND grpBox;
@@ -252,7 +252,7 @@ void bmf_window_close(void)
 /**
  * bmf_window_init(): Initialize the file text boxes.
  */
-static void bmf_window_init(void)
+static void WINAPI bmf_window_init(void)
 {
 	for (int file = 0; bmf_entries[file].title != NULL; file++)
 	{
@@ -271,7 +271,7 @@ static void bmf_window_init(void)
 /**
  * bmf_window_save(): Save the BIOS/Misc Files.
  */
-static void bmf_window_save(void)
+static void WINAPI bmf_window_save(void)
 {
 	int file;
 	for (file = 0; bmf_entries[file].title != NULL; file++)
@@ -359,7 +359,7 @@ static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
  * bmf_window_callback_btnChange_clicked(): A "Change..." button was clicked.
  * @param file File ID number.
  */
-static void bmf_window_callback_btnChange_clicked(int file)
+static void WINAPI bmf_window_callback_btnChange_clicked(int file)
 {
 	// Check that this is a valid file entry.
 	if (!bmf_entries[file].entry)

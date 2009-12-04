@@ -130,11 +130,11 @@ static const char *FFT_Win32[] =
 	NULL
 };
 
-static string UI_Win32_OpenFile_int(const string& title,
-				    const string& initFile,
-				    FileFilterType filterType,
-				    HWND owner,
-				    const bool openOrSave);
+static string WINAPI UI_Win32_OpenFile_int(const string& title,
+					  const string& initFile,
+					  FileFilterType filterType,
+					  HWND owner,
+					  const bool openOrSave);
 
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 
@@ -499,9 +499,9 @@ string GensUI::saveFile(const string& title, const string& initFile,
  * @param openOrSave false for Open; true for Save.
  * @return Filename if successful; otherwise, an empty string.
  */
-static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
-				    FileFilterType filterType, HWND owner,
-				    const bool openOrSave)
+static string WINAPI UI_Win32_OpenFile_int(const string& title, const string& initFile,
+					   FileFilterType filterType, HWND owner,
+					   const bool openOrSave)
 {
 	char filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
