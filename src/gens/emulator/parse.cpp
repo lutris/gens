@@ -165,6 +165,9 @@ static const opt0arg_str_t opt0arg_str[] =
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	{"debug",	"Enable debug console"},
 #endif
+#if defined(GENS_OS_WIN32)
+	{"ansi",	"Force ANSI mode"},
+#endif
 	{NULL, NULL}
 };
 
@@ -179,6 +182,9 @@ enum opt0arg_enum
 #endif
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	OPT0_DEBUG_CONSOLE,
+#endif
+#if defined(GENS_OS_WIN32)
+	OPT0_ANSI,
 #endif
 	OPT0_TOTAL
 };
@@ -300,6 +306,9 @@ static const struct option long_options[] =
 #endif
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	LONGOPT_0ARG(OPT0_DEBUG_CONSOLE),
+#endif
+#if defined(GENS_OS_WIN32)
+	LONGOPT_0ARG(OPT0_ANSI),
 #endif
 	
 	// Boolean parameters.
@@ -641,6 +650,13 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			// Enable Debug console.
 			startup->enable_debug_console = 1;
+		}
+#endif
+#if defined(GENS_OS_WIN32)
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_ANSI].option))
+		{
+			// ANSI mode. This is checked by libgsft_w32u,
+			// so we don't have to do anything here.
 		}
 #endif
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))
