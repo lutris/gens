@@ -51,6 +51,27 @@ wchar_t* WINAPI w32u_mbstowcs_alloc(const char *lpSrc, int cchMinSize, UINT cpFr
 
 
 /**
+ * w32u_wcstombs_alloc(): Convert a UTF-16 (wchar_t*) string to multibyte.
+ * @param lpSrc Source string.
+ * @param cbMinSize Minimum size (in bytes) for the allocated string.
+ * @param cpTo Code page to convert to.
+ * @return Multibyte string. (MUST BE free()'d AFTER USE!)
+ */
+char* WINAPI w32u_wcstombs_alloc(const wchar_t *lpSrc, int cbMinSize, UINT cpTo)
+{
+	int cbAcs = WideCharToMultiByte(cpTo, 0, lpSrc, -1, NULL, 0, NULL, NULL);
+	if (cbAcs <= 0)
+		return NULL;
+	if (cbAcs < cbMinSize)
+		cbAcs = cbMinSize;
+	
+	char *mbs = (char*)malloc(cbAcs);
+	WideCharToMultiByte(cpTo, 0, lpSrc, -1, mbs, cbAcs, NULL, NULL);
+	return mbs;
+}
+
+
+/**
  * w32u_mbstombs_alloc(): Convert a multibyte string to a different multibyte encoding.
  * @param lpSrc Source string.
  * @param cbMinSize Minimum size (in bytes) for the allocated string.

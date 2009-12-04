@@ -30,6 +30,7 @@ extern "C" {
 
 /** Multibyte to Wide Character string functions. **/
 wchar_t* WINAPI w32u_mbstowcs_alloc(const char *lpSrc, int cchMinSize, UINT cpFrom);
+char* WINAPI w32u_wcstombs_alloc(const wchar_t *lpSrc, int cbMinSize, UINT cpTo);
 
 /** Multibyte to Multibyte string functions. **/
 char* WINAPI w32u_mbstombs_alloc(const char *lpSrc, int cbMinSize, UINT cpFrom, UINT cpTo);
@@ -37,6 +38,7 @@ int WINAPI w32u_mbstombs_copy(char *lpDest, const char *lpSrc, int cbDest, UINT 
 int WINAPI w32u_mbstombs_ip(char *lpBuf, int cbBuf, UINT cpFrom, UINT cpTo);
 
 #define w32u_UTF8toUTF16(lpSrc)		w32u_mbstowcs_alloc((lpSrc), 0, CP_UTF8)
+#define w32u_UTF16toUTF8(lpSrc)		w32u_wcstombs_alloc((lpSrc), 0, CP_UTF8)
 
 #define w32u_UTF8toANSI(lpSrc)		w32u_mbstombs_alloc((lpSrc), 0, CP_UTF8, CP_ACP)
 #define w32u_ANSItoUTF8(lpSrc)		w32u_mbstombs_alloc((lpSrc), 0, CP_ACP, CP_UTF8)
