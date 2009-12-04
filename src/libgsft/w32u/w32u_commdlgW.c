@@ -83,6 +83,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	
 	if (lpofn->lpstrCustomFilter && lpofn->nMaxCustFilter > 0)
 	{
+		// Pair of null-terminated strings. Copy the whole buffer.
 		lpstrwCustomFilter = (wchar_t*)malloc(lpofn->nMaxCustFilter * sizeof(wchar_t));
 		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
 					lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
@@ -92,7 +93,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	if (lpofn->lpstrFile && lpofn->nMaxFile > 0)
 	{
 		lpstrwFile = (wchar_t*)malloc(lpofn->nMaxFile * sizeof(wchar_t));
-		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, -1,
 					lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
 		wofn.lpstrFile = lpstrwFile;
 	}
@@ -100,7 +101,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	if (lpofn->lpstrFileTitle && lpofn->nMaxFileTitle > 0)
 	{
 		lpstrwFileTitle = (wchar_t*)malloc(lpofn->nMaxFileTitle * sizeof(wchar_t));
-		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
+		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, -1,
 					lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
 		wofn.lpstrFileTitle = lpstrwFileTitle;
 	}
@@ -111,17 +112,18 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	// Convert the non-constant strings from UTF-16 to UTF-8.
 	if (wofn.lpstrCustomFilter && wofn.nMaxCustFilter > 0)
 	{
+		// Pair of null-terminated strings. Copy the whole buffer.
 		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
 					lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
 	}
 	if (wofn.lpstrFile && wofn.nMaxFile > 0)
 	{
-		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, -1,
 					lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
 	}
 	if (wofn.lpstrFileTitle && wofn.nMaxFileTitle > 0)
 	{
-		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
+		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, -1,
 					lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
 	}
 	

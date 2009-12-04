@@ -116,3 +116,35 @@ int WINAPI w32u_mbstombs_copy(char *lpDest, const char *lpSrc, int cbDest, UINT 
 	free(wcs);
 	return 0;
 }
+
+
+/**
+ * w32u_mbstombs_alloc(): Convert a multibyte string to a different multibyte encoding.
+ * @param lpSrc String buffer to convert. (Must be null-terminated!)
+ * @param cbBuf Size of the string buffer.
+ * @param cpFrom Code page to convert from.
+ * @param cpTo Code page to convert to.
+ * @return 0 on success; non-zero on error.
+ */
+int WINAPI w32u_mbstombs_ip(char *lpBuf, int cbBuf, UINT cpFrom, UINT cpTo)
+{
+	// Convert from cpFrom to UTF-16 first.
+	int cchWcs = MultiByteToWideChar(cpFrom, 0, lpBuf, -1, NULL, 0);
+	if (cchWcs <= 0)
+		return -1;
+	
+	wchar_t *wcs = (wchar_t*)malloc(cchWcs * sizeof(wchar_t));
+	MultiByteToWideChar(cpFrom, 0, lpBuf, -1, wcs, cchWcs);
+	
+	// Convert from UTF-16 to cpTo.
+	int cbAcs = WideCharToMultiByte(cpTo, 0, wcs, cchWcs, NULL, 0, NULL, NULL);
+	if (cbAcs <= 0 || cbAcs > cbBuf)
+	{
+		free(wcs);
+		return -2;
+	}
+	
+	WideCharToMultiByte(cpTo, 0, wcs, cchWcs, lpBuf, cbAcs, NULL, NULL);
+	free(wcs);
+	return 0;
+}

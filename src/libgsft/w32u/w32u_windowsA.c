@@ -46,32 +46,43 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameUA(HMODULE hModule, LPSTR lpFile
 	if (dwRet == 0)
 		return dwRet;
 	
-	// Convert the filename from ANSI to UTF-16.
-	int cchwFilename = MultiByteToWideChar(CP_ACP, 0, lpFilename, -1, NULL, 0);
-	if (cchwFilename <= 0)
-		return 0;
-	
-	wchar_t *lpwFilename = (wchar_t*)malloc(cchwFilename * sizeof(wchar_t));
-	MultiByteToWideChar(CP_ACP, 0, lpFilename, -1, lpwFilename, cchwFilename);
-	
-	// Convert the filename from UTF-16 to UTF-8.
-	WideCharToMultiByte(CP_UTF8, 0, lpwFilename, cchwFilename, lpFilename, nSize, NULL, NULL);
-	free(lpwFilename);
+	// Convert the filename from ANSI to UTF-8 in place.
+	w32u_ANSItoUTF8_ip(lpFilename, nSize);
 	return dwRet;
 }
 
 
 static WINBASEAPI HMODULE WINAPI GetModuleHandleUA(LPCSTR lpModuleName)
 {
-	// TODO: ANSI conversion.
-	return GetModuleHandleA(lpModuleName);
+	if (!lpModuleName)
+	{
+		// String not specified. Don't bother converting anything.
+		return GetModuleHandleA(lpModuleName);
+	}
+	
+	// Convert lpModuleName from UTF-8 to ANSI.
+	char *lpaModuleName = w32u_UTF8toANSI(lpModuleName);
+	
+	HMODULE hRet = GetModuleHandleA(lpaModuleName);
+	free(lpaModuleName);
+	return hRet;
 }
 
 
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryUA(LPCSTR lpPathName)
 {
-	// TODO: ANSI conversion.
-	return SetCurrentDirectoryA(lpPathName);
+	if (!lpPathName)
+	{
+		// String not specified. Don't bother converting anything.
+		return SetCurrentDirectoryA(lpPathName);
+	}
+	
+	// Convert lpPathName from UTF-8 to ANSI.
+	char *lpaPathName = w32u_UTF8toANSI(lpPathName);
+	
+	BOOL bRet = SetCurrentDirectoryA(lpaPathName);
+	free(lpaPathName);
+	return bRet;
 }
 
 
@@ -85,10 +96,30 @@ static WINBASEAPI BOOL WINAPI GetVersionExUA(LPOSVERSIONINFOA lpVersionInfo)
 /** user32.dll **/
 
 
-static WINUSERAPI ATOM WINAPI RegisterClassUA(CONST WNDCLASSA* lpWndClass)
+static WINUSERAPI ATOM WINAPI RegisterClassUA(const WNDCLASSA* lpWndClass)
 {
-	// TODO: ANSI conversion.
-	return RegisterClassA(lpWndClass);
+	WNDCLASSA aWndClass;
+	memcpy(&aWndClass, lpWndClass, sizeof(aWndClass));
+	
+	// Convert the UTF-8 strings to ANSI.
+	char *lpszaMenuName = NULL, *lpszaClassName = NULL;
+	
+	if (lpWndClass->lpszMenuName)
+	{
+		lpszaMenuName = w32u_UTF8toANSI(lpWndClass->lpszMenuName);
+		aWndClass.lpszMenuName = lpszaMenuName;
+	}
+	
+	if (lpWndClass->lpszClassName)
+	{
+		lpszaClassName = w32u_UTF8toANSI(lpWndClass->lpszClassName);
+		aWndClass.lpszClassName = lpszaClassName;
+	}
+	
+	ATOM aRet = RegisterClassA(&aWndClass);
+	free(lpszaMenuName);
+	free(lpszaClassName);
+	return aRet;
 }
 
 
@@ -132,51 +163,75 @@ static WINUSERAPI int WINAPI GetWindowTextUA(HWND hWnd, LPSTR lpString, int nMax
 
 static WINUSERAPI BOOL WINAPI InsertMenuUA(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
-	// TODO: ANSI conversion.
-	return InsertMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpNewItem);
+	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
+	{
+		// String not specified. Don't bother converting anything.
+		return InsertMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpNewItem);
+	}
+	
+	// Convert lpNewItem from UTF-8 to ANSI.
+	char *lpaNewItem = NULL;
+	
+	if (lpNewItem)
+		lpaNewItem = w32u_UTF8toANSI(lpNewItem);
+	
+	BOOL bRet = InsertMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpaNewItem);
+	free(lpaNewItem);
+	return bRet;
 }
 
 
 static WINUSERAPI BOOL WINAPI ModifyMenuUA(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCSTR lpNewItem)
 {
-	// TODO: ANSI conversion.
-	return ModifyMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpNewItem);
+	if ((uFlags & (MF_BITMAP | MF_OWNERDRAW)) || !lpNewItem)
+	{
+		// String not specified. Don't bother converting anything.
+		return ModifyMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpNewItem);
+	}
+	
+	// Convert lpNewItem from UTF-8 to ANSI.
+	char *lpaNewItem = NULL;
+	
+	if (lpNewItem)
+		lpaNewItem = w32u_UTF8toANSI(lpNewItem);
+	
+	BOOL bRet = ModifyMenuA(hMenu, uPosition, uFlags, uIDNewItem, lpaNewItem);
+	free(lpaNewItem);
+	return bRet;
 }
 
 
-static WINUSERAPI HACCEL WINAPI LoadAcceleratorsUA(HINSTANCE hInstance, LPCSTR lpTableName)
-{
-	// TODO: ANSI conversion.
-	return LoadAcceleratorsA(hInstance, lpTableName);
+#define LOADRESOURCE_FNA(fnUA, fnWin32, type_ret) \
+static WINUSERAPI type_ret WINAPI fnUA(HINSTANCE hInstance, LPCSTR lpResName) \
+{ \
+	if ((DWORD_PTR)lpResName < 0x10000) \
+		return fnWin32(hInstance, lpResName); \
+	char *lpaResName = w32u_UTF8toANSI(lpResName); \
+	type_ret ret = fnWin32(hInstance, lpaResName); \
+	free(lpaResName); \
+	return ret; \
 }
 
-
-static WINUSERAPI HBITMAP WINAPI LoadBitmapUA(HINSTANCE hInstance, LPCSTR lpBitmapName)
-{
-	// TODO: ANSI conversion.
-	return LoadBitmapA(hInstance, lpBitmapName);
-}
-
-
-static WINUSERAPI HCURSOR WINAPI LoadCursorUA(HINSTANCE hInstance, LPCSTR lpCursorName)
-{
-	// TODO: ANSI conversion.
-	return LoadCursorA(hInstance, lpCursorName);
-}
-
-
-static WINUSERAPI HICON WINAPI LoadIconUA(HINSTANCE hInstance, LPCSTR lpIconName)
-{
-	// TODO: ANSI conversion.
-	return LoadIconA(hInstance, lpIconName);
-}
+LOADRESOURCE_FNA(LoadAcceleratorsUA,	LoadAcceleratorsA,	HACCEL);
+LOADRESOURCE_FNA(LoadBitmapUA,		LoadBitmapA,		HBITMAP);
+LOADRESOURCE_FNA(LoadCursorUA,		LoadCursorA,		HCURSOR);
+LOADRESOURCE_FNA(LoadIconUA,		LoadIconA,		HICON);
 
 
 static WINUSERAPI HANDLE WINAPI LoadImageUA(HINSTANCE hInst, LPCSTR lpszName, UINT uType,
 						int cxDesired, int cyDesired, UINT fuLoad)
 {
-	// TODO: ANSI conversion.
-	return LoadImageA(hInst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+	if ((DWORD_PTR)lpszName < 0x10000)
+	{
+		// lpszName is a resource ID.
+		return LoadImageA(hInst, lpszName, uType, cxDesired, cyDesired, fuLoad);
+	}
+	
+	// lpszName is a string. Convert it from UTF-8 to ANSI.
+	char *lpszaName = w32u_UTF8toANSI(lpszName);
+	HANDLE hRet = LoadImageA(hInst, lpszaName, uType, cxDesired, cyDesired, fuLoad);
+	free(lpszaName);
+	return hRet;
 }
 
 
@@ -200,8 +255,16 @@ static WINUSERAPI LRESULT WINAPI SendMessageUA_LPCSTR(HWND hWnd, UINT msgA, UINT
 {
 	GSFT_UNUSED_PARAMETER(msgW);
 	
-	// TODO: ANSI conversions.
-	return SendMessageA(hWnd, msgA, wParam, lParam);
+	if (!lParam)
+		return SendMessageA(hWnd, msgA, wParam, lParam);
+	
+	// Convert lParam from UTF-8 to ANSI.
+	char *laParam = w32u_UTF8toANSI((char*)lParam);
+	
+	// Send the message.
+	LRESULT lRet = SendMessageA(hWnd, msgA, wParam, (LPARAM)laParam);
+	free(laParam);
+	return lRet;
 }
 
 

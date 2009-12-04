@@ -88,6 +88,8 @@ static inline BOOL WINAPI GetOpenFileNameUA_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	
 	if (lpofn->lpstrCustomFilter && lpofn->nMaxCustFilter > 0)
 	{
+		// Pair of null-terminated strings. Copy the whole buffer.
+		// TODO: Do that! w32u_UTF8toANSI_sz doesn't copy the whole buffer!
 		lpstraCustomFilter = w32u_UTF8toANSI_sz(lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter);
 		aofn.lpstrCustomFilter = lpstraCustomFilter;
 	}
@@ -110,6 +112,8 @@ static inline BOOL WINAPI GetOpenFileNameUA_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	// Convert the non-constant strings from UTF-16 to UTF-8.
 	if (aofn.lpstrCustomFilter && aofn.nMaxCustFilter > 0)
 	{
+		// Pair of null-terminated strings. Copy the whole buffer.
+		// TODO: Do that! This ends at a null terminator!
 		w32u_ANSItoUTF8_copy(lpofn->lpstrCustomFilter,
 					aofn.lpstrCustomFilter,
 					lpofn->nMaxCustFilter);

@@ -131,13 +131,13 @@ static WINBASEAPI BOOL WINAPI GetVersionExUW(LPOSVERSIONINFOA lpVersionInfo)
 /** user32.dll **/
 
 
-static WINUSERAPI ATOM WINAPI RegisterClassUW(CONST WNDCLASSA* lpWndClass)
+static WINUSERAPI ATOM WINAPI RegisterClassUW(const WNDCLASSA* lpWndClass)
 {
 	// Convert lpWndClass from WNDCLASSA to WNDCLASSW.
 	WNDCLASSW wWndClass;
 	memcpy(&wWndClass, lpWndClass, sizeof(wWndClass));
 	
-	// Convert the ANSI strings to Unicode.
+	// Convert the UTF-8 strings to UTF-16.
 	wchar_t *lpszwMenuName = NULL, *lpszwClassName = NULL;
 	
 	if (lpWndClass->lpszMenuName)
@@ -258,72 +258,21 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 }
 
 
-static WINUSERAPI HACCEL WINAPI LoadAcceleratorsUW(HINSTANCE hInstance, LPCSTR lpTableName)
-{
-	if ((DWORD_PTR)lpTableName < 0x10000)
-	{
-		// lpTableName is a resource ID.
-		return LoadAcceleratorsW(hInstance, (LPCWSTR)lpTableName);
-	}
-	
-	// lpTableName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwTableName = w32u_UTF8toUTF16(lpTableName);
-	
-	HACCEL hRet = LoadAcceleratorsW(hInstance, lpwTableName);
-	free(lpwTableName);
-	return hRet;
+#define LOADRESOURCE_FNW(fnUW, fnWin32, type_ret) \
+static WINUSERAPI type_ret WINAPI fnUW(HINSTANCE hInstance, LPCSTR lpResName) \
+{ \
+	if ((DWORD_PTR)lpResName < 0x10000) \
+		return fnWin32(hInstance, (LPCWSTR)lpResName); \
+	wchar_t *lpwResName = w32u_UTF8toUTF16(lpResName); \
+	type_ret ret = fnWin32(hInstance, lpwResName); \
+	free(lpwResName); \
+	return ret; \
 }
 
-
-static WINUSERAPI HBITMAP WINAPI LoadBitmapUW(HINSTANCE hInstance, LPCSTR lpBitmapName)
-{
-	if ((DWORD_PTR)lpBitmapName < 0x10000)
-	{
-		// lpBitmapName is a resource ID.
-		return LoadBitmapW(hInstance, (LPCWSTR)lpBitmapName);
-	}
-	
-	// lpBitmapName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwBitmapName = w32u_UTF8toUTF16(lpBitmapName);
-	
-	HBITMAP hRet = LoadBitmapW(hInstance, lpwBitmapName);
-	free(lpwBitmapName);
-	return hRet;
-}
-
-
-static WINUSERAPI HCURSOR WINAPI LoadCursorUW(HINSTANCE hInstance, LPCSTR lpCursorName)
-{
-	if ((DWORD_PTR)lpCursorName < 0x10000)
-	{
-		// lpCursorName is a resource ID.
-		return LoadCursorW(hInstance, (LPCWSTR)lpCursorName);
-	}
-	
-	// lpCursorName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwCursorName = w32u_UTF8toUTF16(lpCursorName);
-	
-	HCURSOR hRet = LoadCursorW(hInstance, lpwCursorName);
-	free(lpwCursorName);
-	return hRet;
-}
-
-
-static WINUSERAPI HICON WINAPI LoadIconUW(HINSTANCE hInstance, LPCSTR lpIconName)
-{
-	if ((DWORD_PTR)lpIconName < 0x10000)
-	{
-		// lpIconName is a resource ID.
-		return LoadIconW(hInstance, (LPCWSTR)lpIconName);
-	}
-	
-	// lpIconName is a string. Convert it from UTF-8 to UTF-16.
-	wchar_t *lpwIconName = w32u_UTF8toUTF16(lpIconName);
-	
-	HICON hRet = LoadIconW(hInstance, lpwIconName);
-	free(lpwIconName);
-	return hRet;
-}
+LOADRESOURCE_FNW(LoadAcceleratorsUW,	LoadAcceleratorsW,	HACCEL);
+LOADRESOURCE_FNW(LoadBitmapUW,		LoadBitmapW,		HBITMAP);
+LOADRESOURCE_FNW(LoadCursorUW,		LoadCursorW,		HCURSOR);
+LOADRESOURCE_FNW(LoadIconUW,		LoadIconW,		HICON);
 
 
 static WINUSERAPI HANDLE WINAPI LoadImageUW(HINSTANCE hInst, LPCSTR lpszName, UINT uType,
@@ -337,7 +286,6 @@ static WINUSERAPI HANDLE WINAPI LoadImageUW(HINSTANCE hInst, LPCSTR lpszName, UI
 	
 	// lpszName is a string. Convert it from UTF-8 to UTF-16.
 	wchar_t *lpszwName = w32u_UTF8toUTF16(lpszName);
-	
 	HANDLE hRet = LoadImageW(hInst, lpszwName, uType, cxDesired, cyDesired, fuLoad);
 	free(lpszwName);
 	return hRet;
