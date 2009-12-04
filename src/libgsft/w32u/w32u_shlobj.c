@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_shlobj.h"
-#include "w32u_shlobjW.h"
-#include "w32u_shlobjA.h"
+#include "W/w32u_shlobjW.h"
+#include "A/w32u_shlobjA.h"
 
 
 MAKE_FUNCPTR2(SHBrowseForFolderA,	SHBrowseForFolderU);

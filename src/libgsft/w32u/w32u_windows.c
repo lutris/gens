@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_windows.h"
-#include "w32u_windowsW.h"
-#include "w32u_windowsA.h"
+#include "W/w32u_windowsW.h"
+#include "A/w32u_windowsA.h"
 
 
 /** kernel32.dll **/

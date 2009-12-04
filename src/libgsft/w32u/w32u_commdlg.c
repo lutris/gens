@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_commdlg.h"
-#include "w32u_commdlgW.h"
-#include "w32u_commdlgA.h"
+#include "W/w32u_commdlgW.h"
+#include "A/w32u_commdlgA.h"
 
 
 MAKE_FUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);

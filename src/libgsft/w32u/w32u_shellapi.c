@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_shellapi.h"
-#include "w32u_shellapiW.h"
-#include "w32u_shellapiA.h"
+#include "W/w32u_shellapiW.h"
+#include "A/w32u_shellapiA.h"
 
 
 MAKE_FUNCPTR2(DragQueryFileA,	DragQueryFileU);

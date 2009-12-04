@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_windowsx.h"
-#include "w32u_windowsxW.h"
-#include "w32u_windowsxA.h"
+#include "W/w32u_windowsxW.h"
+#include "A/w32u_windowsxA.h"
 
 
 /** ListBox functions. **/

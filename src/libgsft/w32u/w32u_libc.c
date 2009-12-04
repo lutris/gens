@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_libc.h"
-#include "w32u_libcW.h"
-#include "w32u_libcA.h"
+#include "W/w32u_libcW.h"
+#include "A/w32u_libcA.h"
 
 /** Unicode wrappers. **/
 MAKE_FUNCPTR(access);

@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 #include "w32u_winnls.h"
-#include "w32u_winnlsW.h"
-#include "w32u_winnlsA.h"
+#include "W/w32u_winnlsW.h"
+#include "A/w32u_winnlsA.h"
 
 
 MAKE_FUNCPTR2(GetCPInfoExA,		GetCPInfoExU);
