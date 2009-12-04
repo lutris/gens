@@ -110,6 +110,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	else
 	{
 		// ANSI mode.
+		// TODO: Do we need to convert from ANSI to UTF-8?
 		filenameA = strdup(filename);
 		rar_open.ArcName = filenameA;
 		rar_open.ArcNameW = NULL;
@@ -152,6 +153,7 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 		else
 		{
 			// Use the ANSI filename. (rar_header.FileName)
+			// TODO: Do we need to convert from ANSI to UTF-8?
 			z_entry_cur->filename = strdup(rar_header.FileName);
 		}
 		
@@ -271,6 +273,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	else
 	{
 		// ANSI mode.
+		// TODO: Do we need to convert from ANSI to UTF-8?
 		filenameA = strdup(filename);
 		rar_open.ArcName = filenameA;
 		rar_open.ArcNameW = NULL;
@@ -303,6 +306,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 		else
 		{
 			// ANSI mode.
+			// TODO: Do we need to convert from ANSI to UTF-8?
 			cmp = _stricmp(z_entry->filename, rar_header.FileName);
 		}
 		
