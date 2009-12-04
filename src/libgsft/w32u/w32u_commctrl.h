@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_commctrl.h: commctrl.h translation.                                *
+ * w32u_commctrl.h: commctrl.h translation. (common code)                  *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -23,6 +23,7 @@
 #define GSFT_W32U_COMMCTRL_H
 
 #include "w32u.h"
+#include "w32u_windows.h"
 #include <commctrl.h>
 
 #ifdef __cplusplus
@@ -31,7 +32,7 @@ extern "C" {
 
 /** TabCtrl macros. **/
 #define TabCtrl_GetCurSelU(w)			(int)pSendMessageU((w),TCM_GETCURSEL,0,0)
-int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
+extern int (WINAPI *pTabCtrl_InsertItemU)(HWND hWnd, int iItem, const TCITEMA *pItem);
 
 /** ListView macros. **/
 #define ListView_DeleteAllItemsU(w)		(BOOL)pSendMessageU((w),LVM_DELETEALLITEMS,0,0)
@@ -39,13 +40,13 @@ int WINAPI TabCtrl_InsertItemU(HWND hWnd, int iItem, const LPTCITEM pItem);
 #define ListView_GetCheckStateU(w,i)		((((UINT)(pSendMessageU((w),LVM_GETITEMSTATE,(WPARAM)(i),LVIS_STATEIMAGEMASK)))>>12)-1)
 #define ListView_GetItemCountU(w)		(int)pSendMessageU((w),LVM_GETITEMCOUNT,0,0)
 #define ListView_GetNextItemU(w,i,f)		(int)pSendMessageU((w),LVM_GETNEXTITEM,i,MAKELPARAM((f),0))
-int WINAPI ListView_GetItemU(HWND hWnd, LVITEM *pItem);
-int WINAPI ListView_InsertColumnU(HWND hWnd, int iCol, const LV_COLUMN *pCol);
-int WINAPI ListView_InsertItemU(HWND hWnd, const LVITEM *pItem);
+extern int (WINAPI *pListView_GetItemU)(HWND hWnd, LVITEMA *pItem);
+extern int (WINAPI *pListView_InsertColumnU)(HWND HWnd, int iCol, const LV_COLUMNA *pCol);
+extern int (WINAPI *pListView_InsertItemU)(HWND hWnd, const LVITEMA *pItem);
 #define ListView_SetCheckStateU(w,i,f)		ListView_SetItemStateU(w,i,INDEXTOSTATEIMAGEMASK((f)+1),LVIS_STATEIMAGEMASK)
 #define ListView_SetExtendedListViewStyleU(w,s)	(DWORD)pSendMessageU((w),LVM_SETEXTENDEDLISTVIEWSTYLE,0,(s))
 #define ListView_SetImageListU(w,h,i)		(HIMAGELIST)(UINT)pSendMessageU((w),LVM_SETIMAGELIST,(i),(LPARAM)(h))
-int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem);
+extern int (WINAPI *pListView_SetItemU)(HWND hWnd, const LVITEMA *pItem);
 
 #define ListView_SetItemStateU(w,i,d,m) \
 { \
@@ -54,6 +55,8 @@ int WINAPI ListView_SetItemU(HWND hWnd, const LVITEM *pItem);
 	_lvi.state=d;\
 	pSendMessageU((w),LVM_SETITEMSTATE,i,(LPARAM)(LV_ITEM*)&_lvi);\
 }
+
+int WINAPI w32u_commctrl_init(void);
 
 #ifdef __cplusplus
 }

@@ -22,6 +22,7 @@
 #include "w32u.h"
 #include "w32u_windows.h"
 #include "w32u_windowsx.h"
+#include "w32u_commctrl.h"
 #include "w32u_shellapi.h"
 #include "w32u_libc.h"
 #include "w32u_commdlg.h"
@@ -111,12 +112,14 @@ int WINAPI w32u_init(void)
 	// Initialize the Unicode modules.
 	w32u_windows_init();
 	w32u_windowsx_init();
+	w32u_commctrl_init();
 	w32u_shellapi_init();
 	w32u_libc_init();
 	w32u_commdlg_init();
 	w32u_shlobj_init();
 	w32u_winnls_init();
 	
+	// Win32 Unicode Translation Layer initialized successfully.
 	return 0;
 }
 

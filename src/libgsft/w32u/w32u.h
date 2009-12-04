@@ -23,7 +23,7 @@
 #define GSFT_W32U_H
 
 // Define W32U_NO_UNICODE to permanently disable Unicode.
-//#define W32U_NO_UNICODE
+#define W32U_NO_UNICODE
 
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX

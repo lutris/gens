@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_commctrl.c: commctrl.h translation. (common code)                  *
+ * w32u_commctrlA.h: commctrl.h translation. (ANSI version)                *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,26 +19,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_commctrl.h"
-#include "W/w32u_commctrlW.h"
-#include "A/w32u_commctrlA.h"
+#ifndef GSFT_W32U_COMMCTRLA_H
+#define GSFT_W32U_COMMCTRLA_H
 
+#include "w32u.h"
 
-/** TabCtrl functions. **/
-int (WINAPI *pTabCtrl_InsertItemU)(HWND hWnd, int iItem, const TCITEMA *pItem) = NULL;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+int WINAPI w32u_commctrlA_init(void);
 
-/** ListView functions. **/
-int (WINAPI *pListView_GetItemU)(HWND hWnd, LVITEMA *pItem) = NULL;
-int (WINAPI *pListView_InsertColumnU)(HWND HWnd, int iCol, const LV_COLUMNA *pCol) = NULL;
-int (WINAPI *pListView_InsertItemU)(HWND hWnd, const LVITEMA *pItem) = NULL;
-int (WINAPI *pListView_SetItemU)(HWND hWnd, const LVITEMA *pItem) = NULL;
-
-
-int WINAPI w32u_commctrl_init(void)
-{
-	if (w32u_is_unicode)
-		return w32u_commctrlW_init();
-	else
-		return w32u_commctrlA_init();
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* GSFT_W32U_COMMCTRLA_H */
