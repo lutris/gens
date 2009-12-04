@@ -25,7 +25,7 @@
 
 
 /** ListBox functions. **/
-int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer);
+int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer) = NULL;
 
 
 int WINAPI w32u_windowsx_init(void)
