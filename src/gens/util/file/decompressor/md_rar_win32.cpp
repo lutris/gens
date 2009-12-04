@@ -27,10 +27,10 @@
 #include "ui/gens_ui.hpp"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_libc.h"
 #include "libgsft/w32u/w32u_priv.h"
-#include <winnls.h>
+#include "libgsft/w32u/w32u_winnls.h"
 
 // C includes.
 #include <unistd.h>
