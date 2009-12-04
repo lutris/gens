@@ -46,6 +46,7 @@ static WINBASEAPI DWORD WINAPI GetModuleFileNameUA(HMODULE hModule, LPSTR lpFile
 		return dwRet;
 	
 	// Convert the filename from ANSI to UTF-8 in place.
+	// TODO: Check for errors in case the UTF-8 text doesn't fit.
 	w32u_ANSItoUTF8_ip(lpFilename, nSize);
 	return dwRet;
 }
