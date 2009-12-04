@@ -46,6 +46,7 @@ using std::stringstream;
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
+#include "libgsft/w32u/w32u_winnls.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -471,10 +472,9 @@ static void WINAPI about_window_buildDebugInfoString(void)
 	stringstream ss;
 	
 	// Print the current code page.
-	// TODO: Add a w32u version of GetCPInfoExU().
 	ss << "System code page: ";
 	CPINFOEX cpix;
-	BOOL bRet = GetCPInfoExA(CP_ACP, 0, &cpix);
+	BOOL bRet = pGetCPInfoExU(CP_ACP, 0, &cpix);
 	if (!bRet)
 		ss << "Unknown [GetCPInfoEx() failed]\n";
 	else
