@@ -8,9 +8,10 @@ endif
 
 noinst_LTLIBRARIES = libgsft.la
 
-libgsft_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
-libgsft_la_CXXFLAGS	= $(AM_CXXFLAGS) -static -O3 -funroll-loops
-libgsft_la_LDFLAGS	= $(AM_LDFLAGS) -static
+libgsft_la_CFLAGS	= $(AM_CFLAGS) -O3 -funroll-loops
+libgsft_la_CXXFLAGS	= $(AM_CXXFLAGS) -O3 -funroll-loops
+libgsft_la_LDFLAGS	= $(AM_LDFLAGS)
+libgsft_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
 libgsft_la_SOURCES = \
 		gsft_byteswap.c \
@@ -51,10 +52,11 @@ if GENS_PNG
 
 noinst_LTLIBRARIES += libgsft_png.la
 
-libgsft_png_la_CFLAGS	= $(libgsft_la_CFLAGS)
-libgsft_png_la_CXXFLAGS	= $(libgsft_la_CXXFLAGS)
-libgsft_png_la_LDFLAGS	= $(libgsft_la_LDFLAGS)
-libgsft_png_la_LIBADD	= @PNG_LIBS@
+libgsft_png_la_CFLAGS		= $(libgsft_la_CFLAGS)
+libgsft_png_la_CXXFLAGS		= $(libgsft_la_CXXFLAGS)
+libgsft_png_la_LDFLAGS		= $(libgsft_la_LDFLAGS)
+libgsft_png_la_LIBADD		= @PNG_LIBS@
+libgsft_png_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)
 
 INCLUDES =
 
@@ -85,6 +87,7 @@ noinst_LTLIBRARIES += libgsft_win32.la libgsft_win32_gdi.la
 libgsft_win32_la_CFLAGS		= $(libgsft_la_CFLAGS)
 libgsft_win32_la_CXXFLAGS	= $(libgsft_la_CXXFLAGS)
 libgsft_win32_la_LDFLAGS	= $(libgsft_la_LDFLAGS)
+libgsft_win32_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)
 
 libgsft_win32_la_SOURCES = \
 		gsft_win32.c
@@ -92,10 +95,11 @@ noinst_HEADERS += \
 		gsft_win32.h
 
 # Win32 GDI stuff.
-libgsft_win32_gdi_la_CFLAGS	= $(libgsft_win32_la_CFLAGS)
-libgsft_win32_gdi_la_CXXFLAGS	= $(libgsft_win32_la_CXXFLAGS)
-libgsft_win32_gdi_la_LDFLAGS	= $(libgsft_win32_la_LDFLAGS)
-libgsft_win32_gdi_la_LIBADD	= -lgdi32
+libgsft_win32_gdi_la_CFLAGS		= $(libgsft_win32_la_CFLAGS)
+libgsft_win32_gdi_la_CXXFLAGS		= $(libgsft_win32_la_CXXFLAGS)
+libgsft_win32_gdi_la_LDFLAGS		= $(libgsft_win32_la_LDFLAGS)
+libgsft_win32_gdi_la_LIBADD		= -lgdi32
+libgsft_win32_gdi_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)
 
 libgsft_win32_gdi_la_SOURCES = \
 		gsft_win32_gdi.c
