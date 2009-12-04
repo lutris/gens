@@ -109,16 +109,16 @@ VDRAW_BACKEND vdraw_cur_backend_id = -1;
 uint32_t vdraw_cur_backend_flags = 0;
 
 // Function pointers.
-int	(*vdraw_init_subsystem)(void) = NULL;
-int	(*vdraw_shutdown)(void) = NULL;
-void	(*vdraw_clear_screen)(void) = NULL;
-void	(*vdraw_update_vsync)(const int data) = NULL;
-int	(*vdraw_reinit_gens_window)(void) = NULL;
+int		(*vdraw_shutdown)(void) = NULL;
+static int	(*vdraw_flip_backend)(void) = NULL;
+void		(*vdraw_clear_screen)(void) = NULL;
+void		(*vdraw_update_vsync)(const int data) = NULL;
+int		(*vdraw_reinit_gens_window)(void) = NULL;
 #ifdef GENS_OS_WIN32
-int WINAPI (*vdraw_clear_primary_screen)(void) = NULL;
-int WINAPI (*vdraw_clear_back_screen)(void) = NULL;
-int WINAPI (*vdraw_restore_primary)(void) = NULL;
-int WINAPI (*vdraw_set_cooperative_level)(void) = NULL;
+int WINAPI 	(*vdraw_clear_primary_screen)(void) = NULL;
+int WINAPI	 (*vdraw_clear_back_screen)(void) = NULL;
+int WINAPI	 (*vdraw_restore_primary)(void) = NULL;
+int WINAPI	 (*vdraw_set_cooperative_level)(void) = NULL;
 #endif /* GENS_OS_WIN32 */
 
 // Render functions.
@@ -268,8 +268,8 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_cur_backend_id = backend;
 	
 	// Copy the function pointers.
-	vdraw_init_subsystem		= vdraw_cur_backend->init_subsystem;
 	vdraw_shutdown			= vdraw_cur_backend->shutdown;
+	vdraw_flip_backend		= vdraw_cur_backend->flip;
 	vdraw_clear_screen		= vdraw_cur_backend->clear_screen;
 	vdraw_update_vsync		= vdraw_cur_backend->update_vsync;
 	vdraw_reinit_gens_window	= vdraw_cur_backend->reinit_gens_window;
@@ -288,7 +288,7 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		vdraw_prop_fullscreen = FALSE;
 	
 	// The Gens window must be reinitialized.
-	return vdraw_cur_backend->reinit_gens_window();
+	return vdraw_reinit_gens_window();
 }
 
 
@@ -440,11 +440,11 @@ int vdraw_flip(int md_screen_updated)
 	{
 		// New screen width is smaller than old screen width.
 		// Clear the screen.
-		vdraw_cur_backend->clear_screen();
+		vdraw_clear_screen();
 	}
 	
 	// Flip the screen buffer.
-	return vdraw_cur_backend->flip();
+	return vdraw_flip_backend();
 }
 
 
@@ -462,7 +462,8 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	
 	if (reset_video && vdraw_cur_backend)
 	{
-		vdraw_cur_backend->end();
+		if (vdraw_cur_backend->end)
+			vdraw_cur_backend->end();
 		vdraw_cur_backend->init();
 	}
 	

@@ -77,22 +77,22 @@ extern uint8_t vdraw_backends_broken[VDRAW_BACKEND_MAX];
 // VDraw backend function pointers.
 typedef struct
 {
-	const char* const name;
-	const uint32_t flags;
+	const char* const name;			// Must be set.
+	const uint32_t flags;			// Must be set.
 	
-	int	(*init)(void);
-	int	(*end)(void);
+	int	(*init)(void);			// Must be set.
+	int	(*end)(void);			// May be NULL.
 	
-	int	(*init_subsystem)(void);
-	int	(*shutdown)(void);
+	int	(*init_subsystem)(void);	// May be NULL.
+	int	(*shutdown)(void);		// May be NULL.
 	
-	void	(*clear_screen)(void);
-	void	(*update_vsync)(const int data);
+	void	(*clear_screen)(void);			// Must be set.
+	void	(*update_vsync)(const int data);	// May be NULL.
 	
-	int	(*flip)(void);
-	void	(*stretch_adjust)(void);
-	void	(*update_renderer)(void);
-	int	(*reinit_gens_window)(void);
+	int	(*flip)(void);			// Must be set.
+	void	(*stretch_adjust)(void);	// May be NULL.
+	void	(*update_renderer)(void);	// May be NULL.
+	int	(*reinit_gens_window)(void);	// Must be set.
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
@@ -122,8 +122,7 @@ void	vdraw_set_bpp(const int new_bpp, const BOOL reset_video);
 void	vdraw_refresh_video(void);
 
 // Function pointers.
-extern int	(*vdraw_init_subsystem)(void);
-extern int	(*vdraw_shutdown)(void);
+extern int	(*vdraw_shutdown)(void);	// TODO: Make this a regular function.
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
 extern int	(*vdraw_reinit_gens_window)(void);
