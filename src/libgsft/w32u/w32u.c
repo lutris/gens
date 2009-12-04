@@ -91,15 +91,25 @@ int WINAPI w32u_init(void)
 	}
 	
 	// Check if the system supports Unicode.
-#ifndef W32U_NO_UNICODE
 	if (GetModuleHandleW(NULL) != NULL)
 	{
 		// GetModuleHandleW() returned gens.exe's module handle.
 		// This means the system supports Unicode.
-		w32u_is_unicode = 1;
+		
+		// Check if ANSI mode is forced on the command line.
+		const char *lpCmdLine = GetCommandLineA();
+		if (!strstr(lpCmdLine, " --ansi"))
+		{
+			// ANSI mode is not forced. Enable Unicode.
+			w32u_is_unicode = 1;
+		}
+		else
+		{
+			// ANSI mode is forced. Disable Unicode.
+			w32u_is_unicode = 0;
+		}
 	}
 	else
-#endif
 	{
 		// GetModuleHandleW(NULL) returned NULL.
 		// This means the system doesn't support Unicode.
