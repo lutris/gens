@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_priv.h: Private functions.                                         *
+ * w32u_priv.h: Private macros.                                            *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -75,17 +75,5 @@ do { \
 	else \
 		pA = (typeof(pA))GetProcAddress(hDll, fnA); \
 } while (0)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/** Functions. **/
-wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs);
-char* WINAPI w32u_UTF8toANSI(const char *mbs);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* GSFT_W32U_PRIV_H */

@@ -1,6 +1,6 @@
 /***************************************************************************
  * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_libcW.c: libc translation. (Unicode version)                       *
+ * w32u_charset.h: Character set conversion functions.                     *
  *                                                                         *
  * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
@@ -19,65 +19,41 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "w32u_windows.h"
-#include "w32u_charset.h"
-#include "w32u_libcW.h"
+#ifndef GSFT_W32U_CHARSET_H
+#define GSFT_W32U_CHARSET_H
 
-#include "w32u_libc.h"
+#include "w32u.h"
 
-// C includes.
-#include <stdlib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+/** Functions. **/
+wchar_t* WINAPI w32u_mbstowcs_alloc(const char *lpSrc, int cchMinSize, UINT cpFrom);
+char* WINAPI w32u_mbstombs_alloc(const char *lpSrc, int cbMinSize, UINT cpFrom, UINT cpTo);
+int WINAPI w32u_mbstombs_copy(char *lpDest, const char *lpSrc, int cbDest, UINT cpFrom, UINT cpTo);
 
-static int accessUW(const char *path, int mode)
-{
-	if (!path)
-	{
-		// String not specified. Don't bother converting anything.
-		return _waccess((const wchar_t*)path, mode);
-	}
-	
-	// Convert path from UTF-8 to UTF-16.
-	wchar_t *wpath = w32u_UTF8toUTF16(path);
-	
-	UINT uRet = _waccess(wpath, mode);
-	free(wpath);
-	return uRet;
+#define w32u_UTF8toUTF16(lpSrc)		w32u_mbstowcs_alloc((lpSrc), 0, CP_UTF8)
+
+#define w32u_UTF8toANSI(lpSrc)		w32u_mbstombs_alloc((lpSrc), 0, CP_UTF8, CP_ACP)
+#define w32u_ANSItoUTF8(lpSrc)		w32u_mbstombs_alloc((lpSrc), 0, CP_ACP, CP_UTF8)
+
+#define w32u_UTF8toANSI_sz(lpSrc, cbMinSize)		w32u_mbstombs_alloc((lpSrc), (cbMinSize), CP_UTF8, CP_ACP)
+
+#define w32u_UTF8toANSI_copy(lpDest, lpSrc, cbDest)	w32u_mbstombs_copy((lpDest), (lpSrc), (cbDest), CP_UTF8, CP_ACP)
+#define w32u_ANSItoUTF8_copy(lpDest, lpSrc, cbDest)	w32u_mbstombs_copy((lpDest), (lpSrc), (cbDest), CP_ACP, CP_UTF8)
+
+#if 0
+wchar_t* WINAPI w32u_UTF8toUTF16(const char *mbs);
+char* WINAPI w32u_UTF8toANSI(const char *mbs);
+char* WINAPI w32u_UTF8toANSI_sz(const char *mbs, int cbSize);
+
+int WINAPI w32u_UTF8toANSI_copy(char *lpDest, char *lpSrc, int cbDest);
+int WINAPI w32u_ANSItoUTF8_copy(char *lpDest, char *lpSrc, int cbDest);
+#endif
+
+#ifdef __cplusplus
 }
+#endif
 
-
-static FILE* fopenUW(const char *path, const char *mode)
-{
-	// Convert path and mode from UTF-8 to UTF-16.
-	wchar_t *wpath = NULL, *wmode = NULL;
-	
-	if (path)
-		wpath = w32u_UTF8toUTF16(path);
-	
-	if (mode)
-		wmode = w32u_UTF8toUTF16(mode);
-	
-	FILE *fRet = _wfopen(wpath, wmode);
-	free(wpath);
-	free(wmode);
-	return fRet;
-}
-
-
-int WINAPI w32u_libcW_init(void)
-{
-	// TODO: Error handling.
-	
-	paccess		= &accessUW;
-	pfopen		= &fopenUW;
-	p_wcsicmp	= &_wcsicmp;
-	
-	return 0;
-}
-
-
-int WINAPI w32u_libcW_end(void)
-{
-	// TODO: Should the function pointers be NULL'd?
-	return 0;
-}
+#endif /* GSFT_W32U_PRIV_H */

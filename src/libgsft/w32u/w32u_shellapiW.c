@@ -21,6 +21,7 @@
 
 #include "w32u_windows.h"
 #include "w32u_priv.h"
+#include "w32u_charset.h"
 #include "w32u_shellapiW.h"
 
 #include "w32u_shellapi.h"

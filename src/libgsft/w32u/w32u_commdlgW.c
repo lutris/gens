@@ -21,6 +21,7 @@
 
 #include "w32u_windows.h"
 #include "w32u_priv.h"
+#include "w32u_charset.h"
 #include "w32u_commdlgW.h"
 
 #include "w32u_commdlg.h"
@@ -49,12 +50,12 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 		while (tmp[0] || tmp[1])
 			tmp++;
 		
-		size_t lpstrFilter_len = (size_t)(tmp - lpofn->lpstrFilter + 2);
-		if (lpstrFilter_len > 0)
+		size_t cchFilter = (size_t)(tmp - lpofn->lpstrFilter + 2);
+		if (cchFilter > 0)
 		{
-			lpstrwFilter = (wchar_t*)malloc(lpstrFilter_len * sizeof(wchar_t));
-			MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, lpstrFilter_len,
-					    lpstrwFilter, lpstrFilter_len);
+			lpstrwFilter = (wchar_t*)malloc(cchFilter * sizeof(wchar_t));
+			MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFilter, cchFilter,
+						lpstrwFilter, cchFilter);
 			wofn.lpstrFilter = lpstrwFilter;
 		}
 	}
@@ -84,7 +85,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	{
 		lpstrwCustomFilter = (wchar_t*)malloc(lpofn->nMaxCustFilter * sizeof(wchar_t));
 		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter,
-				    lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
+					lpstrwCustomFilter, lpofn->nMaxCustFilter * sizeof(wchar_t));
 		wofn.lpstrCustomFilter = lpstrwCustomFilter;
 	}
 	
@@ -92,7 +93,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	{
 		lpstrwFile = (wchar_t*)malloc(lpofn->nMaxFile * sizeof(wchar_t));
 		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFile, lpofn->nMaxFile,
-				    lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
+					lpstrwFile, lpofn->nMaxFile * sizeof(wchar_t));
 		wofn.lpstrFile = lpstrwFile;
 	}
 	
@@ -100,7 +101,7 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	{
 		lpstrwFileTitle = (wchar_t*)malloc(lpofn->nMaxFileTitle * sizeof(wchar_t));
 		MultiByteToWideChar(CP_UTF8, 0, lpofn->lpstrFileTitle, lpofn->nMaxFileTitle,
-				    lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
+					lpstrwFileTitle, lpofn->nMaxFileTitle * sizeof(wchar_t));
 		wofn.lpstrFileTitle = lpstrwFileTitle;
 	}
 	
@@ -111,17 +112,17 @@ static inline BOOL WINAPI GetOpenFileNameUW_int(LPOPENFILENAMEA lpofn, GETOPENFI
 	if (wofn.lpstrCustomFilter && wofn.nMaxCustFilter > 0)
 	{
 		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrCustomFilter, wofn.nMaxCustFilter,
-				    lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
+					lpofn->lpstrCustomFilter, lpofn->nMaxCustFilter, NULL, NULL);
 	}
 	if (wofn.lpstrFile && wofn.nMaxFile > 0)
 	{
 		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFile, wofn.nMaxFile,
-				    lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
+					lpofn->lpstrFile, lpofn->nMaxFile, NULL, NULL);
 	}
 	if (wofn.lpstrFileTitle && wofn.nMaxFileTitle > 0)
 	{
 		WideCharToMultiByte(CP_UTF8, 0, wofn.lpstrFileTitle, wofn.nMaxFileTitle,
-				    lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
+					lpofn->lpstrFileTitle, lpofn->nMaxFileTitle, NULL, NULL);
 	}
 	
 	// Free the constant strings.

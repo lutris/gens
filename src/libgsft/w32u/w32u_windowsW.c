@@ -21,6 +21,7 @@
 
 #include "w32u_windowsW.h"
 #include "w32u_priv.h"
+#include "w32u_charset.h"
 #include "../gsft_unused.h"
 
 #include "w32u_windows.h"

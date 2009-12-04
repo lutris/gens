@@ -21,6 +21,7 @@
 
 #include "w32u.h"
 #include "w32u_priv.h"
+#include "w32u_charset.h"
 #include "w32u_windows.h"
 #include "w32u_commctrl.h"
 

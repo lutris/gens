@@ -11,7 +11,7 @@ libgsft_w32u_la_LIBADD		= -lkernel32 -luser32 -lshell32 -lcomdlg32
 
 libgsft_w32u_la_SOURCES = \
 		w32u.c \
-		w32u_priv.c \
+		w32u_charset.c \
 		w32u_windows.c \
 		w32u_windowsW.c \
 		w32u_windowsA.c \
@@ -30,11 +30,15 @@ libgsft_w32u_la_SOURCES = \
 		w32u_commdlgA.c \
 		w32u_shlobj.c \
 		w32u_shlobjW.c \
-		w32u_shlobjA.c
+		w32u_shlobjA.c \
+		w32u_winnls.c \
+		w32u_winnlsW.c \
+		w32u_winnlsA.c
 
 noinst_HEADERS = \
 		w32u.h \
 		w32u_priv.h \
+		w32u_charset.h \
 		w32u_windows.h \
 		w32u_windowsW.h \
 		w32u_windowsA.h \
@@ -53,4 +57,7 @@ noinst_HEADERS = \
 		w32u_commdlgA.h \
 		w32u_shlobj.h \
 		w32u_shlobjW.h \
-		w32u_shlobjA.h
+		w32u_shlobjA.h \
+		w32u_winnls.h \
+		w32u_winnlsW.h \
+		w32u_winnlsA.h
