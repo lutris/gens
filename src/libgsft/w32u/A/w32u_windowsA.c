@@ -149,15 +149,34 @@ static WINUSERAPI HWND WINAPI CreateWindowExUA(
 
 static WINUSERAPI BOOL WINAPI SetWindowTextUA(HWND hWnd, LPCSTR lpString)
 {
-	// TODO: ANSI conversion.
-	return SetWindowTextA(hWnd, lpString);
+	if (!lpString)
+	{
+		// String not specified. Don't bother converting anything.
+		return SetWindowTextA(hWnd, lpString);
+	}
+	
+	// Convert the text from UTF-8 to ANSI.
+	char *lpaString = w32u_UTF8toANSI(lpString);
+	BOOL bRet = SetWindowTextA(hWnd, lpaString);
+	free(lpaString);
+	return bRet;
 }
 
 
 static WINUSERAPI int WINAPI GetWindowTextUA(HWND hWnd, LPSTR lpString, int nMaxCount)
 {
-	// TODO: ANSI conversion.
-	return GetWindowTextA(hWnd, lpString, nMaxCount);
+	// Get the window text.
+	int ret = GetWindowTextA(hWnd, lpString, nMaxCount);
+	if (ret == 0)
+	{
+		// Error retrieving the text.
+		return ret;
+	}
+	
+	// Convert the filename from ANSI to UTF-8 in place.
+	// TODO: Check for errors in case the UTF-8 text doesn't fit.
+	w32u_ANSItoUTF8_ip(lpString, nMaxCount);
+	return ret;
 }
 
 
