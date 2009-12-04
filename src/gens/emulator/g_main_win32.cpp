@@ -44,7 +44,7 @@ using std::list;
 
 // Win32 Unicode support.
 #include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_priv.h"
+#include "libgsft/w32u/w32u_charset.h"
 
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
@@ -180,34 +180,43 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Parse command line arguments.
 	Gens_StartupInfo_t *startup;
 	argc_argv arg;
+	char *lpuCmdLine = NULL;
+	bool bNeedsPrgName;		// If true, convertCmdLineToArgv() will add the program name as arg.v[0].
 	
-	if (!w32u_is_unicode)
+	if (w32u_is_unicode)
 	{
-		// ANSI version.
-		// TODO: Convert the command line from ANSI to UTF-8.
-		// NOTE: lpCmdLine does not contain the program name.
-		convertCmdLineToArgv(lpCmdLine, &arg, true);
-		startup = parse_args(arg.c, arg.v);
-		deleteArgcArgv(&arg);
+		// Unicode version.
+		// NOTE: lpwCmdLine *does* contain the program name, whereas lpCmdLine does not.
+		bNeedsPrgName = false;
+		const wchar_t *lpwCmdLine = GetCommandLineW();
+		lpuCmdLine = w32u_UTF16toUTF8(lpwCmdLine);
 	}
 	else
 	{
-		// Unicode version.
-		const wchar_t *lpwCmdLine = GetCommandLineW();
-		int cchCmdLine_utf8 = WideCharToMultiByte(CP_UTF8, 0, lpwCmdLine, -1, NULL, 0, NULL, NULL);
-		if (cchCmdLine_utf8 > 0)
-		{
-			char *lpCmdLine_utf8 = (char*)malloc(cchCmdLine_utf8);
-			WideCharToMultiByte(CP_UTF8, 0, lpwCmdLine, -1, lpCmdLine_utf8, cchCmdLine_utf8, NULL, NULL);
-			
-			// NOTE: lpwCmdLine contains the program name, whereas lpCmdLine does not.
-			convertCmdLineToArgv(lpCmdLine_utf8, &arg, false);
-			startup = parse_args(arg.c, arg.v);
-			deleteArgcArgv(&arg);
-			
-			free(lpCmdLine_utf8);
-		}
+		// ANSI version.
+		// NOTE: lpCmdLine does not contain the program name.
+		bNeedsPrgName = true;
+		lpuCmdLine = w32u_ANSItoUTF8(lpCmdLine);
 	}
+	
+	if (lpuCmdLine)
+	{
+		// Command line converted to UTF-8 successfully.
+		// Parse the command line arguments.
+		convertCmdLineToArgv(lpuCmdLine, &arg, bNeedsPrgName);
+		startup = parse_args(arg.c, arg.v);
+		free(lpuCmdLine);
+	}
+	else
+	{
+		// Couldn't convert the command line to UTF-8.
+		// Create a blank startup struct.
+		startup = (Gens_StartupInfo_t*)malloc(sizeof(Gens_StartupInfo_t));
+		memset(startup, 0x00, sizeof(Gens_StartupInfo_t));
+	}
+	
+	// Delete the command line arguments.
+	deleteArgcArgv(&arg);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
