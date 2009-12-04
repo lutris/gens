@@ -34,7 +34,7 @@ static WINBASEAPI BOOL WINAPI GetCPInfoExUA(UINT CodePage, DWORD dwFlags, LPCPIN
 {
 	// TODO: Correct argument names.
 	// TODO: ANSI conversion.
-	return GetCPInfoExA(cp, dwFlags, lpCpInfoEx);
+	return GetCPInfoExA(CodePage, dwFlags, lpCPInfoEx);
 }
 
 
