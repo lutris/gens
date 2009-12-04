@@ -27,6 +27,7 @@
 #include "w32u_libc.h"
 #include "w32u_commdlg.h"
 #include "w32u_shlobj.h"
+#include "w32u_winnls.h"
 
 // shlwapi.h needed for DLLVERSIONINFO and DLLGETVERSIONPROC.
 #include <shlwapi.h>
@@ -120,6 +121,7 @@ int WINAPI w32u_init(void)
 	w32u_libc_init();
 	w32u_commdlg_init();
 	w32u_shlobj_init();
+	w32u_winnls_init();
 	
 	return 0;
 }
