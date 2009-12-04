@@ -246,11 +246,11 @@ static void about_window_create_child_windows(HWND hWnd)
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
 	tab.pszText = "&Copyright";
-	TabCtrl_InsertItemU(tabInfo, 0, &tab);
+	pTabCtrl_InsertItemU(tabInfo, 0, &tab);
 	tab.pszText = "Included &Libraries";
-	TabCtrl_InsertItemU(tabInfo, 1, &tab);
+	pTabCtrl_InsertItemU(tabInfo, 1, &tab);
 	tab.pszText = "&Debug Info";
-	TabCtrl_InsertItemU(tabInfo, 2, &tab);
+	pTabCtrl_InsertItemU(tabInfo, 2, &tab);
 	
 	// Calculate the tab's display area.
 	RECT rectTab;

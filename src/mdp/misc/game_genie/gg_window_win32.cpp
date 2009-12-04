@@ -322,22 +322,22 @@ static void gg_window_create_lstCodes(HWND container)
 	// Code (Hex)
 	lvCol.pszText = "Code (Hex)";
 	lvCol.cx = 144;
-	ListView_InsertColumnU(lstCodes, 0, &lvCol);
+	pListView_InsertColumnU(lstCodes, 0, &lvCol);
 	
 	// Code (GG)
 	lvCol.pszText = "Code (GG)";
 	lvCol.cx = 104;
-	ListView_InsertColumnU(lstCodes, 1, &lvCol);
+	pListView_InsertColumnU(lstCodes, 1, &lvCol);
 	
 	// CPU
 	lvCol.pszText = "CPU";
 	lvCol.cx = 48;
-	ListView_InsertColumnU(lstCodes, 2, &lvCol);
+	pListView_InsertColumnU(lstCodes, 2, &lvCol);
 	
 	// Name
 	lvCol.pszText = "Name";
 	lvCol.cx = 192;
-	ListView_InsertColumnU(lstCodes, 3, &lvCol);
+	pListView_InsertColumnU(lstCodes, 3, &lvCol);
 }
 
 
@@ -362,7 +362,7 @@ void gg_window_close(void)
 	for (int i = lvItems - 1; i >= 0; i--)
 	{
 		lvItem.iItem = i;
-		if (ListView_GetItemU(lstCodes, &lvItem))
+		if (pListView_GetItemU(lstCodes, &lvItem))
 		{
 			// Item retrieved. Delete the associated gg_code_t*.
 			free((gg_code_t*)(lvItem.lParam));
@@ -421,7 +421,7 @@ static void gg_window_save(void)
 	for (int i = 0; i < lvItems; i++)
 	{
 		lvItem.iItem = i;
-		if (ListView_GetItemU(lstCodes, &lvItem))
+		if (pListView_GetItemU(lstCodes, &lvItem))
 		{
 			// Item retrieved.
 			
@@ -682,7 +682,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char *name)
 	// First column: Code (Hex)
 	lviCode.iSubItem = 0;
 	lviCode.pszText = s_code_hex;
-	ListView_InsertItemU(lstCodes, &lviCode);
+	pListView_InsertItemU(lstCodes, &lviCode);
 	
 	// lParam doesn't need to be set for the subitems.
 	lviCode.mask = LVIF_TEXT;
@@ -691,17 +691,17 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char *name)
 	// Second column: Code (GG)
 	lviCode.iSubItem = 1;
 	lviCode.pszText = const_cast<LPTSTR>(s_code_gg);
-	ListView_SetItemU(lstCodes, &lviCode);
+	pListView_SetItemU(lstCodes, &lviCode);
 	
 	// Third column: CPU
 	lviCode.iSubItem = 2;
 	lviCode.pszText = const_cast<LPTSTR>(s_cpu);
-	ListView_SetItemU(lstCodes, &lviCode);
+	pListView_SetItemU(lstCodes, &lviCode);
 	
 	// Fourth column: Name
 	lviCode.iSubItem = 3;
 	lviCode.pszText = const_cast<LPTSTR>(name);
-	ListView_SetItemU(lstCodes, &lviCode);
+	pListView_SetItemU(lstCodes, &lviCode);
 	
 	// Set the "Enabled" state.
 	ListView_SetCheckStateU(lstCodes, lviCode.iItem, gg_code->enabled);
@@ -727,7 +727,7 @@ static void gg_window_callback_delete(void)
 	for (int i = lvItems - 1; i >= 0; i--)
 	{
 		lvItem.iItem = i;
-		if (ListView_GetItemU(lstCodes, &lvItem))
+		if (pListView_GetItemU(lstCodes, &lvItem))
 		{
 			// Item retrieved. Check if it should be deleted.
 			if (lvItem.state & LVIS_SELECTED)

@@ -299,7 +299,7 @@ static void pmgr_window_create_plugin_list_tab(HWND container, const char* title
 #else
 	lvCol.cx = 0;
 #endif
-	ListView_InsertColumnU(lstPluginList[id], 0, &lvCol);
+	pListView_InsertColumnU(lstPluginList[id], 0, &lvCol);
 	
 	// Plugin name.
 	lvCol.pszText = "Plugin Name";
@@ -308,7 +308,7 @@ static void pmgr_window_create_plugin_list_tab(HWND container, const char* title
 #else
 	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-24;
 #endif
-	ListView_InsertColumnU(lstPluginList[id], 1, &lvCol);
+	pListView_InsertColumnU(lstPluginList[id], 1, &lvCol);
 }
 
 
@@ -499,7 +499,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	// First column: Icon.
 	lviPlugin.iSubItem = 0;
 	lviPlugin.pszText = NULL;
-	ListView_InsertItemU(lstPluginList[pmType], &lviPlugin);
+	pListView_InsertItemU(lstPluginList[pmType], &lviPlugin);
 	
 	// lParam doesn't need to be set for the subitems.
 	lviPlugin.mask = LVIF_TEXT;
@@ -508,7 +508,7 @@ static void pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const string&
 	// Second column: Plugin name.
 	lviPlugin.iSubItem = 1;
 	lviPlugin.pszText = const_cast<char*>(pluginName.c_str());
-	ListView_SetItemU(lstPluginList[pmType], &lviPlugin);
+	pListView_SetItemU(lstPluginList[pmType], &lviPlugin);
 }
 
 
@@ -677,7 +677,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 #else
 	lvItem.mask = LVIF_PARAM;
 #endif
-	int rval = ListView_GetItemU(lstPluginList[id], &lvItem);
+	int rval = pListView_GetItemU(lstPluginList[id], &lvItem);
 	
 	mdp_t *plugin = reinterpret_cast<mdp_t*>(lvItem.lParam);
 	
