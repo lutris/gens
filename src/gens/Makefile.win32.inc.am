@@ -18,7 +18,6 @@ gens_SOURCES += \
 		audio/audio_dsound.cpp \
 		plugins/mdp_host_gens_win32.c \
 		ui/win32/fonts.c \
-		ui/win32/cc6.c \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
@@ -58,7 +57,6 @@ noinst_HEADERS += \
 		audio/audio_dsound.hpp \
 		plugins/mdp_host_gens_win32.h \
 		ui/win32/fonts.h \
-		ui/win32/cc6.h \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \

@@ -37,6 +37,7 @@
 // Win32 includes.
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -86,13 +87,24 @@ static void WINAPI ccode_window_callback_btnDown_clicked(void);
 
 /** BEGIN: Common Controls v6.0 **/
 
-#include "ui/win32/cc6.h"
+// w32api's headers don't include BUTTON_IMAGELIST or related macros and constants.
+#ifndef BCM_SETIMAGELIST
+typedef struct
+{
+	HIMAGELIST himl;
+	RECT margin;
+	UINT uAlign;
+} BUTTON_IMAGELIST, *PBUTTON_IMAGELIST;
+#define BUTTON_IMAGELIST_ALIGN_LEFT 0
+#define BCM_FIRST 0x1600
+#define BCM_SETIMAGELIST (BCM_FIRST + 0x0002)
+#define Button_SetImageList(hWnd, pbuttonImageList) \
+	SendMessage((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
+#endif
 
 // Image lists.
 static HIMAGELIST	imglArrowUp = NULL;
 static HIMAGELIST	imglArrowDown = NULL;
-
-static CC6_STATUS_T	ccode_window_cc6 = CC6_STATUS_UNKNOWN;
 
 /** END: Common Controls v6.0 **/
 
@@ -287,14 +299,11 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 					container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
 	SetWindowFontU(btnDown, fntMain, TRUE);
 	
-	// Check the Common Controls v6.0 status.
-	if (ccode_window_cc6 == CC6_STATUS_UNKNOWN)
-		ccode_window_cc6 = cc6_check();
-	
 	// Set the button icons.
-	if (ccode_window_cc6 == CC6_STATUS_V6)
+	if (comctl32_dll_version >= 0x05520000)
 	{
-		// Common Controls v6.0. Use BUTTON_IMAGELIST and Button_SetImageList().
+		// Common Controls v6.0. (DLL version 5.82)
+		// Use BUTTON_IMAGELIST and Button_SetImageList().
 		// This ensures that visual styles are applied correctly.
 		
 		// "Up" button image list.
