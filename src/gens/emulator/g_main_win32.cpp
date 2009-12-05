@@ -252,12 +252,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		FILE *hf_in = _fdopen(hCrt, "r");
 		setvbuf(hf_in, NULL, _IONBF, 128);
 		*stdin = *hf_in;
-		
-#if !defined(GENS_DEBUG)
-		// Install the signal handler.
-		gens_sighandler_init();
-#endif
 	}
+#endif
+
+#if !defined(GENS_DEBUG)
+	// Install the signal handler.
+	gens_sighandler_init();	
 #endif
 	
 	// Initialize the video backend.
