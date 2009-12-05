@@ -117,6 +117,7 @@ int WINAPI w32u_init(void)
 	}
 	
 	// Get DLL version numbers.
+	comctl32_dll_version = GetDllVersionNumber("comctl32.dll");
 	shell32_dll_version = GetDllVersionNumber("shell32.dll");
 	
 	// Initialize the Unicode modules.

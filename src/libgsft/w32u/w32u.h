@@ -40,6 +40,7 @@ extern "C" {
 extern BOOL w32u_is_unicode;
 
 /** DLL versions. (0xMMNNRRRR) **/
+extern DWORD comctl32_dll_version;
 extern DWORD shell32_dll_version;
 
 DWORD WINAPI GetDllVersionNumber(const char *filename);
