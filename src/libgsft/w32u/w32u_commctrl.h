@@ -31,6 +31,7 @@ extern "C" {
 #endif
 
 /** TabCtrl macros. **/
+#define TabCtrl_AdjustRectU(w,b,p)		(int)pSendMessageU((w),TCM_ADJUSTRECT,(b),(LPARAM)(LPRECT)(p))
 #define TabCtrl_GetCurSelU(w)			(int)pSendMessageU((w),TCM_GETCURSEL,0,0)
 extern int (WINAPI *pTabCtrl_InsertItemU)(HWND hWnd, int iItem, const TCITEMA *pItem);
 

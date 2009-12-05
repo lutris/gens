@@ -30,6 +30,10 @@
 extern "C" {
 #endif
 
+/** Font macros. **/
+#define GetWindowFontU(hwnd,hfont,fRedraw)	(HFONT)(UINT)(DWORD)(pSendMessageU((hwnd),WM_GETFONT,0,0))
+#define SetWindowFontU(hwnd,hfont,fRedraw)	(void)(pSendMessageU((hwnd),WM_SETFONT,(WPARAM)(HFONT)(hfont),(LPARAM)(BOOL)(fRedraw)))
+
 /** Button macros. **/
 #define Button_GetCheckU(hwndCtl)	((int)(DWORD)pSendMessageU((hwndCtl),BM_GETCHECK,0,0))
 #define Button_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
