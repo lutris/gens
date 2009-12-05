@@ -148,7 +148,7 @@ void pmgr_window_show(void)
 		pmgr_wndclass.cbClsExtra = 0;
 		pmgr_wndclass.cbWndExtra = 0;
 		pmgr_wndclass.hInstance = ghInstance;
-		pmgr_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		pmgr_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		pmgr_wndclass.hCursor = NULL;
 		pmgr_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		pmgr_wndclass.lpszMenuName = NULL;
@@ -193,7 +193,7 @@ static void WINAPI pmgr_window_create_child_windows(HWND hWnd)
 					PMGR_WINDOW_WIDTH-8-75, PMGR_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, fntMain, true);
 	
 	// Populate the plugin lists.
 	pmgr_window_populate_plugin_lists();
@@ -216,7 +216,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container)
 					PMGR_FRAME_PLUGIN_LIST_WIDTH,
 					PMGR_FRAME_PLUGIN_LIST_HEIGHT,
 					container, NULL, ghInstance, NULL);
-	SetWindowFont(tabPluginList, fntMain, true);
+	SetWindowFontU(tabPluginList, fntMain, true);
 	
 #ifdef GENS_PNG
 	// Create the ImageList.
@@ -246,7 +246,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 	TCITEM tabItem;
 	tabItem.mask = TCIF_TEXT;
 	tabItem.pszText = const_cast<char*>(title);
-	TabCtrl_InsertItem(container, id, &tabItem);
+	pTabCtrl_InsertItemU(container, id, &tabItem);
 	
 	// Create the plugin ListView.
 	lstPluginList[id] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
@@ -256,7 +256,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 						PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
 						PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
 						container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
-	SetWindowFont(lstPluginList[id], fntMain, true);
+	SetWindowFontU(lstPluginList[id], fntMain, true);
 	ListView_SetExtendedListViewStyleU(lstPluginList[id], LVS_EX_FULLROWSELECT);
 	
 	if (id == PMGR_INTERNAL)
@@ -310,7 +310,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						8, top,
 						PMGR_FRAME_PLUGIN_INFO_WIDTH, PMGR_FRAME_PLUGIN_INFO_HEIGHT,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(fraPluginInfo, fntMain, true);
+	SetWindowFontU(fraPluginInfo, fntMain, true);
 	
 #ifdef GENS_PNG
 	// Create the plugin icon widget.
@@ -331,7 +331,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						PMGR_FRAME_PLUGIN_INFO_WIDTH - lblPluginMainInfo_Left,
 						lblPluginMainInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(lblPluginMainInfo, fntMain, true);
+	SetWindowFontU(lblPluginMainInfo, fntMain, true);
 	Edit_SetReadOnlyU(lblPluginMainInfo, true);
 	
 	// Label for secondary plugin info.
@@ -342,7 +342,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
 						lblPluginSecInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(lblPluginSecInfo, fntMain, true);
+	SetWindowFontU(lblPluginSecInfo, fntMain, true);
 	Edit_SetReadOnlyU(lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
@@ -353,7 +353,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 					PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
 					lblPluginDesc_Height,
 					container, NULL, ghInstance, NULL);
-	SetWindowFont(lblPluginDesc, fntMain, true);
+	SetWindowFontU(lblPluginDesc, fntMain, true);
 	Edit_SetReadOnlyU(lblPluginDesc, true);
 }
 
@@ -478,7 +478,7 @@ static void WINAPI pmgr_window_add_plugin_to_list(mdp_t *plugin, int err, const 
 	lviPlugin.mask = LVIF_PARAM;
 #endif
 	lviPlugin.cchTextMax = 256;
-	lviPlugin.iItem = ListView_GetItemCount(lstPluginList[pmType]);
+	lviPlugin.iItem = ListView_GetItemCountU(lstPluginList[pmType]);
 	lviPlugin.lParam = (LPARAM)plugin;
 	
 	// First column: Icon.
@@ -592,7 +592,7 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 					if (nmHdr->hwndFrom == tabPluginList)
 					{
 						// Tab was changed.
-						int selTab = TabCtrl_GetCurSel(nmHdr->hwndFrom);
+						int selTab = TabCtrl_GetCurSelU(nmHdr->hwndFrom);
 						for (int i = 0; i < PMGR_MAX; i++)
 						{
 							ShowWindow(lstPluginList[i], ((i == selTab) ? SW_SHOW : SW_HIDE));
@@ -791,10 +791,10 @@ static void WINAPI pmgr_window_create_plugin_icon_widget(HWND container)
 {
 	// Plugin icon widget.
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
-	imgPluginIcon = CreateWindow(WC_STATIC, NULL,
-				     WS_CHILD | WS_VISIBLE | SS_BITMAP,
-				     8+8, top+16, 32, 32,
-				     container, NULL, ghInstance, NULL);
+	imgPluginIcon = pCreateWindowU(WC_STATIC, NULL,
+					WS_CHILD | WS_VISIBLE | SS_BITMAP,
+					8+8, top+16, 32, 32,
+					container, NULL, ghInstance, NULL);
 	
 	// Clear the icon.
 	pSendMessageU(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);

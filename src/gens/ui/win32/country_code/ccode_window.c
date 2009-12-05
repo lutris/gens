@@ -120,7 +120,7 @@ void ccode_window_show(void)
 		ccode_wndclass.cbClsExtra = 0;
 		ccode_wndclass.cbWndExtra = 0;
 		ccode_wndclass.hInstance = ghInstance;
-		ccode_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		ccode_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		ccode_wndclass.hCursor = NULL;
 		ccode_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ccode_wndclass.lpszMenuName = NULL;
@@ -163,7 +163,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					CCODE_WINDOW_FRACOUNTRY_WIDTH,
 					CCODE_WINDOW_FRACOUNTRY_HEIGHT,
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(fraCountry, fntMain, TRUE);
+	SetWindowFontU(fraCountry, fntMain, TRUE);
 	
 	// Create the Country Code treeview.
 	ccode_window_create_lstCountryCodes(hWnd);
@@ -193,7 +193,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft, ccode_window_height-8-24,
 					75, 23,
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
@@ -201,7 +201,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft+8+75, ccode_window_height-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
@@ -209,7 +209,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft+8+75+8+75, ccode_window_height-8-24,
 					75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, fntMain, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -235,7 +235,7 @@ static void WINAPI ccode_window_create_lstCountryCodes(HWND container)
 						CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH,
 						CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(lstCountryCodes, fntMain, TRUE);
+	SetWindowFontU(lstCountryCodes, fntMain, TRUE);
 	
 	// Check what the listbox's actual height is.
 	RECT r;
@@ -258,11 +258,11 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 	// See http://support.microsoft.com/kb/142226
 	
 	// Load the icons.
-	HICON icoUp   = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
+	HICON icoUp   = (HICON)LoadImageA(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
 						IMAGE_ICON,
 						CCODE_WINDOW_BTN_ICON_SIZE,
 						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
-	HICON icoDown = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
+	HICON icoDown = (HICON)LoadImageA(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
 						IMAGE_ICON,
 						CCODE_WINDOW_BTN_ICON_SIZE,
 						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
@@ -276,7 +276,7 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 					8+16,
 					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
 					container, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
-	SetWindowFont(btnUp, fntMain, TRUE);
+	SetWindowFontU(btnUp, fntMain, TRUE);
 	
 	// "Down" button.
 	HWND btnDown = pCreateWindowU(WC_BUTTON, NULL,
@@ -285,7 +285,7 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 					8+16+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT+(ccode_window_height-CCODE_WINDOW_DEF_HEIGHT)-CCODE_WINDOW_BTN_SIZE,
 					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
 					container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
-	SetWindowFont(btnDown, fntMain, TRUE);
+	SetWindowFontU(btnDown, fntMain, TRUE);
 	
 	// Check the Common Controls v6.0 status.
 	if (ccode_window_cc6 == CC6_STATUS_UNKNOWN)

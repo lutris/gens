@@ -308,10 +308,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	fonts_end();
 	
 	// Empty the message queue.
+	// NOTE: ANSI functions are used here, since the messages aren't actually processed.
 	MSG msg;
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (PeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessage(&msg, NULL, 0, 0))
+		if (!GetMessageA(&msg, NULL, 0, 0))
 			return msg.wParam;
 	}
 	

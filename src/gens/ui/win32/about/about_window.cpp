@@ -151,7 +151,7 @@ void about_window_show(void)
 		about_wndclass.cbClsExtra = 0;
 		about_wndclass.cbWndExtra = 0;
 		about_wndclass.hInstance = ghInstance;
-		about_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		about_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		about_wndclass.hCursor = NULL;
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
@@ -190,7 +190,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 		// Gens logo
 		imgGensLogo = pCreateWindowU(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		hbmpGensLogo = (HBITMAP)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+		hbmpGensLogo = (HBITMAP)LoadImageA(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 							IMAGE_BITMAP, 0, 0,
 							LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 		pSendMessageU(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
@@ -221,13 +221,13 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	lblGensTitle = pCreateWindowU(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
 					128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensTitle, fntTitle, true);
+	SetWindowFontU(lblGensTitle, fntTitle, true);
 	
 	lblGensDesc = pCreateWindowU(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
 					128, 42+ABOUT_WINDOW_GIT_HEIGHT,
 					(ABOUT_WINDOW_WIDTH-128), 100,
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensDesc, fntMain, true);
+	SetWindowFontU(lblGensDesc, fntMain, true);
 	
 	// Build the debug information string.
 	about_window_buildDebugInfoString();
@@ -236,7 +236,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	tabInfo = pCreateWindowU(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
 				8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(tabInfo, fntMain, true);
+	SetWindowFontU(tabInfo, fntMain, true);
 	
 	// Make sure the tab control is in front of all other windows.
 	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
@@ -258,7 +258,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	rectTab.top = 0;
 	rectTab.right = TAB_WIDTH;
 	rectTab.bottom = TAB_HEIGHT;
-	TabCtrl_AdjustRect(tabInfo, false, &rectTab);
+	TabCtrl_AdjustRectU(tabInfo, false, &rectTab);
 	
 	// Box for the tab contents.
 	HWND grpTabContents;
@@ -267,7 +267,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					rectTab.right - rectTab.left - 8,
 					rectTab.bottom - rectTab.top - 4,
 					tabInfo, NULL, ghInstance, NULL);
-	SetWindowFont(grpTabContents, fntMain, true);
+	SetWindowFontU(grpTabContents, fntMain, true);
 	
 	// Subclass the tab box.
 	grpTabContents_old_wndproc = (WNDPROC)pSetWindowLongPtrU(grpTabContents, GWL_WNDPROC,
@@ -279,7 +279,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					rectTab.right - rectTab.left - 24,
 					rectTab.bottom - rectTab.top - 32,
 					grpTabContents, NULL, ghInstance, NULL);
-	SetWindowFont(lblTabContents, fntMain, true);
+	SetWindowFontU(lblTabContents, fntMain, true);
 	
 	// Create the OK button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
@@ -287,7 +287,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);

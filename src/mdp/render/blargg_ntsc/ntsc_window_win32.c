@@ -118,7 +118,7 @@ void ntsc_window_show(void *parent)
 		ntsc_window_wndclass.cbClsExtra = 0;
 		ntsc_window_wndclass.cbWndExtra = 0;
 		ntsc_window_wndclass.hInstance = ntsc_hInstance;
-		ntsc_window_wndclass.hIcon = NULL; //LoadIcon(ntsc_hInstance, MAKEINTRESOURCE(IDI_NTSC));
+		ntsc_window_wndclass.hIcon = NULL; //LoadIconA(ntsc_hInstance, MAKEINTRESOURCE(IDI_NTSC));
 		ntsc_window_wndclass.hCursor = NULL;
 		ntsc_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ntsc_window_wndclass.lpszMenuName = NULL;
@@ -176,21 +176,21 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, 8, NTSC_WINDOW_WIDTH-16, NTSC_WINDOW_HEIGHT-8-16-24,
 					hWnd, NULL, ntsc_hInstance, NULL);
-	SetWindowFont(grpBox, ntsc_hFont, TRUE);
+	SetWindowFontU(grpBox, ntsc_hFont, TRUE);
 	
 	// Add a label for the presets dropdown.
 	HWND lblPresets = pCreateWindowU(WC_STATIC, "&Presets:",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
 						8+8, 8+16+4, 64, 16,
 						hWnd, NULL, ntsc_hInstance, NULL);
-	SetWindowFont(lblPresets, ntsc_hFont, TRUE);
+	SetWindowFontU(lblPresets, ntsc_hFont, TRUE);
 	
 	// Add the presets dropdown.
 	cboPresets = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
 					8+64+8, 8+16, 96, 23*NTSC_PRESETS_COUNT,
 					hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
-	SetWindowFont(cboPresets, ntsc_hFont, TRUE);
+	SetWindowFontU(cboPresets, ntsc_hFont, TRUE);
 	
 	// Add the presets to the dropdown.
 	int i;
@@ -204,21 +204,21 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 					8+64+8+96+8, 8+16+2, 64, 16,
 					hWnd, (HMENU)IDC_NTSC_SCANLINE, ntsc_hInstance, NULL);
-	SetWindowFont(chkScanline, ntsc_hFont, TRUE);
+	SetWindowFontU(chkScanline, ntsc_hFont, TRUE);
 	
 	// Interpolation checkbox.
 	chkInterp = pCreateWindowU(WC_BUTTON, "&Interpolation",
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 					8+64+8+96+8+64+8, 8+16+2, 88, 16,
 					hWnd, (HMENU)IDC_NTSC_INTERP, ntsc_hInstance, NULL);
-	SetWindowFont(chkInterp, ntsc_hFont, TRUE);
+	SetWindowFontU(chkInterp, ntsc_hFont, TRUE);
 	
 	// Interpolation checkbox.
 	chkCXA2025AS = pCreateWindowU(WC_BUTTON, "Use Sony C&X2025AS US decoder.",
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 					8+8, 8+16+24, 204, 16,
 					hWnd, (HMENU)IDC_NTSC_CXA2025AS, ntsc_hInstance, NULL);
-	SetWindowFont(chkCXA2025AS, ntsc_hFont, TRUE);
+	SetWindowFontU(chkCXA2025AS, ntsc_hFont, TRUE);
 	
 	// Create the adjustment widgets.
 	int hscTop = 8+16+16+24;
@@ -230,7 +230,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 							8+8, hscTop+4,
 							NTSC_WIDGETNAME_WIDTH, NTSC_WIDGETNAME_HEIGHT,
 							hWnd, NULL, ntsc_hInstance, NULL);
-		SetWindowFont(lblWidgetName, ntsc_hFont, TRUE);
+		SetWindowFontU(lblWidgetName, ntsc_hFont, TRUE);
 		
 		// Value Label.
 		lblCtrlValues[i] = pCreateWindowU(WC_STATIC, NULL,
@@ -238,7 +238,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 							8+8+NTSC_WIDGETNAME_WIDTH+8, hscTop+4,
 							NTSC_VALUELABEL_WIDTH, NTSC_VALUELABEL_HEIGHT,
 							hWnd, NULL, ntsc_hInstance, NULL);
-		SetWindowFont(lblCtrlValues[i], ntsc_hFont, TRUE);
+		SetWindowFontU(lblCtrlValues[i], ntsc_hFont, TRUE);
 		
 		// Trackbar.
 		hscCtrlValues[i] = pCreateWindowU(TRACKBAR_CLASS, NULL, NTSC_TRACKBAR_STYLE,
@@ -259,7 +259,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					NTSC_WINDOW_WIDTH-75-8, NTSC_WINDOW_HEIGHT-24-8, 75, 23,
 					hWnd, (HMENU)IDCLOSE, ntsc_hInstance, NULL);
-	SetWindowFont(btnClose, ntsc_hFont, TRUE);
+	SetWindowFontU(btnClose, ntsc_hFont, TRUE);
 	
 	// Child windows created.
 	ntsc_window_child_windows_created = TRUE;

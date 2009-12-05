@@ -179,7 +179,7 @@ void cc_window_show(void)
 		cc_wndclass.cbClsExtra = 0;
 		cc_wndclass.cbWndExtra = 0;
 		cc_wndclass.hInstance = ghInstance;
-		cc_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		cc_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		cc_wndclass.hCursor = NULL;
 		cc_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		cc_wndclass.lpszMenuName = NULL;
@@ -234,7 +234,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 				CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				75, 23,
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
@@ -242,7 +242,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 					CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
@@ -250,7 +250,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 					CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, fntMain, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -285,7 +285,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
 					container, NULL, ghInstance, NULL);
-	SetWindowFont(fraPort, fntMain, TRUE);
+	SetWindowFontU(fraPort, fntMain, TRUE);
 	
 	// Checkbox for enabling teamplayer.
 	const char *tp_label;
@@ -298,7 +298,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 						8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
 						container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
 						ghInstance, NULL);
-	SetWindowFont(chkTeamplayer[port-1], fntMain, TRUE);
+	SetWindowFontU(chkTeamplayer[port-1], fntMain, TRUE);
 	
 	// Player inputs.
 	unsigned int i, player;
@@ -325,7 +325,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
 							8+8, fraPort_top+16+16+4+(i*24)+2, 48, 16,
 							container, NULL, ghInstance, NULL);
-		SetWindowFont(lblPlayer[player], fntMain, TRUE);
+		SetWindowFontU(lblPlayer[player], fntMain, TRUE);
 		
 		// Pad type dropdown.
 		cboPadType[player] = pCreateWindowU(WC_COMBOBOX, tmp,
@@ -333,7 +333,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							8+8+48+8, fraPort_top+16+16+4+(i*24), 80, 23*2,
 							container, (HMENU)(IDC_CC_CBOPADTYPE + player),
 							ghInstance, NULL);
-		SetWindowFont(cboPadType[player], fntMain, TRUE);
+		SetWindowFontU(cboPadType[player], fntMain, TRUE);
 		
 		// Pad type dropdown entries.
 		ComboBox_AddStringU(cboPadType[player], "3 buttons");
@@ -345,7 +345,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
 							container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
 							ghInstance, NULL);
-		SetWindowFont(optConfigure[player], fntMain, TRUE);
+		SetWindowFontU(optConfigure[player], fntMain, TRUE);
 	}
 }
 
@@ -364,7 +364,7 @@ static void WINAPI cc_window_create_input_devices_frame(HWND container)
 						8, fraInputDevices_top,
 						CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(fraInputDevices, fntMain, TRUE);
+	SetWindowFontU(fraInputDevices, fntMain, TRUE);
 	
 	// Create a listbox for the list of input devices.
 	lstInputDevices = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
@@ -372,7 +372,7 @@ static void WINAPI cc_window_create_input_devices_frame(HWND container)
 						8+8, fraInputDevices_top+16,
 						CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(lstInputDevices, fntMain, TRUE);
+	SetWindowFontU(lstInputDevices, fntMain, TRUE);
 }
 
 
@@ -410,7 +410,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					fraConfigure_left, fraConfigure_top,
 					CC_FRAME_CONFIGURE_WIDTH, CC_FRAME_CONFIGURE_HEIGHT,
 					container, NULL, ghInstance, NULL);
-	SetWindowFont(fraConfigure, fntMain, TRUE);
+	SetWindowFontU(fraConfigure, fntMain, TRUE);
 	
 	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
@@ -424,7 +424,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 							fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
 							36, 16,
 							container, NULL, ghInstance, NULL);
-		SetWindowFont(lblButton[button], fntMain, TRUE);
+		SetWindowFontU(lblButton[button], fntMain, TRUE);
 		
 		// Current configuration label.
 		lblCurConfig[button] = pCreateWindowU(WC_STATIC, NULL,
@@ -440,7 +440,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 							fraConfigure_top+16+(button*24),
 							75, 23,
 							container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
-		SetWindowFont(btnChange[button], fntMain, TRUE);
+		SetWindowFontU(btnChange[button], fntMain, TRUE);
 	}
 	
 	// Separator between the table and the miscellaneous buttons.
@@ -456,7 +456,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					fraConfigure_left+8, fraConfigure_top+16+12*24+8+2+8,
 					127, 23,
 					container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
-	SetWindowFont(btnChangeAll, fntMain, TRUE);
+	SetWindowFontU(btnChangeAll, fntMain, TRUE);
 	
 	// "Clear All Buttons" button.
 	btnClearAll = pCreateWindowU(WC_BUTTON, "Clear All Buttons",
@@ -465,7 +465,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					fraConfigure_top+16+12*24+8+2+8,
 					127, 23,
 					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
-	SetWindowFont(btnClearAll, fntMain, TRUE);
+	SetWindowFontU(btnClearAll, fntMain, TRUE);
 }
 
 
@@ -485,7 +485,7 @@ static void WINAPI cc_window_create_options_frame(HWND container)
 						fraOptions_left, fraOptions_top,
 						CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(fraOptions, fntMain, TRUE);
+	SetWindowFontU(fraOptions, fntMain, TRUE);
 	
 	// "Restrict Input" checkbox.
 	chkRestrictInput = pCreateWindowU(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
@@ -493,7 +493,7 @@ static void WINAPI cc_window_create_options_frame(HWND container)
 						fraOptions_left+8, fraOptions_top+16,
 						CC_FRAME_OPTIONS_WIDTH-16, 32,
 						container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
-	SetWindowFont(chkRestrictInput, fntMain, TRUE);
+	SetWindowFontU(chkRestrictInput, fntMain, TRUE);
 }
 
 
@@ -617,7 +617,7 @@ static inline void WINAPI cc_window_display_key_name(HWND label, uint16_t key)
 	Static_SetTextU(label, key_name);
 #endif
 	
-	SetWindowFont(label, fntMono, TRUE);
+	SetWindowFontU(label, fntMono, TRUE);
 }
 
 
@@ -761,7 +761,7 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -887,10 +887,11 @@ static BOOL WINAPI cc_window_configure_key(int player, int button)
 	ShowWindow(lblCurConfig[button], SW_SHOW);
 	
 	// Remove various dialog messages from the window message queue.
+	// NOTE: ANSI functions are used here, since the messages aren't actually processed.
 	MSG msg;
-	while (pPeekMessageU(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
-	while (pPeekMessageU(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
-	while (pPeekMessageU(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
+	while (PeekMessageA(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
+	while (PeekMessageA(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
+	while (PeekMessageA(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
 	
 	return key_changed;
 }

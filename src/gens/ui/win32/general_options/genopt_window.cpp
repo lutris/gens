@@ -154,7 +154,7 @@ void genopt_window_show(void)
 		genopt_wndclass.cbClsExtra = 0;
 		genopt_wndclass.cbWndExtra = 0;
 		genopt_wndclass.hInstance = ghInstance;
-		genopt_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		genopt_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		genopt_wndclass.hCursor = NULL;
 		genopt_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		genopt_wndclass.lpszMenuName = NULL;
@@ -222,7 +222,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(fraOSD, fntMain, true);
+	SetWindowFontU(fraOSD, fntMain, true);
 	
 	// FPS counter frame
 	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, 16, 24,
@@ -239,7 +239,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 				WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 				frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, fntMain, true);
 	
 	// Auto Fix Checksum
 	frameTop += 16;
@@ -247,7 +247,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 							frameLeft+8, frameTop, 128, 20,
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_AutoFixChecksum, fntMain, true);
+	SetWindowFontU(chkMisc_AutoFixChecksum, fntMain, true);
 	
 	// Auto Pause
 	frameTop += 20;
@@ -255,7 +255,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_AutoPause, fntMain, true);
+	SetWindowFontU(chkMisc_AutoPause, fntMain, true);
 	
 	// Fast Blur
 	frameTop += 20;
@@ -263,7 +263,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_FastBlur, fntMain, true);
+	SetWindowFontU(chkMisc_FastBlur, fntMain, true);
 	
 	// Show SegaCD LEDs
 	frameTop += 20;
@@ -271,7 +271,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_SegaCDLEDs, fntMain, true);
+	SetWindowFontU(chkMisc_SegaCDLEDs, fntMain, true);
 	
 	// Border Color Emulation
 	frameTop += 20;
@@ -279,7 +279,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 							frameLeft+8, frameTop, 128, 20,
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_BorderColorEmulation, fntMain, true);
+	SetWindowFontU(chkMisc_BorderColorEmulation, fntMain, true);
 	
 	// Pause Tint
 	frameTop += 20;
@@ -287,7 +287,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_PauseTint, fntMain, true);
+	SetWindowFontU(chkMisc_PauseTint, fntMain, true);
 	
 	// Intro Effect label.
 	frameTop += 16+8;
@@ -295,7 +295,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
 						frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblIntroEffect, fntMain, true);
+	SetWindowFontU(lblIntroEffect, fntMain, true);
 	
 	// Dropdown for intro effect.
 	frameTop += 16;
@@ -303,7 +303,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
 					frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 23*3,
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(cboIntroEffect, fntMain, true);
+	SetWindowFontU(cboIntroEffect, fntMain, true);
 	ComboBox_AddStringU(cboIntroEffect, "None");
 	ComboBox_AddStringU(cboIntroEffect, "Gens Logo Effect");
 	ComboBox_AddStringU(cboIntroEffect, "\"Crazy\" Effect");
@@ -315,7 +315,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							WS_CHILD | WS_VISIBLE | SS_CENTER,
 							frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblIntroEffectColor, fntMain, true);
+	SetWindowFontU(lblIntroEffectColor, fntMain, true);
 	
 	// Intro effect color buttons.
 	frameLeft += 8+4 + (((GENOPT_FRAME_WIDTH-16) - (4*(16+8))) / 2);
@@ -336,7 +336,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 				GENOPT_WINDOW_WIDTH-8-75-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 				75, 23,
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, fntMain, true);
 	
 	// Cancel button.
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
@@ -344,7 +344,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					GENOPT_WINDOW_WIDTH-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, fntMain, true);
 	
 	// Apply button.
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
@@ -352,7 +352,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					GENOPT_WINDOW_WIDTH-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, fntMain, true);
 	
 	// Initialize the internal data variables.
 	genopt_window_init();
@@ -373,35 +373,35 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
 				x, y, w, h,
 				container, NULL, ghInstance, NULL);
-	SetWindowFont(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, fntMain, true);
 	
 	// Enable
 	chkOSD_Enable[index] = pCreateWindowU(WC_BUTTON, "Enable",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						x+8, y+16, 128, 20,
 						container, NULL, ghInstance, NULL);
-	SetWindowFont(chkOSD_Enable[index], fntMain, true);
+	SetWindowFontU(chkOSD_Enable[index], fntMain, true);
 	
 	// Double Sized
 	chkOSD_DoubleSized[index] = pCreateWindowU(WC_BUTTON, "Double Sized",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 							x+8, y+16+20, 128, 20,
 							container, NULL, ghInstance, NULL);
-	SetWindowFont(chkOSD_DoubleSized[index], fntMain, true);
+	SetWindowFontU(chkOSD_DoubleSized[index], fntMain, true);
 	
 	// Transparency
 	chkOSD_Transparency[index] = pCreateWindowU(WC_BUTTON, "Transparency",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 							x+8, y+16+20+20, 128, 20,
 							container, NULL, ghInstance, NULL);
-	SetWindowFont(chkOSD_Transparency[index], fntMain, true);
+	SetWindowFontU(chkOSD_Transparency[index], fntMain, true);
 	
 	// Color label
 	lblColor = pCreateWindowU(WC_STATIC, "Color:",
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
 					x+8, y+16+20+20+20+2, 36, 20,
 					container, NULL, ghInstance, NULL);
-	SetWindowFont(lblColor, fntMain, true);
+	SetWindowFontU(lblColor, fntMain, true);
 	
 	// Radio buttons
 	for (int i = 0; i < 4; i++)

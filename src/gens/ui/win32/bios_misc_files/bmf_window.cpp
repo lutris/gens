@@ -103,7 +103,7 @@ void bmf_window_show(void)
 		bmf_wndclass.cbClsExtra = 0;
 		bmf_wndclass.cbWndExtra = 0;
 		bmf_wndclass.hInstance = ghInstance;
-		bmf_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		bmf_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		bmf_wndclass.hCursor = NULL;
 		bmf_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		bmf_wndclass.lpszMenuName = NULL;
@@ -158,7 +158,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 						grpBox_Left, grpBox_Top,
 						BMF_FRAME_WIDTH, grpBox_Height,
 						hWnd, NULL, ghInstance, NULL);
-			SetWindowFont(grpBox, fntMain, true);
+			SetWindowFontU(grpBox, fntMain, true);
 		}
 		else
 		{
@@ -173,7 +173,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 							grpBox_Left + 8, grpBox_Top + entryTop,
 							64, 16,
 							hWnd, NULL, ghInstance, NULL);
-			SetWindowFont(lblFile, fntMain, true);
+			SetWindowFontU(lblFile, fntMain, true);
 			
 			// Create the textbox for the file.
 			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
@@ -181,7 +181,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 								grpBox_Left+8+56+8, grpBox_Top+entryTop,
 								BMF_FRAME_WIDTH-(8+64+8+72+8), 20,
 								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
-			SetWindowFont(txtFile[file], fntMain, true);
+			SetWindowFontU(txtFile[file], fntMain, true);
 			Edit_LimitTextU(txtFile[file], GENS_PATH_MAX-1);
 			
 			// Create the "Change..." button for the file.
@@ -190,7 +190,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 							grpBox_Left+BMF_FRAME_WIDTH-(8+72), grpBox_Top + entryTop,
 							72, 20,
 							hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
-			SetWindowFont(btnChange, fntMain, true);
+			SetWindowFontU(btnChange, fntMain, true);
 			
 			// Next entry.
 			grpBox_Entry++;
@@ -205,7 +205,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 				BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
 				75, 23,
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, fntMain, true);
 	
 	// Cancel button.
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
@@ -213,7 +213,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 					BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, fntMain, true);
 	
 	// Apply button.
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
@@ -221,7 +221,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 					BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, fntMain, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);

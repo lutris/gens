@@ -125,7 +125,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.cbClsExtra = 0;
 		sgens_wndclass.cbWndExtra = 0;
 		sgens_wndclass.hInstance = sgens_hInstance;
-		sgens_wndclass.hIcon = LoadIcon(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
+		sgens_wndclass.hIcon = LoadIconA(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
 		sgens_wndclass.hCursor = NULL;
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		sgens_wndclass.lpszMenuName = NULL;
@@ -174,7 +174,7 @@ static void sgens_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | SS_CENTER,
 					8, 8, SGENS_WINDOW_WIDTH-16, 16,
 					hWnd, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLoadedGame, sgens_hFont, TRUE);
+	SetWindowFontU(lblLoadedGame, sgens_hFont, TRUE);
 	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(hWnd);
@@ -190,7 +190,7 @@ static void sgens_window_create_child_windows(HWND hWnd)
 					SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
-	SetWindowFont(btnClose, sgens_hFont, TRUE);
+	SetWindowFontU(btnClose, sgens_hFont, TRUE);
 	
 	// Child windows created.
 	sgens_window_child_windows_created = TRUE;
@@ -209,21 +209,21 @@ static void sgens_window_create_level_info_frame(HWND container)
 						8, 8+16,
 						FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
 						container, NULL, sgens_hInstance, NULL);
-	SetWindowFont(fraLevelInfo, sgens_hFont, TRUE);
+	SetWindowFontU(fraLevelInfo, sgens_hFont, TRUE);
 	
 	// "Zone" information label.
 	lblLevelInfo_Zone = pCreateWindowU(WC_STATIC, "Zone",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
 						8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
 						fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLevelInfo_Zone, sgens_hFont, TRUE);
+	SetWindowFontU(lblLevelInfo_Zone, sgens_hFont, TRUE);
 	
 	// "Act" information label.
 	lblLevelInfo_Act = pCreateWindowU(WC_STATIC, "Act",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
 						8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
 						fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLevelInfo_Act, sgens_hFont, TRUE);
+	SetWindowFontU(lblLevelInfo_Act, sgens_hFont, TRUE);
 	
 	// Table for level information.
 	unsigned int i;
@@ -258,7 +258,7 @@ static void sgens_window_create_level_info_frame(HWND container)
 							widget_desc_left, widget_top,
 							widget_desc_width, WIDGET_ROW_HEIGHT,
 							fraLevelInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFont(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
+		SetWindowFontU(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
 		
 		// Information label.
 		// TODO: Monospace font.
@@ -283,7 +283,7 @@ static void sgens_window_create_player_info_frame(HWND container)
 						8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
 						FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
 						container, NULL, sgens_hInstance, NULL);
-	SetWindowFont(fraPlayerInfo, sgens_hFont, TRUE);
+	SetWindowFontU(fraPlayerInfo, sgens_hFont, TRUE);
 	
 	// Table for player information.
 	unsigned int i;
@@ -318,7 +318,7 @@ static void sgens_window_create_player_info_frame(HWND container)
 							widget_desc_left, widget_top,
 							widget_desc_width, WIDGET_ROW_HEIGHT,
 							fraPlayerInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFont(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
+		SetWindowFontU(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
 		
 		// Information label.
 		// TODO: Monospace font.

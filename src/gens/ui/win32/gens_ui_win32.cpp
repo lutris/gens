@@ -208,10 +208,10 @@ void GensUI::init(int *argc, char **argv[])
 	CoInitialize(NULL);
 	
 	// Initialize the cursor.
-	SetCursor(pLoadCursorU(NULL, IDC_ARROW));
+	SetCursor(LoadCursorA(NULL, IDC_ARROW));
 	
 	// Load the accelerator table for non-menu commands.
-	hAccelTable_NonMenu = pLoadAcceleratorsU(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
+	hAccelTable_NonMenu = LoadAcceleratorsA(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	gens_window_create();
@@ -656,9 +656,9 @@ void GensUI::setMousePointer(bool busy)
 	HCURSOR cursor;
 	
 	if (busy)
-		cursor = pLoadCursorU(NULL, IDC_WAIT);
+		cursor = LoadCursorA(NULL, IDC_WAIT);
 	else
-		cursor = pLoadCursorU(NULL, IDC_ARROW);
+		cursor = LoadCursorA(NULL, IDC_ARROW);
 	
 	SetCursor(cursor);
 }

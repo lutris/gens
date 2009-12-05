@@ -99,7 +99,7 @@ void selcd_window_show(void)
 		selcd_wndclass.cbClsExtra = 0;
 		selcd_wndclass.cbWndExtra = 0;
 		selcd_wndclass.hInstance = ghInstance;
-		selcd_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		selcd_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		selcd_wndclass.hCursor = NULL;
 		selcd_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		selcd_wndclass.lpszMenuName = NULL;
@@ -135,14 +135,14 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
 						8, 8+3, 96, 16,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblDeviceName, fntMain, true);
+	SetWindowFontU(lblDeviceName, fntMain, true);
 	
 	// CD-ROM Drive dropdown box
 	cboDeviceName = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
 					16+96-8, 8, SELCD_WINDOW_WIDTH-8-96-16+8, 23*5,
 					hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
-	SetWindowFont(cboDeviceName, fntMain, true);
+	SetWindowFontU(cboDeviceName, fntMain, true);
 	
 	// Buttons
 	const unsigned short btnTop = SELCD_WINDOW_HEIGHT-8-24;
@@ -150,17 +150,17 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				SELCD_WINDOW_WIDTH-8-75-8-75-8-75, btnTop, 75, 23,
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, fntMain, true);
 	
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					SELCD_WINDOW_WIDTH-8-75-8-75, btnTop, 75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, fntMain, true);
 	
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					SELCD_WINDOW_WIDTH-8-75, btnTop, 75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, fntMain, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);

@@ -26,13 +26,12 @@
 #include <string.h>
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <tchar.h>
-#include <shlwapi.h>
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
+//#include <shlwapi.h>
+
+// libgsft includes.
+#include "libgsft/gsft_strlcpy.h"
 
 
 /**
@@ -45,15 +44,13 @@ CC6_STATUS_T WINAPI cc6_check(void)
 	// If the program's manifest isn't set up properly, then this will return
 	// CC6_STATUS_V6 on Windows XP or later, but v6.0 won't actually be loaded!
 	
-	static const TCHAR dllFileName[] = TEXT("\\COMCTL32.DLL");
-	
-	TCHAR dllPath[MAX_PATH];
-	unsigned int rval;
+	static const char dllFileName[] = "\\COMCTL32.DLL";
+	char dllPath[MAX_PATH];
 	
 	// COMCTL32.DLL is located in %SYSDIR%\\COMCTL32.DLL.
 	// Get the system directory.
-	rval = GetSystemDirectory(dllPath, (sizeof(dllPath) / sizeof(dllPath[0])));
-	if (rval == 0 || rval > (sizeof(dllPath) - sizeof(dllFileName) - 1))
+	UINT uRet = pGetSystemDirectoryU(dllPath, sizeof(dllPath));
+	if (uRet == 0 || uRet > (sizeof(dllPath) - sizeof(dllFileName) - 1))
 	{
 		// Could not retrieve the system directory.
 		// Assume we're using an older version of comctl32.dll.
@@ -61,53 +58,11 @@ CC6_STATUS_T WINAPI cc6_check(void)
 	}
 	
 	// Append the filename.
-	// NOTE: _tcscat() [TCHAR strcat()] can be used here, since the amonut of space
-	// remaining in the buffer was checked via GetSystemDirectory()'s return value.
-	_tcscat(dllPath, dllFileName);
+	strlcat(dllPath, dllFileName, sizeof(dllPath));
 	
-	// Load the DLL.
-	HINSTANCE hinstDLL = LoadLibrary(dllPath);
-	if (!hinstDLL)
-	{
-		// Could not load the DLL.
-		// Assume we're using an older version of comctl32.dll.
-		return CC6_STATUS_OLD;
-	}
-	
-	// Get the DllGetVersion() function.
-	// References:
-	// - Shell and Common Controls Versions: http://msdn.microsoft.com/en-us/library/bb776779%28VS.85%29.aspx
-	// - DllGetVersion Function (): http://msdn.microsoft.com/en-us/library/bb776404%28VS.85%29.aspx
-	DLLGETVERSIONPROC pDllGetVersion =
-			(DLLGETVERSIONPROC)GetProcAddress(hinstDLL, "DllGetVersion");
-	if (!pDllGetVersion)
-	{
-		// Could not find the DllGetVersion symbol.
-		// Assume we're using an older version of comctl32.dll.
-		FreeLibrary(hinstDLL);
-		return CC6_STATUS_OLD;
-	}
-	
-	// Get the DLL version.
-	DLLVERSIONINFO dvi;
-	HRESULT hr;
-	
-	memset(&dvi, 0x00, sizeof(dvi));
-	dvi.cbSize = sizeof(dvi);
-	
-	hr = pDllGetVersion(&dvi);
-	FreeLibrary(hinstDLL);
-	
-	if (FAILED(hr))
-	{
-		// An error occurred calling DllGetVersion().
-		// Assume we're using an older version of comctl32.dll.
-		return CC6_STATUS_OLD;
-	}
-	
-	// Check the DLL version number.
-	if (dvi.dwMajorVersion > 5 ||
-	    (dvi.dwMajorVersion == 5 && dvi.dwMinorVersion >= 82))
+	// Get the DLL version number.
+	DWORD dllVersion = GetDllVersionNumber(dllFileName);
+	if (dllVersion >= 0x05520000)
 	{
 		// Common Controls v6.0 (DLL version 5.82)
 		return CC6_STATUS_V6;

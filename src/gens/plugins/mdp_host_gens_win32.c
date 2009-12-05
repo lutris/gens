@@ -87,5 +87,5 @@ void mdp_host_win32_check_icon(void *window)
 	
 	// Window has no icon. Set it to the Gens/GS icon.
 	// TODO: Use an icon that indicates it's from a plugin instead of using IDI_GENS_APP.
-	pSendMessageU(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP)));
+	pSendMessageU(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP)));
 }
