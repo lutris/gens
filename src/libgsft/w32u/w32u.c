@@ -44,6 +44,7 @@ static int init_counter = 0;
 BOOL w32u_is_unicode = 0;
 
 /** DLL versions. (0xMMNNRRRR) **/
+DWORD comctl32_dll_version = 0;
 DWORD shell32_dll_version = 0;
 
 
