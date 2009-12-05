@@ -81,9 +81,6 @@ static HINSTANCE WINAPI ShellExecuteUA(HWND hWnd, LPCSTR lpOperation, LPCSTR lpF
 	free(lpaParameters);
 	free(lpaDirectory);
 	return hRet;
-	
-	// TODO: ANSI conversion.
-	return ShellExecuteA(hWnd, lpOperation, lpFile, lpParameters, lpDirectory, nShowCmd);
 }
 
 
