@@ -27,6 +27,7 @@
 /** kernel32.dll **/
 MAKE_FUNCPTR2(GetModuleFileNameA,	GetModuleFileNameU);
 MAKE_FUNCPTR2(GetModuleHandleA,		GetModuleHandleU);
+MAKE_FUNCPTR2(GetSystemDirectoryA,	GetSystemDirectoryU);
 MAKE_FUNCPTR2(SetCurrentDirectoryA,	SetCurrentDirectoryU);
 MAKE_FUNCPTR2(GetVersionExA,		GetVersionExU);
 

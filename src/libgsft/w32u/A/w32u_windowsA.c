@@ -69,6 +69,26 @@ static WINBASEAPI HMODULE WINAPI GetModuleHandleUA(LPCSTR lpModuleName)
 }
 
 
+static WINBASEAPI UINT WINAPI GetSystemDirectoryUA(LPSTR lpBuffer, UINT uSize)
+{
+	if (!lpBuffer || uSize == 0)
+	{
+		// String not specified. Don't bother converting anything.
+		return GetSystemDirectoryA(lpBuffer, uSize);
+	}
+	
+	// Get the directory name.
+	UINT uRet = GetSystemDirectoryA(lpBuffer, uSize);
+	if (uRet == 0)
+		return uRet;
+	
+	// Convert the filename from ANSI to UTF-8 in place.
+	// TODO: Check for errors in case the UTF-8 text doesn't fit.
+	w32u_ANSItoUTF8_ip(lpBuffer, uSize);
+	return uRet;
+}
+
+
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryUA(LPCSTR lpPathName)
 {
 	if (!lpPathName)
@@ -293,6 +313,7 @@ int WINAPI w32u_windowsA_init(void)
 	
 	pGetModuleFileNameU	= &GetModuleFileNameUA;
 	pGetModuleHandleU	= &GetModuleHandleUA;
+	pGetSystemDirectoryU	= &GetSystemDirectoryUA;
 	pSetCurrentDirectoryU	= &SetCurrentDirectoryUA;
 	pGetVersionExU		= &GetVersionExUA;
 	

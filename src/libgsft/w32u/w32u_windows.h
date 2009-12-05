@@ -31,6 +31,7 @@ extern "C" {
 /** kernel32.dll **/
 MAKE_EXTFUNCPTR2(GetModuleFileNameA,	GetModuleFileNameU);
 MAKE_EXTFUNCPTR2(GetModuleHandleA,	GetModuleHandleU);
+MAKE_EXTFUNCPTR2(GetSystemDirectoryA,	GetSystemDirectoryU);
 MAKE_EXTFUNCPTR2(SetCurrentDirectoryA,	SetCurrentDirectoryU);
 MAKE_EXTFUNCPTR2(GetVersionExA,		GetVersionExU);
 

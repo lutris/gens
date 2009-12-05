@@ -72,6 +72,30 @@ static WINBASEAPI HMODULE WINAPI GetModuleHandleUW(LPCSTR lpModuleName)
 }
 
 
+static WINBASEAPI UINT WINAPI GetSystemDirectoryUW(LPSTR lpBuffer, UINT uSize)
+{
+	if (!lpBuffer || uSize == 0)
+	{
+		// String not specified. Don't bother converting anything.
+		return GetSystemDirectoryW((LPWSTR)lpBuffer, uSize);
+	}
+	
+	// Allocate a buffer for the filename.
+	wchar_t *lpwBuffer = (wchar_t*)malloc(uSize * sizeof(wchar_t));
+	UINT uRet = GetSystemDirectoryW(lpwBuffer, uSize);
+	if (uRet == 0)
+	{
+		free(lpwBuffer);
+		return uRet;
+	}
+	
+	// Convert the filename from UTF-16 to UTF-8.
+	WideCharToMultiByte(CP_UTF8, 0, lpwBuffer, -1, lpBuffer, uSize, NULL, NULL);
+	free(lpwBuffer);
+	return uRet;
+}
+
+
 static WINUSERAPI BOOL WINAPI SetCurrentDirectoryUW(LPCSTR lpPathName)
 {
 	if (!lpPathName)
@@ -339,6 +363,7 @@ int WINAPI w32u_windowsW_init(void)
 	
 	pGetModuleFileNameU	= &GetModuleFileNameUW;
 	pGetModuleHandleU	= &GetModuleHandleUW;
+	pGetSystemDirectoryU	= &GetSystemDirectoryUW;
 	pSetCurrentDirectoryU	= &SetCurrentDirectoryUW;
 	pGetVersionExU		= &GetVersionExUW;
 	
