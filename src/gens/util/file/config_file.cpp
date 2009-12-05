@@ -106,17 +106,12 @@ using std::list;
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
 #endif /* GENS_OS_WIN32 */
-
-// RAR stuff.
-#ifdef _WIN32
-static const char rar_binary_key[] = "UnRAR DLL";
-static const char rar_binary_default[] = ".\\unrar.dll";
-#else
-static const char rar_binary_key[] = "RAR Binary";
-static const char rar_binary_default[] = "/usr/bin/rar";
-#endif	
 
 
 /**
@@ -128,7 +123,7 @@ int Config::save(const string& filename)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	// Load the configuration file into the INI handler.
@@ -326,7 +321,7 @@ int Config::save(const string& filename)
 		cfg.writeInt("Options", "RAM Cart Size", -1);
 	
 	// Miscellaneous files.
-	cfg.writeString("Options", rar_binary_key, Misc_Filenames.RAR_Binary);
+	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
 	
 	// Controller settings.
 	cfg.writeInt("Input", "P1.Type", (Controller_1_Type & 0x11), true, 2);
@@ -432,7 +427,7 @@ int Config::load(const string& filename, void* gameActive)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	INI cfg(filename);
@@ -704,8 +699,13 @@ int Config::load(const string& filename, void* gameActive)
 		BRAM_Ex_State |= 0x100;
 	
 	// Miscellaneous files.
-	cfg.getString("Options", rar_binary_key, rar_binary_default,
+#if defined(__WIN32__)
+	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\rar.exe",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
+#else /* !defined(__WIN32__) */
+	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
+		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
+#endif	
 	
 	// Controller settings.
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 0x01);

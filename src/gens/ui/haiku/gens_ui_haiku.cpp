@@ -152,7 +152,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::openFile(const string& title, const string& initFile,
-			FileFilterType filterType, void* owner)
+			const FileFilterType filterType, void* owner)
 {
 	return string("Stub");
 }
@@ -167,7 +167,7 @@ string GensUI::openFile(const string& title, const string& initFile,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::saveFile(const string& title, const string& initFile,
-			FileFilterType filterType, void* owner)
+			const FileFilterType filterType, void* owner)
 {
 	return string("Stub");
 }

@@ -77,10 +77,6 @@ using std::list;
 // Render Manager.
 #include "plugins/rendermgr.hpp"
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 
 /**
  * spriteLimit(): Get the current sprite limit setting.

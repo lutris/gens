@@ -56,8 +56,7 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
-		cflags_platform="-fshort-wchar"
-		ldflags_platform="-static-libgcc ${ldflags_platform}"
+		ldflags_win32="-static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
@@ -68,8 +67,8 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
-		cflags_platform="-fshort-wchar -mno-cygwin -mwin32 ${cflags_platform}";
-		ldflags_platform="-mno-cygwin -mwin32 -static-libgcc ${ldflags_platform}"
+		cflags_win32="-mno-cygwin -mwin32 ${cflags_win32}";
+		ldflags_win32="-mno-cygwin -mwin32 -static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
@@ -81,8 +80,6 @@ case $host in
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "MacOS X", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F null";
 		yasm_debug="-g null";
 		cflags_debug="-ggdb"
@@ -94,8 +91,6 @@ case $host in
 		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "Linux", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
@@ -106,8 +101,6 @@ case $host in
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_HAIKU, 1, Haiku operating system)
 		AC_DEFINE(GENS_PLATFORM, "Haiku", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb";
@@ -118,8 +111,6 @@ case $host in
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "Unix", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
@@ -128,12 +119,9 @@ case $host in
 	x86_64*)
 		obj_format=elf64;
 		AC_MSG_ERROR([64-bit is currently not supported.]);
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization=""
 		;;
 	*)
 		AC_MSG_ERROR([Unsupported system architecture: $host]);
@@ -680,20 +668,24 @@ AC_LANG(C)
 # Miscellaneous
 ###
 
-# Windows-specific CFLAGS and LDFLAGS.
+# Windows-specific options.
 if test x$os = xwin32; then
 	# Check if the Windows console should be enabled.
 	if test x$enable_win32_console = xyes; then
 		# Enable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,console"
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,console"
 	else
 		# Disable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,windows"
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,windows"
 	fi
 	
 	# Windows NT target version and MSIE target version.
 	# (Seriously, MSIE target version?)
-	cflags_platform="${cflags_platform} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
+	cflags_win32="${cflags_win32} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
+else
+	# Not Win32.
+	ldflags_win32=""
+	cflags_win32=""
 fi
 
 # gcc CFLAGS check function.
@@ -805,9 +797,9 @@ GSFT_LDFLAGS_GCC_OPTION([--sort-common], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
 
-AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug} ${cflags_platform}"
-AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug} ${cflags_platform} ${cxxflags_visibility}"
-AM_LDFLAGS="${AM_LDFLAGS} ${ldflags_as_needed} ${ldflags_platform}"
+AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
+AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
+AM_LDFLAGS="${AM_LDFLAGS} ${ldflags_as_needed} ${ldflags_win32}"
 
 # Check for clock_gettime.
 AC_CHECK_LIB(rt, clock_gettime, has_librt=yes, has_librt=no)
@@ -923,7 +915,6 @@ AC_CONFIG_FILES([
 	src/starscream/Makefile
 	src/mdZ80/Makefile
 	src/libgsft/Makefile
-	src/libgsft/w32u/Makefile
 	src/cbob/Makefile
 	src/gens/Makefile
 	src/gens/plugins/Makefile

@@ -6,10 +6,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 #include <string.h>
 
 #include "gens.hpp"

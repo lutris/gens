@@ -25,8 +25,3 @@ noinst_HEADERS = \
 		ips.h		\
 		ips_file.hpp
 #ups_file.hpp
-
-if GENS_UI_WIN32
-mdp_misc_ips_patcher_la_LIBADD	+= \
-		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
-endif

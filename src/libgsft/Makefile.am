@@ -2,10 +2,6 @@
 
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
-if GENS_OS_WIN32
-SUBDIRS = w32u
-endif
-
 noinst_LTLIBRARIES = libgsft.la
 
 libgsft_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops

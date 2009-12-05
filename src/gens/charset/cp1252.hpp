@@ -1,8 +1,9 @@
 /***************************************************************************
- * libgsft_w32u: Win32 Unicode Translation Layer.                          *
- * w32u_shellapi.h: shellapi.h translation.                                *
+ * Gens: cp1252 character set conversion functions.                        *
  *                                                                         *
- * Copyright (c) 2009 by David Korth.                                      *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -19,26 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GSFT_W32U_SHELLAPI_H
-#define GSFT_W32U_SHELLAPI_H
+#ifndef GENS_CP1252_HPP
+#define GENS_CP1252_HPP
 
-#include "w32u.h"
-#include <shellapi.h>
+#include <string>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+std::string charset_utf8_to_cp1252(const char* s_utf8, const char replacementChar = '?');
 
-MAKE_EXTFUNCPTR(DragQueryFileA);
-#define pDragQueryFileU pDragQueryFileA
-
-MAKE_EXTFUNCPTR(ShellExecuteA);
-#define pShellExecuteU pShellExecuteA
-
-int WINAPI w32u_shellapi_init(HMODULE hShell32);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* GSFT_W32U_SHELLAPI_H */
+#endif /* GENS_CP1252_HPP */

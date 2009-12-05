@@ -2,10 +2,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 #include <stdio.h>
 #include <cstring>
 

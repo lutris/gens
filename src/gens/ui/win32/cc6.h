@@ -24,8 +24,12 @@
 #define GENS_WIN32_CC6_H
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
-#include "libgsft/w32u/w32u_commctrl.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <commctrl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,7 +47,7 @@ typedef struct
 #define BCM_FIRST 0x1600
 #define BCM_SETIMAGELIST (BCM_FIRST + 0x0002)
 #define Button_SetImageList(hWnd, pbuttonImageList) \
-	pSendMessageU((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
+	SendMessage((hWnd), BCM_SETIMAGELIST, 0, (LPARAM)(pbuttonImageList))
 #endif
 
 // comctl32.dll version.

@@ -673,11 +673,11 @@ static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key)
 	
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
 	
-#ifdef GENS_DEBUG
-	szprintf(tmp, sizeof(tmp), "<tt>0x%04X: %s</tt>", key, key_name);
-#else
-	szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", key_name);
-#endif
+	#ifdef GENS_DEBUG
+		szprintf(tmp, sizeof(tmp), "<tt>0x%04X: %s</tt>", key, key_name);
+	#else
+		szprintf(tmp, sizeof(tmp), "<tt>%s</tt>", key_name);
+	#endif
 	
 	gtk_label_set_text(GTK_LABEL(label), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);

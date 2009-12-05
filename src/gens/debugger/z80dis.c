@@ -22,10 +22,6 @@
 
 #include "z80dis.h"
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 

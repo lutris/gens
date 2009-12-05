@@ -23,10 +23,6 @@
 #ifndef GENS_ROM_HPP
 #define GENS_ROM_HPP
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "emulator/gens.hpp"
 
 #include <stdlib.h>
@@ -147,16 +143,6 @@ class ROM
 		static void updateROMName(const char* filename);
 		static void deinterleaveSMD(void);
 		static unsigned short calcChecksum(void);
-		
-#if defined(HAVE_ICONV) || defined(_WIN32)
-		/**
-		 * SJIStoUTF8(): Convert a Shift-JIS string to UTF-8.
-		 * @param sjis Shift-JIS string.
-		 * @param len Shift-JIS string length.
-		 * @return UTF-8 string.
-		 */
-		static std::string SJIStoUTF8(const char *sjis, unsigned int len);
-#endif
 	
 	private:
 		// Don't allow instantiation of this class.

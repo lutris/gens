@@ -70,17 +70,6 @@ void GensUI::setWindowTitle_Idle(void)
 
 
 /**
- * isGraphChar(): Determine if a character is a graphical character.
- * @param chr Character.
- * @return True if the character is graphical; false if it's a space.
- */
-static inline bool isGraphChar(char chr)
-{
-	return (isgraph(chr) || (chr & 0x80));
-}
-
-
-/**
  * setWindowTitle_Game(): Set the window title to the system name, followed by the game name.
  * @param systemName System name.
  * @param gameName Game name.
@@ -148,5 +137,8 @@ void GensUI_wakeup(void)
  */
 void GensUI_setWindowVisibility(const int visibility)
 {
+	// TODO: Implement GensUI::setWindowVisibility() on Win32.
+#ifndef GENS_OS_WIN32
 	GensUI::setWindowVisibility(visibility);
+#endif
 }

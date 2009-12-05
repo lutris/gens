@@ -27,13 +27,6 @@
 
 // C includes.
 #include <stdlib.h>
-#include <stdio.h>
-
-// Win32 Unicode Translation Layer.
-#ifdef _WIN32
-#include "libgsft/w32u/w32u.h"
-#include "libgsft/w32u/w32u_libc.h"
-#endif
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -86,20 +79,21 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// GZip-compressed files can only have one file.
-	unsigned char buf[4096];
+	gzFile gzfd;
+	unsigned char buf[1024];
 	
-	FILE *f = fopen(filename, "rb");
-	if (!f)
-		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
-	gzFile gzfd = gzdopen(fileno(f), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
+	{
+		// Error obtaining a GZip file descriptor.
 		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+	}
 	
 	// Read through the GZip file until we hit an EOF.
 	int filesize = 0;
 	while (!gzeof(gzfd))
 	{
-		filesize += gzread(gzfd, buf, sizeof(buf));
+		filesize += gzread(gzfd, buf, 1024);
 	}
 	
 	// Close the GZip fd.
@@ -140,12 +134,14 @@ static size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
 	if (!filename || !buf || !size)
 		return 0;
 	
-	FILE *f = fopen(filename, "rb");
-	if (!f)
-		return -1;
-	gzFile gzfd = gzdopen(fileno(f), "rb");
+	gzFile gzfd;
+	
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
+	{
+		// Error obtaining a GZip file descriptor.
 		return -1;
+	}
 	
 	// Decompress the GZip file into memory.
 	size_t retval = gzread(gzfd, buf, size);

@@ -46,8 +46,14 @@ using std::vector;
 using std::list;
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
-#include "libgsft/w32u/w32u_windowsx.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -97,8 +103,8 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 
 // Widget creation functions.
 static void	dir_window_create_child_windows(HWND hWnd);
-static HWND	dir_window_create_dir_widgets(const char *title, HWND parent,
-						int y, unsigned int id);
+static HWND	dir_window_create_dir_widgets(LPCTSTR title, HWND parent,
+					      int y, unsigned int id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -133,17 +139,17 @@ void dir_window_show(void)
 		dir_wndclass.hCursor = NULL;
 		dir_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		dir_wndclass.lpszMenuName = NULL;
-		dir_wndclass.lpszClassName = "dir_window";
+		dir_wndclass.lpszClassName = TEXT("dir_window");
 		
-		pRegisterClassU(&dir_wndclass);
+		RegisterClass(&dir_wndclass);
 	}
 	
 	// Create the window.
-	dir_window = pCreateWindowU("dir_window", "Configure Directories",
-					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-					CW_USEDEFAULT, CW_USEDEFAULT,
-					DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT_DEFAULT,
-					gens_window, NULL, ghInstance, NULL);
+	dir_window = CreateWindow(TEXT("dir_window"), TEXT("Configure Directories"),
+				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				  CW_USEDEFAULT, CW_USEDEFAULT,
+				  DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT_DEFAULT,
+				  gens_window, NULL, ghInstance, NULL);
 	
 	UpdateWindow(dir_window);
 	ShowWindow(dir_window, SW_SHOW);
@@ -157,13 +163,13 @@ void dir_window_show(void)
 static void dir_window_create_child_windows(HWND hWnd)
 {
 	// Create the internal directory entry frame.
-	HWND fraInternalDirs = pCreateWindowU(WC_BUTTON, "Gens/GS Directories",
-						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-						8, 8,
-						DIR_WINDOW_WIDTH-16,
-						DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT),
-						hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(fraInternalDirs, fntMain, true);
+	HWND fraInternalDirs = CreateWindow(WC_BUTTON, TEXT("Gens/GS Directories"),
+					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					    8, 8,
+					    DIR_WINDOW_WIDTH-16,
+					    DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT),
+					    hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(fraInternalDirs, fntMain, TRUE);
 	
 	// Initialize the directory widget vector.
 	vectDirs.clear();
@@ -190,13 +196,13 @@ static void dir_window_create_child_windows(HWND hWnd)
 	if (!PluginMgr::lstDirectories.empty())
 	{
 		// Create the plugin directory entry frame.
-		HWND fraPluginDirs = pCreateWindowU(WC_BUTTON, "Plugin Directories",
-							WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-							8, 8+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+8,
-							DIR_WINDOW_WIDTH-16,
-							DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()),
-							hWnd, NULL, ghInstance, NULL);
-		SetWindowFont(fraPluginDirs, fntMain, true);
+		HWND fraPluginDirs = CreateWindow(WC_BUTTON, TEXT("Plugin Directories"),
+						  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						  8, 8+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+8,
+						  DIR_WINDOW_WIDTH-16,
+						  DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()),
+						  hWnd, NULL, ghInstance, NULL);
+		SetWindowFont(fraPluginDirs, fntMain, TRUE);
 		
 		// Create all plugin directory entry widgets.
 		int dir = 0x10;
@@ -234,28 +240,28 @@ static void dir_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
-				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
-				75, 23,
-				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, true);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					DIR_WINDOW_WIDTH-8-75-8-75, dir_window_height-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, true);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					DIR_WINDOW_WIDTH-8-75, dir_window_height-8-24,
 					75, 23,
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, true);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);
@@ -265,32 +271,32 @@ static void dir_window_create_child_windows(HWND hWnd)
 }
 
 
-static HWND dir_window_create_dir_widgets(const char *title, HWND container,
+static HWND dir_window_create_dir_widgets(LPCTSTR title, HWND container,
 					  int y, unsigned int id)
 {
 	// Create the label for the directory.
-	HWND lblTitle = pCreateWindowU(WC_STATIC, title,
-					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8+8, y, 72, 16,
-					container, NULL, ghInstance, NULL);
-	SetWindowFont(lblTitle, fntMain, true);
+	HWND lblTitle = CreateWindow(WC_STATIC, title,
+				     WS_CHILD | WS_VISIBLE | SS_LEFT,
+				     8+8, y, 72, 16,
+				     container, NULL, ghInstance, NULL);
+	SetWindowFont(lblTitle, fntMain, TRUE);
 	
 	// Create the textbox for the directory.
-	HWND txtDirectory = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
-						WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
-						8+8+72+8, y,
-						DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
-						container, (HMENU)(IDC_DIR_DIRECTORY), ghInstance, NULL);
-	SetWindowFont(txtDirectory, fntMain, true);
+	HWND txtDirectory = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
+					   WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
+					   8+8+72+8, y,
+					   DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
+					   container, (HMENU)(IDC_DIR_DIRECTORY), ghInstance, NULL);
+	SetWindowFont(txtDirectory, fntMain, TRUE);
 	
 	// Create the "Change" button for the directory.
 	// TODO: Use an icon?
-	HWND btnChange = pCreateWindowU(WC_BUTTON, "Change...",
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DIR_WINDOW_WIDTH-8-72-8, y,
-					72, 20,
-					container, (HMENU)(IDC_DIR_BTNCHANGE + id), ghInstance, NULL);
-	SetWindowFont(btnChange, fntMain, true);
+	HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
+				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				      DIR_WINDOW_WIDTH-8-72-8, y,
+				      72, 20,
+				      container, (HMENU)(IDC_DIR_BTNCHANGE + id), ghInstance, NULL);
+	SetWindowFont(btnChange, fntMain, TRUE);
 	
 	return txtDirectory;
 }
@@ -319,13 +325,13 @@ static void dir_window_init(void)
 	char dir_buf_rel[GENS_PATH_MAX];
 	
 	// Internal directories.
-	for (size_t dir = 0; dir < vectDirs.size(); dir++)
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
 		if (!vectDirs[dir].is_plugin)
 		{
 			// Internal directory.
-			Edit_SetTextU(vectDirs[dir].txt,
-					dir_window_entries[vectDirs[dir].id].entry);
+			Edit_SetText(vectDirs[dir].txt,
+				     dir_window_entries[vectDirs[dir].id].entry);
 		}
 		else
 		{
@@ -347,8 +353,8 @@ static void dir_window_init(void)
 			// Directory retrieved.
 			// If possible, convert it to a relative pathname.
 			gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
-						dir_buf_rel, sizeof(dir_buf_rel));
-			Edit_SetTextU(vectDirs[dir].txt, dir_buf_rel);
+					     dir_buf_rel, sizeof(dir_buf_rel));
+			Edit_SetText(vectDirs[dir].txt, dir_buf_rel);
 		}
 	}
 	
@@ -365,7 +371,7 @@ static void dir_window_save(void)
 	char dir_buf[GENS_PATH_MAX];
 	char dir_buf_abs[GENS_PATH_MAX];
 	
-	for (size_t dir = 0; dir < vectDirs.size(); dir++)
+	for (unsigned int dir = 0; dir < vectDirs.size(); dir++)
 	{
 		if (!vectDirs[dir].is_plugin)
 		{
@@ -373,7 +379,7 @@ static void dir_window_save(void)
 			char *entry = dir_window_entries[vectDirs[dir].id].entry;
 			
 			// Get the entry text.
-			Edit_GetTextU(vectDirs[dir].txt, entry, GENS_PATH_MAX);
+			Edit_GetText(vectDirs[dir].txt, entry, GENS_PATH_MAX);
 			
 			// Make sure the end of the directory has a slash.
 			// TODO: Do this in functions that use pathnames.
@@ -394,7 +400,7 @@ static void dir_window_save(void)
 			// Plugin directory.
 			
 			// Get the entry text.
-			Edit_GetTextU(vectDirs[dir].txt, dir_buf, sizeof(dir_buf));
+			Edit_GetText(vectDirs[dir].txt, dir_buf, sizeof(dir_buf));
 			
 			// Make sure the entry is null-terminated.
 			dir_buf[sizeof(dir_buf)-1] = 0x00;
@@ -415,7 +421,7 @@ static void dir_window_save(void)
 			
 			// If necessary, convert the pathname to an absolute pathname.
 			gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
-						dir_buf_abs, sizeof(dir_buf_abs));
+					     dir_buf_abs, sizeof(dir_buf_abs));
 			
 			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
 			if (dirIter == PluginMgr::tblDirectories.end())
@@ -496,7 +502,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 			break;
 	}
 	
-	return pDefWindowProcU(hWnd, message, wParam, lParam);
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 
@@ -516,12 +522,12 @@ static void dir_window_callback_btnChange_clicked(unsigned int dir)
 	dir_widget_t *dir_widget = &vectDirs[dir];
 	
 	// Get the currently entered directory.
-	Edit_GetTextU(dir_widget->txt, dir_buf, sizeof(dir_buf));
+	Edit_GetText(dir_widget->txt, dir_buf, sizeof(dir_buf));
 	dir_buf[sizeof(dir_buf)-1] = 0x00;
 	
 	// Convert the current directory to an absolute pathname, if necessary.
 	gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
-				dir_buf_abs, sizeof(dir_buf_abs));
+			     dir_buf_abs, sizeof(dir_buf_abs));
 	
 	// Set the title of the window.
 	char tmp[128];
@@ -540,10 +546,10 @@ static void dir_window_callback_btnChange_clicked(unsigned int dir)
 	
 	// Convert the new directory to a relative pathname, if possible.
 	gsft_file_abs_to_rel(new_dir.c_str(), PathNames.Gens_EXE_Path,
-				dir_buf, sizeof(dir_buf));
+			     dir_buf, sizeof(dir_buf));
 	
 	// Set the new directory.
-	Edit_SetTextU(dir_widget->txt, dir_buf);
+	SetWindowText(dir_widget->txt, dir_buf);
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, true);

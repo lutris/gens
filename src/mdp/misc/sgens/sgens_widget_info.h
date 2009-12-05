@@ -31,7 +31,6 @@
 #include "mdp/mdp_fncall.h"
 
 // Degree symbol.
-#if 0
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#ifndef NOMINMAX
@@ -42,8 +41,6 @@
 #else
 	#define DEGREE_SYMBOL "°"
 #endif
-#endif
-#define DEGREE_SYMBOL "°"
 
 #ifdef __cplusplus
 extern "C" {

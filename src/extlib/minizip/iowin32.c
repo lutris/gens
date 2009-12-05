@@ -62,91 +62,6 @@ typedef struct
     int error;
 } WIN32FILE_IOWIN;
 
-
-/** Unicode functions for Gens/GS. **/
-
-#include <winnls.h>
-#include <wchar.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define InitFuncPtr_minizip(hDll, fn) p##fn = (typeof(p##fn))GetProcAddress((hDll), #fn)
-#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
-
-static WINBASEAPI HANDLE WINAPI CreateFileU_int(
-		LPCSTR lpFileName,
-		DWORD dwDesiredAccess,
-		DWORD dwShareMode,
-		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-		DWORD dwCreationDisposition,
-		DWORD dwFlagsAndAttributes,
-		HANDLE hTemplateFile)
-{
-	static BOOL isUnicodeChecked = FALSE;
-	static BOOL isUnicodeAvailable = FALSE;
-	
-	static HMODULE hKernel32 = NULL;
-	MAKE_STFUNCPTR(CreateFileW);
-	MAKE_STFUNCPTR(MultiByteToWideChar);
-	
-	if (!isUnicodeChecked)
-	{
-		hKernel32 = LoadLibrary("kernel32.dll");
-		if (hKernel32)
-		{
-			InitFuncPtr_minizip(hKernel32, CreateFileW);
-			InitFuncPtr_minizip(hKernel32, MultiByteToWideChar);
-			
-			isUnicodeAvailable = (pCreateFileW && pMultiByteToWideChar);
-			if (!isUnicodeAvailable)
-			{
-				// Unicode is not enabled.
-				// Unload kernel32.dll and NULL out the pointers.
-				FreeLibrary(hKernel32);
-				hKernel32 = NULL;
-				pCreateFileW = NULL;
-				pMultiByteToWideChar = NULL;
-			}
-		}
-		isUnicodeChecked = TRUE;
-	}
-	
-	if (isUnicodeAvailable)
-	{
-		// Unicode is available.
-		
-		// Convert the name from UTF-8 to UTF-16.
-		wchar_t *lpwFileName = NULL;
-		int lpwFileName_len = pMultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, NULL, 0);
-		if (lpwFileName_len > 0)
-		{
-			lpwFileName = (wchar_t*)malloc(lpwFileName_len * sizeof(wchar_t));
-			pMultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, lpwFileName, lpwFileName_len);
-		}
-		
-		HANDLE hRet = pCreateFileW(lpwFileName,
-					dwDesiredAccess,
-					dwShareMode,
-					lpSecurityAttributes,
-					dwCreationDisposition,
-					dwFlagsAndAttributes,
-					hTemplateFile);
-		
-		free(lpwFileName);
-		return hRet;
-	}
-	
-	// Unicode is not available. Use ANSI.
-	return CreateFileA(lpFileName,
-			dwDesiredAccess,
-			dwShareMode,
-			lpSecurityAttributes,
-			dwCreationDisposition,
-			dwFlagsAndAttributes,
-			hTemplateFile);
-}
-
-
 voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
    voidpf opaque;
    const char* filename;
@@ -179,10 +94,8 @@ voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
     }
 
     if ((filename!=NULL) && (dwDesiredAccess != 0))
-    {
-        hFile = CreateFileU_int((LPCTSTR)filename, dwDesiredAccess, dwShareMode, NULL,
+        hFile = CreateFile((LPCTSTR)filename, dwDesiredAccess, dwShareMode, NULL,
                       dwCreationDisposition, dwFlagsAndAttributes, NULL);
-    }
 
     if (hFile == INVALID_HANDLE_VALUE)
         hFile = NULL;

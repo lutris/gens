@@ -145,8 +145,8 @@ void gg_window_show(void *parent)
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_NONE);
 	
 	// Strings.
-	static const char strInfoTitle[] = "<b><i>Information about Game Genie / Patch codes</i></b>";
-	static const char strInfo[] =
+	static const char* const strInfoTitle = "<b><i>Information about Game Genie / Patch codes</i></b>";
+	static const char* const strInfo =
 			"Both Game Genie codes and Patch codes are supported.\n"
 			"Check the box next to the code to activate it.\n"
 			"Syntax for Game Genie codes: XXXX-YYYY\n"

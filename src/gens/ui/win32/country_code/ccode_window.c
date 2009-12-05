@@ -35,8 +35,14 @@
 #include <string.h>
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
-#include "libgsft/w32u/w32u_windowsx.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -120,21 +126,21 @@ void ccode_window_show(void)
 		ccode_wndclass.cbClsExtra = 0;
 		ccode_wndclass.cbWndExtra = 0;
 		ccode_wndclass.hInstance = ghInstance;
-		ccode_wndclass.hIcon = pLoadIconU(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		ccode_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		ccode_wndclass.hCursor = NULL;
 		ccode_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ccode_wndclass.lpszMenuName = NULL;
-		ccode_wndclass.lpszClassName = "ccode_window";
+		ccode_wndclass.lpszClassName = TEXT("ccode_window");
 		
-		pRegisterClassU(&ccode_wndclass);
+		RegisterClass(&ccode_wndclass);
 	}
 	
 	// Create the window.
-	ccode_window = pCreateWindowU("ccode_window", "Country Code Order",
-					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-					CW_USEDEFAULT, CW_USEDEFAULT,
-					CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT,
-					gens_window, NULL, ghInstance, NULL);
+	ccode_window = CreateWindow(TEXT("ccode_window"), TEXT("Country Code Order"),
+				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				    CW_USEDEFAULT, CW_USEDEFAULT,
+				    CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT,
+				    gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.
@@ -157,12 +163,12 @@ void ccode_window_show(void)
 static void ccode_window_create_child_windows(HWND hWnd)
 {
 	// Add a frame for country code selection.
-	HWND fraCountry = pCreateWindowU(WC_BUTTON, "Country Code Order",
-					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 8,
-					CCODE_WINDOW_FRACOUNTRY_WIDTH,
-					CCODE_WINDOW_FRACOUNTRY_HEIGHT,
-					hWnd, NULL, ghInstance, NULL);
+	HWND fraCountry = CreateWindow(WC_BUTTON, TEXT("Country Code Order"),
+				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				       8, 8,
+				       CCODE_WINDOW_FRACOUNTRY_WIDTH,
+				       CCODE_WINDOW_FRACOUNTRY_HEIGHT,
+				       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(fraCountry, fntMain, TRUE);
 	
 	// Create the Country Code treeview.
@@ -174,9 +180,9 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	
 	// Adjust the frame's height.
 	SetWindowPos(fraCountry, 0, 0, 0,
-			CCODE_WINDOW_FRACOUNTRY_WIDTH,
-			CCODE_WINDOW_FRACOUNTRY_HEIGHT + (ccode_window_height - CCODE_WINDOW_DEF_HEIGHT),
-			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
+		     CCODE_WINDOW_FRACOUNTRY_WIDTH,
+		     CCODE_WINDOW_FRACOUNTRY_HEIGHT + (ccode_window_height - CCODE_WINDOW_DEF_HEIGHT),
+		     SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
 	
 	// Create the Up/Down buttons.
 	ccode_window_create_up_down_buttons(hWnd);
@@ -188,7 +194,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	static const int btnLeft = (CCODE_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 					btnLeft, ccode_window_height-8-24,
 					75, 23,
@@ -196,7 +202,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft+8+75, ccode_window_height-8-24,
 					75, 23,
@@ -204,7 +210,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft+8+75+8+75, ccode_window_height-8-24,
 					75, 23,
@@ -229,12 +235,12 @@ static void ccode_window_create_child_windows(HWND hWnd)
 static void ccode_window_create_lstCountryCodes(HWND container)
 {
 	// Create the listbox.
-	lstCountryCodes = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
-						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						8+8, 8+16,
-						CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH,
-						CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT,
-						container, NULL, ghInstance, NULL);
+	lstCountryCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					 8+8, 8+16,
+					 CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH,
+					 CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT,
+					 container, NULL, ghInstance, NULL);
 	SetWindowFont(lstCountryCodes, fntMain, TRUE);
 	
 	// Check what the listbox's actual height is.
@@ -242,8 +248,7 @@ static void ccode_window_create_lstCountryCodes(HWND container)
 	GetWindowRect(lstCountryCodes, &r);
 	
 	// Determine the window height based on the listbox's adjusted size.
-	ccode_window_height = CCODE_WINDOW_DEF_HEIGHT + ((r.bottom - r.top)
-				- CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT);
+	ccode_window_height = CCODE_WINDOW_DEF_HEIGHT + ((r.bottom - r.top) - CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT);
 }
 
 
@@ -258,33 +263,33 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	// See http://support.microsoft.com/kb/142226
 	
 	// Load the icons.
-	HICON icoUp   = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
-						IMAGE_ICON,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
-	HICON icoDown = (HICON)pLoadImageU(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
-						IMAGE_ICON,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+	HICON icoUp   = (HICON)LoadImage(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
+					 IMAGE_ICON,
+					 CCODE_WINDOW_BTN_ICON_SIZE,
+					 CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+	HICON icoDown = (HICON)LoadImage(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
+					 IMAGE_ICON,
+					 CCODE_WINDOW_BTN_ICON_SIZE,
+					 CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
 	
 	// Create the buttons.
 	
 	// "Up" button.
-	HWND btnUp = pCreateWindowU(WC_BUTTON, NULL,
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
-					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
-					8+16,
-					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
-					container, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
+	HWND btnUp = CreateWindow(WC_BUTTON, NULL,
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
+				  8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
+				  8+16,
+				  CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
+				  container, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
 	SetWindowFont(btnUp, fntMain, TRUE);
 	
 	// "Down" button.
-	HWND btnDown = pCreateWindowU(WC_BUTTON, NULL,
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
-					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
-					8+16+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT+(ccode_window_height-CCODE_WINDOW_DEF_HEIGHT)-CCODE_WINDOW_BTN_SIZE,
-					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
-					container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
+	HWND btnDown = CreateWindow(WC_BUTTON, NULL,
+				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
+				    8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
+				    8+16+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT+(ccode_window_height-CCODE_WINDOW_DEF_HEIGHT)-CCODE_WINDOW_BTN_SIZE,
+				    CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
+				    container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
 	SetWindowFont(btnDown, fntMain, TRUE);
 	
 	// Check the Common Controls v6.0 status.
@@ -299,8 +304,8 @@ static void ccode_window_create_up_down_buttons(HWND container)
 		
 		// "Up" button image list.
 		imglArrowUp = ImageList_Create(CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						ILC_MASK | ILC_COLOR4, 1, 1);
+					       CCODE_WINDOW_BTN_ICON_SIZE,
+					       ILC_MASK | ILC_COLOR4, 1, 1);
 		ImageList_SetBkColor(imglArrowUp, CLR_NONE);
 		ImageList_AddIcon(imglArrowUp, icoUp);
 		
@@ -330,10 +335,10 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	else
 	{
 		// Older version of Common Controls. Use BM_SETIMAGE.
-		Button_SetTextU(btnUp, "Up");
-		Button_SetTextU(btnDown, "Down");
-		pSendMessageU(btnUp, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoUp);
-		pSendMessageU(btnDown, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoDown);
+		SetWindowText(btnUp, TEXT("Up"));
+		SetWindowText(btnDown, TEXT("Down"));
+		SendMessage(btnUp, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoUp);
+		SendMessage(btnDown, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoDown);
 	}
 }
 
@@ -379,18 +384,18 @@ static void ccode_window_init(void)
 	Check_Country_Order();
 	
 	// Clear the listbox.
-	ListBox_ResetContentU(lstCountryCodes);
+	ListBox_ResetContent(lstCountryCodes);
 	
 	// Country codes.
 	// TODO: Move this to a common file.
-	static const char ccodes[3][8] = {"USA", "Japan", "Europe"};
+	static const TCHAR* const ccodes[3] = {TEXT("USA"), TEXT("Japan"), TEXT("Europe")};
 	
 	// Add the country codes to the listbox in the appropriate order.
 	int i;
 	for (i = 0; i < 3; i++)
 	{
-		ListBox_InsertStringU(lstCountryCodes, i, ccodes[Country_Order[i]]);
-		ListBox_SetItemDataU(lstCountryCodes, i, Country_Order[i]);
+		ListBox_InsertString(lstCountryCodes, i, ccodes[Country_Order[i]]);
+		ListBox_SetItemData(lstCountryCodes, i, Country_Order[i]);
 	}
 	
 	// Disable the "Apply" button initially.
@@ -407,7 +412,7 @@ static void ccode_window_save(void)
 	int i;
 	for (i = 0; i < 3; i++)
 	{
-		Country_Order[i] = ListBox_GetItemDataU(lstCountryCodes, i);
+		Country_Order[i] = ListBox_GetItemData(lstCountryCodes, i);
 	}
 	
 	// Validate the country code order.
@@ -490,7 +495,7 @@ static LRESULT CALLBACK ccode_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
  */
 static void ccode_window_callback_btnUp_clicked(void)
 {
-	int curIndex = ListBox_GetCurSelU(lstCountryCodes);
+	int curIndex = ListBox_GetCurSel(lstCountryCodes);
 	if (curIndex == -1 || curIndex == 0)
 		return;
 	
@@ -499,22 +504,22 @@ static void ccode_window_callback_btnUp_clicked(void)
 	char curItem[32];   int curItemData;
 	
 	// Get the current text and data for each item.
-	ListBox_GetTextU(lstCountryCodes, curIndex - 1, aboveItem);
-	ListBox_GetTextU(lstCountryCodes, curIndex, curItem);
-	aboveItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex - 1);
-	curItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex);
+	ListBox_GetText(lstCountryCodes, curIndex - 1, aboveItem);
+	ListBox_GetText(lstCountryCodes, curIndex, curItem);
+	aboveItemData = ListBox_GetItemData(lstCountryCodes, curIndex - 1);
+	curItemData = ListBox_GetItemData(lstCountryCodes, curIndex);
 	
 	// Swap the strings and data.
-	ListBox_DeleteStringU(lstCountryCodes, curIndex - 1);
-	ListBox_InsertStringU(lstCountryCodes, curIndex - 1, curItem);
-	ListBox_SetItemDataU(lstCountryCodes, curIndex - 1, curItemData);
+	ListBox_DeleteString(lstCountryCodes, curIndex - 1);
+	ListBox_InsertString(lstCountryCodes, curIndex - 1, curItem);
+	ListBox_SetItemData(lstCountryCodes, curIndex - 1, curItemData);
 	
-	ListBox_DeleteStringU(lstCountryCodes, curIndex);
-	ListBox_InsertStringU(lstCountryCodes, curIndex, aboveItem);
-	ListBox_SetItemDataU(lstCountryCodes, curIndex, aboveItemData);
+	ListBox_DeleteString(lstCountryCodes, curIndex);
+	ListBox_InsertString(lstCountryCodes, curIndex, aboveItem);
+	ListBox_SetItemData(lstCountryCodes, curIndex, aboveItemData);
 	
 	// Set the current selection.
-	ListBox_SetCurSelU(lstCountryCodes, curIndex - 1);
+	ListBox_SetCurSel(lstCountryCodes, curIndex - 1);
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, TRUE);
@@ -526,8 +531,8 @@ static void ccode_window_callback_btnUp_clicked(void)
  */
 static void ccode_window_callback_btnDown_clicked(void)
 {
-	int curIndex = ListBox_GetCurSelU(lstCountryCodes);
-	if (curIndex == -1 || curIndex >= (ListBox_GetCountU(lstCountryCodes) - 1))
+	int curIndex = ListBox_GetCurSel(lstCountryCodes);
+	if (curIndex == -1 || curIndex >= (ListBox_GetCount(lstCountryCodes) - 1))
 		return;
 	
 	// Swap the current item and the one below it.
@@ -535,22 +540,22 @@ static void ccode_window_callback_btnDown_clicked(void)
 	char belowItem[32]; int belowItemData;
 	
 	// Get the current text and data for each item.
-	ListBox_GetTextU(lstCountryCodes, curIndex, curItem);
-	ListBox_GetTextU(lstCountryCodes, curIndex + 1, belowItem);
-	curItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex);
-	belowItemData = ListBox_GetItemDataU(lstCountryCodes, curIndex + 1);
+	ListBox_GetText(lstCountryCodes, curIndex, curItem);
+	ListBox_GetText(lstCountryCodes, curIndex + 1, belowItem);
+	curItemData = ListBox_GetItemData(lstCountryCodes, curIndex);
+	belowItemData = ListBox_GetItemData(lstCountryCodes, curIndex + 1);
 	
 	// Swap the strings and data.
-	ListBox_DeleteStringU(lstCountryCodes, curIndex);
-	ListBox_InsertStringU(lstCountryCodes, curIndex, belowItem);
-	ListBox_SetItemDataU(lstCountryCodes, curIndex, belowItemData);
+	ListBox_DeleteString(lstCountryCodes, curIndex);
+	ListBox_InsertString(lstCountryCodes, curIndex, belowItem);
+	ListBox_SetItemData(lstCountryCodes, curIndex, belowItemData);
 	
-	ListBox_DeleteStringU(lstCountryCodes, curIndex + 1);
-	ListBox_InsertStringU(lstCountryCodes, curIndex + 1, curItem);
-	ListBox_SetItemDataU(lstCountryCodes, curIndex + 1, curItemData);
+	ListBox_DeleteString(lstCountryCodes, curIndex + 1);
+	ListBox_InsertString(lstCountryCodes, curIndex + 1, curItem);
+	ListBox_SetItemData(lstCountryCodes, curIndex + 1, curItemData);
 	
 	// Set the current selection.
-	ListBox_SetCurSelU(lstCountryCodes, curIndex + 1);
+	ListBox_SetCurSel(lstCountryCodes, curIndex + 1);
 	
 	// Enable the "Apply" button.
 	Button_Enable(btnApply, TRUE);
