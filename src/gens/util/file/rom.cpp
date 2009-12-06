@@ -114,9 +114,8 @@ using std::deque;
 #if defined(HAVE_ICONV)
 #include "charset/iconv_string.hpp"
 #elif defined(_WIN32)
-// TODO: Move character set conversion to a different module.
 #include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_winnls.h"
+#include "libgsft/w32u/w32u_charset.h"
 #endif
 
 
@@ -1123,36 +1122,20 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	return gens_iconv(sjis, len, "SHIFT-JIS", "");
 #elif defined(_WIN32)
 	// Win32-based Shift-JIS to UTF-8 conversion code.
-	// TODO: This seems to produce the wrong result for Mega Anser.
-	// It results in 5 Japanese characters, but it should be 8 Japanese characters.
+	// NOTE: w32u_mbstombs_alloc() requires a NULL-terminated string;
+	// however, sjis is *not* NULL-terminated.
+	char *sjis_tmp = (char*)malloc(len + 1);
+	memcpy(sjis_tmp, sjis, len);
+	sjis_tmp[len] = 0x00;
 	
-	// Convert Shift-JIS to UTF-16.
-	int wcs_len = MultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, NULL, 0);
-	if (wcs_len <= 0)
-		return string(sjis);
-	
-	wchar_t *wcs = (wchar_t*)malloc(wcs_len * sizeof(wchar_t));
-	MultiByteToWideChar(932, MB_PRECOMPOSED, sjis, len, wcs, wcs_len);
-	
-	// Convert UTF-16 to UTF-8.
-	int mbs_len = WideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, NULL, 0, NULL, NULL);
-	if (mbs_len <= 0)
-	{
-		free(wcs);
-		return string(sjis);
-	}
-	
-	char *mbs = (char*)malloc(mbs_len * sizeof(char) + 1);
-	WideCharToMultiByte(CP_UTF8, 0, wcs, wcs_len, mbs, mbs_len, NULL, NULL);
-	mbs[mbs_len * sizeof(char)] = 0x00;
-	
-	string s_utf8 = string(mbs);
-	
-	// Free the buffers.
-	free(wcs);
-	free(mbs);
+	// Convert the string from Shift-JIS to UTF-8.
+	char *mbs = w32u_mbstombs_alloc(sjis_tmp, 0, 932, CP_UTF8);
+	if (!mbs)
+		return "";
 	
 	// Return the string.
+	string s_utf8 = string(mbs);
+	free(mbs);
 	return s_utf8;
 #endif
 }
