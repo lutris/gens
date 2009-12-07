@@ -235,8 +235,8 @@ int osd_font_load(const char *filename)
 	gzclose(zf_osd);
 	
 	LOG_MSG(gens, LOG_MSG_LEVEL_INFO,
-		"%d characters loaded from 'osd_font.bin'. (%d non-BMP characters skipped)",
-		num_chrs, num_chrs_nonbmp);
+		"%d characters loaded from '%s'. (%d non-BMP characters skipped)",
+		num_chrs, filename, num_chrs_nonbmp);
 	
 	return 0;
 }
