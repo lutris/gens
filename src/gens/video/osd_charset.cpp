@@ -59,6 +59,13 @@ static uint8_t chr_font_flags[65536];	// Character flags.
 #define CHR_FLAG_HALFWIDTH	0
 #define CHR_FLAG_FULLWIDTH	(1 << 0)
 
+typedef union
+{
+	const uint8_t *p_u8;
+	const uint16_t *p_u16;
+	const void *p_v;
+} chr_ptr_t;
+
 
 /**
  * osd_init(): Initialize the OSD font.
@@ -231,13 +238,14 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 	if (!str || !prerender_buf)
 		return 0;
 	
-	const uint8_t *chr_data;
+	chr_ptr_t chr_data;
 	const unsigned char *utf8str = reinterpret_cast<const unsigned char*>(str);
 	unsigned int chr_num = 0;
 	
-	while (*utf8str)
+	while (*utf8str && chr_num < 1023)
 	{
 		wchar_t wchr;
+		bool is_fullwidth = false;
 		
 		// Check if this is the start of a UTF-8 sequence.
 		if (!(*utf8str & 0x80))
@@ -294,18 +302,18 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		if (wchr > 0xFFFF)
 		{
 			// Outside of BMP. Not found.
-			chr_data = &chr_err[0];
+			chr_data.p_u8 = &chr_err[0];
 		}
 		else if (chr_font_data[wchr] == NULL)
 		{
 			// Character not found.
-			chr_data = &chr_err[0];
+			chr_data.p_u8 = &chr_err[0];
 		}
 		else
 		{
 			// Character found.
-			// TODO: Proper fullwidth handling.
-			chr_data = (const uint8_t*)chr_font_data[wchr];
+			chr_data.p_v = chr_font_data[wchr];
+			is_fullwidth = (chr_font_flags[wchr] & CHR_FLAG_FULLWIDTH);
 		}
 		
 		// Check for combining characters.
@@ -324,18 +332,33 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			// Unicode combining character.
 			// OR the glyph with the previous character.
 			// TODO: This isn't the perfect method, but it's good enough for now.
+			// TODO: Check for fullwidth combining characters.
 			chr_num--;
 			for (unsigned int row = 0; row < 16; row++)
 			{
-				prerender_buf[row][chr_num] |= chr_data[row];
+				prerender_buf[row][chr_num] |= chr_data.p_u8[row];
 			}
 		}
 		else
 		{
 			// Regular character.
-			for (unsigned int row = 0; row < 16; row++)
+			if (!is_fullwidth)
 			{
-				prerender_buf[row][chr_num] = chr_data[row];
+				// Halfwidth character.
+				for (unsigned int row = 0; row < 16; row++)
+				{
+					prerender_buf[row][chr_num] = chr_data.p_u8[row];
+				}
+			}
+			else
+			{
+				// Fullwidth character.
+				for (unsigned int row = 0; row < 16; row++)
+				{
+					prerender_buf[row][chr_num] = chr_data.p_u16[row] >> 8;
+					prerender_buf[row][chr_num + 1] = chr_data.p_u16[row] & 0xFF;
+				}
+				chr_num++;
 			}
 		}
 		
