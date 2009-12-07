@@ -25,11 +25,57 @@
 
 // C includes.
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 // Character used if a character cannot be found.
 static const uint8_t chr_err[16] =
 	{0x00, 0x38, 0x7C, 0x7C, 0xC6, 0x92, 0xF2, 0xE6,
 	 0xFE, 0xE6, 0x7C, 0x7C, 0x38, 0x00, 0x00, 0x00};
+
+
+// Character font data.
+static void *chr_font_data[65536];	// Pointers to character data.
+static uint8_t chr_font_flags[65536];	// Character flags.
+
+// Character flags.
+#define CHR_FLAG_HALFWIDTH	0
+#define CHR_FLAG_FULLWIDTH	(1 << 0)
+
+
+/**
+ * osd_init(): Initialize the OSD font.
+ */
+void osd_init(void)
+{
+	memset(chr_font_data, 0x00, sizeof(chr_font_data));
+	memset(chr_font_flags, 0x00, sizeof(chr_font_flags));
+	
+	// Initialize character data with the internal VGA character set.
+	// TODO: Copy the data into memory so it can be replaced by external fonts.
+	for (unsigned int chr = 0x20; chr < 0x80; chr++)
+	{
+		chr_font_data[chr] = (void*)&VGA_charset_ASCII[chr-0x20][0];
+		chr_font_flags[chr] = CHR_FLAG_HALFWIDTH;
+	}
+	
+	// TODO: Load font data.
+}
+
+
+/**
+ * osd_end(): Shut down the OSD font.
+ */
+void osd_end(void)
+{
+	// Free the OSD font data.
+	for (unsigned int chr = 0x80; chr < 65536; chr++)
+		free(chr_font_data[chr]);
+	
+	memset(chr_font_data, 0x00, sizeof(chr_font_data));
+	memset(chr_font_flags, 0x00, sizeof(chr_font_flags));
+}
+
 
 /**
  * osd_charset_prerender(): Prerender a string.
@@ -101,24 +147,22 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			}
 		}
 		
-		// Check if the page exists.
+		// Check if the character exists.
 		if (wchr > 0xFFFF)
 		{
 			// Outside of BMP. Not found.
 			chr_data = &chr_err[0];
 		}
-		else if (VGA_charset[wchr >> 8] == NULL)
+		else if (chr_font_data[wchr] == NULL)
 		{
-			// Page not found.
+			// Character not found.
 			chr_data = &chr_err[0];
 		}
 		else
 		{
-			// Page found.
-			int page = (wchr >> 8) & 0xFF;
-			int chr = wchr & 0xFF;
-			
-			chr_data = VGA_charset[page] + (16*chr);
+			// Character found.
+			// TODO: Proper fullwidth handling.
+			chr_data = (const uint8_t*)chr_font_data[wchr];
 		}
 		
 		// Check for combining characters.
@@ -129,10 +173,10 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 		// * Combining Half Marks (FE20–FE2F)
 		// Reference: http://en.wikipedia.org/wiki/Combining_character
 		if (chr_num > 0 &&
-		    (wchr >= 0x0300 && wchr <= 0x036F) ||
-		    (wchr >= 0x1DC0 && wchr <= 0x1DFF) ||
-		    (wchr >= 0x20D0 && wchr <= 0x20FF) ||
-		    (wchr >= 0xFE20 && wchr <= 0xFE2F))
+		    ((wchr >= 0x0300 && wchr <= 0x036F) ||
+		     (wchr >= 0x1DC0 && wchr <= 0x1DFF) ||
+		     (wchr >= 0x20D0 && wchr <= 0x20FF) ||
+		     (wchr >= 0xFE20 && wchr <= 0xFE2F)))
 		{
 			// Unicode combining character.
 			// OR the glyph with the previous character.

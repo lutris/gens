@@ -36,8 +36,8 @@ extern "C" {
  * MSB == left-most dot; LSB == right-most dot      *
  ****************************************************/
 
-/** Typedef for 8x16 character set page. */
-typedef uint8_t osd_charset_page_t[256][16];
+void osd_init(void);
+void osd_end(void);
 
 int osd_charset_prerender(const char *str, uint8_t prerender_buf[16][1024]);
 

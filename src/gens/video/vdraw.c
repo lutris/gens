@@ -50,6 +50,7 @@
 
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
+#include "osd_charset.hpp"
 
 // Gens window.
 #include "gens/gens_window_sync.hpp"
@@ -165,6 +166,9 @@ BOOL		vdraw_needs_conversion = FALSE;
  */
 int vdraw_init(void)
 {
+	// Initialize the OSD subsystem.
+	osd_init();
+	
 	// Calculate the initial text styles.
 	memset(&vdraw_fps_style, 0x00, sizeof(vdraw_fps_style));
 	memset(&vdraw_msg_style, 0x00, sizeof(vdraw_msg_style));
@@ -189,6 +193,9 @@ int vdraw_end(void)
 		vdraw_cur_backend->end();
 		vdraw_cur_backend = NULL;
 	}
+	
+	// Shut down the OSD subsystem.
+	osd_end();
 	
 	// TODO: Do something here.
 	return 0;
