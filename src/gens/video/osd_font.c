@@ -132,7 +132,7 @@ int osd_font_load(const char *filename)
 	// OSD file format stuff.
 	static const uint8_t osd_header[] = {'M', 'D', 'F', 'o', 'n', 't', '1', 0x0A};
 	static const uint8_t osd_eof[] = {'_', 'E', 'O', 'F'};
-	uint8_t buf[32];
+	uint8_t buf[256];
 	
 	// Get the file header.
 	gzread(zf_osd, buf, 8);
@@ -141,8 +141,19 @@ int osd_font_load(const char *filename)
 		// Invalid file header.
 		gzclose(zf_osd);
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
-			"'osd_font.bin' is not a valid Gens/GS OSD font.");
+			"'%s' is not a valid Gens/GS OSD font.", filename);
 		return -2;
+	}
+	
+	// Get the font title.
+	uint8_t font_title_len;
+	gzread(zf_osd, &font_title_len, 1);
+	if (font_title_len > 0)
+	{
+		gzread(zf_osd, buf, font_title_len);
+		buf[font_title_len+1] = 0x00;
+		LOG_MSG(gens, LOG_MSG_LEVEL_INFO,
+			"Loading OSD font '%s': %s", filename, buf);
 	}
 	
 	if (!osd_is_alloc)
