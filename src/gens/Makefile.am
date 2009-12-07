@@ -136,6 +136,7 @@ gens_SOURCES = \
 		util/sound/wave.c \
 		video/VGA_charset.c \
 		video/osd_charset.cpp \
+		video/osd_font.c \
 		video/vdraw.c \
 		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
@@ -261,6 +262,7 @@ noinst_HEADERS = \
 		util/sound/wave.h \
 		video/VGA_charset.h \
 		video/osd_charset.hpp \
+		video/osd_font.h \
 		video/vdraw.h \
 		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
