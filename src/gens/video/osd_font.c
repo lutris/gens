@@ -88,8 +88,9 @@ void osd_font_init_ASCII(void)
 /**
  * osd_font_load(): Load an OSD font.
  * @param filename Filename of the OSD font.
+ * @return 0 on success; non-zero on error.
  */
-void osd_font_load(const char *filename)
+int osd_font_load(const char *filename)
 {
 #ifdef _WIN32
 	// TODO: Use pSetCurrentDirectoryU once win32-unicode is merged to master.
@@ -102,7 +103,7 @@ void osd_font_load(const char *filename)
 		// Couldn't open the font file.
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
 			"Couldn't open 'osd_font.bin': %s", strerror(errno));
-		return;
+		return -1;
 	}
 	
 	// OSD file format stuff.
@@ -118,7 +119,7 @@ void osd_font_load(const char *filename)
 		fclose(f_osd);
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
 			"'osd_font.bin' is not a valid Gens/GS OSD font.");
-		return;
+		return -2;
 	}
 	
 	unsigned int num_chrs = 0;
@@ -210,4 +211,6 @@ void osd_font_load(const char *filename)
 	LOG_MSG(gens, LOG_MSG_LEVEL_INFO,
 		"%d characters loaded from 'osd_font.bin'. (%d non-BMP characters skipped)",
 		num_chrs, num_chrs_nonbmp);
+	
+	return 0;
 }

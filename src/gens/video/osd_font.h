@@ -45,7 +45,7 @@ extern uint8_t osd_font_flags[65536];	// Character flags.
 
 void osd_font_clear(void);
 void osd_font_init_ASCII(void);
-void osd_font_load(const char *filename);
+int osd_font_load(const char *filename);
 
 #ifdef __cplusplus
 }
