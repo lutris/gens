@@ -20,12 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "osd_charset.hpp"
 #include "osd_font.h"
 
 // C includes.
 #include <string.h>
 #include <stdlib.h>
+
+#ifdef GENS_ZLIB
+#include <zlib.h>
+#endif
 
 // Character used if a character cannot be found.
 static const uint8_t chr_err[16] =
@@ -43,8 +51,15 @@ void osd_init(void)
 	
 	// Load font data from "osd_font.bin"
 	// TODO: Make it customizable?
-	// TODO: GZipped file support?
-	osd_font_load("osd_font.bin");
+	int ret = -1;
+	
+#ifdef GENS_ZLIB
+	if (!access("osd_font.bin.gz", R_OK))
+		ret = osd_font_load("osd_font.bin.gz");
+#endif
+	
+	if (ret != 0)
+		osd_font_load("osd_font.bin");
 }
 
 

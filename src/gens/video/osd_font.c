@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "osd_font.h"
 
 // C includes.
@@ -35,6 +39,15 @@
 
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
+
+#ifdef GENS_ZLIB
+#include <zlib.h>
+#else
+#define zf_osd f_osd
+#define gzread(file, buf, len)	fread((buf), 1, (len), (file))
+#define gzclose(file)		fclose(file)
+#define gzeof(file)		feof(file)
+#endif
 
 // Needed for SetCurrentDirectory.
 // TODO: Use libgsft/w32u/ once win32-unicode is merged to master.
@@ -102,9 +115,19 @@ int osd_font_load(const char *filename)
 	{
 		// Couldn't open the font file.
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
-			"Couldn't open 'osd_font.bin': %s", strerror(errno));
+			"Couldn't open '%s': %s", filename, strerror(errno));
 		return -1;
 	}
+	
+#ifdef GENS_ZLIB
+	gzFile zf_osd = gzdopen(fileno(f_osd), "rb");
+	if (!zf_osd)
+	{
+		// ZLib error.
+		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+			"Couldn't gzdopen() '%s': %s", filename, strerror(errno));
+	}
+#endif
 	
 	// OSD file format stuff.
 	static const uint8_t osd_header[] = {'M', 'D', 'F', 'o', 'n', 't', '1', 0x0A};
@@ -112,11 +135,11 @@ int osd_font_load(const char *filename)
 	uint8_t buf[32];
 	
 	// Get the file header.
-	fread(buf, 1, 8, f_osd);
+	gzread(zf_osd, buf, 8);
 	if (memcmp(osd_header, buf, sizeof(osd_header)) != 0)
 	{
 		// Invalid file header.
-		fclose(f_osd);
+		gzclose(zf_osd);
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
 			"'osd_font.bin' is not a valid Gens/GS OSD font.");
 		return -2;
@@ -133,9 +156,9 @@ int osd_font_load(const char *filename)
 	uint32_t chr;
 	uint8_t flags;
 	
-	while (!feof(f_osd))
+	while (!gzeof(zf_osd))
 	{
-		fread(chr_flag_buf, 1, sizeof(chr_flag_buf), f_osd);
+		gzread(zf_osd, chr_flag_buf, sizeof(chr_flag_buf));
 		if (memcmp(osd_eof, chr_flag_buf, sizeof(osd_eof)) == 0)
 		{
 			// End of file.
@@ -159,9 +182,9 @@ int osd_font_load(const char *filename)
 			else
 			{
 				// Simply skip the character.
-				fseek(f_osd, 16, SEEK_CUR);
+				gzread(zf_osd, buf, 16);
 				if (flags & OSD_FLAG_FULLWIDTH)
-					fseek(f_osd, 16, SEEK_CUR);
+					gzread(zf_osd, buf, 16);
 				
 				num_chrs_nonbmp++;
 			}
@@ -171,7 +194,7 @@ int osd_font_load(const char *filename)
 		if (!(flags & OSD_FLAG_FULLWIDTH))
 		{
 			// Halfwidth. Read 16 bytes.
-			fread(buf, 1, 16, f_osd);
+			gzread(zf_osd, buf, 16);
 			if (osd_font_data[chr].p_v != NULL)
 			{
 				// Character already exists. Skip it.
@@ -186,7 +209,7 @@ int osd_font_load(const char *filename)
 		else
 		{
 			// Fullwidth. Read 32 bytes.
-			fread(buf, 1, 32, f_osd);
+			gzread(zf_osd, buf, 32);
 			if (osd_font_data[chr].p_v != NULL)
 			{
 				// Character already exists. Skip it.
@@ -209,7 +232,7 @@ int osd_font_load(const char *filename)
 	}
 	
 	// Finished reading the file.
-	fclose(f_osd);
+	gzclose(zf_osd);
 	
 	LOG_MSG(gens, LOG_MSG_LEVEL_INFO,
 		"%d characters loaded from 'osd_font.bin'. (%d non-BMP characters skipped)",
