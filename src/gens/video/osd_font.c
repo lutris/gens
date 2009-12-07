@@ -122,6 +122,9 @@ int osd_font_load(const char *filename)
 		return -2;
 	}
 	
+	if (!osd_is_alloc)
+		osd_font_clear();
+	
 	unsigned int num_chrs = 0;
 	unsigned int num_chrs_nonbmp = 0;
 	
