@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libmdp_render_2x.la
+noinst_DIST = mdp_render_2x.txt
 
 INCLUDES = -I@top_srcdir@/src/
 libmdp_render_2x_la_CCASFLAGS	= $(INCLUDES)
