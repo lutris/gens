@@ -103,6 +103,13 @@ static int decompressor_zip_get_file_info(FILE *zF, const char* filename, mdp_z_
 	while (i == UNZ_OK)
 	{
 		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
+		if (zinfo.external_fa & 0x10)
+		{
+			// Directory. (0x10 == DOS attribute for directory)
+			// Skip this file.
+			i = unzGoToNextFile(f);
+			continue;
+		}
 		
 		// Allocate memory for the next file list element.
 		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
