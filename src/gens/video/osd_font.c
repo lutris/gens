@@ -78,7 +78,6 @@ osd_font_mem_t *osd_font_blocks_head = NULL;
 
 static osd_font_mem_t* osd_font_alloc(size_t sz)
 {
-	printf("alloc: %d bytes\n", sz);
 	osd_font_mem_t *cur = (osd_font_mem_t*)malloc(sizeof(osd_font_mem_t));
 	cur->ptr = malloc(sz);
 	cur->next = osd_font_blocks_head;
