@@ -423,6 +423,11 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		
 		case IDM_GRAPHICS_OPENGL_RES_CUSTOM:
 			glres_window_show();
+			
+			// Synchronize the Graphics Menu;
+			// otherwise, "Custom" may be selected even if the resolution
+			// matches one of the predefined resolutions.
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 #endif /* GENS_OPENGL */
 		
