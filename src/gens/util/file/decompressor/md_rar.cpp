@@ -231,30 +231,30 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 
 
 /**
- * decompressor_rar_get_file(): Get a file from the archive.
- * @param zF Open file handle. (Unused in the RAR handler.)
- * @param filename Filename of the archive.
- * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
- * @param buf Buffer to read the file into.
- * @param size Size of buf (in bytes).
- * @return Number of bytes read, or 0 on error.
+ * decompressor_get_file(): Get a file from the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
+ * @param buf		[in] Buffer to read the file into.
+ * @param size		[in] Size of buf (in bytes).
+ * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
+ * @return MDP error code.
  */
-size_t decompressor_rar_get_file(FILE *zF, const char *filename,
-				 mdp_z_entry_t *z_entry,
-				 void *buf, const size_t size)
+int decompressor_rar_get_file(FILE *zF, const char *filename,
+				mdp_z_entry_t *z_entry, void *buf,
+				const size_t size, size_t *ret_size)
 {
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
-	if (!filename || !z_entry || !buf || !size)
-		return 0;
+	if (!filename || !z_entry || !buf || !size || !ret_size)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Check that the RAR executable is available.
 	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
 	{
 		// Cannot run the RAR executable.
-		// TODO: Show an error message and/or return an error code.
-		return 0;
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	// Build the command line.
@@ -270,8 +270,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	if (!pRAR)
 	{
 		// Error opening `rar`.
-		// TODO: Show an error message and/or return an error code.
-		return 0;
+		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	// Read from the pipe.
@@ -287,6 +286,7 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 	}
 	gens_pclose(pRAR);
 	
-	// Return the filesize.
-	return extracted_size;
+	// File extracted successfully.
+	*ret_size = extracted_size;
+	return MDP_ERR_OK;
 }

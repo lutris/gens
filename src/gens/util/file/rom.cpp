@@ -565,6 +565,7 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	const decompressor_t *cmp = NULL;
 	unsigned int romType;
+	int ret;
 	
 	// Reset the ROM byteswap state.
 	ROM_ByteSwap_State = 0;
@@ -574,6 +575,9 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!fROM)
 	{
 		// Error opening the file.
+		Game = NULL;
+		out_ROM = NULL;
+		
 		char msg[512];
 		szprintf(msg, sizeof(msg), "The file '%s' could not be opened.",
 			 File::GetNameFromPath(filename.c_str()).c_str());
@@ -592,9 +596,6 @@ unsigned int ROM::loadROM(const string& filename,
 #endif
 		
 		GensUI::msgBox(msg, "Cannot Open File", GensUI::MSGBOX_ICON_ERROR);
-		
-		Game = NULL;
-		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -630,13 +631,20 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	// Get the file information.
 	mdp_z_entry_t *z_list = NULL;
-	int rval = cmp->get_file_info(fROM, filename.c_str(), &z_list);
+	ret = cmp->get_file_info(fROM, filename.c_str(), &z_list);
 	
 	// Check how many files are available.
-	if (rval != MDP_ERR_OK || !z_list)
+	if (ret != MDP_ERR_OK || !z_list)
 	{
 		// An error occurred while trying to open the file.
-		switch (rval)
+		if (z_list)
+			z_entry_t_free(z_list);
+		
+		fclose(fROM);
+		Game = NULL;
+		out_ROM = NULL;
+		
+		switch (ret)
 		{
 			case -MDP_ERR_Z_ARCHIVE_NOT_FOUND:
 				// Archive wasn't found.
@@ -675,7 +683,7 @@ unsigned int ROM::loadROM(const string& filename,
 			{
 				// Unknown error.
 				char err_code[16];
-				szprintf(err_code, sizeof(err_code), "0x%08X", rval);
+				szprintf(err_code, sizeof(err_code), "0x%08X", ret);
 				
 				GensUI::msgBox("An unknown error occurred while attempting to open this file.\n"
 						"Please report this as a bug to the Gens/GS developers.\n\n"
@@ -685,12 +693,6 @@ unsigned int ROM::loadROM(const string& filename,
 			}
 		}
 		
-		if (z_list)
-			z_entry_t_free(z_list);
-		
-		fclose(fROM);
-		Game = NULL;
-		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	else if (!z_list->next)
@@ -797,7 +799,9 @@ unsigned int ROM::loadROM(const string& filename,
 	// Determine the ROM type.
 	// TODO: Show an error if the ROM can't be opened.
 	unsigned char detectBuf[2048];
-	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf));
+	size_t bytes_read;
+	
+	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf), &bytes_read);
 	romType = detectFormat(detectBuf);
 	unsigned int romSys = romType & ROMTYPE_SYS_MASK;
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
@@ -814,12 +818,13 @@ unsigned int ROM::loadROM(const string& filename,
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (sel_file->filesize > ((6 * 1024 * 1024) + 512))
 	{
-		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
 		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
 		GensUI::setMousePointer(false);
+		
+		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -837,15 +842,13 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0x00, sizeof(Rom_Data));
-	size_t loaded_size = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
-	if (loaded_size != sel_file->filesize)
+	ret = cmp->get_file(fROM, filename.c_str(),
+				sel_file, Rom_Data,
+				sel_file->filesize, &bytes_read);
+	
+	if (ret != MDP_ERR_OK)
 	{
-		// Incorrect filesize.
-		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-			"Incorrect filesize. Got %d; expected %d.",
-			loaded_size, sel_file->filesize);
-		
-		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
+		// Error loading the file.
 		z_entry_t_free(z_list);
 		fclose(fROM);
 		free(myROM);
@@ -853,6 +856,27 @@ unsigned int ROM::loadROM(const string& filename,
 		Game = NULL;
 		out_ROM = NULL;
 		GensUI::setMousePointer(false);
+		
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Error loading the file from the archive: 0x%08X", ret);
+		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
+		return ROMTYPE_SYS_NONE;
+	}
+	else if (bytes_read != sel_file->filesize)
+	{
+		// Incorrect filesize.
+		z_entry_t_free(z_list);
+		fclose(fROM);
+		free(myROM);
+		myROM = NULL;
+		Game = NULL;
+		out_ROM = NULL;
+		GensUI::setMousePointer(false);
+		
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Incorrect filesize. Got %d; expected %d.",
+			bytes_read, sel_file->filesize);
+		GensUI::msgBox("Error loading the ROM file: Incorrect filesize.", "ROM File Error");
 		return ROMTYPE_SYS_NONE;
 	}
 	

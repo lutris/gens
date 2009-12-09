@@ -187,14 +187,16 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	
 	/* Get the file from the decompressor. */
 	decompressor_t *cmp = (decompressor_t*)(z_file->data);
-	int rval = cmp->get_file(z_file->f, z_file->filename, z_entry, buf, size);
+	size_t bytes_read;
+	int ret = cmp->get_file(z_file->f, z_file->filename, z_entry, buf, size, &bytes_read);
 	
-	/* If rval is positive, it's a filesize. */
-	/* If 0, return an error code. */
-	if (rval == 0)
-		return -MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE;
-	else
-		return rval;
+	if (ret != MDP_ERR_OK)
+		return ret;
+	
+	// Return the filesize.
+	// TODO: Add another z function to MDP 1.1 that uses the new get_file() interface,
+	// which takes a pointer to size_t for the file size.
+	return (int)(bytes_read);
 }
 
 

@@ -58,16 +58,17 @@ typedef int (*decompressor_get_file_info)(FILE *zF, const char *filename, mdp_z_
 
 /**
  * decompressor_get_file(): Get a file from the archive.
- * @param zF Open file handle.
- * @param filename Filename of the archive.
- * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
- * @param buf Buffer to read the file into.
- * @param size Size of buf (in bytes).
- * @return Number of bytes read, or 0 on error.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
+ * @param buf		[in] Buffer to read the file into.
+ * @param size		[in] Size of buf (in bytes).
+ * @param ret_size	[in] Pointer to size_t to store number of bytes read.
+ * @return MDP error code.
  */
-typedef size_t (*decompressor_get_file)(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry,
-					void *buf, const size_t size);
+typedef int (*decompressor_get_file)(FILE *zF, const char *filename,
+					mdp_z_entry_t *z_entry, void *buf,
+					const size_t size, size_t *ret_size);
 
 /**
  * decompressor_t: Struct containing function pointers to various decompresssors.

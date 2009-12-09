@@ -43,9 +43,9 @@
 static int decompressor_zip_detect_format(FILE *zF);
 static int decompressor_zip_get_file_info(FILE *zF, const char* filename,
 					  mdp_z_entry_t** z_entry_out);
-static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
-					mdp_z_entry_t *z_entry,
-					void *buf, const size_t size);
+static int decompressor_zip_get_file(FILE *zF, const char* filename,
+					mdp_z_entry_t *z_entry, void *buf,
+					const size_t size, size_t *ret_size);
 
 // Zip decompressor struct.
 const decompressor_t decompressor_zip =
@@ -143,38 +143,36 @@ static int decompressor_zip_get_file_info(FILE *zF, const char* filename, mdp_z_
 
 
 /**
- * decompressor_zip_get_file(): Get a file from the archive.
- * @param zF Open file handle. (Unused in the Zip handler.)
- * @param filename Filename of the archive.
- * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
- * @param buf Buffer to read the file into.
- * @param size Size of buf (in bytes).
- * @return Number of bytes read, or 0 on error.
+ * decompressor_get_file(): Get a file from the archive.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
+ * @param buf		[in] Buffer to read the file into.
+ * @param size		[in] Size of buf (in bytes).
+ * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
+ * @return MDP error code.
  */
-static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry,
-					void *buf, const size_t size)
+static int decompressor_zip_get_file(FILE *zF, const char *filename,
+					mdp_z_entry_t *z_entry, void *buf,
+					const size_t size, size_t *ret_size)
 {
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
-	if (!filename || !z_entry || !buf || !size)
-		return 0;
+	if (!filename || !z_entry || !buf || !size || !ret_size)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	unzFile f = unzOpen(filename);
 	if (!f)
-		return 0;
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	
 	// Locate the ROM in the Zip file.
 	if (unzLocateFile(f, z_entry->filename, 1) != UNZ_OK ||
 	    unzOpenCurrentFile(f) != UNZ_OK)
 	{
-		// Error loading the ROM file.
-		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
-			"Error extracting file '%s' from archive '%s'.",
-			z_entry->filename, filename);
+		// Can't find the selected file in the archive.
 		unzClose(f);
-		return -1;
+		return -MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE;
 	}
 	
 	// Decompress the ROM.
@@ -184,6 +182,7 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 	{
 		const char* zip_err;
 		
+		// TODO: Add MDP Z errors for these.
 		switch (zResult)
 		{
 			case UNZ_ERRNO:
@@ -212,9 +211,10 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
 			"Error extracting file '%s' from archive '%s': %s",
 			z_entry->filename, filename, zip_err);
-		return -1;
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
-	// Return the filesize.
-	return size;
+	// File extracted successfully.
+	*ret_size = (size_t)zResult;
+	return MDP_ERR_OK;
 }
