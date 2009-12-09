@@ -30,6 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 // VGA character set.
 #include "VGA_charset.h"
@@ -63,37 +66,59 @@
 // Character font data.
 osd_ptr_t osd_font_data[65536];	// Pointers to character data.
 uint8_t osd_font_flags[65536];	// Character flags.
-static int osd_is_alloc = 0;	// Set to 1 if these have been allocated.
+
+// Stack of font memory blocks.
+typedef struct _osd_font_mem_t
+{
+	void *ptr;
+	struct _osd_font_mem_t *next;
+} osd_font_mem_t;
+osd_font_mem_t *osd_font_blocks_head = NULL;
+
+
+static osd_font_mem_t* osd_font_alloc(size_t sz)
+{
+	printf("alloc: %d bytes\n", sz);
+	osd_font_mem_t *cur = (osd_font_mem_t*)malloc(sizeof(osd_font_mem_t));
+	cur->ptr = malloc(sz);
+	cur->next = osd_font_blocks_head;
+	osd_font_blocks_head = cur;
+	return cur;
+}
 
 
 void osd_font_clear(void)
 {
-	if (osd_is_alloc)
-	{
-		// OSD has been allocated. Free everything.
-		for (int chr = sizeof(osd_font_data)-1; chr >= 0; chr--)
-			free(osd_font_data[chr].p_v);
-	}
-	
 	memset(osd_font_data, 0x00, sizeof(osd_font_data));
 	memset(osd_font_flags, 0x00, sizeof(osd_font_flags));
-	osd_is_alloc = 1;
+	
+	// Free all allocated font memory blocks.
+	osd_font_mem_t *cur = osd_font_blocks_head;
+	while (cur != NULL)
+	{
+		osd_font_mem_t *next = cur->next;
+		free(cur->ptr);
+		free(cur);
+		cur = next;
+	}
 }
 
 
 void osd_font_init_ASCII(void)
 {
-	if (!osd_is_alloc)
-		osd_font_clear();
+	// Allocate a font memory block for ASCII character data.
+	osd_font_mem_t *cur = osd_font_alloc(sizeof(VGA_charset_ASCII));
 	
+	// Copy the ASCII character data to the memory block.
+	memcpy(cur->ptr, VGA_charset_ASCII, sizeof(VGA_charset_ASCII));
+	
+	// Set up osd_font_data.
+	uint8_t *chr_ptr = (uint8_t*)cur->ptr;
 	for (unsigned int chr = 0x20; chr < 0x80; chr++)
 	{
-		if (osd_font_data[chr].p_v)
-			free(osd_font_data[chr].p_v);
-		
-		osd_font_data[chr].p_v = malloc(16);
-		memcpy(osd_font_data[chr].p_v, VGA_charset_ASCII[chr-0x20], 16);
+		osd_font_data[chr].p_u8 = chr_ptr;
 		osd_font_flags[chr] = OSD_FLAG_HALFWIDTH;
+		chr_ptr += 16;
 	}
 }
 
@@ -109,6 +134,35 @@ int osd_font_load(const char *filename)
 	// TODO: Use pSetCurrentDirectoryU once win32-unicode is merged to master.
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif
+	
+	// Get the filesize.
+	struct stat st_file;
+	if (stat(filename, &st_file) != 0)
+	{
+		// Couldn't stat the file.
+		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+			"Couldn't stat() '%s': %s", filename, strerror(errno));
+		return -1;
+	}
+	
+	// TODO: Check for sysconf().
+	int pg_size;
+#if defined(_WIN32)
+	// Win32 version.
+	SYSTEM_INFO si;
+	GetSystemInfo(&si);
+	pg_size = si.dwAllocationGranularity;
+#elif defined(_SC_PAGESIZE)
+	// sysconf() version.
+	pg_size = sysconf(_SC_PAGESIZE);
+#endif
+	
+	// Make sure the page size is at least 4096 bytes.
+	if (pg_size < 4096)
+		pg_size = 4096;
+	
+	// Calculate the block size. (Filesize rounded to the highest pagesize.)
+	const size_t blk_size = (st_file.st_size & (~(pg_size - 1))) + pg_size;
 	
 	FILE *f_osd = fopen(filename, "rb");
 	if (!f_osd)
@@ -156,11 +210,13 @@ int osd_font_load(const char *filename)
 			"Loading OSD font '%s': %s", filename, buf);
 	}
 	
-	if (!osd_is_alloc)
-		osd_font_clear();
-	
 	unsigned int num_chrs = 0;
 	unsigned int num_chrs_nonbmp = 0;
+	
+	// Allocate a block.
+	osd_font_mem_t *blk = osd_font_alloc(blk_size);
+	uint8_t *blk_ptr = (uint8_t*)(blk->ptr);
+	size_t blk_avail = blk_size;
 	
 	// Read the file.
 	uint8_t chr_flag_buf[4];
@@ -212,10 +268,21 @@ int osd_font_load(const char *filename)
 				continue;
 			}
 			
-			// Copy this character to osd_font_data.
-			osd_font_data[chr].p_u8 = (uint8_t*)malloc(16);
-			memcpy(osd_font_data[chr].p_u8, buf, 16);
+			// Make sure space is available in the current block.
+			if (blk_avail < 16)
+			{
+				// Current block is filled. Allocate a new block.
+				blk = osd_font_alloc(blk_size);
+				blk_ptr = (uint8_t*)(blk->ptr);
+				blk_avail = blk_size;
+			}
+			
+			// Copy the character data to the block.
+			memcpy(blk_ptr, buf, 16);
+			osd_font_data[chr].p_u8 = blk_ptr;
 			osd_font_flags[chr] = flags;
+			blk_ptr += 16;
+			blk_avail -= 16;
 		}
 		else
 		{
@@ -227,16 +294,33 @@ int osd_font_load(const char *filename)
 				continue;
 			}
 			
-			// Make sure the character is byteswapped correctly.
-			uint16_t *tmp = (uint16_t*)malloc(16 * sizeof(tmp));
-			memcpy(tmp, buf, 32);
-			for (int i = 0; i < 16; i++)
+			// Make sure space is available in the current block.
+			if (blk_avail < 32)
 			{
-				tmp[i] = le16_to_cpu(tmp[i]);
+				// Current block is filled. Allocate a new block.
+				blk = osd_font_alloc(blk_size);
+				blk_ptr = (uint8_t*)(blk->ptr);
+				blk_avail = blk_size;
 			}
 			
-			osd_font_data[chr].p_u16 = tmp;
+			// Copy the character data to the block.
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
+			// Little-endian. Copy the data as-is.
+			memcpy(blk_ptr, buf, 32);
+#else /* GSFT_BYTE_ORDER == GSFT_BIG_ENDIAN */
+			// Big-endian. Byteswap the data.
+			for (int i = 0; i < 32; i += 4)
+			{
+				blk_ptr[i + 0] = buf[i + 1];
+				blk_ptr[i + 1] = buf[i + 0];
+				blk_ptr[i + 2] = buf[i + 3];
+				blk_ptr[i + 3] = buf[i + 2];
+			}
+#endif			
+			osd_font_data[chr].p_u8 = blk_ptr;
 			osd_font_flags[chr] = flags;
+			blk_ptr += 32;
+			blk_avail -= 32;
 		}
 		
 		num_chrs++;
