@@ -674,6 +674,13 @@ int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t ad
 	/* Copy the block. */
 	memcpy(ptr, data, length);
 	
+	if (memID == MDP_MEM_MD_ROM && _32X_Started)
+	{
+		// MD ROM, and 32X is active.
+		// Write to the 32X ROM, too.
+		memcpy(&_32X_Rom.u8[address], data, length);
+	}
+	
 	if (memID == MDP_MEM_MD_VRAM)
 		VRam_Flag = 1;
 	else if (memID == MDP_MEM_MD_VRAM)
