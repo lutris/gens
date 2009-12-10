@@ -49,9 +49,6 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	// Disable the CRAM flag, since the palette is being updated.
 	CRam_Flag = 0;
 	
-	// 16-bit CRAM pointer.
-	const uint16_t *cram_16 = (uint16_t*)CRam;
-	
 	// Color mask. Depends on VDP register 0, bit 2 (Palette Select).
 	// If set, allows full MD palette.
 	// If clear, only allows the LSB of each color component.
@@ -60,8 +57,8 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	// Update all 64 colors.
 	for (int i = 62; i >= 0; i -= 2)
 	{
-		uint16_t color1_raw = cram_16[i] & color_mask;
-		uint16_t color2_raw = cram_16[i + 1] & color_mask;
+		uint16_t color1_raw = CRam.u16[i] & color_mask;
+		uint16_t color2_raw = CRam.u16[i + 1] & color_mask;
 		
 		// Get the palette color.
 		pixel color1 = palette[color1_raw];

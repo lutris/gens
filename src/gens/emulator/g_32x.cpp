@@ -71,9 +71,9 @@ int Init_32X(ROM_t* MD_ROM)
 	
 	// Clear the firmware buffers.
 	memset(&_32X_Genesis_Rom[0], 0x00, sizeof(_32X_Genesis_Rom));
-	memset(&_32X_MSH2_Rom[0], 0x00, sizeof(_32X_MSH2_Rom));
-	memset(&_32X_SSH2_Rom[0], 0x00, sizeof(_32X_SSH2_Rom));
-
+	memset(&_32X_MSH2_Rom.u8[0], 0x00, sizeof(_32X_MSH2_Rom));
+	memset(&_32X_SSH2_Rom.u8[0], 0x00, sizeof(_32X_SSH2_Rom));
+	
 	// Read the 32X MC68000 firmware. (usually "32X_G_BIOS.BIN")
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_FW_68K;
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
@@ -96,15 +96,15 @@ int Init_32X(ROM_t* MD_ROM)
 	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
 		// External firmware file opened.
-		fread(&_32X_MSH2_Rom[0], 1, sizeof(_32X_MSH2_Rom), f);
+		fread(&_32X_MSH2_Rom.u8[0], 1, sizeof(_32X_MSH2_Rom), f);
 		fclose(f);
-		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(_32X_MSH2_Rom));
+		le16_to_cpu_array(&_32X_MSH2_Rom.u8[0], sizeof(_32X_MSH2_Rom));
 	}
 	else
 	{
 		// Use the reverse-engineered firmware.
-		memcpy(&_32X_MSH2_Rom[0], &cbob_bios32xm_bin[0], sizeof(cbob_bios32xm_bin));
-		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(cbob_bios32xm_bin));
+		memcpy(&_32X_MSH2_Rom.u8[0], &cbob_bios32xm_bin[0], sizeof(cbob_bios32xm_bin));
+		le16_to_cpu_array(&_32X_MSH2_Rom.u8[0], sizeof(cbob_bios32xm_bin));
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_MSH2;
 	
@@ -113,15 +113,15 @@ int Init_32X(ROM_t* MD_ROM)
 	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
 		// External firmware file opened.
-		fread(&_32X_SSH2_Rom[0], 1, sizeof(_32X_SSH2_Rom), f);
+		fread(&_32X_SSH2_Rom.u8[0], 1, sizeof(_32X_SSH2_Rom), f);
 		fclose(f);
-		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(_32X_SSH2_Rom));
+		le16_to_cpu_array(&_32X_SSH2_Rom.u8[0], sizeof(_32X_SSH2_Rom));
 	}
 	else
 	{
 		// Use the reverse-engineered firmware.
-		memcpy(&_32X_SSH2_Rom[0], &cbob_bios32xs_bin[0], sizeof(cbob_bios32xs_bin));
-		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(cbob_bios32xs_bin));
+		memcpy(&_32X_SSH2_Rom.u8[0], &cbob_bios32xs_bin[0], sizeof(cbob_bios32xs_bin));
+		le16_to_cpu_array(&_32X_SSH2_Rom.u8[0], sizeof(cbob_bios32xs_bin));
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_FW_SSH2;
 	
@@ -176,16 +176,16 @@ int Init_32X(ROM_t* MD_ROM)
 	// Thus, they need to be byteswapped differently.
 	
 	// First, copy the ROM to the 32X ROM section.
-	memcpy(_32X_Rom, Rom_Data, 4 * 1024 * 1024);
+	memcpy(_32X_Rom.u8, Rom_Data.u8, 4 * 1024 * 1024);
 	
 	// Byteswap the 68000 ROM data from big-endian (MC68000) to host-endian.
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_MD_ROM;
-	be16_to_cpu_array(Rom_Data, Rom_Size);
+	be16_to_cpu_array(Rom_Data.u8, Rom_Size);
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Byteswap the SH2 ROM data from little-endian (SH2) to host-endian.
 	ROM_ByteSwap_State &= ~ROM_BYTESWAPPED_32X_ROM;
-	le16_to_cpu_array(_32X_Rom, Rom_Size);
+	le16_to_cpu_array(_32X_Rom.u8, Rom_Size);
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_32X_ROM;
 	
 	// Reset all CPUs and other components.
@@ -232,7 +232,7 @@ int Init_32X(ROM_t* MD_ROM)
 	// this permit 32X games with older BIOS version to run correctly
 	// Ecco 32X demo needs it
 	for (i = 0; i < 0x400; i++)
-		_32X_MSH2_Rom[i + 0x36C] = _32X_Rom[i + 0x400];
+		_32X_MSH2_Rom.u8[i + 0x36C] = _32X_Rom.u8[i + 0x400];
 	
 	return 1;
 }
@@ -301,7 +301,7 @@ void Reset_32X(void)
 	// Ecco 32X demo needs it
 	
 	for (i = 0; i < 0x400; i++)
-		_32X_MSH2_Rom[i + 0x36C] = _32X_Rom[i + 0x400];
+		_32X_MSH2_Rom.u8[i + 0x36C] = _32X_Rom.u8[i + 0x400];
 }
 
 

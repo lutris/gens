@@ -180,9 +180,9 @@ int Init_SegaCD(const char* iso_name)
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// TODO: Why are these two bytes set to 0xFF?
-	Rom_Data[0x72] = 0xFF;
-	Rom_Data[0x73] = 0xFF;
-	be16_to_cpu_array(Rom_Data, Rom_Size);
+	Rom_Data.u8[0x72] = 0xFF;
+	Rom_Data.u8[0x73] = 0xFF;
+	be16_to_cpu_array(Rom_Data.u8, Rom_Size);
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.
@@ -305,9 +305,9 @@ void Reset_SegaCD(void)
 	Options::setGameName(1);
 	
 	// TODO: Why are these two bytes set to 0xFF?
-	Rom_Data[0x72] = 0xFF;
-	Rom_Data[0x73] = 0xFF;
-	be16_to_cpu_array(Rom_Data, Rom_Size);
+	Rom_Data.u8[0x72] = 0xFF;
+	Rom_Data.u8[0x73] = 0xFF;
+	be16_to_cpu_array(Rom_Data.u8, Rom_Size);
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.

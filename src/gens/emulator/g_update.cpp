@@ -162,9 +162,9 @@ int Update_Emulation(void)
 		if (ice >= 3)
 			ice = 1;
 #if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
-		if (Ram_68k[0xFFB0] == 7)
+		if (Ram_68k.u8[0xFFB0] == 7)
 #else // GSFT_BYTEORDER == GSFT_BIG_ENDIAN
-		if (Ram_68k[0xFFB1] == 7)
+		if (Ram_68k.u8[0xFFB1] == 7)
 #endif
 		{
 			if (ice == 1)
@@ -175,7 +175,7 @@ int Update_Emulation(void)
 			if (ice > 1)
 				ice = 1;
 		}
-		if (*((unsigned int*)&Ram_68k[0xFFD4]))
+		if (Ram_68k.u32[0xFFD4 >> 2])
 			ice = 0;
 	}
 

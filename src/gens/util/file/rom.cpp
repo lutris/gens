@@ -355,7 +355,7 @@ void ROM::deinterleaveSMD(void)
 	// The second 8 KB of each 16 KB block are the even bytes.
 	
 	// Start at 0x200 bytes (after the SMD header).
-	Src = &Rom_Data[0x200];
+	Src = &Rom_Data.u8[0x200];
 	
 	// Subtract the SMD header length from the ROM size.
 	Rom_Size -= 0x200;
@@ -373,9 +373,9 @@ void ROM::deinterleaveSMD(void)
 		for (j = 0; j < 0x2000; j++)
 		{
 			// Odd byte; first 8 KB.
-			Rom_Data[ptr + (j << 1) + 1] = buf[j];
+			Rom_Data.u8[ptr + (j << 1) + 1] = buf[j];
 			// Even byte; second 8 KB.
-			Rom_Data[ptr + (j << 1)] = buf[j + 0x2000];
+			Rom_Data.u8[ptr + (j << 1)] = buf[j + 0x2000];
 		}
 	}
 }
@@ -391,7 +391,7 @@ void ROM::fillROMInfo(ROM_t *rom)
 		return;
 	
 	// Load the ROM header.
-	memcpy(rom, &Rom_Data[0x100], sizeof(*rom));
+	memcpy(rom, &Rom_Data.u8[0x100], sizeof(*rom));
 	
 	// TODO: Make sure this is correct.
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
@@ -841,9 +841,9 @@ unsigned int ROM::loadROM(const string& filename,
 	}
 	
 	// Clear the ROM buffer and load the ROM.
-	memset(Rom_Data, 0x00, sizeof(Rom_Data));
+	memset(Rom_Data.u8, 0x00, sizeof(Rom_Data));
 	ret = cmp->get_file(fROM, filename.c_str(),
-				sel_file, Rom_Data,
+				sel_file, Rom_Data.u8,
 				sel_file->filesize, &bytes_read);
 	
 	if (ret != MDP_ERR_OK)
@@ -889,7 +889,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (Rom_Size < sizeof(Rom_Data) && (Rom_Size & 1))
 	{
 		// Odd ROM length. Increment the size and NULL the last byte.
-		Rom_Data[Rom_Size++] = 0x00;
+		Rom_Data.u8[Rom_Size++] = 0x00;
 	}
 	
 	// Set the compressed ROM filename.
@@ -932,7 +932,7 @@ unsigned short ROM::calcChecksum(void)
 		return 0;
 	
 	// Checksum starts at 0x200, past the vector table and ROM header.
-	uint8_t *Rom_Ptr = &Rom_Data[0x200];
+	uint8_t *Rom_Ptr = &Rom_Data.u8[0x200];
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
 		// ROM is byteswapped. (little-endian)
@@ -974,14 +974,14 @@ void ROM::fixChecksum(void)
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
 		// ROM is byteswapped. (little-endian)
-		Rom_Data[0x18E] = (checksum & 0xFF);
-		Rom_Data[0x18F] = (checksum >> 8);
+		Rom_Data.u8[0x18E] = (checksum & 0xFF);
+		Rom_Data.u8[0x18F] = (checksum >> 8);
 	}
 	else
 	{
 		// ROM is not byteswapped. (big-endian)
-		Rom_Data[0x18E] = (checksum >> 8);
-		Rom_Data[0x18F] = (checksum & 0xFF);
+		Rom_Data.u8[0x18E] = (checksum >> 8);
+		Rom_Data.u8[0x18F] = (checksum & 0xFF);
 	}
 	
 	// SH2 checksum.
@@ -990,14 +990,14 @@ void ROM::fixChecksum(void)
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_32X_ROM)
 	{
 		// ROM is byteswapped. (big-endian)
-		_32X_Rom[0x18E] = (checksum >> 8);
-		_32X_Rom[0x18F] = (checksum & 0xFF);
+		_32X_Rom.u8[0x18E] = (checksum >> 8);
+		_32X_Rom.u8[0x18F] = (checksum & 0xFF);
 	}
 	else
 	{
 		// ROM is not byteswapped. (little-endian)
-		_32X_Rom[0x18E] = (checksum & 0xFF);
-		_32X_Rom[0x18F] = (checksum >> 8);
+		_32X_Rom.u8[0x18E] = (checksum & 0xFF);
+		_32X_Rom.u8[0x18F] = (checksum >> 8);
 	}
 }
 

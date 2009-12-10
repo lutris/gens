@@ -24,9 +24,8 @@
  */
 void Post_Line_32X(void)
 {
-	unsigned short *VRam_32X = (unsigned short *) &_32X_VDP_Ram;
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
-	VRam_Ind += VRam_32X[VRam_Ind + VDP_Current_Line];
+	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Current_Line];
 	
 	unsigned int pixel;
 	unsigned char pixC; 
@@ -57,7 +56,7 @@ void Post_Line_32X(void)
 			for (pixel = TAB336[VDP_Current_Line] + 8;
 			     pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
 			{
-				pixC = _32X_VDP_Ram[VRam_Ind++ ^ 1];
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
 				{
@@ -78,7 +77,7 @@ void Post_Line_32X(void)
 			//POST_LINE_32X_M10;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
 			{
-				pixS = VRam_32X[VRam_Ind++];
+				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
 				{
 					MD_Screen32[pixel] = _32X_Palette_32B[pixS];
@@ -101,8 +100,8 @@ void Post_Line_32X(void)
 			pixMax = TAB336[VDP_Current_Line] + 336;
 			while (curPixel < pixMax)
 			{
-				pixC = VRam_32X[VRam_Ind] & 0xFF;
-				Num = VRam_32X[VRam_Ind++] >> 8;
+				pixC = _32X_VDP_Ram.u16[VRam_Ind] & 0xFF;
+				Num = _32X_VDP_Ram.u16[VRam_Ind++] >> 8;
 				endPixel = curPixel + Num;
 				while (curPixel <= endPixel)
 				{
@@ -118,7 +117,7 @@ void Post_Line_32X(void)
 			VRam_Ind *= 2;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
 			{
-				pixC = _32X_VDP_Ram[VRam_Ind++ ^ 1];
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) && (MD_Screen[pixel] & 0x0F))
 				{
@@ -138,7 +137,7 @@ void Post_Line_32X(void)
 			//POST_LINE_32X_M10_P;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
 			{
-				pixS = VRam_32X[VRam_Ind++];
+				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				if (!(pixS & 0x8000) && (MD_Screen[pixel] & 0x0F))
 				{
 					MD_Screen32[pixel] = _32X_Palette_32B[pixS];
@@ -157,7 +156,7 @@ void Post_Line_32X(void)
 			VRam_Ind *= 2;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
 			{
-				pixC = _32X_VDP_Ram[VRam_Ind++ ^ 1];
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
 				{
@@ -177,7 +176,7 @@ void Post_Line_32X(void)
 			VRam_Ind *= 2;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
 			{
-				pixC = _32X_VDP_Ram[VRam_Ind++ ^ 1];
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) && (MD_Screen[pixel] & 0x0F))
 				{

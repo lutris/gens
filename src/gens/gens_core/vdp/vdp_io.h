@@ -29,43 +29,60 @@ extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;
 
-struct Reg_VDP_Type
+typedef union
 {
-	unsigned int Set1;
-	unsigned int Set2;
-	unsigned int Pat_ScrA_Adr;
-	unsigned int Pat_Win_Adr;
-	unsigned int Pat_ScrB_Adr;
-	unsigned int Spr_Att_Adr;
-	unsigned int Reg6;
-	unsigned int BG_Color;
-	unsigned int Reg8;
-	unsigned int Reg9;
-	unsigned int H_Int;
-	unsigned int Set3;
-	unsigned int Set4;
-	unsigned int H_Scr_Adr;
-	unsigned int Reg14;
-	unsigned int Auto_Inc;
-	unsigned int Scr_Size;
-	unsigned int Win_H_Pos;
-	unsigned int Win_V_Pos;
-	unsigned int DMA_Length_L;
-	unsigned int DMA_Length_H;
-	unsigned int DMA_Src_Adr_L;
-	unsigned int DMA_Src_Adr_M;
-	unsigned int DMA_Src_Adr_H;
-	unsigned int DMA_Length;
-	unsigned int DMA_Address;
-};
+	uint32_t reg[26];
+	struct
+	{
+		unsigned int Set1;
+		unsigned int Set2;
+		unsigned int Pat_ScrA_Adr;
+		unsigned int Pat_Win_Adr;
+		unsigned int Pat_ScrB_Adr;
+		unsigned int Spr_Att_Adr;
+		unsigned int Reg6;
+		unsigned int BG_Color;
+		unsigned int Reg8;
+		unsigned int Reg9;
+		unsigned int H_Int;
+		unsigned int Set3;
+		unsigned int Set4;
+		unsigned int H_Scr_Adr;
+		unsigned int Reg14;
+		unsigned int Auto_Inc;
+		unsigned int Scr_Size;
+		unsigned int Win_H_Pos;
+		unsigned int Win_V_Pos;
+		unsigned int DMA_Length_L;
+		unsigned int DMA_Length_H;
+		unsigned int DMA_Src_Adr_L;
+		unsigned int DMA_Src_Adr_M;
+		unsigned int DMA_Src_Adr_H;
+		
+		// These two variables are internal to Gens.
+		// They don't map to any actual VDP registers.
+		unsigned int DMA_Length;
+		unsigned int DMA_Address;
+	};
+} Reg_VDP_Type;
 
-extern uint8_t  VRam[64 * 1024];
-extern uint16_t CRam[64];
+extern union
+{
+	uint8_t  u8[64*1024];
+	uint16_t u16[(64*1024)>>1];
+	uint32_t u32[(64*1024)>>2];
+} VRam;
+extern union
+{
+	uint8_t  u8[64<<1];
+	uint16_t u16[64];
+	uint32_t u32[64>>1];
+} CRam;
 extern uint8_t  VSRam[256];
 extern uint32_t VSRam_Over[8];
 extern uint8_t  H_Counter_Table[512][2];
 
-extern struct Reg_VDP_Type VDP_Reg;
+extern Reg_VDP_Type VDP_Reg;
 extern int VDP_Current_Line;
 extern int VDP_Num_Lines;
 extern int VDP_Num_Vis_Lines;
@@ -76,16 +93,23 @@ extern int VDP_Status;
 extern int DMAT_Length;
 extern int DMAT_Type;
 extern int DMAT_Tmp;
-extern struct 
+
+typedef union
 {
-	int Flag;
-	int Data;
-	int Write;
-	int Access;
-	int Address;
-	int DMA_Mode;
-	int DMA;
-} Ctrl;
+	int reg[7];
+	uint32_t ureg[7];
+	struct
+	{
+		int Flag;
+		int Data;
+		int Write;
+		int Access;
+		int Address;
+		int DMA_Mode;
+		int DMA;
+	};
+} VDP_Ctrl_t;
+extern VDP_Ctrl_t Ctrl;
 
 // Set this to 1 to enable zero-length DMA requests.
 // Default is 0. (hardware-accurate)

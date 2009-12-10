@@ -31,9 +31,9 @@ struct S68000CONTEXT Context_68K;
 struct STARSCREAM_PROGRAMREGION M68K_Fetch[] =
 {
 	{0x000000, 0x3FFFFF, (unsigned int)0x000000},
-	{0xFF0000, 0xFFFFFF, (unsigned int)&Ram_68k[0] - 0xFF0000},
-	{0xF00000, 0xF0FFFF, (unsigned int)&Ram_68k[0] - 0xF00000},
-	{0xEF0000, 0xEFFFFF, (unsigned int)&Ram_68k[0] - 0xEF0000},
+	{0xFF0000, 0xFFFFFF, (unsigned int)&Ram_68k.u8[0] - 0xFF0000},
+	{0xF00000, 0xF0FFFF, (unsigned int)&Ram_68k.u8[0] - 0xF00000},
+	{0xEF0000, 0xEFFFFF, (unsigned int)&Ram_68k.u8[0] - 0xEF0000},
 	{-1, -1, (unsigned int)NULL},
 	{-1, -1, (unsigned int)NULL},
 	{-1, -1, (unsigned int)NULL}
@@ -42,7 +42,7 @@ struct STARSCREAM_PROGRAMREGION M68K_Fetch[] =
 struct STARSCREAM_DATAREGION M68K_Read_Byte[5] =
 {
 	{0x000000, 0x3FFFFF, NULL, NULL},
-	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k[0]},
+	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k.u8[0]},
 	{0x400000, 0xFEFFFF, (void*)M68K_RB, NULL},
 	{-1, -1, NULL, NULL}
 };
@@ -50,21 +50,21 @@ struct STARSCREAM_DATAREGION M68K_Read_Byte[5] =
 struct STARSCREAM_DATAREGION M68K_Read_Word[5] =
 {
 	{0x000000, 0x3FFFFF, NULL, NULL},
-	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k[0]},
+	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k.u8[0]},
 	{0x400000, 0xFEFFFF, (void*)M68K_RW, NULL},
 	{-1, -1, NULL, NULL}
 };
 
 struct STARSCREAM_DATAREGION M68K_Write_Byte[] =
 {
-	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k[0]},
+	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k.u8[0]},
 	{0x000000, 0xFEFFFF, (void*)M68K_WB, NULL},
 	{-1, -1, NULL, NULL}
 };
 
 struct STARSCREAM_DATAREGION M68K_Write_Word[] =
 {
-	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k[0]},
+	{0xFF0000, 0xFFFFFF, NULL, &Ram_68k.u8[0]},
 	{0x000000, 0xFEFFFF, (void*)M68K_WW, NULL},
 	{-1, -1, NULL, NULL}
 };
@@ -191,25 +191,25 @@ void M68K_Reset(int System_ID)
 {
 	// TODO: This is not 64-bit clean!
 	
-	memset(Ram_68k, 0x00, sizeof(Ram_68k));
+	memset(Ram_68k.u8, 0x00, sizeof(Ram_68k));
 	
 	M68K_Fetch[0].lowaddr = 0x000000;
 	M68K_Fetch[0].highaddr = Rom_Size - 1;
-	M68K_Fetch[0].offset = (unsigned int)&Rom_Data[0] - 0x000000;
+	M68K_Fetch[0].offset = (unsigned int)&Rom_Data.u8[0] - 0x000000;
 	
 	M68K_Fetch[1].lowaddr = 0xFF0000;
 	M68K_Fetch[1].highaddr = 0xFFFFFF;
-	M68K_Fetch[1].offset = (unsigned int)&Ram_68k[0] - 0xFF0000;
+	M68K_Fetch[1].offset = (unsigned int)&Ram_68k.u8[0] - 0xFF0000;
 	
 	if (System_ID == GENESIS)
 	{
 		M68K_Fetch[2].lowaddr = 0xF00000;
 		M68K_Fetch[2].highaddr = 0xF0FFFF;
-		M68K_Fetch[2].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+		M68K_Fetch[2].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 		
 		M68K_Fetch[3].lowaddr = 0xEF0000;
 		M68K_Fetch[3].highaddr = 0xEFFFFF;
-		M68K_Fetch[3].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+		M68K_Fetch[3].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 		
 		M68K_Fetch[4].lowaddr = -1;
 		M68K_Fetch[4].highaddr = -1;
@@ -221,11 +221,11 @@ void M68K_Reset(int System_ID)
 		
 		M68K_Fetch[2].lowaddr = 0xF00000;
 		M68K_Fetch[2].highaddr = 0xF0FFFF;
-		M68K_Fetch[2].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+		M68K_Fetch[2].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 		
 		M68K_Fetch[3].lowaddr = 0xEF0000;
 		M68K_Fetch[3].highaddr = 0xEFFFFF;
-		M68K_Fetch[3].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+		M68K_Fetch[3].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 		
 		M68K_Fetch[4].lowaddr = -1;
 		M68K_Fetch[4].highaddr = -1;
@@ -243,11 +243,11 @@ void M68K_Reset(int System_ID)
 		
 		M68K_Fetch[4].lowaddr = 0xF00000;
 		M68K_Fetch[4].highaddr = 0xF0FFFF;
-		M68K_Fetch[4].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+		M68K_Fetch[4].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 		
 		M68K_Fetch[5].lowaddr = 0xEF0000;
 		M68K_Fetch[5].highaddr = 0xEFFFFF;
-		M68K_Fetch[5].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+		M68K_Fetch[5].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 		
 		M68K_Fetch[6].lowaddr = -1;
 		M68K_Fetch[6].highaddr = -1;
@@ -295,7 +295,7 @@ void M68K_32X_Mode(void)
 			// ROM MOVED
 			M68K_Fetch[0].lowaddr = 0x880000;
 			M68K_Fetch[0].highaddr = 0x8FFFFF;
-			M68K_Fetch[0].offset = (unsigned int)&Rom_Data[0] - 0x880000;
+			M68K_Fetch[0].offset = (unsigned int)&Rom_Data.u8[0] - 0x880000;
 			
 			M68K_Fetch[1].lowaddr = 0x900000;
 			M68K_Fetch[1].highaddr = 0x9FFFFF;
@@ -303,7 +303,7 @@ void M68K_32X_Mode(void)
 			
 			M68K_Fetch[2].lowaddr = 0xFF0000;
 			M68K_Fetch[2].highaddr = 0xFFFFFF;
-			M68K_Fetch[2].offset = (unsigned int)&Ram_68k[0] - 0xFF0000;
+			M68K_Fetch[2].offset = (unsigned int)&Ram_68k.u8[0] - 0xFF0000;
 			
 			M68K_Fetch[3].lowaddr = 0x00;
 			M68K_Fetch[3].highaddr = 0xFF;
@@ -311,11 +311,11 @@ void M68K_32X_Mode(void)
 			
 			M68K_Fetch[4].lowaddr = 0xEF0000;
 			M68K_Fetch[4].highaddr = 0xEFFFFF;
-			M68K_Fetch[4].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+			M68K_Fetch[4].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 			
 			M68K_Fetch[5].lowaddr = 0xF00000;
 			M68K_Fetch[5].highaddr = 0xF0FFFF;
-			M68K_Fetch[5].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+			M68K_Fetch[5].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 			
 			M68K_Fetch[6].lowaddr = -1;
 			M68K_Fetch[6].highaddr = -1;
@@ -329,11 +329,11 @@ void M68K_32X_Mode(void)
 			// ROM NOT MOVED BUT BIOS PRESENT
 			M68K_Fetch[0].lowaddr = 0x000100;
 			M68K_Fetch[0].highaddr = Rom_Size - 1;
-			M68K_Fetch[0].offset = (unsigned int)&Rom_Data[0] - 0x000000;
+			M68K_Fetch[0].offset = (unsigned int)&Rom_Data.u8[0] - 0x000000;
 			
 			M68K_Fetch[1].lowaddr = 0xFF0000;
 			M68K_Fetch[1].highaddr = 0xFFFFFF;
-			M68K_Fetch[1].offset = (unsigned int)&Ram_68k[0] - 0xFF0000;
+			M68K_Fetch[1].offset = (unsigned int)&Ram_68k.u8[0] - 0xFF0000;
 			
 			M68K_Fetch[2].lowaddr = 0x00;
 			M68K_Fetch[2].highaddr = 0xFF;
@@ -341,11 +341,11 @@ void M68K_32X_Mode(void)
 			
 			M68K_Fetch[3].lowaddr = 0xF00000;
 			M68K_Fetch[3].highaddr = 0xF0FFFF;
-			M68K_Fetch[3].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+			M68K_Fetch[3].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 			
 			M68K_Fetch[4].lowaddr = 0xEF0000;
 			M68K_Fetch[4].highaddr = 0xEFFFFF;
-			M68K_Fetch[4].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+			M68K_Fetch[4].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 			
 			M68K_Fetch[5].lowaddr = -1;
 			M68K_Fetch[5].highaddr = -1;
@@ -360,19 +360,19 @@ void M68K_32X_Mode(void)
 		// 32X OFF
 		M68K_Fetch[0].lowaddr = 0x000000;
 		M68K_Fetch[0].highaddr = Rom_Size - 1;
-		M68K_Fetch[0].offset = (unsigned int)&Rom_Data[0] - 0x000000;
+		M68K_Fetch[0].offset = (unsigned int)&Rom_Data.u8[0] - 0x000000;
 		
 		M68K_Fetch[1].lowaddr = 0xFF0000;
 		M68K_Fetch[1].highaddr = 0xFFFFFF;
-		M68K_Fetch[1].offset = (unsigned int)&Ram_68k[0] - 0xFF0000;
+		M68K_Fetch[1].offset = (unsigned int)&Ram_68k.u8[0] - 0xFF0000;
 		
 		M68K_Fetch[2].lowaddr = 0xF00000;
 		M68K_Fetch[2].highaddr = 0xF0FFFF;
-		M68K_Fetch[2].offset = (unsigned int)&Ram_68k[0] - 0xF00000;
+		M68K_Fetch[2].offset = (unsigned int)&Ram_68k.u8[0] - 0xF00000;
 		
 		M68K_Fetch[3].lowaddr = 0xEF0000;
 		M68K_Fetch[3].highaddr = 0xEFFFFF;
-		M68K_Fetch[3].offset = (unsigned int)&Ram_68k[0] - 0xEF0000;
+		M68K_Fetch[3].offset = (unsigned int)&Ram_68k.u8[0] - 0xEF0000;
 		
 		M68K_Fetch[4].lowaddr = -1;
 		M68K_Fetch[4].highaddr = -1;
@@ -393,7 +393,7 @@ void M68K_Set_32X_Rom_Bank(void)
 	if (!(_32X_ADEN && !_32X_RV))
 		return;
 		
-	M68K_Fetch[1].offset = (unsigned int)&Rom_Data[Bank_SH2 << 20] - 0x900000;
+	M68K_Fetch[1].offset = (unsigned int)&Rom_Data.u8[Bank_SH2 << 20] - 0x900000;
 	
 	M68K_Read_Byte_Table[(9 * 2) + 0] =
 		_32X_M68K_Read_Byte_Table[(Bank_SH2 << 1) + 0];

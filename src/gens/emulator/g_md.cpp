@@ -170,7 +170,7 @@ void Init_Genesis_Bios(void)
 	}
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_TMSS;
 	
-	memcpy(Rom_Data, Genesis_Rom, Rom_Size);
+	memcpy(Rom_Data.u8, Genesis_Rom, Rom_Size);
 	Game_Mode = 0;
 	CPU_Mode = 0;
 	VDP_Num_Vis_Lines = 224;
@@ -300,7 +300,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// Byteswap the ROM data.
-	be16_to_cpu_array(Rom_Data, Rom_Size);
+	be16_to_cpu_array(Rom_Data.u8, Rom_Size);
 	ROM_ByteSwap_State |= ROM_BYTESWAPPED_MD_ROM;
 	
 	// Reset all CPUs and other components.
@@ -406,26 +406,24 @@ int Do_VDP_Only(void)
 }
 
 
-#define CONGRATULATIONS_PRECHECK				\
-unsigned int old_pc = main68k_context.pc;			\
-do {								\
-	if (congratulations == 1 && old_pc < Rom_Size)		\
-	{							\
-		congratulations = 2;				\
-		Rom_Data[old_pc] = ~Rom_Data[old_pc];		\
-		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
+#define CONGRATULATIONS_PRECHECK					\
+unsigned int old_pc = main68k_context.pc;				\
+do {									\
+	if (congratulations == 1 && old_pc < Rom_Size)			\
+	{								\
+		congratulations = 2;					\
+		Rom_Data.u16[old_pc >> 1] = ~Rom_Data.u16[old_pc >> 1];	\
 	}							\
 } while (0)
 
-#define CONGRATULATIONS_POSTCHECK				\
-do {								\
-	if (congratulations == 2)				\
-	{							\
-		congratulations = 3;				\
-		Rom_Data[old_pc] = ~Rom_Data[old_pc];		\
-		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
-	}							\
-	congratulations = 0;					\
+#define CONGRATULATIONS_POSTCHECK					\
+do {									\
+	if (congratulations == 2)					\
+	{								\
+		congratulations = 3;					\
+		Rom_Data.u16[old_pc >> 1] = ~Rom_Data.u16[old_pc >> 1];	\
+	}								\
+	congratulations = 0;						\
 } while (0)
 
 

@@ -848,19 +848,15 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, sizeof(H_Counter_Table));
 		
 		// VDP registers.
-		uint32_t *reg = (uint32_t*)&VDP_Reg;
 		for (unsigned int i = 0; i < 26; i++)
 		{
-			*reg = le32_to_cpu(md_save_v7.vdp_reg[i]);
-			reg++;
+			VDP_Reg.reg[i] = le32_to_cpu(md_save_v7.vdp_reg[i]);
 		}
 		
 		// VDP control.
-		reg = (uint32_t*)&Ctrl;
 		for (unsigned int i = 0; i < 7; i++)
 		{
-			*reg = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
-			reg++;
+			Ctrl.ureg[i] = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
 		}
 		
 		// Extra Starscream MC68000 information.
@@ -998,7 +994,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	// CRAM and VSRAM.
 	// [TODO: Is CRAM supposed to be 16-bit byteswapped?]
-	memcpy(&md_save.cram, CRam, sizeof(md_save.cram));
+	memcpy(&md_save.cram, CRam.u8, sizeof(md_save.cram));
 	memcpy(&md_save.vsram, VSRam, sizeof(md_save.vsram));
 	
 	// YM2612 registers.
@@ -1217,19 +1213,15 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(H_Counter_Table));
 	
 	// VDP registers.
-	uint32_t *reg = (uint32_t*)&VDP_Reg;
 	for (unsigned int i = 0; i < 26; i++)
 	{
-		md_save_v7.vdp_reg[i] = cpu_to_le32(*reg);
-		reg++;
+		md_save_v7.vdp_reg[i] = cpu_to_le32(VDP_Reg.reg[i]);
 	}
 	
 	// VDP control.
-	reg = (uint32_t*)&Ctrl;
 	for (unsigned int i = 0; i < 7; i++)
 	{
-		md_save_v7.vdp_ctrl[i] = cpu_to_le32(*reg);
-		reg++;
+		md_save_v7.vdp_ctrl[i] = cpu_to_le32(Ctrl.ureg[i]);
 	}
 	
 	// Extra Starscream MC68000 information.
@@ -1472,7 +1464,7 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 		ImportDataAuto(&H_Dot, data, offset, 4);
 		
 		ImportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-		ImportDataAuto(&Rom_Data[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+		ImportDataAuto(&Rom_Data.u8[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 		
 #ifdef GENS_MP3
 		ImportDataAuto(&fatal_mp3_error, data, offset, 4);
@@ -1696,7 +1688,7 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	ExportDataAuto(&H_Dot, data, offset, 4);
 	
 	ExportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-	ExportDataAuto(&Rom_Data[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+	ExportDataAuto(&Rom_Data.u8[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 	
 #ifdef GENS_MP3
 	ExportDataAuto(&fatal_mp3_error, data, offset, 4);
@@ -1837,7 +1829,7 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	}
 	
 	// TODO: Proper byteswapping for e.g. 32X RAM.
-	memcpy(_32X_Ram, sv._32x_ram, sizeof(_32X_Ram));
+	memcpy(&_32X_Ram.u8[0], sv._32x_ram, sizeof(_32X_Ram));
 	memcpy(_MSH2_Reg, sv.msh2_reg, sizeof(_MSH2_Reg));
 	memcpy(_SSH2_Reg, sv.ssh2_reg, sizeof(_SSH2_Reg));
 	memcpy(_SH2_VDP_Reg, sv.sh2_vdp_reg, sizeof(_SH2_VDP_Reg));
@@ -1880,7 +1872,7 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	_32X_VDP.AF_Line	= le32_to_cpu(sv.vdp.af_line);
 	
 	// TODO: Is VDP RAM byteswapped? (CRAM probably is...)
-	memcpy(_32X_VDP_Ram, sv.vdp_ram, sizeof(_32X_VDP_Ram));
+	memcpy(&_32X_VDP_Ram.u8[0], sv.vdp_ram, sizeof(_32X_VDP_Ram));
 	memcpy(_32X_VDP_CRam, sv.vdp_cram, sizeof(_32X_VDP_CRam));
 	le16_to_cpu_array(_32X_VDP_CRam, sizeof(_32X_VDP_CRam));
 	
@@ -1911,11 +1903,11 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	// as was apparently the case with Sega CD games (1024 seems acceptably small)
 	// NOTE: This is the 32X (non-swapped) version.
 	// TODO: Should this also be copied to the MD ROM?
-	memcpy(&_32X_Rom[0], sv.rom_header, sizeof(sv.rom_header));
+	memcpy(&_32X_Rom.u8[0], sv.rom_header, sizeof(sv.rom_header));
 	
 	// MSH2 and SSH2 firmware. (non-swapped for now)
-	memcpy(_32X_MSH2_Rom, sv._32x_msh2_rom, sizeof(_32X_MSH2_Rom));
-	memcpy(_32X_SSH2_Rom, sv._32x_ssh2_rom, sizeof(_32X_SSH2_Rom));
+	memcpy(&_32X_MSH2_Rom.u8[0], sv._32x_msh2_rom, sizeof(_32X_MSH2_Rom));
+	memcpy(&_32X_SSH2_Rom.u8[0], sv._32x_ssh2_rom, sizeof(_32X_SSH2_Rom));
 
 	M68K_32X_Mode();
 	_32X_Set_FB();
@@ -2022,7 +2014,7 @@ void Savestate::GsxExport32X(unsigned char* data)
 		ExportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
 	}
 	
-	ExportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
+	ExportDataAuto(&_32X_Ram.u8[0], data, offset, sizeof(_32X_Ram));
 	ExportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
 	ExportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
 	ExportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
@@ -2053,7 +2045,7 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
 	
 	ExportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
-	ExportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
+	ExportDataAuto(&_32X_VDP_Ram.u8[0], data, offset, sizeof(_32X_VDP_Ram));
 	ExportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
 	
 	ExportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
@@ -2074,9 +2066,9 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
 	ExportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
 	
-	ExportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
-	ExportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
-	ExportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
+	ExportDataAuto(&_32X_Rom.u8[0], data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
+	ExportDataAuto(&_32X_MSH2_Rom.u8[0], data, offset, sizeof(_32X_MSH2_Rom));
+	ExportDataAuto(&_32X_SSH2_Rom.u8[0], data, offset, sizeof(_32X_SSH2_Rom));
 	
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);

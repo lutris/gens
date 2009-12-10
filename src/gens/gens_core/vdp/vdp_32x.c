@@ -28,7 +28,7 @@
 
 
 // VDP RAM and CRam.
-uint8_t  _32X_VDP_Ram[0x100 * 1024];
+_32X_VDP_Ram_t _32X_VDP_Ram;
 uint16_t _32X_VDP_CRam[0x100];
 
 // Full 32X palettes.

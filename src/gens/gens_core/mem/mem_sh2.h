@@ -9,10 +9,30 @@ extern "C" {
 
 #include "gens_core/cpu/sh2/sh2.h"
 
-extern unsigned char _32X_Rom[4 * 1024 * 1024];
-extern unsigned char _32X_Ram[256 * 1024];
-extern unsigned char _32X_MSH2_Rom[2 * 1024];
-extern unsigned char _32X_SSH2_Rom[1 * 1024];
+extern union
+{
+	uint8_t  u8[4*1024*1024];
+	uint16_t u16[(4*1024*1024)>>1];
+	uint32_t u32[(4*1024*1024)>>1];
+} _32X_Rom;
+extern union
+{
+	uint8_t  u8[256*1024];
+	uint16_t u16[(256*1024)>>1];
+	uint32_t u32[(256*1024)>>2];
+} _32X_Ram;
+extern union
+{
+	uint8_t  u8[2*1024];
+	uint16_t u16[(2*1024)>>1];
+	uint32_t u32[(2*1024)>>2];
+} _32X_MSH2_Rom;
+extern union
+{
+	uint8_t  u8[1*1024];
+	uint16_t u16[(1*1024)>>1];
+	uint32_t u32[(1*1024)>>2];
+} _32X_SSH2_Rom;
 
 extern unsigned char _MSH2_Reg[0x40];
 extern unsigned char _SSH2_Reg[0x40];

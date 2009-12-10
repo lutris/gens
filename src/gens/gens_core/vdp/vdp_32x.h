@@ -18,7 +18,13 @@ typedef struct _VDP_32X_t
 } VDP_32X_t;
 
 // VDP RAM and CRam.
-extern uint8_t  _32X_VDP_Ram[0x100 * 1024];
+typedef union
+{
+	uint8_t  u8[0x100*1024];
+	uint16_t u16[(0x100*1024)>>1];
+	uint32_t u32[(0x100*1024)>>2];
+} _32X_VDP_Ram_t;
+extern _32X_VDP_Ram_t _32X_VDP_Ram;
 extern uint16_t  _32X_VDP_CRam[0x100];
 
 // Full 32X palettes.

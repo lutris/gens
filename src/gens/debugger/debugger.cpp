@@ -512,14 +512,15 @@ static void Refresh_M68k_Mem(void)
 	
 	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
+		// TODO: Optimize this to use Ram_68k.u16[].
 		unsigned int i = (j & 0x7FFF) << 1;
 		sprintf(Dbg_Out_Str, "%.4X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
-				Ram_68k[i] + (Ram_68k[i + 1] << 8),
-				Ram_68k[i + 2] + (Ram_68k[i + 3] << 8),
-				Ram_68k[i + 4] + (Ram_68k[i + 5] << 8),
-				Ram_68k[i + 6] + (Ram_68k[i + 7] << 8),
-				Ram_68k[i + 8] + (Ram_68k[i + 9] << 8),
-				Ram_68k[i + 10] + (Ram_68k[i + 11] << 8));
+				Ram_68k.u8[i] | (Ram_68k.u8[i + 1] << 8),
+				Ram_68k.u8[i + 2] | (Ram_68k.u8[i + 3] << 8),
+				Ram_68k.u8[i + 4] | (Ram_68k.u8[i + 5] << 8),
+				Ram_68k.u8[i + 6] | (Ram_68k.u8[i + 7] << 8),
+				Ram_68k.u8[i + 8] | (Ram_68k.u8[i + 9] << 8),
+				Ram_68k.u8[i + 10] | (Ram_68k.u8[i + 11] << 8));
 		Print_Text(Dbg_Out_Str, 34, 1, 146 + (k << 3), BLANC);
     }
 }
@@ -578,14 +579,15 @@ static void Refresh_SH2_Mem(void)
 	
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
+		// TODO: Optimize this to use _32X_Ram.u16[].
 		i = (j & 0x1FFFF) << 1;
 		sprintf(Dbg_Out_Str, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
-				_32X_Ram[i] + (_32X_Ram[i + 1] << 8),
-				_32X_Ram[i + 2] + (_32X_Ram[i + 3] << 8),
-				_32X_Ram[i + 4] + (_32X_Ram[i + 5] << 8),
-				_32X_Ram[i + 6] + (_32X_Ram[i + 7] << 8),
-				_32X_Ram[i + 8] + (_32X_Ram[i + 9] << 8),
-				_32X_Ram[i + 10] + (_32X_Ram[i + 11] << 8));
+				_32X_Ram.u8[i] + (_32X_Ram.u8[i + 1] << 8),
+				_32X_Ram.u8[i + 2] + (_32X_Ram.u8[i + 3] << 8),
+				_32X_Ram.u8[i + 4] + (_32X_Ram.u8[i + 5] << 8),
+				_32X_Ram.u8[i + 6] + (_32X_Ram.u8[i + 7] << 8),
+				_32X_Ram.u8[i + 8] + (_32X_Ram.u8[i + 9] << 8),
+				_32X_Ram.u8[i + 10] + (_32X_Ram.u8[i + 11] << 8));
 		Print_Text(Dbg_Out_Str, 35, 1, 146 + (k << 3), BLANC);
 	}
 }
@@ -820,7 +822,7 @@ static void Refresh_VDP_Pattern(void)
 		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, BLANC);
 	}
 	
-	Cell_8x8_Dump(&VRam[pattern_adr & 0xFFFF], pattern_pal);
+	Cell_8x8_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
 }
 
 

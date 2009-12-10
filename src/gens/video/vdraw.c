@@ -137,12 +137,19 @@ static BOOL	vdraw_prop_sw_render = FALSE;
 static BOOL	vdraw_prop_fast_blur = FALSE;
 int		vdraw_scale = 1;
 
+typedef union
+{
+	uint32_t u32[2];
+	int64_t  s64;
+} u32_s64_t;
+
 // FPS counter.
 BOOL		vdraw_fps_enabled = FALSE;
 static float	vdraw_fps_value = 0;
 static float	vdraw_fps_frames[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static uint32_t	vdraw_fps_old_time = 0, vdraw_fps_view = 0, vdraw_fps_index = 0;
-static uint32_t	vdraw_fps_freq_cpu[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
+static u32_s64_t vdraw_fps_freq_cpu = {.s64 = 0};
+static u32_s64_t vdraw_fps_new_time = {.s64 = 0};
 vdraw_style_t	vdraw_fps_style;
 
 // On-screen message.
@@ -359,19 +366,19 @@ int vdraw_flip(int md_screen_updated)
 		}
 		else if (vdraw_fps_enabled && (Game != NULL) && !Settings.Paused)
 		{
-			if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
+			if (vdraw_fps_freq_cpu.u32[0] > 1)	// accurate timer ok
 			{
 				if (++vdraw_fps_view >= 16)
 				{
 					#ifdef GENS_OS_WIN32
-						QueryPerformanceCounter((LARGE_INTEGER*)vdraw_fps_new_time);
+						QueryPerformanceCounter((LARGE_INTEGER*)(&vdraw_fps_new_time.s64));
 					#else
-						QueryPerformanceCounter((long long*)vdraw_fps_new_time);
+						QueryPerformanceCounter(&vdraw_fps_new_time.s64);
 					#endif
-					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
+					if (vdraw_fps_new_time.u32[0] != vdraw_fps_old_time)
 					{
-						vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
-								(float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
+						vdraw_fps_value = (float)(vdraw_fps_freq_cpu.u32[0]) * 16.0f /
+								(float)(vdraw_fps_new_time.u32[0] - vdraw_fps_old_time);
 						vdraw_text_printf(0, "%.1f", vdraw_fps_value);
 					}
 					else
@@ -380,18 +387,18 @@ int vdraw_flip(int md_screen_updated)
 						vdraw_text_write(">9000", 0);
 					}
 					
-					vdraw_fps_old_time = vdraw_fps_new_time[0];
+					vdraw_fps_old_time = vdraw_fps_new_time.u32[0];
 					vdraw_fps_view = 0;
 				}
 			}
-			else if (vdraw_fps_freq_cpu[0] == 1)	// accurate timer not supported
+			else if (vdraw_fps_freq_cpu.u32[0] == 1)	// accurate timer not supported
 			{
 				if (++vdraw_fps_view >= 10)
 				{
-					vdraw_fps_new_time[0] = GetTickCount();
+					vdraw_fps_new_time.u32[0] = GetTickCount();
 					
-					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
-						vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
+					if (vdraw_fps_new_time.u32[0] != vdraw_fps_old_time)
+						vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time.u32[0] - vdraw_fps_old_time);
 					else
 						vdraw_fps_frames[vdraw_fps_index] = 2000;
 					
@@ -404,7 +411,7 @@ int vdraw_flip(int md_screen_updated)
 						vdraw_fps_value += vdraw_fps_frames[i];
 					
 					vdraw_fps_value /= 8.0f;
-					vdraw_fps_old_time = vdraw_fps_new_time[0];
+					vdraw_fps_old_time = vdraw_fps_new_time.u32[0];
 					vdraw_fps_view = 0;
 				}
 				vdraw_text_printf(0, "%.1f", vdraw_fps_value);
@@ -412,12 +419,12 @@ int vdraw_flip(int md_screen_updated)
 			else
 			{
 				#ifdef GENS_OS_WIN32
-					QueryPerformanceFrequency((LARGE_INTEGER*)vdraw_fps_freq_cpu);
+					QueryPerformanceFrequency((LARGE_INTEGER*)(&vdraw_fps_freq_cpu.s64));
 				#else
-					QueryPerformanceFrequency((long long*)vdraw_fps_freq_cpu);
+					QueryPerformanceFrequency(&vdraw_fps_freq_cpu.s64);
 				#endif
-				if (vdraw_fps_freq_cpu[0] == 0)
-					vdraw_fps_freq_cpu[0] = 1;
+				if (vdraw_fps_freq_cpu.u32[0] == 0)
+					vdraw_fps_freq_cpu.u32[0] = 1;
 				
 				// Clear the message text.
 				vdraw_text_clear();
