@@ -121,6 +121,16 @@ void get_default_save_path(char *buf, size_t size)
 }
 
 
+static UINT cp_orig = CP_ACP;
+#define SET_CONSOLE_OUTPUT_CP_UTF8() \
+do { \
+	cp_orig = GetConsoleOutputCP(); \
+	SetConsoleOutputCP(CP_UTF8); \
+} while (0)
+#define SET_CONSOLE_OUTPUT_CP_ACP() \
+	SetConsoleOutputCP(cp_orig)
+
+
 /**
  * WinMain: Win32 main loop.
  * @param hInst Instance ID of the Gens process.
@@ -139,6 +149,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Initialize the Win32 Unicode Translation Layer.
 	w32u_init();
+	
+#if defined(GENS_WIN32_CONSOLE)
+	SET_CONSOLE_OUTPUT_CP_UTF8();
+#endif
 	
 	// Initialize the PRNG.
 	Init_PRNG();
@@ -229,11 +243,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	//initializeConsoleRomsView();
 	
 #if !defined(GENS_WIN32_CONSOLE)
-	if (startup->enable_debug_console)
+	int enable_debug_console = startup->enable_debug_console;
+	if (enable_debug_console)
 	{
 		// Allocate a console.
 		// Example code from http://justcheckingonall.wordpress.com/2008/08/29/console-window-win32-app/
 		AllocConsole();
+		SET_CONSOLE_OUTPUT_CP_UTF8();
 		
 		HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
 		int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
@@ -314,6 +330,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 #if !defined(GENS_DEBUG)
 	// Shut down the signal handler.
 	gens_sighandler_end();
+#endif
+	
+	// Reset the console code page.
+#if defined(GENS_WIN32_CONSOLE)
+	SET_CONSOLE_OUTPUT_CP_ACP();
+#else
+	if (enable_debug_console)
+		SET_CONSOLE_OUTPUT_CP_ACP();
 #endif
 	
 	// Shut down the Win32 Unicode Translation Layer.
