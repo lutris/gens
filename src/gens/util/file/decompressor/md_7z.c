@@ -177,7 +177,7 @@ static int decompressor_7z_get_file_info(FILE *zF, const char* filename, mdp_z_e
 
 
 /**
- * decompressor_get_file(): Get a file from the archive.
+ * decompressor_7z_get_file(): Get a file from the archive.
  * @param zF		[in] Open file handle.
  * @param filename	[in] Filename of the archive.
  * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
