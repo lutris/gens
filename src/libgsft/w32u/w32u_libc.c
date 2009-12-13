@@ -26,6 +26,7 @@
 /** Unicode wrappers. **/
 MAKE_FUNCPTR(access);
 MAKE_FUNCPTR(fopen);
+MAKE_FUNCPTR(stat);
 
 /** Unicode functions that are accessed directly. **/
 MAKE_FUNCPTR(_wcsicmp);

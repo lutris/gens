@@ -37,7 +37,6 @@ static int accessUW(const char *path, int mode)
 	
 	// Convert path from UTF-8 to UTF-16.
 	wchar_t *wpath = w32u_UTF8toUTF16(path);
-	
 	UINT uRet = _waccess(wpath, mode);
 	free(wpath);
 	return uRet;
@@ -62,12 +61,30 @@ static FILE* fopenUW(const char *path, const char *mode)
 }
 
 
+static int statUW(const char *path, struct stat *buf)
+{
+	if (!path)
+	{
+		// String not specified. Don't bother converting anything.
+		return _wstat((const wchar_t*)path, buf);
+	}
+	
+	// Convert path from UTF-8 to UTF-16.
+	wchar_t *wpath = w32u_UTF8toUTF16(path);
+	int ret = _wstat(wpath, buf);
+	free(wpath);
+	return ret;
+}
+
+
 int WINAPI w32u_libcW_init(void)
 {
 	// TODO: Error handling.
 	
 	paccess		= &accessUW;
 	pfopen		= &fopenUW;
+	pstat		= &statUW;
+	
 	p_wcsicmp	= &_wcsicmp;
 	
 	return 0;

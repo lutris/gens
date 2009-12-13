@@ -27,6 +27,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,6 +41,9 @@ MAKE_EXTFUNCPTR(access);
 
 MAKE_EXTFUNCPTR(fopen);
 #define fopen(path, mode) pfopen(path, mode)
+
+MAKE_EXTFUNCPTR(stat);
+#define stat(path, buf) pstat(path, buf)
 
 /** Unicode functions that are accessed directly. **/
 MAKE_EXTFUNCPTR(_wcsicmp);

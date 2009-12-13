@@ -26,11 +26,13 @@
 // C includes.
 #include <stdlib.h>
 
-// Make sure fopen isn't defined as a macro.
+// Make sure fopen and stat aren't defined as macros.
 #ifdef fopen
 #undef fopen
 #endif
-
+#ifdef stat
+#undef stat
+#endif
 
 static int accessUA(const char *path, int mode)
 {
@@ -66,12 +68,30 @@ static FILE* fopenUA(const char *path, const char *mode)
 }
 
 
+static int statUA(const char *path, struct stat *buf)
+{
+	if (!path)
+	{
+		// String not specified. Don't bother converting anything.
+		return stat(path, buf);
+	}
+	
+	// Convert path from UTF-8 to ANSI.
+	char *apath = w32u_UTF8toANSI(path);
+	int ret = stat(apath, buf);
+	free(apath);
+	return ret;
+}
+
+
 int WINAPI w32u_libcA_init(void)
 {
 	// TODO: Error handling.
 	
 	paccess		= &accessUA;
 	pfopen		= &fopenUA;
+	pstat		= &statUA;
+	
 	p_wcsicmp	= &_wcsicmp;
 	
 	return 0;
