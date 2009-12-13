@@ -280,6 +280,22 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUW(HMENU hMenu, UINT uPosition, UINT uFl
 }
 
 
+static WINUSERAPI int WINAPI DrawTextUW(HDC hDC, LPCSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat)
+{
+	if (!lpchText)
+	{
+		// String not specified. Don't bother converting anything.
+		return DrawTextW(hDC, (LPCWSTR)lpchText, nCount, lpRect, uFormat);
+	}
+	
+	// Convert lpchText from UTF-8 to UTF-16.
+	wchar_t *lpchwText = w32u_UTF8toUTF16(lpchText);
+	int ret = DrawTextW(hDC, lpchwText, nCount, lpRect, uFormat);
+	free(lpchwText);
+	return ret;
+}
+
+
 /** gdi32.dll **/
 
 
@@ -398,6 +414,7 @@ int WINAPI w32u_windowsW_init(void)
 	pLoadIconU		= &LoadIconUW;
 	pLoadImageU		= &LoadImageUW;
 	pMessageBoxU		= &MessageBoxUW;
+	pDrawTextU		= &DrawTextUW;
 	
 	pGetTextExtentPoint32U	= &GetTextExtentPoint32UW;
 	

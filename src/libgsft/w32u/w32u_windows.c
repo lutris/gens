@@ -45,6 +45,7 @@ MAKE_FUNCPTR2(LoadCursorA,		LoadCursorU);
 MAKE_FUNCPTR2(LoadIconA,		LoadIconU);
 MAKE_FUNCPTR2(LoadImageA,		LoadImageU);
 MAKE_FUNCPTR2(MessageBoxA,		MessageBoxU);
+MAKE_FUNCPTR2(DrawTextA,		DrawTextU);
 
 /** gdi32.dll **/
 MAKE_FUNCPTR2(GetTextExtentPoint32A,	GetTextExtentPoint32U);

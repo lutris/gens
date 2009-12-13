@@ -240,6 +240,22 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUA(HMENU hMenu, UINT uPosition, UINT uFl
 }
 
 
+static WINUSERAPI int WINAPI DrawTextUA(HDC hDC, LPCSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat)
+{
+	if (!lpchText)
+	{
+		// String not specified. Don't bother converting anything.
+		return DrawTextA(hDC, lpchText, nCount, lpRect, uFormat);
+	}
+	
+	// Convert lpchText from UTF-8 to ANSI.
+	char *lpchaText = w32u_UTF8toANSI(lpchText);
+	int ret = DrawTextA(hDC, lpchaText, nCount, lpRect, uFormat);
+	free(lpchaText);
+	return ret;
+}
+
+
 /** gdi32.dll **/
 
 
@@ -348,6 +364,7 @@ int WINAPI w32u_windowsA_init(void)
 	pLoadIconU		= &LoadIconUA;
 	pLoadImageU		= &LoadImageUA;
 	pMessageBoxU		= &MessageBoxUA;
+	pDrawTextU		= &DrawTextUA;
 	
 	pGetTextExtentPoint32U	= &GetTextExtentPoint32UA;
 	
