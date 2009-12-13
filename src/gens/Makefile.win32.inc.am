@@ -27,6 +27,7 @@ gens_SOURCES += \
 		ui/win32/bios_misc_files/bmf_window.cpp \
 		ui/win32/directory_config/dir_window.cpp \
 		ui/win32/general_options/genopt_window.cpp \
+		ui/win32/general_options/btncolor.cpp \
 		ui/win32/color_adjust/ca_window.c \
 		ui/win32/country_code/ccode_window.c \
 		ui/win32/zip_select/zipsel_dialog.c \
@@ -65,6 +66,7 @@ noinst_HEADERS += \
 		ui/win32/bios_misc_files/bmf_window.hpp \
 		ui/win32/directory_config/dir_window.hpp \
 		ui/win32/general_options/genopt_window.hpp \
+		ui/win32/general_options/btncolor.hpp \
 		ui/win32/color_adjust/ca_window.h \
 		ui/win32/country_code/ccode_window.h \
 		ui/win32/zip_select/zipsel_dialog.h \

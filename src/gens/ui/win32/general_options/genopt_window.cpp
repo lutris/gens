@@ -25,17 +25,20 @@
 #endif
 
 #include "genopt_window.hpp"
+#include "btncolor.hpp"
 #include "gens/gens_window.h"
 
 // C includes.
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 
 // Win32 includes.
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
+#include "libgsft/w32u/w32u_commdlg.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -47,17 +50,9 @@
 #include "emulator/options.hpp"
 #include "gens_ui.hpp"
 
-// Video Drawing.
+// Video and Audio functions.
 #include "video/vdraw.h"
-
-// On-Screen Display colors.
-static const COLORREF genopt_colors_OSD[4][2] =
-{
-	{RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00)},
-	{RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xFF, 0xFF)},
-	{RGB(0x00, 0xFF, 0x00), RGB(0x00, 0x00, 0x00)},
-	{RGB(0xFF, 0x00, 0x00), RGB(0x00, 0x00, 0x00)},
-};
+#include "audio/audio.h"
 
 // Intro effect colors.
 static const COLORREF genopt_colors_IntroEffect[8][2] =
@@ -80,10 +75,10 @@ HWND genopt_window;
 static WNDCLASS genopt_wndclass;
 
 // Window size.
-#define GENOPT_WINDOW_WIDTH  344
+#define GENOPT_WINDOW_WIDTH  360
 #define GENOPT_WINDOW_HEIGHT 300
 
-#define GENOPT_FRAME_WIDTH  160
+#define GENOPT_FRAME_WIDTH  168
 #define GENOPT_FRAME_HEIGHT 252
 
 // Window procedure.
@@ -96,7 +91,12 @@ static HWND	btnOK, btnCancel, btnApply;
 static HWND	chkOSD_Enable[2];
 static HWND	chkOSD_DoubleSized[2];
 static HWND	chkOSD_Transparency[2];
-static HWND	optOSD_Color[2][4];
+static HWND	btnColor[2];
+static BtnColor *btnColor_cpp[2] = {NULL, NULL};
+
+// NOTE: Win32 colors have the Red and Blue components
+// swapped compared to the internal colors.
+static uint32_t	osd_colors[2];
 
 // Widgets: Intro Effect.
 static HWND	cboIntroEffect;
@@ -112,8 +112,6 @@ static HWND	chkMisc_BorderColorEmulation;
 static HWND	chkMisc_PauseTint;
 
 // GDI objects.
-static HBRUSH	brushOSD[4][2];
-static HPEN	penOSD[4][2];
 static HBRUSH	brushIntroEffect[8][2];
 static HPEN	penIntroEffect[8][2];
 
@@ -130,6 +128,7 @@ static void WINAPI genopt_window_save(void);
 // Callbacks.
 static void WINAPI genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);
 static void WINAPI genopt_window_callback_selectRadioButton(int identifier);
+static void WINAPI genopt_window_callback_btnColor_clicked(int identifier);
 
 
 /**
@@ -192,16 +191,6 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	int frameLeft = 8;
 	int frameTop = 8;
 	
-	// Create message color brushes and pens.
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			brushOSD[i][j] = CreateSolidBrush(genopt_colors_OSD[i][j]);
-			penOSD[i][j] = CreatePen(PS_SOLID, 1, genopt_colors_OSD[i][j]);
-		}
-	}
-	
 	// Create intro effect color brushes and pens.
 	for (int i = 0; i < 8; i++)
 	{
@@ -245,7 +234,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 16;
 	chkMisc_AutoFixChecksum = pCreateWindowU(WC_BUTTON, "Auto Fix Checksum",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							frameLeft+8, frameTop, 128, 20,
+							frameLeft+8, frameTop,
+							(GENOPT_FRAME_WIDTH-16), 20,
 							hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_AutoFixChecksum, fntMain, true);
 	
@@ -253,7 +243,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	chkMisc_AutoPause = pCreateWindowU(WC_BUTTON, "Auto Pause",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop, 128, 20,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_AutoPause, fntMain, true);
 	
@@ -261,7 +252,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	chkMisc_FastBlur = pCreateWindowU(WC_BUTTON, "Fast Blur",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop, 128, 20,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_FastBlur, fntMain, true);
 	
@@ -269,7 +261,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	chkMisc_SegaCDLEDs = pCreateWindowU(WC_BUTTON, "Show SegaCD LEDs",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop, 128, 20,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_SegaCDLEDs, fntMain, true);
 	
@@ -277,7 +270,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	chkMisc_BorderColorEmulation = pCreateWindowU(WC_BUTTON, "Border Color Emulation",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							frameLeft+8, frameTop, 128, 20,
+							frameLeft+8, frameTop,
+							(GENOPT_FRAME_WIDTH-16), 20,
 							hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_BorderColorEmulation, fntMain, true);
 	
@@ -285,7 +279,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 20;
 	chkMisc_PauseTint = pCreateWindowU(WC_BUTTON, "Pause Tint",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop, 128, 20,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_PauseTint, fntMain, true);
 	
@@ -293,7 +288,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 16+8;
 	HWND lblIntroEffect = pCreateWindowU(WC_STATIC, "Intro Effect:",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
-						frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(lblIntroEffect, fntMain, true);
 	
@@ -301,7 +297,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 16;
 	cboIntroEffect = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 23*3,
+					frameLeft+8, frameTop,
+					(GENOPT_FRAME_WIDTH-16), 23*3,
 					hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(cboIntroEffect, fntMain, true);
 	ComboBox_AddStringU(cboIntroEffect, "None");
@@ -313,7 +310,8 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	frameTop += 24+4;
 	HWND lblIntroEffectColor = pCreateWindowU(WC_STATIC, "Intro Effect Color:",
 							WS_CHILD | WS_VISIBLE | SS_CENTER,
-							frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
+							frameLeft+8, frameTop,
+							(GENOPT_FRAME_WIDTH-16), 20,
 							hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(lblIntroEffectColor, fntMain, true);
 	
@@ -378,39 +376,44 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 	// Enable
 	chkOSD_Enable[index] = pCreateWindowU(WC_BUTTON, "Enable",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						x+8, y+16, 128, 20,
+						x+8, y+16,
+						GENOPT_FRAME_WIDTH-32, 20,
 						container, NULL, ghInstance, NULL);
 	SetWindowFontU(chkOSD_Enable[index], fntMain, true);
 	
 	// Double Sized
 	chkOSD_DoubleSized[index] = pCreateWindowU(WC_BUTTON, "Double Sized",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							x+8, y+16+20, 128, 20,
+							x+8, y+16+20,
+							GENOPT_FRAME_WIDTH-32, 20,
 							container, NULL, ghInstance, NULL);
 	SetWindowFontU(chkOSD_DoubleSized[index], fntMain, true);
 	
 	// Transparency
 	chkOSD_Transparency[index] = pCreateWindowU(WC_BUTTON, "Transparency",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							x+8, y+16+20+20, 128, 20,
+							x+8, y+16+20+20,
+							GENOPT_FRAME_WIDTH-32, 20,
 							container, NULL, ghInstance, NULL);
 	SetWindowFontU(chkOSD_Transparency[index], fntMain, true);
 	
-	// Color label
+	// Color label.
 	lblColor = pCreateWindowU(WC_STATIC, "Color:",
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					x+8, y+16+20+20+20+2, 36, 20,
+					x+8, y+16+20+20+20+4, 36, 20,
 					container, NULL, ghInstance, NULL);
 	SetWindowFontU(lblColor, fntMain, true);
 	
-	// Radio buttons
-	for (int i = 0; i < 4; i++)
-	{
-		optOSD_Color[index][i] = pCreateWindowU(
-				WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				x+8+36+4+(i*(16+8)), y+16+20+20+20+2, 16, 16,
-				container, (HMENU)(0xA000 + ((index * 4) + i)), ghInstance, NULL);
-	}
+	// Color button.
+	btnColor[index] = pCreateWindowU(WC_BUTTON, "Change...",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+						x+8+36+4, y+16+20+20+20+2,
+						(GENOPT_FRAME_WIDTH-32-36-4), 23,
+						container, (HMENU)(0xB000 + index), ghInstance, NULL);
+	SetWindowFontU(btnColor[index], fntMain, true);
+	
+	// Color button C++ wrapper.
+	btnColor_cpp[index] = new BtnColor(btnColor[index]);
 }
 
 
@@ -426,16 +429,6 @@ void genopt_window_close(void)
 	DestroyWindow(genopt_window);
 	genopt_window = NULL;
 	
-	// Delete OSD color brushes and pens.
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			DeleteBrush(brushOSD[i][j]);
-			DeletePen(penOSD[i][j]);
-		}
-	}
-	
 	// Delete intro effect color brushes and pens.
 	for (int i = 0; i < 8; i++)
 	{
@@ -444,6 +437,13 @@ void genopt_window_close(void)
 			DeleteBrush(brushIntroEffect[i][j]);
 			DeletePen(penIntroEffect[i][j]);
 		}
+	}
+	
+	// Delete the color button C++ wrappers.
+	for (int i = 0; i < 2; i++)
+	{
+		delete btnColor_cpp[i];
+		btnColor_cpp[i] = NULL;
 	}
 }
 
@@ -455,6 +455,7 @@ static void WINAPI genopt_window_init(void)
 {
 	// Get the current options.
 	unsigned char curFPSStyle, curMsgStyle;
+	uint32_t color_tmp;
 	
 	// Miscellaneous
 	Button_SetCheckU(chkMisc_AutoFixChecksum, (Auto_Fix_CS ? BST_CHECKED : BST_UNCHECKED));
@@ -470,7 +471,12 @@ static void WINAPI genopt_window_init(void)
 	curFPSStyle = vdraw_get_fps_style();
 	Button_SetCheckU(chkOSD_DoubleSized[0], ((curFPSStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheckU(chkOSD_Transparency[0], ((curFPSStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
-	state_optColor[0] = (curFPSStyle & 0x06) >> 1;
+	
+	color_tmp = vdraw_get_fps_color();
+	osd_colors[0] = ((color_tmp >> 16) & 0xFF) |
+			((color_tmp & 0xFF00)) |
+			((color_tmp & 0xFF) << 16);
+	btnColor_cpp[0]->setBgColor(osd_colors[0]);
 	
 	// Message
 	Button_SetCheckU(chkOSD_Enable[1], (vdraw_get_msg_enabled() ? BST_CHECKED : BST_UNCHECKED));
@@ -478,7 +484,12 @@ static void WINAPI genopt_window_init(void)
 	curMsgStyle = vdraw_get_msg_style();
 	Button_SetCheckU(chkOSD_DoubleSized[1], ((curMsgStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheckU(chkOSD_Transparency[1], ((curMsgStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
-	state_optColor[1] = (curMsgStyle & 0x06) >> 1;
+	
+	color_tmp = vdraw_get_msg_color();
+	osd_colors[1] = ((color_tmp >> 16) & 0xFF) |
+			((color_tmp & 0xFF00)) |
+			((color_tmp & 0xFF) << 16);
+	btnColor_cpp[1]->setBgColor(osd_colors[1]);
 	
 	// Intro effect.
 	ComboBox_SetCurSelU(cboIntroEffect, Intro_Style);
@@ -495,6 +506,7 @@ static void WINAPI genopt_window_save(void)
 {
 	// Save the current options.
 	unsigned char curFPSStyle, curMsgStyle;
+	uint32_t color_tmp;
 	
 	// System
 	Auto_Fix_CS = (Button_GetCheckU(chkMisc_AutoFixChecksum) == BST_CHECKED);
@@ -515,8 +527,12 @@ static void WINAPI genopt_window_save(void)
 	curFPSStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
 	curFPSStyle |= ((Button_GetCheckU(chkOSD_Transparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
 	curFPSStyle &= ~0x06;
-	curFPSStyle |= state_optColor[0] << 1;
 	vdraw_set_fps_style(curFPSStyle);
+	
+	color_tmp = ((osd_colors[0] >> 16) & 0xFF) |
+		    ((osd_colors[0] & 0xFF00)) |
+		    ((osd_colors[0] & 0xFF) << 16);
+	vdraw_set_fps_color(color_tmp);
 	
 	// Message
 	vdraw_set_msg_enabled(Button_GetCheckU(chkOSD_Enable[1]) == BST_CHECKED);
@@ -524,9 +540,13 @@ static void WINAPI genopt_window_save(void)
 	curMsgStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
 	curMsgStyle |= ((Button_GetCheckU(chkOSD_Transparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
 	curMsgStyle &= ~0x06;
-	curMsgStyle |= state_optColor[1] << 1;
 	vdraw_set_msg_style(curMsgStyle);
 	
+	color_tmp = ((osd_colors[1] >> 16) & 0xFF) |
+		    ((osd_colors[1] & 0xFF00)) |
+		    ((osd_colors[1] & 0xFF) << 16);
+	vdraw_set_msg_color(color_tmp);
+
 	// Intro effect.
 	Intro_Style = ComboBox_GetCurSelU(cboIntroEffect);
 	if (Intro_Style < 0)
@@ -552,7 +572,21 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 			break;
 		
 		case WM_DRAWITEM:
-			genopt_window_callback_drawMsgRadioButton(LOWORD(wParam), (LPDRAWITEMSTRUCT)lParam);
+			switch (LOWORD(wParam) & 0xFF00)
+			{
+				case 0xA000:
+					genopt_window_callback_drawMsgRadioButton(LOWORD(wParam), (LPDRAWITEMSTRUCT)lParam);
+					break;
+				case 0xB000:
+				{
+					int id = (LOWORD(wParam) & 0xFF);
+					if (id >= 0 && id < 2)
+						btnColor_cpp[id]->handleDrawItem((LPDRAWITEMSTRUCT)lParam);
+					break;
+				}
+				default:
+					break;
+			}
 			break;
 		
 		case WM_COMMAND:
@@ -578,6 +612,12 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 						// Radio button selected.
 						genopt_window_callback_selectRadioButton(LOWORD(wParam));
 					}
+					else if ((LOWORD(wParam) & 0xFF00) == 0xB000)
+					{
+						// Change Color button.
+						genopt_window_callback_btnColor_clicked(LOWORD(wParam));
+					}
+					break;
 			}
 			break;
 		
@@ -586,16 +626,6 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 				break;
 			
 			genopt_window = NULL;
-			
-			// Delete OSD color brushes and pens.
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 2; j++)
-				{
-					DeleteBrush(brushOSD[i][j]);
-					DeletePen(penOSD[i][j]);
-				}
-			}
 			
 			// Delete intro effect color brushes and pens.
 			for (int i = 0; i < 8; i++)
@@ -607,6 +637,16 @@ static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wP
 				}
 			}
 			
+			// Delete the color button C++ wrappers.
+			for (int i = 0; i < 2; i++)
+			{
+				delete btnColor_cpp[i];
+				btnColor_cpp[i] = NULL;
+			}
+			
+			break;
+		
+		default:
 			break;
 	}
 	
@@ -637,22 +677,14 @@ static void WINAPI genopt_window_callback_drawMsgRadioButton(int identifier, LPD
 	HDC hDC = lpDrawItem->hDC;
 	RECT itemRect = lpDrawItem->rcItem;
 	
-	if (index < 2)
-		FillRect(hDC, &itemRect, brushOSD[button][0]);
-	else //if (index == 2)
+	if (index == 2)
 		FillRect(hDC, &itemRect, brushIntroEffect[button][0]);
 	
 	// Check if the radio button is checked.
 	if (state_optColor[index] == button)
 	{
 		// Checked. Draw a circle in the middle of the box.
-		
-		if (index < 2)
-		{
-			SelectBrush(hDC, brushOSD[button][1]);
-			SelectPen(hDC, penOSD[button][1]);
-		}
-		else //if (index == 2)
+		if (index == 2)
 		{
 			SelectBrush(hDC, brushIntroEffect[button][1]);
 			SelectPen(hDC, penIntroEffect[button][1]);
@@ -701,14 +733,65 @@ static void WINAPI genopt_window_callback_selectRadioButton(int identifier)
 	// State has changed.
 	unsigned short oldButton = state_optColor[index];
 	state_optColor[index] = button;
-	if (index < 2)
-	{
-		InvalidateRect(optOSD_Color[index][oldButton], NULL, false);
-		InvalidateRect(optOSD_Color[index][button], NULL, false);
-	}
-	else //if (index == 2)
+	if (index == 2)
 	{
 		InvalidateRect(optIntroEffectColor[oldButton], NULL, false);
 		InvalidateRect(optIntroEffectColor[button], NULL, false);
 	}
+}
+
+
+/**
+ * genopt_window_callback_btnColor_clicked(): "Change..." button for a color was clicked.
+ * @param identifier Button identifier.
+ */
+static void WINAPI genopt_window_callback_btnColor_clicked(int identifier)
+{
+	identifier &= 0x0F;
+	if (identifier >= 2)
+		return;
+	
+	// Custom colors.
+	// NOTE: These are only preserved for the current session.
+	static COLORREF custom_colors[16] =
+	{
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+		RGB(255, 255, 255), RGB(255, 255, 255),
+	};
+	
+	// Create a color picker dialog.
+	CHOOSECOLOR color_sel;
+	memset(&color_sel, 0x00, sizeof(color_sel));
+	color_sel.lStructSize = sizeof(color_sel);
+	color_sel.hwndOwner = genopt_window;
+	color_sel.rgbResult = osd_colors[identifier];
+	color_sel.lpCustColors = custom_colors;
+	color_sel.Flags = CC_ANYCOLOR | CC_FULLOPEN | CC_RGBINIT;
+	
+	// Request a color.
+	// TODO: w32u version of ChooseColor()
+	audio_clear_sound_buffer();
+	BOOL bRet = ChooseColor(&color_sel);
+	if (bRet == 0)
+	{
+		// No color selected.
+		return;
+	}
+	
+	// Color selected.
+	if (color_sel.rgbResult == osd_colors[identifier])
+		return;
+	
+	// Set the new color.
+	osd_colors[identifier] = color_sel.rgbResult;
+	btnColor_cpp[identifier]->setBgColor(osd_colors[identifier]);
+	
+	// Enable the "Apply" button.
+	Button_Enable(btnApply, true);
 }
