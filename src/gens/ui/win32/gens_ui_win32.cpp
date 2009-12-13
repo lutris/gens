@@ -514,8 +514,8 @@ static string WINAPI UI_Win32_OpenFile_int(const string& title, const string& in
 	filename[0] = 0x00;
 	
 	// Open Filename dialog settings
-	memset(&ofn, 0, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	memset(&ofn, 0, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = owner;
 	ofn.hInstance = ghInstance;
 	ofn.lpstrFile = filename;
@@ -589,7 +589,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.lpfn = selectDir_SetSelProc;
 	bi.lParam = (LPARAM)(initDir.c_str());
 	
-	// Check for DLL-specific features.
+	// Check for DLL version-specific features.
 	if (shell32_dll_version >= 0x04470000)
 	{
 		// shell32.dll v4.71 or later.
