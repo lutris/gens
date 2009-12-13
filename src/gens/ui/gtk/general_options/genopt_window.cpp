@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 
 // GTK+ includes.
 #include <gtk/gtk.h>
