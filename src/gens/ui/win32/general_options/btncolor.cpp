@@ -116,9 +116,8 @@ void BtnColor::handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem)
 	rcFocus.bottom	-= 4;
 	
 	// Get the button's caption.
-	// TODO: w32u version. [Button_GetTextU()]
 	char buf[1024];
-	Button_GetText(m_hWnd, buf, sizeof(buf));
+	Button_GetTextU(m_hWnd, buf, sizeof(buf));
 	buf[sizeof(buf)-1] = 0x00;
 	string strCaption = string(buf);
 	
@@ -275,9 +274,8 @@ void BtnColor::DrawButtonText(HDC hDC, RECT &rc, const string &strCaption, COLOR
 		vLines.push_back(strCaption);
 	}
 	
-	// TODO: w32u version of GetTextExtentPoint32().
 	SIZE szText;
-	GetTextExtentPoint32(hDC, strCaption.c_str(), strCaption.size(), &szText);
+	pGetTextExtentPoint32U(hDC, strCaption.c_str(), strCaption.size(), &szText);
 	
 	COLORREF oldColor;
 	
@@ -313,9 +311,8 @@ void BtnColor::DrawButtonText(HDC hDC, RECT &rc, const string &strCaption, COLOR
 		textRc.top = nStartPos + (szText.cy * i);
 		textRc.bottom = nStartPos + (szText.cy * (i + 1));
 		
-		// TODO: w32u version of DrawText()
 		const string &line = vLines.at(i);
-		DrawText(hDC, line.c_str(), line.size(), &textRc, uDrawStyles);
+		pDrawTextU(hDC, line.c_str(), line.size(), &textRc, uDrawStyles);
 	}
 	
 	SetTextColor(hDC, oldColor);
