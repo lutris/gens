@@ -35,10 +35,11 @@ extern "C" {
 #define SetWindowFontU(hwnd,hfont,fRedraw)	(void)(pSendMessageU((hwnd),WM_SETFONT,(WPARAM)(HFONT)(hfont),(LPARAM)(BOOL)(fRedraw)))
 
 /** Button macros. **/
-#define Button_GetCheckU(hwndCtl)	((int)(DWORD)pSendMessageU((hwndCtl),BM_GETCHECK,0,0))
-#define Button_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
-#define Button_SetCheckU(hwndCtl,check)	((void)pSendMessageU((hwndCtl),BM_SETCHECK,(WPARAM)(int)(check),0))
-#define Button_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
+#define Button_GetCheckU(hwndCtl)		((int)(DWORD)pSendMessageU((hwndCtl),BM_GETCHECK,0,0))
+#define Button_GetTextU(hwndCtl,lpch,cchMax)	pGetWindowTextU((hwndCtl),(lpch),(cchMax))
+#define Button_GetTextLengthU(hwndCtl)		pGetWindowTextLengthU(hwndCtl)
+#define Button_SetCheckU(hwndCtl,check)		((void)pSendMessageU((hwndCtl),BM_SETCHECK,(WPARAM)(int)(check),0))
+#define Button_SetTextU(hwndCtl,lpsz)		pSetWindowTextU((hwndCtl),(lpsz))
 
 /** ComboBox macros. **/
 #define ComboBox_AddStringU(hwndCtl, lpsz)	((int)(DWORD)pSendMessageU_LPCSTR((hwndCtl),CB_ADDSTRING,CB_ADDSTRING,0,(LPARAM)(lpsz)))
