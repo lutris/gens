@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+
 #include <ctype.h>
 #include <fcntl.h>
 
@@ -814,10 +816,22 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	// Determine the ROM type.
 	// TODO: Show an error if the ROM can't be opened.
-	unsigned char detectBuf[2048];
-	size_t bytes_read;
+	uint8_t detectBuf[2048];
+	memset(detectBuf, 0x00, sizeof(detectBuf));
 	
+	size_t bytes_read;
 	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf), &bytes_read);
+	if (bytes_read == 0)
+	{
+		// Couldn't read the header.
+		z_entry_t_free(z_list);
+		fclose(fROM);
+		Game = NULL;
+		out_ROM = NULL;
+		GensUI::setMousePointer(false);
+		return ROMTYPE_SYS_NONE;
+	}
+	
 	romType = detectFormat(detectBuf);
 	unsigned int romSys = romType & ROMTYPE_SYS_MASK;
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
