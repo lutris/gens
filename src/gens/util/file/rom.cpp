@@ -1126,7 +1126,11 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 #if defined(HAVE_ICONV) || defined(_WIN32)
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
-		return SJIStoUTF8(RomName, sizeof(RomName));
+	{
+		string s_utf8 = SJIStoUTF8(RomName, sizeof(RomName));
+		if (!s_utf8.empty())
+			return s_utf8;
+	}
 #endif
 	
 	return string(RomName);
@@ -1163,5 +1167,8 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 	free(mbs);
 	return s_utf8;
 #endif
+	
+	// This shouldn't happen...
+	return "";
 }
 #endif
