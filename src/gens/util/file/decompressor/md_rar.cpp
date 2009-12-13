@@ -278,7 +278,7 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 	// Build the command line.
 	char cmd_line[(GENS_PATH_MAX*3) + 256];
 	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" p -ierr \"%s\" \"%s\"%s",
-			Misc_Filenames.RAR_Binary, filename. z_entry->filename,
+			Misc_Filenames.RAR_Binary, filename, z_entry->filename,
 #ifndef GENS_OS_WIN32
 			" 2>/dev/null"
 #else
@@ -287,7 +287,7 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 		);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(cmd_line, "r");
+	FILE *pRAR = popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
