@@ -50,6 +50,9 @@ MAKE_EXTFUNCPTR2(LoadIconA,		LoadIconU);
 MAKE_EXTFUNCPTR2(LoadImageA,		LoadImageU);
 MAKE_EXTFUNCPTR2(MessageBoxA,		MessageBoxU);
 
+/** gdi32.dll **/
+MAKE_EXTFUNCPTR2(GetTextExtentPoint32A,	GetTextExtentPoint32U);
+
 /**
  * These functions don't need reimplementation (no string processing),
  * but they have separate A/W versions.

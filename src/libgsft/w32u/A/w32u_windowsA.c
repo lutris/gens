@@ -240,6 +240,25 @@ static WINUSERAPI BOOL WINAPI ModifyMenuUA(HMENU hMenu, UINT uPosition, UINT uFl
 }
 
 
+/** gdi32.dll **/
+
+
+static WINGDIAPI BOOL WINAPI GetTextExtentPoint32UA(HDC hDC, LPCSTR lpString, int c, LPSIZE lpSize)
+{
+	if (!lpString)
+	{
+		// String not specified. Don't bother converting anything.
+		return GetTextExtentPoint32A(hDC, lpString, c, lpSize);
+	}
+	
+	// Convert lpString from UTF-8 to ANSI.
+	char *lpaString = w32u_UTF8toANSI(lpString);
+	BOOL bRet = GetTextExtentPoint32A(hDC, lpaString, c, lpSize);
+	free(lpaString);
+	return bRet;
+}
+
+
 #define LOADRESOURCE_FNA(fnUA, fnWin32, type_ret) \
 static WINUSERAPI type_ret WINAPI fnUA(HINSTANCE hInstance, LPCSTR lpResName) \
 { \
@@ -329,6 +348,8 @@ int WINAPI w32u_windowsA_init(void)
 	pLoadIconU		= &LoadIconUA;
 	pLoadImageU		= &LoadImageUA;
 	pMessageBoxU		= &MessageBoxUA;
+	
+	pGetTextExtentPoint32U	= &GetTextExtentPoint32UA;
 	
 	pDefWindowProcU		= &DefWindowProcA;
 	pCallWindowProcU	= &CallWindowProcA;

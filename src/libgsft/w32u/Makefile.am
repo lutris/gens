@@ -7,7 +7,7 @@ noinst_LTLIBRARIES = libgsft_w32u.la
 libgsft_w32u_la_CFLAGS		= $(AM_CFLAGS) -O3 -funroll-loops
 libgsft_w32u_la_CXXFLAGS	= $(AM_CXXFLAGS) -O3 -funroll-loops
 libgsft_w32u_la_LDFLAGS		= $(AM_LDFLAGS)
-libgsft_w32u_la_LIBADD		= -lkernel32 -luser32 -lshell32 -lcomdlg32
+libgsft_w32u_la_LIBADD		= -lkernel32 -luser32 -lgdi32 -lshell32 -lcomdlg32
 libgsft_w32u_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
 libgsft_w32u_la_SOURCES = \
