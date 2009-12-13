@@ -37,20 +37,18 @@
 #include <string.h>
 
 // C++ includes.
-#include <string.h>
+#include <string>
+#include <sstream>
 using std::string;
+using std::stringstream;
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
+#include "libgsft/w32u/w32u_winnls.h"
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
-#include "charset/cp1252.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
@@ -98,8 +96,13 @@ static WNDCLASS about_wndclass;
 // Window procedure.
 static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-// Subclassed window procedure for the tab groupbox.
+// Tab callbacks.
 static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void WINAPI about_window_tabInfo_selChanged(void);
+
+// Debug Info.
+static string sDebugInfo;
+static void WINAPI about_window_buildDebugInfoString(void);
 
 // Widgets.
 static HWND	tabInfo;
@@ -117,7 +120,7 @@ static LPBYTE	pbmpData = NULL;
 static HDC	hdcComp = NULL;
 
 // Widget creation functions.
-static void	about_window_create_child_windows(HWND hWnd);
+static void WINAPI about_window_create_child_windows(HWND hWnd);
 
 // ice variables and functions.
 static uint8_t		ax, bx, cx;
@@ -148,21 +151,21 @@ void about_window_show(void)
 		about_wndclass.cbClsExtra = 0;
 		about_wndclass.cbWndExtra = 0;
 		about_wndclass.hInstance = ghInstance;
-		about_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		about_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
 		about_wndclass.hCursor = NULL;
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
-		about_wndclass.lpszClassName = TEXT("about_window");
+		about_wndclass.lpszClassName = "about_window";
 		
-		RegisterClass(&about_wndclass);
+		pRegisterClassU(&about_wndclass);
 	}
 	
 	// Create the window.
-	about_window = CreateWindow(TEXT("about_window"), TEXT("About " GENS_APPNAME),
-				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				    CW_USEDEFAULT, CW_USEDEFAULT,
-				    ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
-				    gens_window, NULL, ghInstance, NULL);
+	about_window = pCreateWindowU("about_window", "About " GENS_APPNAME,
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
+					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	gsft_win32_set_actual_window_size(about_window, ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT);
@@ -179,18 +182,18 @@ void about_window_show(void)
  * about_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void about_window_create_child_windows(HWND hWnd)
+static void WINAPI about_window_create_child_windows(HWND hWnd)
 {
 	cx = 0; iceLastTicks = 0;
 	if (ice != 3)
 	{
 		// Gens logo
-		imgGensLogo = CreateWindow(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
-					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
-						 IMAGE_BITMAP, 0, 0,
-						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
-		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
+		imgGensLogo = pCreateWindowU(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
+						12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
+		hbmpGensLogo = (HBITMAP)LoadImageA(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+							IMAGE_BITMAP, 0, 0,
+							LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+		pSendMessageU(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
 	}
 	else
 	{
@@ -215,34 +218,39 @@ static void about_window_create_child_windows(HWND hWnd)
 	}
 	
 	// Title and version information.
-	lblGensTitle = CreateWindow(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
-				    hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensTitle, fntTitle, true);
+	lblGensTitle = pCreateWindowU(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
+					128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
+					hWnd, NULL, ghInstance, NULL);
+	SetWindowFontU(lblGensTitle, fntTitle, true);
 	
-	lblGensDesc = CreateWindow(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				   128, 42+ABOUT_WINDOW_GIT_HEIGHT,
-				   (ABOUT_WINDOW_WIDTH-128), 100,
-				   hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensDesc, fntMain, true);
+	lblGensDesc = pCreateWindowU(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
+					128, 42+ABOUT_WINDOW_GIT_HEIGHT,
+					(ABOUT_WINDOW_WIDTH-128), 100,
+					hWnd, NULL, ghInstance, NULL);
+	SetWindowFontU(lblGensDesc, fntMain, true);
+	
+	// Build the debug information string.
+	about_window_buildDebugInfoString();
 	
 	// Tab control.
-	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-			       8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
-			       hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(tabInfo, fntMain, true);
+	tabInfo = pCreateWindowU(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
+				8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
+				hWnd, NULL, ghInstance, NULL);
+	SetWindowFontU(tabInfo, fntMain, true);
 	
 	// Make sure the tab control is in front of all other windows.
 	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 	
-	// Add tabs for "Copyright" and "Included Libraries".
+	// Add the tabs.
 	TCITEM tab;
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
-	tab.pszText = TEXT("&Copyright");
-	TabCtrl_InsertItem(tabInfo, 0, &tab);
-	tab.pszText = TEXT("Included &Libraries");
-	TabCtrl_InsertItem(tabInfo, 1, &tab);
+	tab.pszText = "&Copyright";
+	pTabCtrl_InsertItemU(tabInfo, 0, &tab);
+	tab.pszText = "Included &Libraries";
+	pTabCtrl_InsertItemU(tabInfo, 1, &tab);
+	tab.pszText = "&Debug Info";
+	pTabCtrl_InsertItemU(tabInfo, 2, &tab);
 	
 	// Calculate the tab's display area.
 	RECT rectTab;
@@ -250,37 +258,36 @@ static void about_window_create_child_windows(HWND hWnd)
 	rectTab.top = 0;
 	rectTab.right = TAB_WIDTH;
 	rectTab.bottom = TAB_HEIGHT;
-	TabCtrl_AdjustRect(tabInfo, false, &rectTab);
+	TabCtrl_AdjustRectU(tabInfo, false, &rectTab);
 	
 	// Box for the tab contents.
 	HWND grpTabContents;
-	grpTabContents = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				      rectTab.left + 4, rectTab.top,
-				      rectTab.right - rectTab.left - 8,
-				      rectTab.bottom - rectTab.top - 4,
-				      tabInfo, NULL, ghInstance, NULL);
-	SetWindowFont(grpTabContents, fntMain, true);
+	grpTabContents = pCreateWindowU(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					rectTab.left + 4, rectTab.top,
+					rectTab.right - rectTab.left - 8,
+					rectTab.bottom - rectTab.top - 4,
+					tabInfo, NULL, ghInstance, NULL);
+	SetWindowFontU(grpTabContents, fntMain, true);
 	
 	// Subclass the tab box.
-	grpTabContents_old_wndproc = (WNDPROC)SetWindowLongPtr(grpTabContents, GWL_WNDPROC,
+	grpTabContents_old_wndproc = (WNDPROC)pSetWindowLongPtrU(grpTabContents, GWL_WNDPROC,
 						(LONG_PTR)about_window_grpTabContents_wndproc);
 	
 	// Tab contents.
-	string sTabContents = charset_utf8_to_cp1252(about_window_copyright);
-	lblTabContents = CreateWindow(WC_STATIC, sTabContents.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
-				      8, 16,
-				      rectTab.right - rectTab.left - 24,
-				      rectTab.bottom - rectTab.top - 32,
-				      grpTabContents, NULL, ghInstance, NULL);
-	SetWindowFont(lblTabContents, fntMain, true);
+	lblTabContents = pCreateWindowU(WC_STATIC, about_window_copyright, WS_CHILD | WS_VISIBLE | SS_LEFT,
+					8, 16,
+					rectTab.right - rectTab.left - 24,
+					rectTab.bottom - rectTab.top - 32,
+					grpTabContents, NULL, ghInstance, NULL);
+	SetWindowFontU(lblTabContents, fntMain, true);
 	
 	// Create the OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
-				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+					ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);
@@ -348,7 +355,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			    (HWND)lParam == imgGensLogo)
 			{
 				SetBkMode((HDC)wParam, TRANSPARENT);
-				return (LRESULT)GetStockObject(NULL_BRUSH);
+				return (LRESULT)GetStockBrush(NULL_BRUSH);
 			}
 			break;
 		
@@ -367,31 +374,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 		
 		case WM_NOTIFY:
 			if (((LPNMHDR)lParam)->code == TCN_SELCHANGE)
-			{
-				// Tab change.
-				string sTabContents;
-				
-				switch (TabCtrl_GetCurSel(tabInfo))
-				{
-					case 0:
-						// Copyright.
-						sTabContents = charset_utf8_to_cp1252(about_window_copyright);
-						break;
-					case 1:
-						// Included Libraries.
-						sTabContents = charset_utf8_to_cp1252(about_window_included_libs);
-						break;
-					default:
-						// Unknown.
-						break;
-				}
-				
-				Static_SetText(lblTabContents, sTabContents.c_str());
-				
-				// Invalidate the tab contents groupbox.
-				InvalidateRect(tabInfo, NULL, true);
-				UpdateWindow(about_window);
-			}
+				about_window_tabInfo_selChanged();
 			break;
 			
 		case WM_DESTROY:
@@ -423,7 +406,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
@@ -445,8 +428,94 @@ static LRESULT CALLBACK about_window_grpTabContents_wndproc(HWND hWnd, UINT mess
 		return (LRESULT)GetStockObject(NULL_BRUSH);
 	}
 	
-	return CallWindowProc(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
+	return pCallWindowProcU(grpTabContents_old_wndproc, hWnd, message, wParam, lParam);
 }
+
+
+static void WINAPI about_window_tabInfo_selChanged(void)
+{
+	// Tab change.
+	const char *sTabContents = NULL;
+	
+	switch (TabCtrl_GetCurSelU(tabInfo))
+	{
+		case 0:
+			// Copyright.
+			sTabContents = about_window_copyright;
+			break;
+		case 1:
+			// Included Libraries.
+			sTabContents = about_window_included_libs;
+			break;
+		case 2:
+			// Debug Information.
+			sTabContents = sDebugInfo.c_str();
+			break;
+		default:
+			// Unknown tab.
+			sTabContents = "";
+			break;
+	}
+	
+	// Set the text.
+	Static_SetTextU(lblTabContents, sTabContents);
+	
+	// Invalidate the tab contents groupbox.
+	InvalidateRect(tabInfo, NULL, true);
+	UpdateWindow(about_window);
+}
+
+
+static void WINAPI about_window_buildDebugInfoString(void)
+{
+	// Build the debug information string.
+	stringstream ss;
+	
+	// Print the current code page.
+	ss << "System code page: ";
+	CPINFOEX cpix;
+	BOOL bRet = pGetCPInfoExU(CP_ACP, 0, &cpix);
+	if (!bRet)
+		ss << "Unknown [GetCPInfoEx() failed]\n";
+	else
+	{
+		ss << cpix.CodePage << " (";
+		
+		// Windows XP has the code page number in cpix.CodePageName,
+		// followed by two spaces, and then the code page name in parentheses.
+		char *parenStart = strchr(cpix.CodePageName, '(');
+		if (!parenStart)
+		{
+			// No parentheses. Use the code page name as-is.
+			ss << cpix.CodePageName;
+		}
+		else
+		{
+			// Found starting parenthesis. Check for ending parenthesis.
+			char *parenEnd = strrchr(parenStart, ')');
+			if (parenEnd)
+			{
+				// Found ending parenthesis. Null it out.
+				*parenEnd = 0x00;
+			}
+			
+			ss << (parenStart + 1);
+		}
+		ss << ")\n";
+	}
+	
+	// Is Gens/GS using Unicode?
+	if (w32u_is_unicode)
+		ss << "Using Unicode strings for Win32 API.\n";
+	else
+		ss << "Using ANSI strings for Win32 API.\n";
+	
+	// Save the debug information.
+	sDebugInfo = ss.str();
+}
+
+
+/** ICE stuff. **/
 
 
 #define ICE_RGB(r, g, b) (((r) << 16) | ((g) << 8) | (b))
@@ -531,7 +600,7 @@ static void CALLBACK about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_P
 	rIce.right = ICE_OFFSET_X + 80 - 1;
 	rIce.bottom = ICE_OFFSET_Y + 80 - 1;
 	InvalidateRect(about_window, &rIce, false);
-	SendMessage(about_window, WM_PAINT, 0, 0);
+	pSendMessageU(about_window, WM_PAINT, 0, 0);
 	
 	iceLastTicks = dwTime;
 }

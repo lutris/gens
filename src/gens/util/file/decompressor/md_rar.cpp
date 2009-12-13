@@ -25,8 +25,16 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
-// popen wrapper
-#include "popen_wrapper.h"
+/**
+ * NOTE: The Win32 version uses UnRAR.dll instead of rar.exe.
+ * The Win32 defines here will be kept for historical purposes,
+ * and/or switching back to rar.exe if it's ever needed again
+ * for some reason.
+ */
+
+#ifdef _WIN32
+#include "libgsft/w32u/w32u_libc.h"
+#endif
 
 // Newline constant: "\r\n" on Win32, "\n" on everything else.
 #ifdef GENS_OS_WIN32
@@ -54,6 +62,7 @@ using std::stringstream;
 // libgsft includes.
 #include "libgsft/gsft_strdup.h"
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_szprintf.h"
 
 
 /**
@@ -89,18 +98,23 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Check that the RAR executable is available.
+#if !defined(_WIN32)
 	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+#else
+	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
+#endif
 	{
 		// Cannot run the RAR executable.
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	// Build the command line.
-	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" v \"" << filename << "\"";
+	char cmd_line[(GENS_PATH_MAX*2) + 256];
+	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" v \"%s\"",
+			Misc_Filenames.RAR_Binary, filename);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
+	FILE *pRAR = popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -108,15 +122,15 @@ int decompressor_rar_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t
 	}
 	
 	// Read from the pipe.
-	char buf[1025];
+	char buf[4096+1];
 	size_t rv;
 	stringstream ss;
-	while ((rv = fread(buf, 1, 1024, pRAR)))
+	while ((rv = fread(buf, 1, sizeof(buf)-1, pRAR)))
 	{
 		buf[rv] = 0x00;
 		ss << buf;
 	}
-	gens_pclose(pRAR);
+	pclose(pRAR);
 	
 	// Get the string and go through it to get the file listing.
 	string data = ss.str();
@@ -251,22 +265,29 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Check that the RAR executable is available.
+#if !defined(_WIN32)
 	if (access(Misc_Filenames.RAR_Binary, X_OK) != 0)
+#else
+	if (access(Misc_Filenames.RAR_Binary, R_OK) != 0)
+#endif
 	{
 		// Cannot run the RAR executable.
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
 	// Build the command line.
-	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" p -ierr \"" << filename
-			<< "\" \"" << z_entry->filename << "\"";
+	char cmd_line[(GENS_PATH_MAX*3) + 256];
+	szprintf(cmd_line, sizeof(cmd_line), "\"%s\" p -ierr \"%s\" \"%s\"%s",
+			Misc_Filenames.RAR_Binary, filename. z_entry->filename,
 #ifndef GENS_OS_WIN32
-	ssCmd << " 2>/dev/null";
+			" 2>/dev/null"
+#else
+			""
 #endif
+		);
 	
 	// Open the RAR file.
-	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
+	FILE *pRAR = gens_popen(cmd_line, "r");
 	if (!pRAR)
 	{
 		// Error opening `rar`.
@@ -276,15 +297,15 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 	// Read from the pipe.
 	size_t extracted_size = 0;
 	size_t rv;
-	unsigned char bufRAR[1024];
-	while ((rv = fread(bufRAR, 1, 1024, pRAR)))
+	unsigned char bufRAR[4096];
+	while ((rv = fread(bufRAR, 1, sizeof(bufRAR), pRAR)))
 	{
 		if (extracted_size + rv > size)
 			break;
 		memcpy(&((unsigned char*)buf)[extracted_size], &bufRAR, rv);
 		extracted_size += rv;
 	}
-	gens_pclose(pRAR);
+	pclose(pRAR);
 	
 	// File extracted successfully.
 	*ret_size = extracted_size;

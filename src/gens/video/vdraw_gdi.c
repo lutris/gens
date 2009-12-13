@@ -66,16 +66,16 @@ static int	vdraw_gdi_end(void);
 static void	vdraw_gdi_clear_screen(void);
 
 static int	vdraw_gdi_flip(void);
-static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
+static void	WINAPI vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
 static int	vdraw_gdi_reinit_gens_window(void);
 
 // Win32-specific functions.
-static int	vdraw_gdi_clear_primary_screen(void);
-static int	vdraw_gdi_clear_back_screen(void);
-static int	vdraw_gdi_restore_primary(void) { return 0; }
-static int	vdraw_gdi_set_cooperative_level(void) { return 0; }
+static int WINAPI vdraw_gdi_clear_primary_screen(void);
+static int WINAPI vdraw_gdi_clear_back_screen(void);
+static int WINAPI vdraw_gdi_restore_primary(void) { return 0; }
+static int WINAPI vdraw_gdi_set_cooperative_level(void) { return 0; }
 
 
 // VDraw Backend struct.
@@ -231,7 +231,7 @@ static void vdraw_gdi_clear_screen(void)
  * vdraw_gdi_clear_primary_screen(): Clear the primary screen.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_gdi_clear_primary_screen(void)
+static int WINAPI vdraw_gdi_clear_primary_screen(void)
 {
 	if (!pbmpData)
 		return -1;
@@ -249,7 +249,7 @@ static int vdraw_gdi_clear_primary_screen(void)
  * vdraw_gdi_clear_back_screen(): Clear the back buffer.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_gdi_clear_back_screen(void)
+static int WINAPI vdraw_gdi_clear_back_screen(void)
 {
 	HDC  hdcDest;
 	RECT rectDest;
@@ -436,7 +436,7 @@ static void vdraw_gdi_stretch_adjust(void)
  * vdraw_gdi_draw_border(): Draw the border color.
  * Called from vdraw_gdi_flip().
  */
-static void vdraw_gdi_draw_border(void)
+static void WINAPI vdraw_gdi_draw_border(void)
 {
 	if (!Video.borderColorEmulation)
 	{

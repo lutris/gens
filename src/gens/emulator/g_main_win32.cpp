@@ -42,6 +42,10 @@ using std::list;
 #include "sighandler.h"
 #endif
 
+// Win32 Unicode support.
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_charset.h"
+
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
 #include <io.h>
@@ -82,12 +86,7 @@ int win32_CommCtrlEx = 0;
 #include "ui/win32/fonts.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
+#include "libgsft/w32u/w32u_windows.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -104,18 +103,18 @@ int win32_CommCtrlEx = 0;
 void get_default_save_path(char *buf, size_t size)
 {
 	// Win32 needs the program's pathname.
-	GetModuleFileName(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
+	pGetModuleFileNameU(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
 	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path)-1] = 0x00;
 	
-	// Remove the filename portion of the pathname. (_tcsrchr() == strrchr())
-	TCHAR *last_backslash = _tcsrchr(PathNames.Gens_EXE_Path, '\\');
+	// Remove the filename portion of the pathname.
+	char *last_backslash = strrchr(PathNames.Gens_EXE_Path, '\\');
 	if (last_backslash)
 	{
 		*(last_backslash + 1) = 0x00;
 	}
 	
 	// Set the current directory.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	// Set the default save path.
 	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
@@ -137,6 +136,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Save hInst for other functions.
 	ghInstance = hInst;
+	
+	// Initialize the Win32 Unicode Translation Layer.
+	w32u_init();
 	
 	// Initialize the PRNG.
 	Init_PRNG();
@@ -171,11 +173,44 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	}
 	
 	// Parse command line arguments.
-	argc_argv arg;
 	Gens_StartupInfo_t *startup;
+	argc_argv arg;
+	char *lpuCmdLine = NULL;
+	bool bNeedsPrgName;		// If true, convertCmdLineToArgv() will add the program name as arg.v[0].
 	
-	convertCmdLineToArgv(lpCmdLine, &arg);
-	startup = parse_args(arg.c, arg.v);
+	if (w32u_is_unicode)
+	{
+		// Unicode version.
+		// NOTE: lpwCmdLine *does* contain the program name, whereas lpCmdLine does not.
+		bNeedsPrgName = false;
+		const wchar_t *lpwCmdLine = GetCommandLineW();
+		lpuCmdLine = w32u_UTF16toUTF8(lpwCmdLine);
+	}
+	else
+	{
+		// ANSI version.
+		// NOTE: lpCmdLine does not contain the program name.
+		bNeedsPrgName = true;
+		lpuCmdLine = w32u_ANSItoUTF8(lpCmdLine);
+	}
+	
+	if (lpuCmdLine)
+	{
+		// Command line converted to UTF-8 successfully.
+		// Parse the command line arguments.
+		convertCmdLineToArgv(lpuCmdLine, &arg, bNeedsPrgName);
+		startup = parse_args(arg.c, arg.v);
+		free(lpuCmdLine);
+	}
+	else
+	{
+		// Couldn't convert the command line to UTF-8.
+		// Create a blank startup struct.
+		startup = (Gens_StartupInfo_t*)malloc(sizeof(Gens_StartupInfo_t));
+		memset(startup, 0x00, sizeof(Gens_StartupInfo_t));
+	}
+	
+	// Delete the command line arguments.
 	deleteArgcArgv(&arg);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
@@ -212,12 +247,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		FILE *hf_in = _fdopen(hCrt, "r");
 		setvbuf(hf_in, NULL, _IONBF, 128);
 		*stdin = *hf_in;
-		
-#if !defined(GENS_DEBUG)
-		// Install the signal handler.
-		gens_sighandler_init();
-#endif
 	}
+#endif
+
+#if !defined(GENS_DEBUG)
+	// Install the signal handler.
+	gens_sighandler_init();	
 #endif
 	
 	// Initialize the video backend.
@@ -268,10 +303,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	fonts_end();
 	
 	// Empty the message queue.
+	// NOTE: ANSI functions are used here, since the messages aren't actually processed.
 	MSG msg;
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (PeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessage(&msg, NULL, 0, 0))
+		if (!GetMessageA(&msg, NULL, 0, 0))
 			return msg.wParam;
 	}
 	
@@ -279,6 +315,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Shut down the signal handler.
 	gens_sighandler_end();
 #endif
+	
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
 	return 0;

@@ -189,7 +189,7 @@ void gens_menu_parse(const GensMenuItem_t *menu, HMENU container)
 		}
 		
 		// Add the menu item to the container.
-		InsertMenu(container, -1, uFlags, uIDNewItem, sMenuText.c_str());
+		pInsertMenuU(container, -1, uFlags, uIDNewItem, sMenuText.c_str());
 		
 		// Next menu item.
 		menu++;
@@ -202,7 +202,7 @@ void gens_menu_parse(const GensMenuItem_t *menu, HMENU container)
 			DestroyAcceleratorTable(hAccelTable_Menu);
 		
 		// Create the accelerator table.
-		hAccelTable_Menu = CreateAcceleratorTable(&vAccel[0], vAccel.size());
+		hAccelTable_Menu = pCreateAcceleratorTableU(&vAccel[0], vAccel.size());
 		
 		// Clear the vector of accelerators.
 		vAccel.clear();

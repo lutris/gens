@@ -49,7 +49,10 @@
 // SDL input event handler.
 #include "input/input_sdl_events.hpp"
 
-// C++ includes
+// C includes.
+#include <unistd.h>
+
+// C++ includes.
 #include <string>
 using std::string;
 
@@ -131,7 +134,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 	g_free(unescaped);
 	
 	// Check that the file actually exists.
-	if (gsft_file_exists(filename.c_str()))
+	if (!access(filename.c_str(), F_OK))
 	{
 		// File exists. Open it as a ROM image.
 		ROM::openROM(filename);

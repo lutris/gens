@@ -36,6 +36,11 @@
 #include <string>
 using std::string;
 
+#ifdef _WIN32
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
 
@@ -78,7 +83,7 @@ int gym_dump_start(void)
 	
 	// Make sure relative pathnames are handled correctly on Win32.
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif
 	
 	// Build the filename.

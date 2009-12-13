@@ -21,13 +21,9 @@
  ***************************************************************************/
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_windowsx.h"
+#include "libgsft/w32u/w32u_commctrl.h"
 
 // C includes.
 #include <stdio.h>
@@ -56,9 +52,8 @@
 
 // Window.
 static HWND	sgens_window = NULL;
-
-// Window class.
 static WNDCLASS	sgens_wndclass;
+static BOOL	sgens_window_child_windows_created;
 
 // Window size.
 #define SGENS_WINDOW_WIDTH  336
@@ -112,6 +107,11 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		return;
 	}
 	
+	// Initialize the Win32 Unicode Translation Layer.
+	w32u_init();
+	
+	sgens_window_child_windows_created = FALSE;
+	
 	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
 	if (!sgens_hInstance)
 		sgens_hInstance = GetModuleHandle(NULL);
@@ -124,24 +124,24 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.cbClsExtra = 0;
 		sgens_wndclass.cbWndExtra = 0;
 		sgens_wndclass.hInstance = sgens_hInstance;
-		sgens_wndclass.hIcon = LoadIcon(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
+		sgens_wndclass.hIcon = LoadIconA(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
 		sgens_wndclass.hCursor = NULL;
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		sgens_wndclass.lpszMenuName = NULL;
-		sgens_wndclass.lpszClassName = TEXT("mdp_misc_sgens_window");
+		sgens_wndclass.lpszClassName = "mdp_misc_sgens_window";
 		
-		RegisterClass(&sgens_wndclass);
+		pRegisterClassU(&sgens_wndclass);
 	}
 	
 	// Create the font.
 	sgens_hFont = gsft_win32_gdi_get_message_font();
 	
 	// Create the window.
-	sgens_window = CreateWindow(TEXT("mdp_misc_sgens_window"), TEXT("Sonic Gens"),
-				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				    CW_USEDEFAULT, CW_USEDEFAULT,
-				    SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT,
-				    (HWND)parent, NULL, sgens_hInstance, NULL);
+	sgens_window = pCreateWindowU("mdp_misc_sgens_window", "Sonic Gens",
+					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					CW_USEDEFAULT, CW_USEDEFAULT,
+					SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT,
+					(HWND)parent, NULL, sgens_hInstance, NULL);
 	
 	// Window adjustment.
 	gsft_win32_set_actual_window_size(sgens_window, SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT);
@@ -165,12 +165,15 @@ void MDP_FNCALL sgens_window_show(void *parent)
  */
 static void sgens_window_create_child_windows(HWND hWnd)
 {
+	if (sgens_window_child_windows_created)
+		return;
+	
 	// Create the label for the loaded game.
-	lblLoadedGame = CreateWindow(WC_STATIC, NULL,
-				     WS_CHILD | WS_VISIBLE | SS_CENTER,
-				     8, 8, SGENS_WINDOW_WIDTH-16, 16,
-				     hWnd, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLoadedGame, sgens_hFont, TRUE);
+	lblLoadedGame = pCreateWindowU(WC_STATIC, NULL,
+					WS_CHILD | WS_VISIBLE | SS_CENTER,
+					8, 8, SGENS_WINDOW_WIDTH-16, 16,
+					hWnd, NULL, sgens_hInstance, NULL);
+	SetWindowFontU(lblLoadedGame, sgens_hFont, TRUE);
 	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(hWnd);
@@ -181,12 +184,15 @@ static void sgens_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// Close button.
-	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"),
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
-	SetWindowFont(btnClose, sgens_hFont, TRUE);
+	HWND btnClose = pCreateWindowU(WC_BUTTON, "&Close",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
+					75, 23,
+					hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
+	SetWindowFontU(btnClose, sgens_hFont, TRUE);
+	
+	// Child windows created.
+	sgens_window_child_windows_created = TRUE;
 }
 
 
@@ -197,26 +203,26 @@ static void sgens_window_create_child_windows(HWND hWnd)
 static void sgens_window_create_level_info_frame(HWND container)
 {
 	// "Level Information" frame.
-	HWND fraLevelInfo = CreateWindow(WC_BUTTON, TEXT("Level Information"),
-					 WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					 8, 8+16,
-					 FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
-					 container, NULL, sgens_hInstance, NULL);
-	SetWindowFont(fraLevelInfo, sgens_hFont, TRUE);
+	HWND fraLevelInfo = pCreateWindowU(WC_BUTTON, "Level Information",
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						8, 8+16,
+						FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
+						container, NULL, sgens_hInstance, NULL);
+	SetWindowFontU(fraLevelInfo, sgens_hFont, TRUE);
 	
 	// "Zone" information label.
-	lblLevelInfo_Zone = CreateWindow(WC_STATIC, TEXT("Zone"),
-					 WS_CHILD | WS_VISIBLE | SS_CENTER,
-					 8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
-					 fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLevelInfo_Zone, sgens_hFont, TRUE);
+	lblLevelInfo_Zone = pCreateWindowU(WC_STATIC, "Zone",
+						WS_CHILD | WS_VISIBLE | SS_CENTER,
+						8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
+						fraLevelInfo, NULL, sgens_hInstance, NULL);
+	SetWindowFontU(lblLevelInfo_Zone, sgens_hFont, TRUE);
 	
 	// "Act" information label.
-	lblLevelInfo_Act = CreateWindow(WC_STATIC, TEXT("Act"),
-					WS_CHILD | WS_VISIBLE | SS_CENTER,
-					8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
-					fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFont(lblLevelInfo_Act, sgens_hFont, TRUE);
+	lblLevelInfo_Act = pCreateWindowU(WC_STATIC, "Act",
+						WS_CHILD | WS_VISIBLE | SS_CENTER,
+						8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
+						fraLevelInfo, NULL, sgens_hInstance, NULL);
+	SetWindowFontU(lblLevelInfo_Act, sgens_hFont, TRUE);
 	
 	// Table for level information.
 	unsigned int i;
@@ -246,20 +252,20 @@ static void sgens_window_create_level_info_frame(HWND container)
 		const int widget_top = (16*3)+(level_info[i].row * WIDGET_ROW_HEIGHT);
 		
 		// Description label.
-		lblLevelInfo_Desc[i] = CreateWindow(WC_STATIC, level_info[i].description,
-						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    widget_desc_left, widget_top,
-						    widget_desc_width, WIDGET_ROW_HEIGHT,
-						    fraLevelInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFont(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
+		lblLevelInfo_Desc[i] = pCreateWindowU(WC_STATIC, level_info[i].description,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							widget_desc_left, widget_top,
+							widget_desc_width, WIDGET_ROW_HEIGHT,
+							fraLevelInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
 		
 		// Information label.
 		// TODO: Monospace font.
-		lblLevelInfo[i] = CreateWindow(WC_STATIC, level_info[i].initial,
-					       WS_CHILD | WS_VISIBLE | SS_RIGHT,
-					       widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
-					       widget_info_width, WIDGET_ROW_HEIGHT,
-					       fraLevelInfo, NULL, sgens_hInstance, NULL);
+		lblLevelInfo[i] = pCreateWindowU(WC_STATIC, level_info[i].initial,
+							WS_CHILD | WS_VISIBLE | SS_RIGHT,
+							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
+							widget_info_width, WIDGET_ROW_HEIGHT,
+							fraLevelInfo, NULL, sgens_hInstance, NULL);
 	}
 }
 
@@ -271,12 +277,12 @@ static void sgens_window_create_level_info_frame(HWND container)
 static void sgens_window_create_player_info_frame(HWND container)
 {
 	// "Level Information" frame.
-	HWND fraPlayerInfo = CreateWindow(WC_BUTTON, TEXT("Player Information"),
-					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					  8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
-					  FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
-					  container, NULL, sgens_hInstance, NULL);
-	SetWindowFont(fraPlayerInfo, sgens_hFont, TRUE);
+	HWND fraPlayerInfo = pCreateWindowU(WC_BUTTON, "Player Information",
+						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
+						FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
+						container, NULL, sgens_hInstance, NULL);
+	SetWindowFontU(fraPlayerInfo, sgens_hFont, TRUE);
 	
 	// Table for player information.
 	unsigned int i;
@@ -306,20 +312,20 @@ static void sgens_window_create_player_info_frame(HWND container)
 		const int widget_top = 16 + (player_info[i].row * WIDGET_ROW_HEIGHT);
 		
 		// Description label.
-		lblPlayerInfo_Desc[i] = CreateWindow(WC_STATIC, player_info[i].description,
-						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    widget_desc_left, widget_top,
-						    widget_desc_width, WIDGET_ROW_HEIGHT,
-						    fraPlayerInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFont(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
+		lblPlayerInfo_Desc[i] = pCreateWindowU(WC_STATIC, player_info[i].description,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							widget_desc_left, widget_top,
+							widget_desc_width, WIDGET_ROW_HEIGHT,
+							fraPlayerInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
 		
 		// Information label.
 		// TODO: Monospace font.
-		lblPlayerInfo[i] = CreateWindow(WC_STATIC, player_info[i].initial,
-						WS_CHILD | WS_VISIBLE | SS_RIGHT,
-						widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
-						widget_info_width, WIDGET_ROW_HEIGHT,
-						fraPlayerInfo, NULL, sgens_hInstance, NULL);
+		lblPlayerInfo[i] = pCreateWindowU(WC_STATIC, player_info[i].initial,
+							WS_CHILD | WS_VISIBLE | SS_RIGHT,
+							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
+							widget_info_width, WIDGET_ROW_HEIGHT,
+							fraPlayerInfo, NULL, sgens_hInstance, NULL);
 	}
 }
 
@@ -338,6 +344,9 @@ void MDP_FNCALL sgens_window_close(void)
 	// Destroy the window.
 	DestroyWindow(sgens_window);
 	sgens_window = NULL;
+	
+	// Shut down the Win32 Unicode Translation Layer.
+	w32u_end();
 }
 
 
@@ -398,10 +407,10 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
 	}
 	
 	// Set the "Loaded Game" label.
-	Static_SetText(lblLoadedGame, sgens_ROM_type_name[sgens_current_rom_type]);
+	Static_SetTextU(lblLoadedGame, sgens_ROM_type_name[sgens_current_rom_type]);
 	
 	// Reset the "Rings for Perfect Bonus" information label.
-	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], TEXT("0"));
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], "0");
 	
 	// Enable/Disable the "Rings for Perfect Bonus" labels, depending on ROM type.
 	BOOL isS2 = (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
@@ -434,23 +443,23 @@ void MDP_FNCALL sgens_window_update(void)
 	
 	// Score.
 	szprintf(tmp, sizeof(tmp), "%d", info.score);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
 	
 	// Time.
 	szprintf(tmp, sizeof(tmp), "%02d:%02d:%02d", info.time.min, info.time.sec, info.time.frames);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_TIME], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_TIME], tmp);
 	
 	// Rings.
 	szprintf(tmp, sizeof(tmp), "%d", info.rings);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_RINGS], tmp);
 	
 	// Lives.
 	szprintf(tmp, sizeof(tmp), "%d", info.lives);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_LIVES], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_LIVES], tmp);
 	
 	// Continues.
 	szprintf(tmp, sizeof(tmp), "%d", info.continues);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_CONTINUES], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_CONTINUES], tmp);
 	
 	// Rings remaining for Perfect Bonus.
 	// This is only applicable for Sonic 2.
@@ -458,40 +467,40 @@ void MDP_FNCALL sgens_window_update(void)
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
 		szprintf(tmp, sizeof(tmp), "%d", info.rings_for_perfect_bonus);
-		Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], tmp);
+		Static_SetTextU(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], tmp);
 	}
 	
 	// Water status.
 	szprintf(tmp, sizeof(tmp), "%s", (info.water_level != 0 ? "ON" : "OFF"));
-	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_ENABLED], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_WATER_ENABLED], tmp);
 	
 	// Water level.
 	szprintf(tmp, sizeof(tmp), "%04X", info.water_level);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_LEVEL], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_WATER_LEVEL], tmp);
 	
 	// Number of emeralds.
 	szprintf(tmp, sizeof(tmp), "%d", info.emeralds);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 	
 	// Camera X position.
 	szprintf(tmp, sizeof(tmp), "%04X", info.camera_x);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 	
 	// Camera Y position.
 	szprintf(tmp, sizeof(tmp), "%04X", info.camera_y);
-	Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
+	Static_SetTextU(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 	
 	// Player angle.
 	szprintf(tmp, sizeof(tmp), "%0.02f" DEGREE_SYMBOL, info.player_angle);
-	Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
+	Static_SetTextU(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 	
 	// Player X position.
 	szprintf(tmp, sizeof(tmp), "%04X", info.player_x);
-	Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
+	Static_SetTextU(lblPlayerInfo[PLAYER_INFO_X], tmp);
 	
 	// Player Y position.
 	szprintf(tmp, sizeof(tmp), "%04X", info.player_y);
-	Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
+	Static_SetTextU(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	
 	// SGens window has been updated.
 	return;

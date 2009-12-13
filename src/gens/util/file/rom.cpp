@@ -42,6 +42,10 @@ using std::string;
 using std::list;
 using std::deque;
 
+#ifdef _WIN32
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 #include "rom.hpp"
 
 #include "emulator/g_main.hpp"
@@ -77,13 +81,17 @@ using std::deque;
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/dummy.h"
 #ifdef GENS_ZLIB
-	#include "util/file/decompressor/md_gzip.h"
-	#include "util/file/decompressor/md_zip.h"
+#	include "util/file/decompressor/md_gzip.h"
+#	include "util/file/decompressor/md_zip.h"
 #endif
 #ifdef GENS_LZMA
-	#include "util/file/decompressor/md_7z.h"
+#	include "util/file/decompressor/md_7z.h"
 #endif
-#include "util/file/decompressor/md_rar_t.h"
+#ifdef _WIN32
+#	include "util/file/decompressor/md_rar_win32_t.h"
+#else
+#	include "util/file/decompressor/md_rar_t.h"
+#endif
 
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
@@ -102,9 +110,12 @@ using std::deque;
 // MDP includes.
 #include "mdp/mdp_error.h"
 
-#ifdef HAVE_ICONV
 // String conversion.
+#if defined(HAVE_ICONV)
 #include "charset/iconv_string.hpp"
+#elif defined(_WIN32)
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_charset.h"
 #endif
 
 
@@ -250,12 +261,13 @@ void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 	}
 	ROM_Filename[i + 1] = 0;
 	
-#ifdef HAVE_ICONV
+	// TODO: Move character set conversion to a different module.
+#if defined(HAVE_ICONV) || defined(_WIN32)
 	// If overseas is false (Japan), convert from Shift-JIS to UTF-8, if necessary.
 	if (!overseas)
 	{
 		// Attempt to convert the ROM name.
-		string romNameJP = gens_iconv(ROM_Filename, sizeof(ROM_Filename), "SHIFT-JIS", "");
+		string romNameJP = SJIStoUTF8(ROM_Filename, sizeof(ROM_Filename));
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.
@@ -549,14 +561,18 @@ unsigned int ROM::loadROM(const string& filename,
 	// Array of decompressors.
 	static const decompressor_t* const decompressors[] =
 	{
-		#ifdef GENS_ZLIB
-			&decompressor_gzip,
-			&decompressor_zip,
-		#endif
-		#ifdef GENS_LZMA
-			&decompressor_7z,
-		#endif
+#ifdef GENS_ZLIB
+		&decompressor_gzip,
+		&decompressor_zip,
+#endif
+#ifdef GENS_LZMA
+		&decompressor_7z,
+#endif
+#ifdef _WIN32
+		&decompressor_rar_win32,
+#else
 		&decompressor_rar,
+#endif
 		
 		// Last decompressor is the Dummy decompressor.
 		&decompressor_dummy,
@@ -1107,19 +1123,45 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
 	
-#ifdef HAVE_ICONV
+#if defined(HAVE_ICONV) || defined(_WIN32)
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
-	{
-		// Attempt to convert the ROM name.
-		string romNameJP = gens_iconv(RomName, sizeof(RomName), "SHIFT-JIS", "");
-		if (!romNameJP.empty())
-		{
-			// The ROM name was converted successfully.
-			return romNameJP;
-		}
-	}
+		return SJIStoUTF8(RomName, sizeof(RomName));
 #endif
 	
 	return string(RomName);
 }
+
+
+#if defined(HAVE_ICONV) || defined(_WIN32)
+/**
+ * SJIStoUTF8(): Convert a Shift-JIS string to UTF-8.
+ * @param sjis Shift-JIS string.
+ * @param len Shift-JIS string length.
+ * @return UTF-8 string.
+ */
+string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
+{
+#if defined(HAVE_ICONV)
+	// libiconv-based Shift-JIS to UTF-8 conversion code.
+	return gens_iconv(sjis, len, "SHIFT-JIS", "");
+#elif defined(_WIN32)
+	// Win32-based Shift-JIS to UTF-8 conversion code.
+	// NOTE: w32u_mbstombs_alloc() requires a NULL-terminated string;
+	// however, sjis is *not* NULL-terminated.
+	char *sjis_tmp = (char*)malloc(len + 1);
+	memcpy(sjis_tmp, sjis, len);
+	sjis_tmp[len] = 0x00;
+	
+	// Convert the string from Shift-JIS to UTF-8.
+	char *mbs = w32u_mbstombs_alloc(sjis_tmp, 0, 932, CP_UTF8);
+	if (!mbs)
+		return "";
+	
+	// Return the string.
+	string s_utf8 = string(mbs);
+	free(mbs);
+	return s_utf8;
+#endif
+}
+#endif

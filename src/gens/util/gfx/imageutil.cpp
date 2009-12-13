@@ -27,12 +27,17 @@
 #include "imageutil.hpp"
 #include "bmp.h"
 
+#ifdef _WIN32
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 // Message logging.
 #include "macros/log_msg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
+#include <string.h>
+#include <unistd.h>
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
@@ -508,7 +513,7 @@ int ImageUtil::ScreenShot(void)
 	{
 		num++;
 		szprintf(filename, sizeof(filename), "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Filename, num, ext);
-	} while (gsft_file_exists(filename));
+	} while (!access(filename, F_OK));
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)

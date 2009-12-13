@@ -60,6 +60,7 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#include "emulator/g_main.hpp"
 #endif /* _WIN32 */
 
 

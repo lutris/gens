@@ -25,11 +25,7 @@
 
 #include "ui/common/gens/gens_menu.h"
 
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u_windows.h"
 
 #ifdef __cplusplus
 extern "C" {

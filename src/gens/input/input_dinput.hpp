@@ -42,13 +42,13 @@ uint16_t	input_dinput_get_key(void);
 BOOL		input_dinput_joy_exists(int joy_num);
 
 // Win32-specific functions.
-int		input_dinput_set_cooperative_level(HWND hWnd);
+int WINAPI	input_dinput_set_cooperative_level(HWND hWnd);
 
 // Win32-specific functions not used in input_backend_t.
-int		input_dinput_init_joysticks(HWND hWnd);
+int WINAPI	input_dinput_init_joysticks(HWND hWnd);
 
 // Used for the Controller Configuration window.
-void		input_dinput_add_joysticks_to_listbox(HWND lstBox);
+void WINAPI	input_dinput_add_joysticks_to_listbox(HWND lstBox);
 
 // Default keymap.
 extern const input_keymap_t input_dinput_keymap_default[8];

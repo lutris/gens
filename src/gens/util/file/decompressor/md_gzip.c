@@ -28,6 +28,12 @@
 // C includes.
 #include <stdlib.h>
 
+// Win32 Unicode Translation Layer.
+#ifdef _WIN32
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 
@@ -79,13 +85,16 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// GZip-compressed files can only have one file.
-	gzFile gzfd;
-	unsigned char buf[1024];
+	unsigned char buf[4096];
 	
-	gzfd = gzopen(filename, "rb");
+	FILE *f = fopen(filename, "rb");
+	if (!f)
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+	
+	gzFile gzfd = gzdopen(fileno(f), "rb");
 	if (!gzfd)
 	{
-		// Error obtaining a GZip file descriptor.
+		fclose(f);
 		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
@@ -93,7 +102,7 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	int filesize = 0;
 	while (!gzeof(gzfd))
 	{
-		filesize += gzread(gzfd, buf, 1024);
+		filesize += gzread(gzfd, buf, sizeof(buf));
 	}
 	
 	// Close the GZip fd.
@@ -135,12 +144,14 @@ static int decompressor_gzip_get_file(FILE *zF, const char *filename,
 	if (!filename || !buf || !size || !ret_size)
 		return -MDP_ERR_INVALID_PARAMETERS;
 	
-	gzFile gzfd;
+	FILE *f = fopen(filename, "rb");
+	if (!f)
+		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	
-	gzfd = gzopen(filename, "rb");
+	gzFile gzfd = gzdopen(fileno(f), "rb");
 	if (!gzfd)
 	{
-		// Error obtaining a GZip file descriptor.
+		fclose(f);
 		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	

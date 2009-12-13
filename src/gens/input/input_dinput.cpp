@@ -34,14 +34,12 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.h"
 
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
+
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_windowsx.h"
 
 // DirectInput versions.
 #define DIRECTINPUT_VERSION_5 0x0500
@@ -87,10 +85,10 @@ static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
 static int input_dinput_callback_init_joysticks_enum_counter;	// Number of times the enumeration function has been called.
 static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
-int input_dinput_set_cooperative_level_joysticks(HWND hWnd);
+static int WINAPI input_dinput_set_cooperative_level_joysticks(HWND hWnd);
 
 // Miscellaneous DirectInput functions.
-static inline void input_dinput_restore_input(void);
+static inline void WINAPI input_dinput_restore_input(void);
 
 // Used for the Controller Configuration window.
 static BOOL CALLBACK input_dinput_callback_add_joysticks_to_listbox(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
@@ -263,7 +261,7 @@ int input_dinput_end(void)
  * @param hWnd Window handle where the joysticks should be acquired initially.
  * @return 0 on success; non-zero on error.
  */
-int input_dinput_init_joysticks(HWND hWnd)
+int WINAPI input_dinput_init_joysticks(HWND hWnd)
 {
 	// TODO: Check if joysticks work with DirectInput 3.
 	if (input_dinput_joystick_error)
@@ -409,7 +407,7 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 /**
  * input_dinput_restore_input(): Restore DirectInput.
  */
-static inline void input_dinput_restore_input(void)
+static inline void WINAPI input_dinput_restore_input(void)
 {
 	//lpDIDMouse->Acquire();
 	lpDIDKeyboard->Acquire();
@@ -580,9 +578,9 @@ uint16_t input_dinput_get_key(void)
 		// GensUI::update() isn't used here because some messages
 		// need to be filtered out.
 		MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+		while (pPeekMessageU(&msg, NULL, 0, 0, PM_NOREMOVE))
 		{
-			if (!GetMessage(&msg, NULL, 0, 0))
+			if (!pGetMessageU(&msg, NULL, 0, 0))
 				close_gens();
 			
 			// Ignore key input and mouse input.
@@ -604,7 +602,7 @@ uint16_t input_dinput_get_key(void)
 			
 			// Process the message.
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			pDispatchMessageU(&msg);
 		}
 	}
 }
@@ -823,7 +821,7 @@ BOOL input_dinput_check_key_pressed(uint16_t key)
  * @param hWnd Window to set the cooperative level on.
  * @return 0 on success; non-zero on error.
  */
-int input_dinput_set_cooperative_level(HWND hWnd)
+int WINAPI input_dinput_set_cooperative_level(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
@@ -856,7 +854,7 @@ int input_dinput_set_cooperative_level(HWND hWnd)
  * @param hWnd Window to set the cooperative level on.
  * @return 0 on success; non-zero on error.
  */
-int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
+static int WINAPI input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
@@ -893,7 +891,7 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
  * input_dinput_add_joysticks_to_listbox(): Enumerate joysticks and add them to a listbox.
  * @param lstBox Listbox to add the joystick information to.
  */
-void input_dinput_add_joysticks_to_listbox(HWND lstBox)
+void WINAPI input_dinput_add_joysticks_to_listbox(HWND lstBox)
 {
 	if (!lpDI || input_dinput_joystick_error)
 		return;
@@ -917,26 +915,28 @@ void input_dinput_add_joysticks_to_listbox(HWND lstBox)
  */
 static BOOL CALLBACK input_dinput_callback_add_joysticks_to_listbox(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
-	TCHAR joy_name[64];
+	// TODO: Unicode support.
+	// Unicode support requires reworking the entire DirectInput system,
+	// so it might not be worth the effort.
 	
-	// NOTE: _sntprintf() is the TCHAR version of snprintf().
+	char joy_name[64];
+	
 	if (lpDIIJoy->tszProductName)
 	{
-		_sntprintf(joy_name, (sizeof(joy_name)/sizeof(TCHAR)),
-				TEXT("Joystick %d: %s"),
+		szprintf(joy_name, sizeof(joy_name),
+				"Joystick %d: %s",
 				input_dinput_add_joysticks_count,
 				lpDIIJoy->tszProductName);
 	}
 	else
 	{
-		_sntprintf(joy_name, (sizeof(joy_name)/sizeof(TCHAR)),
-				TEXT("Joystick %d"),
+		szprintf(joy_name, sizeof(joy_name),
+				"Joystick %d",
 				input_dinput_add_joysticks_count);
 	}
-	joy_name[(sizeof(joy_name)/sizeof(TCHAR))-1] = 0x00;
 	
 	// Add the joystick name to the listbox.
-	ListBox_AddString((HWND)pvRef, joy_name);
+	ListBox_AddStringU((HWND)pvRef, joy_name);
 	
 	// Increment the joystick counter.
 	input_dinput_add_joysticks_count++;

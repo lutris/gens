@@ -47,7 +47,8 @@ mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.cpp gg_dllmain.c resource.rc
 mdp_misc_game_genie_la_LIBADD	+= \
 		-lgdi32 \
 		$(top_builddir)/src/libgsft/libgsft_win32.la \
-		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la \
+		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
 noinst_HEADERS += \
 		gg.ico \
 		gg_dllmain.h \

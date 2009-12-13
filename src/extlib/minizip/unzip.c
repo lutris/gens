@@ -52,6 +52,11 @@ woven in by Terry Thorsen 1/2003.
 #   include <errno.h>
 #endif
 
+// iowin32.h isn't #include'd by default for some reason.
+// (Gens/GS addition)
+#ifdef _WIN32
+#include "iowin32.h"
+#endif
 
 #ifndef local
 #  define local static
@@ -416,7 +421,11 @@ extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
         return NULL;
 
     if (pzlib_filefunc_def==NULL)
+#if !defined(_WIN32)
         fill_fopen_filefunc(&us.z_filefunc);
+#else
+        fill_win32_filefunc(&us.z_filefunc);
+#endif
     else
         us.z_filefunc = *pzlib_filefunc_def;
 

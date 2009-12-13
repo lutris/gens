@@ -39,10 +39,10 @@ void	vdraw_ddraw_update_vsync(const BOOL fromInitDDraw);
 int	vdraw_ddraw_reinit_gens_window(void);
 
 // Win32-specific functions.
-int	vdraw_ddraw_clear_primary_screen(void);
-int	vdraw_ddraw_clear_back_screen(void);
-int	vdraw_ddraw_restore_primary(void);
-int	vdraw_ddraw_set_cooperative_level(void);
+int WINAPI vdraw_ddraw_clear_primary_screen(void);
+int WINAPI vdraw_ddraw_clear_back_screen(void);
+int WINAPI vdraw_ddraw_restore_primary(void);
+int WINAPI vdraw_ddraw_set_cooperative_level(void);
 
 #ifdef __cplusplus
 }

@@ -337,7 +337,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::openFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
@@ -354,7 +354,7 @@ string GensUI::openFile(const string& title, const string& initFile,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::saveFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...

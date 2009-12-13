@@ -90,19 +90,16 @@ extern "C"
 #include "input/input_dinput.hpp"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <shellapi.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_shellapi.h"
+#include "libgsft/w32u/w32u_libc.h"
 
 static bool paintsEnabled = true;
 
-static void on_gens_window_close(void);
-static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void showPopupMenu(HWND hWnd, bool adjustMousePointer);
-static void dragDropFile(HDROP hDrop);
+static void WINAPI on_gens_window_close(void);
+static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer);
+static void WINAPI dragDropFile(HDROP hDrop);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -238,14 +235,14 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
 /**
  * Window is closed.
  */
-static void on_gens_window_close(void)
+static void WINAPI on_gens_window_close(void)
 {
 	//Modif N - making sure sound doesn't stutter on exit
 	if (audio_initialized)
@@ -262,7 +259,7 @@ static void on_gens_window_close(void)
  * @param wParam LOWORD(wParam) == Command.
  * @param lParam
  */
-static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GSFT_UNUSED_PARAMETER(hWnd);
 	GSFT_UNUSED_PARAMETER(message);
@@ -456,7 +453,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
  * @param hWnd Window handle.
  * @param adjustMousePointer If true, adjusts the mouse pointer.
  */
-static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
+static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer)
 {
 	// Clear the sound buffer to prevent stuttering.
 	audio_clear_sound_buffer();
@@ -470,7 +467,7 @@ static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 	
 	POINT pt;
 	GetCursorPos(&pt);
-	SendMessage(hWnd, WM_PAINT, 0, 0);
+	pSendMessageU(hWnd, WM_PAINT, 0, 0);
 	
 	// Disable painting while the popup menu is open.
 	paintsEnabled = false;
@@ -489,17 +486,18 @@ static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 /**
  * dragDropFile(): Called when a file is dragged onto the Gens window.
  */
-static void dragDropFile(HDROP hDrop)
+static void WINAPI dragDropFile(HDROP hDrop)
 {
-	TCHAR filename[GENS_PATH_MAX];
+	char filename[GENS_PATH_MAX];
 	unsigned int rval;
 	
-	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));
+	rval = pDragQueryFileU(hDrop, 0, filename, sizeof(filename));
 	
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
-		if (gsft_file_exists(filename))
+		// TODO: Port this to Unicode.
+		if (!access(filename, F_OK))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

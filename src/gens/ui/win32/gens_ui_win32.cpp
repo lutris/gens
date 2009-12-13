@@ -37,23 +37,17 @@
 #include "libgsft/gsft_unused.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <shlobj.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_commctrl.h"
+#include "libgsft/w32u/w32u_shellapi.h"
+#include "libgsft/w32u/w32u_shlobj.h"
+#include "libgsft/w32u/w32u_commdlg.h"
 
 // commctrl.h doesn't define ICC_STANDARD_CLASSES
 // unless _WIN32_WINNT is 0x0501 or higher.
 #ifndef ICC_STANDARD_CLASSES
 #define ICC_STANDARD_CLASSES 0x00004000
 #endif
-
-#include <commdlg.h>
 
 // Gens Win32 resources.
 #include "ui/win32/resource.h"
@@ -82,7 +76,7 @@ using std::list;
 using std::string;
 
 // Filename filters.
-static const char* UI_Win32_FileFilter_AllFiles =
+static const char UI_Win32_FileFilter_AllFiles[] =
 	"All Files\0*.*\0\0";
 
 // File extensions.
@@ -97,34 +91,50 @@ static const char* UI_Win32_FileFilter_AllFiles =
 	#define LZMA_EXT
 #endif
 
-static const char* UI_Win32_FileFilter_ROMFile =
+static const char *FFT_Win32[] =
+{
+	// AnyFile
+	"All Files\0*.*\0\0",
+	
+	// ROMFile
 	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;" ZLIB_EXT LZMA_EXT "*.rar\0"
 	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
-	"32X ROMs\0*.32x;" ZLIB_EXT LZMA_EXT "*.rar"
+	"32X ROMs\0*.32x;" ZLIB_EXT LZMA_EXT "*.rar\0"
 	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
-	"All Files\0*.*\0\0";
-
-static const char* UI_Win32_FileFilter_SavestateFile =
+	"All Files\0*.*\0\0",
+	
+	// SavestateFile
 	"Savestate Files\0*.gs?\0"
-	"All Files\0*.*\0\0";
-
-static const char* UI_Win32_FileFilter_CDImage =
+	"All Files\0*.*\0\0",
+	
+	// CDImage
 	"SegaCD Disc Images\0*.bin;*.iso;*.cue\0"
-	"All Files\0*.*\0\0";
+	"All Files\0*.*\0\0",
+	
+	// ConfigFile
+	"Gens Config Files\0*.cfg\0"
+	"All Files\0*.*\0\0",
+	
+	// GYMFile
+	"GYM Files\0*.gym\0"
+	"All Files\0*.*\0\0",
+	
+	// DllFile
+	"DLL Files\0*.dll\0"
+	"All Files\0*.*\0\0",
+	
+	// ExeFile
+	"EXE Files\0*.exe\0"
+	"All Files\0*.*\0\0",
+	
+	NULL
+};
 
-static const char* UI_Win32_FileFilter_ConfigFile =
-	"Gens Config Files\0*.cfg\0\0"
-	"All Files\0*.*\0\0";
-
-static const char* UI_Win32_FileFilter_GYMFile =
-	"GYM Files\0*.gym\0\0"
-	"All Files\0*.*\0\0";
-
-static string UI_Win32_OpenFile_int(const string& title,
-				    const string& initFile,
-				    const FileFilterType filterType,
-				    HWND owner,
-				    const bool openOrSave);
+static string WINAPI UI_Win32_OpenFile_int(const string& title,
+					  const string& initFile,
+					  FileFilterType filterType,
+					  HWND owner,
+					  const bool openOrSave);
 
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 
@@ -143,13 +153,11 @@ void GensUI::init(int *argc, char **argv[])
 	GSFT_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	memset(&winVersion, 0x00, sizeof(winVersion));
 	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
+	if (pGetVersionExU((OSVERSIONINFO*)(&winVersion)) == 0)
 	{
-		memset(&winVersion, 0x00, sizeof(winVersion));
 		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx((OSVERSIONINFO*)(&winVersion));
+		pGetVersionExU((OSVERSIONINFO*)(&winVersion));
 	}
 	
 	// Initialize the Common Controls library.
@@ -200,10 +208,10 @@ void GensUI::init(int *argc, char **argv[])
 	CoInitialize(NULL);
 	
 	// Initialize the cursor.
-	SetCursor(LoadCursor(NULL, IDC_ARROW));
+	SetCursor(LoadCursorA(NULL, IDC_ARROW));
 	
 	// Load the accelerator table for non-menu commands.
-	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
+	hAccelTable_NonMenu = LoadAcceleratorsA(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	gens_window_create();
@@ -242,9 +250,9 @@ void GensUI::update(void)
 {
 	MSG msg;
 	
-	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (pPeekMessageU(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-		if (!GetMessage(&msg, NULL, 0, 0))
+		if (!pGetMessageU(&msg, NULL, 0, 0))
 			close_gens();
 		
 		// Check if this message requires clearing the audio buffer.
@@ -261,25 +269,25 @@ void GensUI::update(void)
 		
 		// Check for an accelerator.
 		if (gens_window && msg.hwnd == gens_window &&
-		    ((hAccelTable_NonMenu && TranslateAccelerator(gens_window, hAccelTable_NonMenu, &msg)) ||
-		     (hAccelTable_Menu    && TranslateAccelerator(gens_window, hAccelTable_Menu, &msg))))
+		    ((hAccelTable_NonMenu && pTranslateAcceleratorU(gens_window, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && pTranslateAcceleratorU(gens_window, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;
 		}
 		
 		// Check for dialog messages.
-		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
-		    (bmf_window && IsDialogMessage(bmf_window, &msg)) ||
-		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
-		    (genopt_window && IsDialogMessage(genopt_window, &msg)) ||
-		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
+		if ((cc_window		&& pIsDialogMessageU(cc_window, &msg)) ||
+		    (bmf_window		&& pIsDialogMessageU(bmf_window, &msg)) ||
+		    (dir_window		&& pIsDialogMessageU(dir_window, &msg)) ||
+		    (genopt_window	&& pIsDialogMessageU(genopt_window, &msg)) ||
+		    (ca_window		&& pIsDialogMessageU(ca_window, &msg)) ||
 #ifdef GENS_CDROM
-		    (selcd_window && IsDialogMessage(selcd_window, &msg)) ||
+		    (selcd_window	&& pIsDialogMessageU(selcd_window, &msg)) ||
 #endif
-		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
-		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)) ||
-		    (about_window && IsDialogMessage(about_window, &msg)))
+		    (ccode_window	&& pIsDialogMessageU(ccode_window, &msg)) ||
+		    (pmgr_window	&& pIsDialogMessageU(pmgr_window, &msg)) ||
+		    (about_window	&& pIsDialogMessageU(about_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.
 			continue;
@@ -291,7 +299,8 @@ void GensUI::update(void)
 		for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
 		     lstIter != PluginMgr::lstWindows.end(); lstIter++)
 		{
-			if (IsDialogMessage((HWND)((*lstIter).window), &msg))
+			HWND hWnd = (HWND)((*lstIter).window);
+			if (pIsDialogMessageU(hWnd, &msg))
 			{
 				// Dialog message. Don't process it as a regular message.
 				isDialogMessage = true;
@@ -308,7 +317,7 @@ void GensUI::update(void)
 		// Not a dialog message.
 		// Process the message.
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		pDispatchMessageU(&msg);
 	}
 }
 
@@ -357,8 +366,19 @@ void GensUI::wakeup(void)
  */
 void GensUI::setWindowTitle(const string& title)
 {
-	SetWindowText(gens_window, title.c_str());
+	pSetWindowTextU(gens_window, title.c_str());
 	update();
+}
+
+
+/**
+ * setWindowVisibility(): Sets window visibility.
+ * @param visibility true to show; false to hide.
+ */
+void GensUI::setWindowVisibility(const bool visibility)
+{
+	// TODO
+	GSFT_UNUSED_PARAMETER(visibility);
 }
 
 
@@ -423,7 +443,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 	audio_clear_sound_buffer();
 	
 	// Show the message box.
-	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
+	int response = pMessageBoxU(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
 	
 	switch (response)
 	{
@@ -449,7 +469,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::openFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), false);
 }
@@ -464,7 +484,7 @@ string GensUI::openFile(const string& title, const string& initFile,
  * @return Filename if successful; otherwise, an empty string.
  */
 string GensUI::saveFile(const string& title, const string& initFile,
-			const FileFilterType filterType, void* owner)
+			FileFilterType filterType, void* owner)
 {
 	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), true);
 }
@@ -479,52 +499,34 @@ string GensUI::saveFile(const string& title, const string& initFile,
  * @param openOrSave false for Open; true for Save.
  * @return Filename if successful; otherwise, an empty string.
  */
-static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
-				    const FileFilterType filterType, HWND owner,
-				    const bool openOrSave)
+static string WINAPI UI_Win32_OpenFile_int(const string& title, const string& initFile,
+					   FileFilterType filterType, HWND owner,
+					   const bool openOrSave)
 {
-	TCHAR filename[GENS_PATH_MAX];
+	char filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
-	
-	memset(filename, 0, sizeof(filename));
-	memset(&ofn, 0, sizeof(OPENFILENAME));
 	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
 		owner = gens_window;
 	
+	// Clear the filename.
+	filename[0] = 0x00;
+	
 	// Open Filename dialog settings
+	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = owner;
 	ofn.hInstance = ghInstance;
 	ofn.lpstrFile = filename;
-	ofn.nMaxFile = GENS_PATH_MAX - 1;
+	ofn.nMaxFile = sizeof(filename) - 1;
 	ofn.lpstrTitle = title.c_str();
 	ofn.lpstrInitialDir = initFile.c_str();
 	
-	switch (filterType)
-	{
-		case ROMFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_ROMFile;
-			break;
-		case SavestateFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_SavestateFile;
-			break;
-		case CDImage:
-			ofn.lpstrFilter = UI_Win32_FileFilter_CDImage;
-			break;
-		case ConfigFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_ConfigFile;
-			break;
-		case GYMFile:
-			ofn.lpstrFilter = UI_Win32_FileFilter_GYMFile;
-			break;
-		case AnyFile:
-		default:
-			ofn.lpstrFilter = UI_Win32_FileFilter_AllFiles;
-			break;
-	}
+	if (filterType >= FFT_MAX)
+		filterType = AnyFile;
 	
+	ofn.lpstrFilter = FFT_Win32[filterType];
 	ofn.nFilterIndex = 0;
 	ofn.lpstrInitialDir = initFile.c_str();
 	
@@ -538,18 +540,18 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	{
 		// Open Dialog
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		ret = GetOpenFileName(&ofn);
+		ret = pGetOpenFileNameU(&ofn);
 	}
 	else
 	{
 		// Save Dialog
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		ret = GetSaveFileName(&ofn);
+		ret = pGetSaveFileNameU(&ofn);
 	}
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
 	// (Why do GetOpenFileName() and GetSaveFileName change it?)
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	if (!ret)
 		return "";
@@ -567,8 +569,8 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
  */
 string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
-	TCHAR displayName[GENS_PATH_MAX];
-	TCHAR selDir[GENS_PATH_MAX];
+	char displayName[GENS_PATH_MAX];
+	char selDir[GENS_PATH_MAX];
 	
 	BROWSEINFO bi;
 	memset(&bi, 0x00, sizeof(bi));
@@ -587,21 +589,34 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.lpfn = selectDir_SetSelProc;
 	bi.lParam = (LPARAM)(initDir.c_str());
 	
+	// Check for DLL-specific features.
+	if (shell32_dll_version >= 0x04470000)
+	{
+		// shell32.dll v4.71 or later.
+		bi.ulFlags |= BIF_EDITBOX;
+	}
+	if (shell32_dll_version >= 0x05000000)
+	{
+		// shell32.dll v5.0 or later.
+		bi.ulFlags |= BIF_NEWDIALOGSTYLE;
+	}
+	
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	// TODO: Does pidl need to be free()'d?
+	LPITEMIDLIST pidl = pSHBrowseForFolderU(&bi);
 	if (!pidl)
 	{
 		// No directory was selected.
 		return "";
 	}
 	
-	bool bRet = SHGetPathFromIDList(pidl, selDir);
+	bool bRet = pSHGetPathFromIDListU(pidl, selDir);
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
 	// I'm not sure if SHGetPathFromIDList() changes it, but it might.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 	
 	if (!bRet)
 		return "";
@@ -622,8 +637,11 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 {
 	GSFT_UNUSED_PARAMETER(lParam);
 	
+	// TODO: Translate lpData from UTF-8 to Unicode, if necessary.
+	// TODO: This doesn't seem to work properly on Windows 98 SE.
+	//       (Original installation, i.e. no updates.)
 	if (uMsg == BFFM_INITIALIZED)
-		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
+		pSendMessageU_LPCSTR(hWnd, BFFM_SETSELECTIONA, BFFM_SETSELECTIONW, true, lpData);
 	
 	return 0;
 }
@@ -638,9 +656,9 @@ void GensUI::setMousePointer(bool busy)
 	HCURSOR cursor;
 	
 	if (busy)
-		cursor = LoadCursor(NULL, IDC_WAIT);
+		cursor = LoadCursorA(NULL, IDC_WAIT);
 	else
-		cursor = LoadCursor(NULL, IDC_ARROW);
+		cursor = LoadCursorA(NULL, IDC_ARROW);
 	
 	SetCursor(cursor);
 }
@@ -652,8 +670,7 @@ void GensUI::setMousePointer(bool busy)
  */
 void GensUI::LaunchBrowser(const string& url)
 {
-	printf("url: %s\n", url.c_str());
-	ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOW);
+	pShellExecuteU(NULL, "open", url.c_str(), NULL, NULL, SW_SHOW);
 }
 
 
@@ -664,6 +681,7 @@ void GensUI::LaunchBrowser(const string& url)
 void GensUI::fsMinimize(fsMinimize_Type fst)
 {
 	// TODO
+	GSFT_UNUSED_PARAMETER(fst);
 }
 
 
@@ -674,4 +692,5 @@ void GensUI::fsMinimize(fsMinimize_Type fst)
 void GensUI::fsRestore(fsMinimize_Type fst)
 {
 	// TODO
+	GSFT_UNUSED_PARAMETER(fst);
 }

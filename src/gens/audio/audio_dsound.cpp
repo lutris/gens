@@ -73,11 +73,11 @@ static int Sound_Segs = 8;
 static int WP, RP;
 
 // DirectSound functions.
-static int audio_dsound_get_current_seg(void);
+static int WINAPI audio_dsound_get_current_seg(void);
 int audio_dsound_check_sound_timing(void);
 
 // Cooperative level (Win32)
-static void audio_dsound_set_cooperative_level(void);
+static void WINAPI audio_dsound_set_cooperative_level(void);
 
 
 /**
@@ -202,7 +202,7 @@ int audio_dsound_end(void)
  * audio_dsound_get_current_seg(): Get the current DSound segment.
  * @return DSound segment.
  */
-static int audio_dsound_get_current_seg(void)
+static int WINAPI audio_dsound_get_current_seg(void)
 {
 	DWORD R;
 	
@@ -416,7 +416,7 @@ void audio_dsound_wait_for_audio_buffer(void)
 /**
  * audio_dsound_set_cooperative_level(): Sets the cooperative level.
  */
-static void audio_dsound_set_cooperative_level(void)
+static void WINAPI audio_dsound_set_cooperative_level(void)
 {
 	if (!gens_window || !lpDS)
 		return;

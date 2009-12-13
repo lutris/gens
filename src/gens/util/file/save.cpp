@@ -81,11 +81,8 @@
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_libc.h"
 #endif /* GENS_OS_WIN32 */
 
 #ifdef GENS_MP3
@@ -180,7 +177,7 @@ int Savestate::LoadState(const string& filename)
 	buf = State_Buffer;
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	if (!(f = fopen(filename.c_str(), "rb")))
@@ -247,7 +244,7 @@ int Savestate::SaveState(const string& filename)
 	ice = 0;
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	buf = State_Buffer;
@@ -2100,7 +2097,7 @@ int Savestate::LoadSRAM(void)
 	memset(SRAM, 0x00, sizeof(SRAM));
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	string filename = GetSRAMFilename();
@@ -2141,7 +2138,7 @@ int Savestate::SaveSRAM(void)
 		size_to_save <<= 1;
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	string filename = GetSRAMFilename();
@@ -2220,7 +2217,7 @@ int Savestate::LoadBRAM(void)
 	Savestate::FormatSegaCD_BackupRAM();
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	string filename = GetBRAMFilename();
@@ -2247,7 +2244,7 @@ int Savestate::SaveBRAM(void)
 	FILE* BRAM_File = 0;
 	
 #ifdef GENS_OS_WIN32
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	string filename = GetBRAMFilename();

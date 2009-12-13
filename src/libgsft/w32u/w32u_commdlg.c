@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: cp1252 character set conversion functions.                        *
+ * libgsft_w32u: Win32 Unicode Translation Layer.                          *
+ * w32u_commdlg.c: commdlg.h translation. (common code)                    *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by David Korth.                                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,11 +19,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_CP1252_HPP
-#define GENS_CP1252_HPP
+#include "w32u_commdlg.h"
+#include "W/w32u_commdlgW.h"
+#include "A/w32u_commdlgA.h"
 
-#include <string>
 
-std::string charset_utf8_to_cp1252(const char* s_utf8, const char replacementChar = '?');
+MAKE_FUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
+MAKE_FUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
 
-#endif /* GENS_CP1252_HPP */
+
+int WINAPI w32u_commdlg_init(void)
+{
+	if (w32u_is_unicode)
+		return w32u_commdlgW_init();
+	else
+		return w32u_commdlgA_init();
+}

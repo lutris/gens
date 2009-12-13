@@ -62,6 +62,75 @@ typedef struct
     int error;
 } WIN32FILE_IOWIN;
 
+
+/** Unicode functions for Gens/GS. **/
+
+#include <winnls.h>
+#include <wchar.h>
+#include <stdlib.h>
+#include <string.h>
+
+static WINBASEAPI HANDLE WINAPI CreateFileU_int(
+		LPCSTR lpFileName,
+		DWORD dwDesiredAccess,
+		DWORD dwShareMode,
+		LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		DWORD dwCreationDisposition,
+		DWORD dwFlagsAndAttributes,
+		HANDLE hTemplateFile)
+{
+	static BOOL isUnicodeChecked = FALSE;
+	static BOOL isUnicodeAvailable = FALSE;
+	
+	if (!isUnicodeChecked)
+	{
+		// On ANSI systems, GetModuleHandleW(NULL) returns NULL.
+		// On Unicode systems, GetModuleHandleW(NULL) returns the executable's handle.
+		if (GetModuleHandleW(NULL) != NULL)
+			isUnicodeAvailable = TRUE;
+		else
+			isUnicodeAvailable = FALSE;
+		
+		isUnicodeChecked = TRUE;
+	}
+	
+	if (isUnicodeAvailable)
+	{
+		// Unicode is available.
+		
+		// Convert the name from UTF-8 to UTF-16.
+		wchar_t *lpwFileName = NULL;
+		int lpwFileName_len = MultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, NULL, 0);
+		if (lpwFileName_len > 0)
+		{
+			lpwFileName = (wchar_t*)malloc(lpwFileName_len * sizeof(wchar_t));
+			MultiByteToWideChar(CP_UTF8, 0, lpFileName, -1, lpwFileName, lpwFileName_len);
+		}
+		
+		HANDLE hRet = CreateFileW(lpwFileName,
+					dwDesiredAccess,
+					dwShareMode,
+					lpSecurityAttributes,
+					dwCreationDisposition,
+					dwFlagsAndAttributes,
+					hTemplateFile);
+		
+		free(lpwFileName);
+		return hRet;
+	}
+	
+	// Unicode is not available. Use ANSI.
+	// TODO: Convert UTF-8 to ANSI.
+	return CreateFileA(lpFileName,
+			dwDesiredAccess,
+			dwShareMode,
+			lpSecurityAttributes,
+			dwCreationDisposition,
+			dwFlagsAndAttributes,
+			hTemplateFile);
+}
+
+
 voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
    voidpf opaque;
    const char* filename;
@@ -94,8 +163,10 @@ voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
     }
 
     if ((filename!=NULL) && (dwDesiredAccess != 0))
-        hFile = CreateFile((LPCTSTR)filename, dwDesiredAccess, dwShareMode, NULL,
+    {
+        hFile = CreateFileU_int((LPCTSTR)filename, dwDesiredAccess, dwShareMode, NULL,
                       dwCreationDisposition, dwFlagsAndAttributes, NULL);
+    }
 
     if (hFile == INVALID_HANDLE_VALUE)
         hFile = NULL;

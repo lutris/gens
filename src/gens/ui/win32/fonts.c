@@ -26,27 +26,26 @@
 #include "gens/gens_window.h"
 
 // Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <tchar.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_windowsx.h"
 
 
 // Fonts.
 HFONT fntMain;
 HFONT fntTitle;
 HFONT fntMono;
-HFONT fntDebug;
 
 
 /**
  * fonts_init(): Initialize the Win32 fonts.
  */
-void fonts_init(void)
+void WINAPI fonts_init(void)
 {
+	/**
+	 * NOTE: This function does not need Unicode translation,
+	 * since it passes the text directly from SystemParametersInfo().
+	 */
+	
 	// Get the system message font.
 	NONCLIENTMETRICS ncm;
 	ncm.cbSize = sizeof(ncm);
@@ -63,16 +62,13 @@ void fonts_init(void)
 	
 	// Set up the monospaced font. (WinXP: Fixedsys)
 	fntMono = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
-	
-	// Set up the debug font. (WinXP: Terminal)
-	fntDebug = (HFONT)GetStockObject(OEM_FIXED_FONT);
 }
 
 
 /**
  * fonts_end(): Delete all Win32 fonts.
  */
-void fonts_end(void)
+void WINAPI fonts_end(void)
 {
 	DeleteFont(fntMain);
 	fntMain = NULL;

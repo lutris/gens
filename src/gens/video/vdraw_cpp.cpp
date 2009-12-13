@@ -272,8 +272,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 		if ((reinit && forceUpdate) || (oldScale != vdraw_scale))
 		{
 			// The Gens window must be reinitialized.
-			if (vdraw_cur_backend->reinit_gens_window)
-				return vdraw_cur_backend->reinit_gens_window();
+			return vdraw_reinit_gens_window();
 		}
 #endif /* GENS_OS_WIN32 */
 	}

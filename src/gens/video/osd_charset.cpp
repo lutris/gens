@@ -30,6 +30,7 @@
 // C includes.
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #ifdef GENS_ZLIB
 #include <zlib.h>

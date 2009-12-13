@@ -2,10 +2,15 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <cstring>
+#ifdef _WIN32
+#include "libgsft/w32u/w32u_libc.h"
+#endif
 
-// C++ includes
+// C includes.
+#include <stdio.h>
+#include <string.h>
+
+// C++ includes.
 #include <string>
 using std::string;
 

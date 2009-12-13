@@ -33,6 +33,12 @@
 #include <list>
 using std::list;
 
+#ifdef _WIN32
+// Win32 includes.
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 // MDP includes.
 #include "mdp/mdp_stdint.h"
 #include "mdp/mdp_error.h"

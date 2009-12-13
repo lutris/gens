@@ -31,6 +31,14 @@
 #include "mdp/mdp_fncall.h"
 
 // Degree symbol.
+/**
+ * NOTE: The separate Win32 define isn't needed anymore,
+ * since Gens/GS (and Sonic Gens) now use UTF-8 via the
+ * Win32 Unicode Translation Layer.
+ * It's left here for historical purposes, in case it's
+ * ever needed again for some reason.
+ */
+#if 0
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#ifndef NOMINMAX
@@ -41,6 +49,8 @@
 #else
 	#define DEGREE_SYMBOL "°"
 #endif
+#endif
+#define DEGREE_SYMBOL "°"
 
 #ifdef __cplusplus
 extern "C" {
