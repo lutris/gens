@@ -52,16 +52,12 @@
 #define gzeof(file)		feof(file)
 #endif
 
-// Needed for SetCurrentDirectory.
-// TODO: Use libgsft/w32u/ once win32-unicode is merged to master.
+// Win32 includes.
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_libc.h"
 #include "emulator/g_main.hpp"
-#endif /* _WIN32 */
+#endif
 
 
 // Character font data.
