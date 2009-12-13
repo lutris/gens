@@ -126,7 +126,7 @@ static int WINAPI ListView_InsertItemUW(HWND hWnd, const LVITEMA *pItem)
 	wchar_t *pszwText = NULL;
 	if (pItem->pszText)
 	{
-		w32u_UTF8toUTF16(pItem->pszText);
+		pszwText = w32u_UTF8toUTF16(pItem->pszText);
 		wItem.pszText = pszwText;
 	}
 	
