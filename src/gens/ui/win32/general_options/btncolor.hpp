@@ -35,12 +35,12 @@
 class BtnColor
 {
 	public:
-		BtnColor(HWND hWnd);
-		~BtnColor();
+		WINAPI BtnColor(HWND hWnd);
+		WINAPI ~BtnColor();
 		
-		void setBgColor(COLORREF newBgColor);
+		void WINAPI setBgColor(COLORREF newBgColor);
 		
-		void handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem);
+		void WINAPI handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem);
 	
 	protected:
 		HWND m_hWnd;
@@ -52,11 +52,11 @@ class BtnColor
 		COLORREF m_colorShadow;
 		COLORREF m_colorDarkShadow;
 		
-		static void DrawFilledRect(HDC hDC, RECT &rc, COLORREF color);
-		static void DrawLine(HDC hDC, int x1, int y1, int x2, int y2, COLORREF color);
+		static void WINAPI DrawFilledRect(HDC hDC, RECT &rc, COLORREF color);
+		static void WINAPI DrawLine(HDC hDC, int x1, int y1, int x2, int y2, COLORREF color);
 		
-		void DrawFrame(HDC hDC, RECT &rc, int state);
-		void DrawButtonText(HDC hDC, RECT &rc, const std::string &strCaption, COLORREF textColor);
+		void WINAPI DrawFrame(HDC hDC, RECT &rc, int state);
+		void WINAPI DrawButtonText(HDC hDC, RECT &rc, const std::string &strCaption, COLORREF textColor);
 		
 	private:
 		enum

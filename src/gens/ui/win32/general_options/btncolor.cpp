@@ -35,7 +35,7 @@ using std::string;
 using std::vector;
 
 
-BtnColor::BtnColor(HWND hWnd)
+WINAPI BtnColor::BtnColor(HWND hWnd)
 {
 	m_hWnd = hWnd;
 	
@@ -55,12 +55,12 @@ BtnColor::BtnColor(HWND hWnd)
 	m_colorDarkShadow	= GetSysColor(COLOR_3DDKSHADOW);
 }
 
-BtnColor::~BtnColor()
+WINAPI BtnColor::~BtnColor()
 {
 }
 
 
-void BtnColor::setBgColor(COLORREF newBgColor)
+void WINAPI BtnColor::setBgColor(COLORREF newBgColor)
 {
 	m_colorBgNormal = newBgColor;
 	
@@ -91,7 +91,7 @@ void BtnColor::setBgColor(COLORREF newBgColor)
 }
 
 
-void BtnColor::handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem)
+void WINAPI BtnColor::handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem)
 {
 	// Draw the item.
 	HDC hDC;
@@ -153,7 +153,7 @@ void BtnColor::handleDrawItem(LPDRAWITEMSTRUCT lpDrawItem)
 }
 
 
-void BtnColor::DrawFilledRect(HDC hDC, RECT &rc, COLORREF color)
+void WINAPI BtnColor::DrawFilledRect(HDC hDC, RECT &rc, COLORREF color)
 {
 	HBRUSH brSolid = CreateSolidBrush(color);
 	FillRect(hDC, &rc, brSolid);
@@ -161,7 +161,7 @@ void BtnColor::DrawFilledRect(HDC hDC, RECT &rc, COLORREF color)
 }
 
 
-void BtnColor::DrawLine(HDC hDC, int x1, int y1, int x2, int y2, COLORREF color)
+void WINAPI BtnColor::DrawLine(HDC hDC, int x1, int y1, int x2, int y2, COLORREF color)
 {
 	HPEN newPen;
 	HPEN oldPen;
@@ -177,7 +177,7 @@ void BtnColor::DrawLine(HDC hDC, int x1, int y1, int x2, int y2, COLORREF color)
 }
 
 
-void BtnColor::DrawFrame(HDC hDC, RECT &rc, int state)
+void WINAPI BtnColor::DrawFrame(HDC hDC, RECT &rc, int state)
 {
 	COLORREF color;
 	
@@ -240,7 +240,7 @@ void BtnColor::DrawFrame(HDC hDC, RECT &rc, int state)
 }
 
 
-void BtnColor::DrawButtonText(HDC hDC, RECT &rc, const string &strCaption, COLORREF textColor)
+void WINAPI BtnColor::DrawButtonText(HDC hDC, RECT &rc, const string &strCaption, COLORREF textColor)
 {
 	LONG_PTR lStyle = pGetWindowLongPtrU(m_hWnd, GWL_STYLE);
 	
