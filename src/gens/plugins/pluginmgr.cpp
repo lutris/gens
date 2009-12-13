@@ -53,6 +53,12 @@
 #include <dirent.h>
 #include <errno.h>
 
+#ifdef _WIN32
+// Win32 includes.
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 // mingw doesn't provide S_ISLNK.
 #ifndef S_ISLNK
 #define S_ISLNK(x) (0)

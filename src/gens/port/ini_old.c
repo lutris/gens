@@ -27,6 +27,12 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+// Win32 includes.
+#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_libc.h"
+#endif
+
 #include "ini_old.h"
 
 static void WriteKey(const char *var, const char *var_name, FILE *file)
