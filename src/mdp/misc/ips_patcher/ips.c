@@ -34,7 +34,7 @@
 
 #ifdef _WIN32
 // Win32 includes.
-#include "libgsft/w32u/w32u_windows.h
+#include "libgsft/w32u/w32u_windows.h"
 #endif
 
 // MDP includes.
