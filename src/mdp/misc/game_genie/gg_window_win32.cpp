@@ -754,6 +754,6 @@ static void gg_window_callback_deactivate_all(void)
 	
 	for (int i = 0; i < lvItems; i++)
 	{
-		ListView_SetCheckStateU(lstCodes, lvItems, false);
+		ListView_SetCheckStateU(lstCodes, i, false);
 	}
 }
