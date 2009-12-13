@@ -49,8 +49,8 @@ extern "C" {
 typedef struct
 {
 	uint8_t		style;
-	uint8_t		color;		// STYLE_COLOR_* values
-	uint32_t	dot_color;	// Actual RGB color value.
+	uint32_t	color;		// RGB color value. (32-bit)
+	uint32_t	dot_color;	// RGB color value. (Screen color depth.)
 	BOOL		double_size;
 	BOOL		transparent;
 } vdraw_style_t;

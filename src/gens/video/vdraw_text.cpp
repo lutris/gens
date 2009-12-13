@@ -293,60 +293,26 @@ void calc_text_style(vdraw_style_t *style)
 	if (!style)
 		return;
 	
-	// Calculate the dot color.
+	// If we're not using 32-bit color, calculate the 15-bit or 16-bit dot color.
+	uint32_t color32 = style->color;
 	if (bppOut == 15)
 	{
-		switch (style->style & 0x07)
-		{
-			case STYLE_COLOR_RED:
-				style->dot_color = 0x7C00;
-				break;
-			case STYLE_COLOR_GREEN:
-				style->dot_color = 0x03E0;
-				break;
-			case STYLE_COLOR_BLUE:
-				style->dot_color = 0x001F;
-				break;
-			default: // STYLE_COLOR_WHITE
-				style->dot_color = 0x7FFF;
-				break;
-		}
+		// 15-bit. (RGB555)
+		style->dot_color = ((color32 >> 9) & 0x7C00) |
+				   ((color32 >> 6) & 0x03E0) |
+				   ((color32 >> 3) & 0x001F);
 	}
 	else if (bppOut == 16)
 	{
-		switch (style->style & 0x07)
-		{
-			case STYLE_COLOR_RED:
-				style->dot_color = 0xF800;
-				break;
-			case STYLE_COLOR_GREEN:
-				style->dot_color = 0x7E00;
-				break;
-			case STYLE_COLOR_BLUE:
-				style->dot_color = 0x001F;
-				break;
-			default: // STYLE_COLOR_WHITE
-				style->dot_color = 0xFFFF;
-				break;
-		}
+		// 16-bit. (RGB565)
+		style->dot_color = ((color32 >> 8) & 0xF800) |
+				   ((color32 >> 5) & 0x07E0) |
+				   ((color32 >> 3) & 0x001F);
 	}
-	else //if (bppOut == 32)
+	else
 	{
-		switch (style->style & 0x07)
-		{
-			case STYLE_COLOR_RED:
-				style->dot_color = 0xFF0000;
-				break;
-			case STYLE_COLOR_GREEN:
-				style->dot_color = 0x00FF00;
-				break;
-			case STYLE_COLOR_BLUE:
-				style->dot_color = 0x0000FF;
-				break;
-			default: // STYLE_COLOR_WHITE
-				style->dot_color = 0xFFFFFF;
-				break;
-		}
+		// 32-bit. Use the original color.
+		style->dot_color = color32;
 	}
 	
 	style->double_size = ((style->style & STYLE_DOUBLESIZE) ? TRUE : FALSE);

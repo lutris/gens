@@ -627,7 +627,7 @@ void vdraw_set_fast_blur(const BOOL new_fast_blur)
 /** Style properties **/
 
 
-uint8_t	vdraw_get_msg_style(void)
+uint8_t vdraw_get_msg_style(void)
 {
 	return vdraw_msg_style.style;
 }
@@ -641,7 +641,7 @@ void vdraw_set_msg_style(const uint8_t new_msg_style)
 }
 
 
-uint8_t	vdraw_get_fps_style(void)
+uint8_t vdraw_get_fps_style(void)
 {
 	return vdraw_fps_style.style;
 }
@@ -655,7 +655,35 @@ void vdraw_set_fps_style(const uint8_t new_fps_style)
 }
 
 
-uint8_t	vdraw_get_intro_effect_color(void)
+uint32_t vdraw_get_msg_color(void)
+{
+	return vdraw_msg_style.color;
+}
+void vdraw_set_msg_color(const uint32_t new_msg_color)
+{
+	if (vdraw_msg_style.color == new_msg_color)
+		return;
+	
+	vdraw_msg_style.color = new_msg_color;
+	calc_text_style(&vdraw_msg_style);
+}
+
+
+uint32_t vdraw_get_fps_color(void)
+{
+	return vdraw_fps_style.color;
+}
+void vdraw_set_fps_color(const uint32_t new_fps_color)
+{
+	if (vdraw_fps_style.color == new_fps_color)
+		return;
+	
+	vdraw_fps_style.color = new_fps_color;
+	calc_text_style(&vdraw_fps_style);
+}
+
+
+uint8_t vdraw_get_intro_effect_color(void)
 {
 	return vdraw_prop_intro_effect_color;
 }

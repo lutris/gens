@@ -158,6 +158,10 @@ uint8_t	vdraw_get_msg_style(void);
 void	vdraw_set_msg_style(const uint8_t new_msg_style);
 uint8_t	vdraw_get_fps_style(void);
 void	vdraw_set_fps_style(const uint8_t new_fps_style);
+uint32_t vdraw_get_msg_color(void);
+void	 vdraw_set_msg_color(const uint32_t new_msg_color);
+uint32_t vdraw_get_fps_color(void);
+void	 vdraw_set_fps_color(const uint32_t new_fps_color);
 uint8_t	vdraw_get_intro_effect_color(void);
 void	vdraw_set_intro_effect_color(const uint8_t new_intro_effect_color);
 
