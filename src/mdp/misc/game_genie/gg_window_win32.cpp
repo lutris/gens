@@ -312,7 +312,7 @@ static void gg_window_create_lstCodes(HWND container)
 					GG_WINDOW_WIDTH-(8+8), 128,
 					container, NULL, gg_hInstance, NULL);
 	SetWindowFontU(lstCodes, gg_hFont, true);
-	ListView_SetExtendedListViewStyle(lstCodes, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+	ListView_SetExtendedListViewStyleU(lstCodes, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	
 	// Create the ListView columns.
 	LV_COLUMN lvCol;
