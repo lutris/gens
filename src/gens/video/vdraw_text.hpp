@@ -48,11 +48,11 @@ extern "C" {
 // VDraw styles.
 typedef struct
 {
-	uint8_t		style;
 	uint32_t	color;		// RGB color value. (32-bit)
 	uint32_t	dot_color;	// RGB color value. (Screen color depth.)
-	BOOL		double_size;
-	BOOL		transparent;
+	uint8_t		style;		// Old Gens style byte.
+	uint8_t		double_size;	// 0 == 1x; non-zero == 2x.
+	uint8_t		transparent;	// 0 == opaque; non-zero == transparent.
 } vdraw_style_t;
 
 void draw_text(void *screen, const int pitch, const int w, const int h,
