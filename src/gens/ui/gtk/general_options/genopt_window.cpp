@@ -45,8 +45,9 @@
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_szprintf.h"
 
-// Video Drawing.
+// Video and Audio functions.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 
 
 typedef struct _gtk_color_t
@@ -684,6 +685,7 @@ static void genopt_window_callback_btnColor_clicked(GtkButton *button, gpointer 
 	gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(color_sel), &tmpColor);
 	
 	// Run the dialog.
+	audio_clear_sound_buffer();
 	gint dialogResponse = gtk_dialog_run(GTK_DIALOG(color_dialog));
 	if (dialogResponse != GTK_RESPONSE_OK)
 	{
