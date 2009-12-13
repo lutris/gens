@@ -653,6 +653,11 @@ static void genopt_window_callback_widget_changed(void)
 }
 
 
+/**
+ * genopt_window_callback_btnColor_clicked(): "Change..." button for a color was clicked.
+ * @param button Button.
+ * @param user_data Color index.
+ */
 static void genopt_window_callback_btnColor_clicked(GtkButton *button, gpointer user_data)
 {
 	GSFT_UNUSED_PARAMETER(button);
