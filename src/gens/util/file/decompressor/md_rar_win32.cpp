@@ -81,6 +81,8 @@ int decompressor_rar_win32_detect_format(FILE *zF)
  */
 int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_entry_t** z_entry_out)
 {
+	GSFT_UNUSED_PARAMETER(zF);
+	
 	// Initialize UnRAR.dll.
 	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
 	if (!dll.isLoaded())
@@ -234,17 +236,20 @@ static int CALLBACK decompressor_rar_win32_callback(UINT msg, LPARAM UserData, L
 
 /**
  * decompressor_rar_win32_get_file(): Get a file from the archive.
- * @param zF Open file handle. (Unused in the RAR handler.)
- * @param filename Filename of the archive.
- * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
- * @param buf Buffer to read the file into.
- * @param size Size of buf (in bytes).
- * @return Number of bytes read, or 0 on error.
+ * @param zF		[in] Open file handle.
+ * @param filename	[in] Filename of the archive.
+ * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
+ * @param buf		[in] Buffer to read the file into.
+ * @param size		[in] Size of buf (in bytes).
+ * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
+ * @return MDP error code.
  */
-size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry,
-					void *buf, const size_t size)
+int decompressor_rar_win32_get_file(FILE *zF, const char *filename,
+					mdp_z_entry_t *z_entry, void *buf,
+					const size_t size, size_t *ret_size)
 {
+	GSFT_UNUSED_PARAMETER(zF);
+	
 	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
 	if (!dll.isLoaded())
 	{
@@ -294,7 +299,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	
 	// Search for the file.
 	struct RARHeaderDataEx rar_header;
-	size_t success = 0;	// 0 == not successful; positive == size read
+	*ret_size = 0;
 	int ret, cmp;
 	while ((ret = dll.pRARReadHeaderEx(hRar, &rar_header)) == 0)
 	{
@@ -341,7 +346,7 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 			break;
 		
 		// File processed.
-		success = rar_state.pos;
+		*ret_size = rar_state.pos;
 		break;
 	}
 	
@@ -351,5 +356,5 @@ size_t decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 	free(filenameW);
 	free(z_filenameW);
 	
-	return success;
+	return MDP_ERR_OK;
 }
