@@ -28,10 +28,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <errno.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 // C++ includes.
 #include <string>
@@ -52,8 +54,9 @@ using std::list;
 // Message logging.
 #include "macros/log_msg.h"
 
-// Unused Parameter macro.
+// libgsft includes.
 #include "libgsft/gsft_unused.h"
+#include "libgsft/gsft_file.h"
 
 #ifdef GENS_OS_MACOSX
 // SDL is needed in order to set the SDL window title.
@@ -410,7 +413,20 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 					     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					     acceptButton, GTK_RESPONSE_ACCEPT, NULL);
 	
+	// Set the initial filename.
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), initFile.c_str());
+	
+	if (action != GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER && !initFile.empty())
+	{
+		// Check if the file in question is a directory.
+		struct stat st_buf;
+		stat(initFile.c_str(), &st_buf);
+		if (S_ISDIR(st_buf.st_mode))
+		{
+			// Set the initial directory.
+			gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), initFile.c_str());
+		}
+	}
 	
 	// Add filters.
 	switch (filterType)
