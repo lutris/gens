@@ -39,6 +39,7 @@ Z	ROM size, in megabits.
 	'z': Print unit abbreviations. (takes priority over 'y')
 
 D	Build date, if available.
+	'l': Use the locked-on ROM, if available.
 
 [	Only display if a ROM is locked on.
 ]	End of previous.
