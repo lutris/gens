@@ -358,6 +358,54 @@ static inline string irc_format_Z(int system_id, uint32_t modifier)
 
 
 /**
+ * irc_format_D(): ROM build date.
+ * @param system_id System ID.
+ * @param modifier Modifier.
+ * @return ROM build date, or empty string on error.
+ */
+static inline string irc_format_D(int system_id, uint32_t modifier)
+{
+	uint32_t date_addr;
+	
+	switch (system_id)
+	{
+		case MDP_SYSTEM_MD:
+		case MDP_SYSTEM_32X:
+		case MDP_SYSTEM_MCD:
+		case MDP_SYSTEM_MCD32X:
+		case MDP_SYSTEM_PICO:
+		{
+			// MD or 32X ROM. Read the header.
+			// TODO: MCD and MCD32X will show the SegaCD firmware ROM name instead of the
+			// actual game name, since MDP v1.0 doesn't support reading data from
+			// the CD-ROM. This may be added in MDP v1.1.
+			
+			date_addr = 0x118;
+			if (modifier & MODIFIER('l'))
+			{
+				if (!is_locked_on())
+					return "none";
+				date_addr |= 0x200000;
+			}
+			
+			char build_date[9];
+			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, date_addr, (uint8_t*)build_date, 8) != MDP_ERR_OK)
+				return "unknown";
+			
+			build_date[sizeof(build_date)-1] = 0;
+			return string(build_date);
+		}
+		
+		default:
+			break;
+	}
+	
+	// Couldn't read the serial number.
+	return "unknown";
+}
+
+
+/**
  * irc_format_code(): Process an IRC format code.
  * @param system_id System ID.
  * @param modifier Modifier.
@@ -394,8 +442,8 @@ static inline string irc_format_code(int system_id, uint32_t modifier, char chr)
 			return irc_format_Z(system_id, modifier);
 		
 		case 'D':
-			// TODO
-			break;
+			// ROM build date.
+			return irc_format_D(system_id, modifier);
 		
 		default:
 			// Unrecognized format character.
