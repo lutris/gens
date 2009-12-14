@@ -113,7 +113,6 @@ static int MDP_FNCALL irc_event_handler(int event_id, void *event_info)
 		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)event_info;
 		
 		string fmt_str = irc_format(openROM->system_id, "[%adS] \\x02\\x1F%T\\x1F\\x02%[ + %lT%] (%D; %zZ)");
-		printf("str: %s\n", fmt_str.c_str());
 		strlcpy(irc_rom_string, fmt_str.c_str(), sizeof(irc_rom_string));
 		
 		// Indicate that a ROM is loaded.

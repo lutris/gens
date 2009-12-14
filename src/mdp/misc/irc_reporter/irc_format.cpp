@@ -420,7 +420,6 @@ static inline string irc_format_D(int system_id, uint32_t modifier)
  */
 static inline string irc_format_code(int system_id, uint32_t modifier, char chr)
 {
-	printf("ENTRY: sysid == %d, modifier == 0x%08X, chr == %c\n", system_id, modifier, chr);
 	switch (chr)
 	{
 		case '%':
