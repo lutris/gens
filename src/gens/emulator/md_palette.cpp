@@ -86,8 +86,8 @@ static inline void adjustContrast(int& r, int& g, int& b, int contrast)
  * Recalculate_Palettes(): Recalculates the MD and 32X palettes for brightness, contrast, and various effects.
  */
 template<typename pixel, pixel *palMD, pixel *pal32X, pixel *cramAdjusted32X,
-	 int RBits, int GBits, int BBits,
-	 int RMask, int GMask, int BMask>
+	int RBits, int GBits, int BBits,
+	int RMask, int GMask, int BMask>
 static inline void T_Recalculate_Palettes(void)
 {
 	int r, g, b;
@@ -96,11 +96,8 @@ static inline void T_Recalculate_Palettes(void)
 	// These values are scaled to positive numbers.
 	// Normal brightness: (Brightness_Level == 100)
 	// Normal contrast:   (  Contrast_Level == 100)
+
 	const int brightness = (Brightness_Level - 100);
-	const int brightness_R = (brightness * (RMask+1)) / 100;
-	const int brightness_G = (brightness * (GMask+1)) / 100;
-	const int brightness_B = (brightness * (BMask+1)) / 100;
-	
 	const int contrast = Contrast_Level;
 	
 	int mdComponentScale;
@@ -110,11 +107,11 @@ static inline void T_Recalculate_Palettes(void)
 			mdComponentScale = 0;
 			break;
 		case COLSCALE_FULL:
-			mdComponentScale = 0xE;
+			mdComponentScale = 0xE0;
 			break;
 		case COLSCALE_FULL_HS:
 		default:
-			mdComponentScale = 0xF;
+			mdComponentScale = 0xF0;
 			break;
 	}
 	
@@ -124,36 +121,63 @@ static inline void T_Recalculate_Palettes(void)
 		// Mask off the LSB of each MD color component.
 		unsigned int color = (i & 0x0FFF);
 		
-		r = (color & 0xF) << (RBits - 4);
-		g = ((color >> 4) & 0x0F) << (GBits - 4);
-		b = ((color >> 8) & 0x0F) << (BBits - 4);
+		// Process using 8-bit color components.
+		r = (color & 0x000F) << 4;
+		g = (color & 0x00F0);
+		b = (color >> 4) & 0xF0;
 		
 		// Scale the colors to full RGB.
 		if (ColorScaleMethod != COLSCALE_RAW)
 		{
-			r = (r * RMask) / (mdComponentScale << (RBits - 4));
-			g = (g * GMask) / (mdComponentScale << (GBits - 4));
-			b = (b * BMask) / (mdComponentScale << (BBits - 4));
+			r = (r * 0xFF) / mdComponentScale;
+			g = (g * 0xFF) / mdComponentScale;
+			b = (b * 0xFF) / mdComponentScale;
 		}
 		
 		// Adjust brightness.
 		if (brightness != 0)
 		{
-			r += brightness_R;
-			g += brightness_G;
-			b += brightness_B;
+			r += brightness;
+			g += brightness;
+			b += brightness;
 		}
 		
 		// Adjust contrast.
 		adjustContrast(r, g, b, contrast);
+		
+		if (Greyscale)
+		{
+			// Convert the color to grayscale.
+			r = g = b = calculateGrayScale(r, g, b);
+		}
+		
+		if (Invert_Color)
+		{
+			// Invert the color components.
+			r ^= 0xFF;
+			g ^= 0xFF;
+			b ^= 0xFF;
+		}
+		
+		// Reduce color components to original color depth.
+		r >>= (8 - RBits);
+		g >>= (8 - GBits);
+		b >>= (8 - BBits);
 		
 		// Constrain the color components.
 		T_constrainColorComponent<RMask>(r);
 		T_constrainColorComponent<GMask>(g);
 		T_constrainColorComponent<BMask>(b);
 		
+		if (GMask == 0x3F)
+		{
+			// 16-bit color. (RGB565)
+			// Mask off the LSB of the green component.
+			g &= ~1;
+		}
+		
 		// Create the color.
-		palMD[i] = (r << (GBits + BBits)) |
+		palMD[i] = (r << (BBits + GBits)) |
 			   (g << (BBits)) |
 			   (b);
 	}
@@ -161,112 +185,65 @@ static inline void T_Recalculate_Palettes(void)
 	// Calculate the 32X palette.
 	for (unsigned int i = 0; i < 0x10000; i++)
 	{
-		r = (i & 0x1F) << (RBits - 5);
-		g = ((i >> 5) & 0x1F) << (GBits - 5);
-		b = ((i >> 10) & 0x1F) << (BBits - 5);
+		// Process using 8-bit color components.
+		r = (i & 0x1F) << 3;
+		g = (i >> 2) & 0xF8;
+		b = (i >> 7) & 0xF8;
 		
 		// Scale the colors to full RGB.
 		if (ColorScaleMethod != COLSCALE_RAW)
 		{
-			r = (r * RMask) / (0x1F << (RBits - 5));
-			g = (g * GMask) / (0x1F << (GBits - 5));
-			b = (b * BMask) / (0x1F << (BBits - 5));
+			r = (r * 0xFF) / 0xF8;
+			g = (g * 0xFF) / 0xF8;
+			b = (b * 0xFF) / 0xF8;
 		}
 		
 		// Adjust brightness.
 		if (brightness != 0)
 		{
-			r += brightness_R;
-			g += brightness_G;
-			b += brightness_B;
+			r += brightness;
+			g += brightness;
+			b += brightness;
 		}
 		
 		// Adjust contrast.
 		adjustContrast(r, g, b, contrast);
+		
+		if (Greyscale)
+		{
+			// Convert the color to grayscale.
+			r = g = b = calculateGrayScale(r, g, b);
+		}
+		
+		if (Invert_Color)
+		{
+			// Invert the color components.
+			r ^= 0xFF;
+			g ^= 0xFF;
+			b ^= 0xFF;
+		}
+		
+		// Reduce color components to original color depth.
+		r >>= (8 - RBits);
+		g >>= (8 - GBits);
+		b >>= (8 - BBits);
 		
 		// Constrain the color components.
 		T_constrainColorComponent<RMask>(r);
 		T_constrainColorComponent<GMask>(g);
 		T_constrainColorComponent<BMask>(b);
 		
+		if (GMask == 0x3F)
+		{
+			// 16-bit color. (RGB565)
+			// Mask off the LSB of the green component.
+			g &= ~1;
+		}
+		
 		// Create the color.
 		pal32X[i] = (r << (GBits + BBits)) |
 			    (g << (BBits)) |
 			    (b);
-	}
-	
-	// Convert colors to grayscale, if necessary.
-	if (Greyscale)
-	{
-		int gray;
-		
-		// MD palette.
-		for (unsigned int i = 0; i < 0x1000; i++)
-		{
-			r = (palMD[i] >> (GBits + BBits)) & RMask;
-			g = (palMD[i] >> (BBits)) & GMask;
-			b = palMD[i] & BMask;
-			
-			// Convert to 24-bit color.
-			r <<= (8 - RBits);
-			g <<= (8 - GBits);
-			b <<= (8 - BBits);
-			
-			// Calculate the grayscale value.
-			gray = calculateGrayScale(r, g, b);
-			
-			// Convert back to the original color depth.
-			r = (gray >> (8 - RBits)) & RMask;
-			g = (gray >> (8 - GBits)) & GMask;
-			b = (gray >> (8 - BBits)) & BMask;
-			
-			// Create the color.
-			palMD[i] = (r << (GBits + BBits)) |
-				   (g << (BBits)) |
-				   (b);
-		}
-		
-		// 32X palette.
-		for (unsigned i = 0; i < 0x10000; i++)
-		{
-			r = (pal32X[i] >> (GBits + BBits)) & RMask;
-			g = (pal32X[i] >> (BBits)) & GMask;
-			b = pal32X[i] & BMask;
-			
-			// Convert to 24-bit color.
-			r <<= (8 - RBits);
-			g <<= (8 - GBits);
-			b <<= (8 - BBits);
-			
-			// Calculate the grayscale value.
-			gray = calculateGrayScale(r, g, b);
-			
-			// Convert back to the original color depth.
-			r = (gray >> (8 - RBits)) & RMask;
-			g = (gray >> (8 - GBits)) & GMask;
-			b = (gray >> (8 - BBits)) & BMask;
-			
-			// Create the color.
-			pal32X[i] = (r << (GBits + BBits)) |
-				    (g << (BBits)) |
-				    (b);
-		}
-	}
-	
-	// Invert colors, if necessary.
-	if (Invert_Color)
-	{
-		// MD palette.
-		for (unsigned int i = 0; i < 0x1000; i++)
-		{
-			palMD[i] = ~palMD[i];
-		}
-		
-		// 32X palette.
-		for (unsigned int i = 0; i < 0x10000; i++)
-		{
-			pal32X[i] = ~pal32X[i];
-		}
 	}
 	
 	// Adjust the 32X VDP CRAM.
