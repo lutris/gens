@@ -70,7 +70,7 @@ static inline bool is_locked_on(void)
  * irc_format_S(): System name.
  * @param system_id System ID.
  * @param modifier Modifier.
- * @return System name, or empty string on error.
+ * @return System name, or "???"/"Unknown" on error.
  */
 static inline string irc_format_S(int system_id, uint32_t modifier)
 {
@@ -138,7 +138,7 @@ static inline string irc_format_S(int system_id, uint32_t modifier)
  * irc_format_T(): ROM title.
  * @param system_id System ID.
  * @param modifier Modifier.
- * @return ROM title, or empty string on error.
+ * @return ROM title, or "unknown" on error.
  */
 static inline string irc_format_T(int system_id, uint32_t modifier)
 {
@@ -217,7 +217,7 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
  * irc_format_N(): ROM serial number.
  * @param system_id System ID.
  * @param modifier Modifier.
- * @return ROM serial number, or empty string on error.
+ * @return ROM serial number, or "unknown" on error.
  */
 static inline string irc_format_N(int system_id, uint32_t modifier)
 {
@@ -265,7 +265,7 @@ static inline string irc_format_N(int system_id, uint32_t modifier)
  * irc_format_Z(): ROM size.
  * @param system_id System ID.
  * @param modifier Modifier.
- * @return ROM size, or empty string on error.
+ * @return ROM size, or "unknown" on error.
  */
 static inline string irc_format_Z(int system_id, uint32_t modifier)
 {
@@ -361,7 +361,7 @@ static inline string irc_format_Z(int system_id, uint32_t modifier)
  * irc_format_D(): ROM build date.
  * @param system_id System ID.
  * @param modifier Modifier.
- * @return ROM build date, or empty string on error.
+ * @return ROM build date, or "unknown" on error.
  */
 static inline string irc_format_D(int system_id, uint32_t modifier)
 {
