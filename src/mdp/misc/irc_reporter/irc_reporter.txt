@@ -28,6 +28,7 @@ T	ROM title as given by the ROM header. Uses the emulator's country
 	'l': Use the locked-on ROM, if available.
 
 C	CRC32 checksum.
+
 N	ROM serial number.
 	'l': Use the locked-on ROM, if available.
 
