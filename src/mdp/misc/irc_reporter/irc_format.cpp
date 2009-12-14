@@ -42,7 +42,13 @@ typedef enum
 	FMT_NORMAL	= 0,
 	FMT_IN_FMT	= 1,	// % format code.
 	FMT_IN_ESC	= 2,	// Backslash escape sequence.
-} fmt_status;
+} fmt_status_t;
+
+typedef enum
+{
+	ESC_NONE	= 0,
+	ESC_HEX_BYTE	= 1,
+} esc_status_t;
 
 #define MODIFIER(chr) (1 << ((chr) - 'a'))
 
@@ -464,9 +470,14 @@ string irc_format(int system_id, const char *str)
 {
 	stringstream ss;
 	uint32_t modifier = 0;
-	fmt_status status = FMT_NORMAL;
+	fmt_status_t status = FMT_NORMAL;
 	char chr;
 	
+	// Escapes.
+	esc_status_t esc_status = ESC_NONE;
+	int esc_counter = 0;
+	uint32_t esc_value = 0;
+		
 	// Set to true if in %[ %] and ROM isn't locked on.
 	bool quiet = false;
 	
@@ -475,7 +486,6 @@ string irc_format(int system_id, const char *str)
 		switch (status)
 		{
 			case FMT_NORMAL:
-			case FMT_IN_ESC:	// TODO
 				if (chr == '%')
 				{
 					modifier = 0;
@@ -485,6 +495,70 @@ string irc_format(int system_id, const char *str)
 					status = FMT_IN_ESC;
 				else if (!quiet)
 					ss << chr;
+				break;
+			
+			case FMT_IN_ESC:
+				switch (esc_status)
+				{
+					case ESC_NONE:
+						//. Check the escape character.
+						if (chr == '\\')
+						{
+							// Backslash.
+							ss << '\\';
+							status = FMT_NORMAL;
+							break;
+						}
+						else if (chr == 'x')
+						{
+							// Hexadecimal byte.
+							esc_status = ESC_HEX_BYTE;
+							esc_counter = 0;
+							esc_value = 0;
+							break;
+						}
+						status = FMT_NORMAL;
+						break;
+					case ESC_HEX_BYTE:
+						// Check the character.
+						if (chr >= '0' && chr <= '9')
+						{
+							// Numeric character.
+							esc_value <<= 4;
+							esc_value |= (chr - '0');
+						}
+						else if (chr >= 'A' && chr <= 'F')
+						{
+							// Uppercase hexadecimal character.
+							esc_value <<= 4;
+							esc_value |= (chr - 'A' + 10);
+						}
+						else if (chr >= 'a' && chr <= 'f')
+						{
+							// Lowercase hexadecimal character.
+							esc_value <<= 4;
+							esc_value |= (chr - 'a' + 10);
+						}
+						else
+						{
+							// Unknown character. Cancel the escape.
+							status = FMT_NORMAL;
+							esc_status = ESC_NONE;
+							break;
+						}
+						
+						// Increment the counter.
+						esc_counter++;
+						if (esc_counter >= 2)
+						{
+							// Finished the escape sequence.
+							ss << (char)esc_value;
+							status = FMT_NORMAL;
+							esc_status = ESC_NONE;
+						}
+						
+						break;
+				}
 				break;
 			
 			case FMT_IN_FMT:
