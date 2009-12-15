@@ -27,8 +27,6 @@
 #include <sys/types.h>
 #include <string.h>
 
-// TODO: Add wrappers for _sntprintf() [Win32 TCHAR].
-
 #ifdef __GNUC__
 #define NONNULL __attribute__ ((nonnull))
 #endif
