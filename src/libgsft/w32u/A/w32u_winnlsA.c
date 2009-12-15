@@ -21,6 +21,7 @@
 
 #include "w32u_winnlsA.h"
 #include "w32u_winnls.h"
+#include "w32u_charset.h"
 
 // C includes.
 #include <stdlib.h>
@@ -29,9 +30,21 @@
 
 static WINBASEAPI BOOL WINAPI GetCPInfoExUA(UINT CodePage, DWORD dwFlags, LPCPINFOEXA lpCPInfoEx)
 {
-	// TODO: Correct argument names.
-	// TODO: ANSI conversion.
-	return GetCPInfoExA(CodePage, dwFlags, lpCPInfoEx);
+	if (!lpCPInfoEx)
+	{
+		// Struct not specified. Don't bother converting anything.
+		return GetCPInfoExA(CodePage, dwFlags, lpCPInfoEx);
+	}
+	
+	// Get the code page information.
+	BOOL bRet = GetCPInfoExA(CodePage, dwFlags, lpCPInfoEx);
+	
+	// Convert the code page name from ANSI to UTF-8.
+	printf("cpa: %s\n", lpCPInfoEx->CodePageName);
+	w32u_ANSItoUTF8_ip(lpCPInfoEx->CodePageName, sizeof(lpCPInfoEx->CodePageName));
+	printf("cpu: %s\n", lpCPInfoEx->CodePageName);
+	lpCPInfoEx->CodePageName[sizeof(lpCPInfoEx->CodePageName)-1] = 0x00;
+	return bRet;
 }
 
 
