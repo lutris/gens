@@ -74,7 +74,7 @@ extern int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer
 #define Static_SetTextU(hwndCtl,lpsz)	pSetWindowTextU((hwndCtl),(lpsz))
 #define Static_GetTextLengthU(hwndCtl)	pGetWindowTextLengthU(hwndCtl)
 
-int WINAPI w32u_windowsx_init(void);
+void WINAPI w32u_windowsx_init(void);
 
 #ifdef __cplusplus
 }

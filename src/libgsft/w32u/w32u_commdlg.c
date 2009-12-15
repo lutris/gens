@@ -28,10 +28,10 @@ MAKE_FUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
 MAKE_FUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
 
 
-int WINAPI w32u_commdlg_init(void)
+void WINAPI w32u_commdlg_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_commdlgW_init();
+		w32u_commdlgW_init();
 	else
-		return w32u_commdlgA_init();
+		w32u_commdlgA_init();
 }

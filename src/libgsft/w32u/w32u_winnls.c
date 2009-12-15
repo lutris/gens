@@ -27,10 +27,10 @@
 MAKE_FUNCPTR2(GetCPInfoExA,		GetCPInfoExU);
 
 
-int WINAPI w32u_winnls_init(void)
+void WINAPI w32u_winnls_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_winnlsW_init();
+		w32u_winnlsW_init();
 	else
-		return w32u_winnlsA_init();
+		w32u_winnlsA_init();
 }

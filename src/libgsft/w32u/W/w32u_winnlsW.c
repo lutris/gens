@@ -35,11 +35,7 @@ static WINBASEAPI BOOL WINAPI GetCPInfoExUW(UINT CodePage, DWORD dwFlags, LPCPIN
 }
 
 
-int WINAPI w32u_winnlsW_init(void)
+void WINAPI w32u_winnlsW_init(void)
 {
-	// TODO: Error handling.
-	
 	pGetCPInfoExU		= &GetCPInfoExUW;
-	
-	return 0;
 }

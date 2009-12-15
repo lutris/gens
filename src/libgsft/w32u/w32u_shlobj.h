@@ -32,7 +32,7 @@ extern "C" {
 MAKE_EXTFUNCPTR2(SHBrowseForFolderA,	SHBrowseForFolderU);
 MAKE_EXTFUNCPTR2(SHGetPathFromIDListA,	SHGetPathFromIDListU);
 
-int WINAPI w32u_shlobj_init(void);
+void WINAPI w32u_shlobj_init(void);
 
 #ifdef __cplusplus
 }

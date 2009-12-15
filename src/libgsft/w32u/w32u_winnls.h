@@ -31,7 +31,7 @@ extern "C" {
 
 MAKE_EXTFUNCPTR2(GetCPInfoExA,          GetCPInfoExU);
 
-int WINAPI w32u_winnls_init(void);
+void WINAPI w32u_winnls_init(void);
 
 #ifdef __cplusplus
 }

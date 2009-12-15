@@ -77,11 +77,7 @@ static int WINAPI ListBox_GetTextUW(HWND hwndCtl, int index, LPSTR lpszBuffer)
 }
 
 
-int WINAPI w32u_windowsxW_init(void)
+void WINAPI w32u_windowsxW_init(void)
 {
-	// TODO: Error handling.
-	
 	pListBox_GetTextU	= &ListBox_GetTextUW;
-	
-	return 0;
 }

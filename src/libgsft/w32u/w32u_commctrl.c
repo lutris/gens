@@ -35,10 +35,10 @@ int (WINAPI *pListView_InsertItemU)(HWND hWnd, const LVITEMA *pItem) = NULL;
 int (WINAPI *pListView_SetItemU)(HWND hWnd, const LVITEMA *pItem) = NULL;
 
 
-int WINAPI w32u_commctrl_init(void)
+void WINAPI w32u_commctrl_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_commctrlW_init();
+		w32u_commctrlW_init();
 	else
-		return w32u_commctrlA_init();
+		w32u_commctrlA_init();
 }

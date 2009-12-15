@@ -40,12 +40,8 @@ static BOOL WINAPI SHGetPathFromIDListUA(LPCITEMIDLIST pidl, LPSTR pszPath)
 }
 
 
-int WINAPI w32u_shlobjA_init(void)
+void WINAPI w32u_shlobjA_init(void)
 {
-	// TODO: Error handling.
-	
 	pSHBrowseForFolderU	= &SHBrowseForFolderUA;
 	pSHGetPathFromIDListU	= &SHGetPathFromIDListUA;
-	
-	return 0;
 }

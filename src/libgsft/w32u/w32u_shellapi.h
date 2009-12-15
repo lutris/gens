@@ -32,7 +32,7 @@ extern "C" {
 MAKE_EXTFUNCPTR2(DragQueryFileA,	DragQueryFileU);
 MAKE_EXTFUNCPTR2(ShellExecuteA,		ShellExecuteU);
 
-int WINAPI w32u_shellapi_init(void);
+void WINAPI w32u_shellapi_init(void);
 
 #ifdef __cplusplus
 }

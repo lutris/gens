@@ -28,10 +28,10 @@ MAKE_FUNCPTR2(DragQueryFileA,	DragQueryFileU);
 MAKE_FUNCPTR2(ShellExecuteA,	ShellExecuteU);
 
 
-int WINAPI w32u_shellapi_init(void)
+void WINAPI w32u_shellapi_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_shellapiW_init();
+		w32u_shellapiW_init();
 	else
-		return w32u_shellapiA_init();
+		w32u_shellapiA_init();
 }

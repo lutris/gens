@@ -77,15 +77,11 @@ static int statUW(const char *path, struct stat *buf)
 }
 
 
-int WINAPI w32u_libcW_init(void)
+void WINAPI w32u_libcW_init(void)
 {
-	// TODO: Error handling.
-	
 	paccess		= &accessUW;
 	pfopen		= &fopenUW;
 	pstat		= &statUW;
 	
 	p_wcsicmp	= &_wcsicmp;
-	
-	return 0;
 }

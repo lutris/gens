@@ -84,12 +84,8 @@ static HINSTANCE WINAPI ShellExecuteUA(HWND hWnd, LPCSTR lpOperation, LPCSTR lpF
 }
 
 
-int WINAPI w32u_shellapiA_init(void)
+void WINAPI w32u_shellapiA_init(void)
 {
-	// TODO: Error handling.
-	
 	pDragQueryFileU		= &DragQueryFileUA;
 	pShellExecuteU		= &ShellExecuteUA;
-	
-	return 0;
 }

@@ -155,12 +155,8 @@ static BOOL WINAPI GetSaveFileNameUA(LPOPENFILENAMEA lpofn)
 }
 
 
-int WINAPI w32u_commdlgA_init(void)
+void WINAPI w32u_commdlgA_init(void)
 {
-	// TODO: Error handling.
-	
 	pGetOpenFileNameU	= &GetOpenFileNameUA;
 	pGetSaveFileNameU	= &GetSaveFileNameUA;
-	
-	return 0;
 }

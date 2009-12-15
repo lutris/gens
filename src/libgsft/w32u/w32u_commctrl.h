@@ -57,7 +57,7 @@ extern int (WINAPI *pListView_SetItemU)(HWND hWnd, const LVITEMA *pItem);
 	pSendMessageU((w),LVM_SETITEMSTATE,i,(LPARAM)(LV_ITEM*)&_lvi);\
 }
 
-int WINAPI w32u_commctrl_init(void);
+void WINAPI w32u_commctrl_init(void);
 
 #ifdef __cplusplus
 }

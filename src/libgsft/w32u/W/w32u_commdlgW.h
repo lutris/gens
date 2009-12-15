@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-int WINAPI w32u_commdlgW_init(void);
+void WINAPI w32u_commdlgW_init(void);
 
 #ifdef __cplusplus
 }

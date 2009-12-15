@@ -84,15 +84,11 @@ static int statUA(const char *path, struct stat *buf)
 }
 
 
-int WINAPI w32u_libcA_init(void)
+void WINAPI w32u_libcA_init(void)
 {
-	// TODO: Error handling.
-	
 	paccess		= &accessUA;
 	pfopen		= &fopenUA;
 	pstat		= &statUA;
 	
 	p_wcsicmp	= &_wcsicmp;
-	
-	return 0;
 }

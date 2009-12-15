@@ -145,16 +145,12 @@ static int WINAPI ListView_SetItemUA(HWND hWnd, const LVITEM *pItem)
 }
 
 
-int WINAPI w32u_commctrlA_init(void)
+void WINAPI w32u_commctrlA_init(void)
 {
-	// TODO: Error handling.
-	
 	pTabCtrl_InsertItemU	= &TabCtrl_InsertItemUA;
 	
 	pListView_GetItemU	= &ListView_GetItemUA;
 	pListView_InsertColumnU	= &ListView_InsertColumnUA;
 	pListView_InsertItemU	= &ListView_InsertItemUA;
 	pListView_SetItemU	= &ListView_SetItemUA;
-	
-	return 0;
 }

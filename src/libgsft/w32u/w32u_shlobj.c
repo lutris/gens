@@ -28,10 +28,10 @@ MAKE_FUNCPTR2(SHBrowseForFolderA,	SHBrowseForFolderU);
 MAKE_FUNCPTR2(SHGetPathFromIDListA,	SHGetPathFromIDListU);
 
 
-int WINAPI w32u_shlobj_init(void)
+void WINAPI w32u_shlobj_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_shlobjW_init();
+		w32u_shlobjW_init();
 	else
-		return w32u_shlobjA_init();
+		w32u_shlobjA_init();
 }

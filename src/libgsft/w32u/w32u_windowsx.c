@@ -28,10 +28,10 @@
 int (WINAPI *pListBox_GetTextU)(HWND hwndCtl, int index, LPSTR lpszBuffer) = NULL;
 
 
-int WINAPI w32u_windowsx_init(void)
+void WINAPI w32u_windowsx_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_windowsxW_init();
+		w32u_windowsxW_init();
 	else
-		return w32u_windowsxA_init();
+		w32u_windowsxA_init();
 }

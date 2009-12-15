@@ -48,7 +48,7 @@ MAKE_EXTFUNCPTR(stat);
 /** Unicode functions that are accessed directly. **/
 MAKE_EXTFUNCPTR(_wcsicmp);
 
-int WINAPI w32u_libc_init(void);
+void WINAPI w32u_libc_init(void);
 
 #ifdef __cplusplus
 }

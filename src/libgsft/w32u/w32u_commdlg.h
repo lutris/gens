@@ -32,7 +32,7 @@ extern "C" {
 MAKE_EXTFUNCPTR2(GetOpenFileNameA,		GetOpenFileNameU);
 MAKE_EXTFUNCPTR2(GetSaveFileNameA,		GetSaveFileNameU);
 
-int WINAPI w32u_commdlg_init(void);
+void WINAPI w32u_commdlg_init(void);
 
 #ifdef __cplusplus
 }

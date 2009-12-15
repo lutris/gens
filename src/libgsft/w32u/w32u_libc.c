@@ -32,10 +32,10 @@ MAKE_FUNCPTR(stat);
 MAKE_FUNCPTR(_wcsicmp);
 
 
-int WINAPI w32u_libc_init(void)
+void WINAPI w32u_libc_init(void)
 {
 	if (w32u_is_unicode)
-		return w32u_libcW_init();
+		w32u_libcW_init();
 	else
-		return w32u_libcA_init();
+		w32u_libcA_init();
 }
