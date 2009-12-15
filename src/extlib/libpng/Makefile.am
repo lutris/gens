@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 noinst_LTLIBRARIES = libpng.la
 
-libpng_la_CFLAGS	= $(AM_CFLAGS) -O3 -funroll-loops
+libpng_la_CFLAGS	= $(AM_CFLAGS) -O3 -funroll-loops -DPNG_PEDANTIC_WARNINGS
 libpng_la_LDFLAGS	= $(AM_LDFLAGS)
 libpng_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
