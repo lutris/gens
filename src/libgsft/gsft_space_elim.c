@@ -20,6 +20,7 @@
  ***************************************************************************/
 
 #include "gsft_space_elim.h"
+#include "gsft_pure.h"
 
 // C includes.
 #include <ctype.h>
@@ -31,7 +32,7 @@
  * @param chr Character.
  * @return 0 if the character is a space; non-zero if the character is graphical.
  */
-static inline int isGraphChar(char chr)
+static inline PURE int isGraphChar(char chr)
 {
 	return (isgraph(chr) || (chr & 0x80));
 }
