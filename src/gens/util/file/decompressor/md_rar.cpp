@@ -291,6 +291,7 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 	if (!pRAR)
 	{
 		// Error opening `rar`.
+		printf("ERR\n");
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
@@ -298,11 +299,21 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 	size_t extracted_size = 0;
 	size_t rv;
 	unsigned char bufRAR[4096];
+	unsigned char *buf8 = (unsigned char*)buf;
+	
 	while ((rv = fread(bufRAR, 1, sizeof(bufRAR), pRAR)))
 	{
 		if (extracted_size + rv > size)
+		{
+			// Do a partial copy.
+			rv = (rv - (size - extracted_size));
+			memcpy(&buf8[extracted_size], &bufRAR, rv);
+			extracted_size += rv;
 			break;
-		memcpy(&((unsigned char*)buf)[extracted_size], &bufRAR, rv);
+		}
+		
+		// Do a full copy.
+		memcpy(&buf8[extracted_size], &bufRAR, rv);
 		extracted_size += rv;
 	}
 	pclose(pRAR);
