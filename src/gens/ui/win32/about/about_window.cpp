@@ -471,14 +471,30 @@ static void WINAPI about_window_buildDebugInfoString(void)
 	// Build the debug information string.
 	stringstream ss;
 	
-	// Print the current code page.
-	ss << "System code page: ";
-	CPINFOEX cpix;
-	BOOL bRet = pGetCPInfoExU(CP_ACP, 0, &cpix);
-	if (!bRet)
-		ss << "Unknown [GetCPInfoEx() failed]\n";
-	else
+	// Print the ANSI and OEM code pages.
+	typedef struct
 	{
+		unsigned int cp;
+		const char *cp_str;
+	} cp_info_t;
+	
+	cp_info_t cp_info[2] =
+	{
+		{CP_ACP,   "System ANSI code page"},
+		{CP_OEMCP, "System OEM code page"}
+	};
+	
+	for (int i = 0; i < 2; i++)
+	{
+		ss << cp_info[i].cp_str << ": ";
+		CPINFOEX cpix;
+		BOOL bRet = pGetCPInfoExU(cp_info[i].cp, 0, &cpix);
+		if (!bRet)
+		{
+			ss << "Unknown [GetCPInfoEx() failed]\n";
+			continue;
+		}
+		
 		ss << cpix.CodePage << " (";
 		
 		// Windows XP has the code page number in cpix.CodePageName,
