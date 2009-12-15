@@ -35,7 +35,8 @@ noinst_HEADERS = \
 		gsft_file.h \
 		gsft_szprintf.h \
 		gsft_strlcpy.h \
-		gsft_space_elim.h
+		gsft_space_elim.h \
+		gsft_pure.h
 
 if !HAVE_STRDUP
 libgsft_la_SOURCES	+= gsft_strdup.c
