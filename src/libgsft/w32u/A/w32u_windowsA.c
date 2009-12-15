@@ -311,8 +311,18 @@ static WINUSERAPI HANDLE WINAPI LoadImageUA(HINSTANCE hInst, LPCSTR lpszName, UI
 
 static WINUSERAPI int WINAPI MessageBoxUA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
-	// TODO: ANSI conversion.
-	return MessageBoxA(hWnd, lpText, lpCaption, uType);
+	// Convert lpText and lpCaption from UTF-8 to ANSI.
+	char *lpaText = NULL, *lpaCaption = NULL;
+	
+	if (lpText)
+		lpaText = w32u_UTF8toANSI(lpText);
+	if (lpCaption)
+		lpaCaption = w32u_UTF8toANSI(lpCaption);
+	
+	int ret = MessageBoxA(hWnd, lpaText, lpaCaption, uType);
+	free(lpaText);
+	free(lpaCaption);
+	return ret;
 }
 
 
