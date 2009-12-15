@@ -291,7 +291,6 @@ int decompressor_rar_get_file(FILE *zF, const char *filename,
 	if (!pRAR)
 	{
 		// Error opening `rar`.
-		printf("ERR\n");
 		return -MDP_ERR_Z_EXE_NOT_FOUND;
 	}
 	
