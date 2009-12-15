@@ -66,12 +66,12 @@ static int statUW(const char *path, struct stat *buf)
 	if (!path)
 	{
 		// String not specified. Don't bother converting anything.
-		return _wstat((const wchar_t*)path, buf);
+		return _wstat((const wchar_t*)path, (struct _stat*)buf);
 	}
 	
 	// Convert path from UTF-8 to UTF-16.
 	wchar_t *wpath = w32u_UTF8toUTF16(path);
-	int ret = _wstat(wpath, buf);
+	int ret = _wstat(wpath, (struct _stat*)buf);
 	free(wpath);
 	return ret;
 }
