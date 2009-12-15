@@ -520,6 +520,8 @@ static void WINAPI about_window_buildDebugInfoString(void)
 		ss << ")\n";
 	}
 	
+	ss << "\n";
+	
 	// Is Gens/GS using Unicode?
 	if (w32u_is_unicode)
 		ss << "Using Unicode strings for Win32 API.\n";
