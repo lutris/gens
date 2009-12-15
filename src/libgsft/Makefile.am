@@ -60,8 +60,8 @@ if GENS_PNG
 
 noinst_LTLIBRARIES += libgsft_png.la
 
-libgsft_png_la_CFLAGS		= $(libgsft_la_CFLAGS)
-libgsft_png_la_CXXFLAGS		= $(libgsft_la_CXXFLAGS)
+libgsft_png_la_CFLAGS		= $(libgsft_la_CFLAGS) @PNG_CFLAGS@
+libgsft_png_la_CXXFLAGS		= $(libgsft_la_CXXFLAGS) @PNG_CFLAGS@
 libgsft_png_la_LDFLAGS		= $(libgsft_la_LDFLAGS)
 libgsft_png_la_LIBADD		= @PNG_LIBS@
 libgsft_png_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)

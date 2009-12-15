@@ -400,6 +400,11 @@ gens_CFLAGS	= $(AM_CFLAGS)
 gens_CXXFLAGS	= $(AM_CXXFLAGS)
 gens_LDFLAGS	= $(AM_LDFLAGS)
 
+if GENS_PNG
+gens_CFLAGS	+= @PNG_CFLAGS@
+gens_CXXFLAGS	+= @PNG_CFLAGS@
+endif
+
 # OS-specific includes
 
 if GENS_OS_UNIX
