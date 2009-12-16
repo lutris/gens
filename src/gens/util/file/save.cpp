@@ -2125,8 +2125,7 @@ int Savestate::LoadSRAM(void)
 	fread(SRAM, sizeof(SRAM), 1, SRAM_File);
 	fclose(SRAM_File);
 	
-	string msg = "SRAM loaded from " + filename;
-	vdraw_text_write(msg.c_str(), 2000);
+	vdraw_text_printf(2000, "SRAM loaded from %s", filename.c_str());
 	return 0;
 }
 
@@ -2167,8 +2166,7 @@ int Savestate::SaveSRAM(void)
 	fwrite(SRAM, size_to_save, 1, SRAM_File);
 	fclose(SRAM_File);
 	
-	string dispText = "SRAM saved in " + filename;
-	vdraw_text_write(dispText.c_str(), 2000);
+	vdraw_text_printf(2000, "SRAM saved in %s", filename.c_str());
 	return 0;
 }
 
@@ -2247,8 +2245,7 @@ int Savestate::LoadBRAM(void)
 	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
 	fclose(BRAM_File);
 	
-	string dispText = "BRAM loaded from " + filename;
-	vdraw_text_write(dispText.c_str(), 2000);
+	vdraw_text_printf(2000, "BRAM loaded from %s", filename.c_str());
 	return 0;
 }
 
@@ -2274,7 +2271,6 @@ int Savestate::SaveBRAM(void)
 	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
 	fclose(BRAM_File);
 	
-	string dispText = "BRAM saved in " + filename;
-	vdraw_text_write(dispText.c_str(), 2000);
+	vdraw_text_printf(2000, "BRAM saved in %s", filename.c_str());
 	return 0;
 }
