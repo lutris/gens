@@ -103,6 +103,7 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_file.h"
 #include "libgsft/gsft_szprintf.h"
+#include "libgsft/gsft_unused.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
@@ -406,21 +407,19 @@ int Config::save(const string& filename)
 
 /**
  * saveAs(): Save the current configuration using a user-selected filename.
- * @return 1 if a file was selected.
+ * @return 0 on success; non-zero on error (or if no file was selected).
  */
 int Config::saveAs(void)
 {
-	string filename;
-	
-	filename = GensUI::saveFile("Save Config As", "", ConfigFile);
+	string filename = GensUI::saveFile("Save Config As", "", ConfigFile);
 	if (filename.length() == 0)
-		return 0;
+		return -1;
 	
 	// Filename selected for the config file.
 	save(filename);
-	string dispText = "Config saved in " + filename;
-	vdraw_text_write(dispText.c_str(), 2000);
-	return 1;
+	
+	vdraw_text_printf(2000, "Config saved in %s", filename.c_str());
+	return 0;
 }
 
 
@@ -431,6 +430,8 @@ int Config::saveAs(void)
  */
 int Config::load(const string& filename, void* gameActive)
 {
+	GSFT_UNUSED_PARAMETER(gameActive);
+	
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
@@ -788,21 +789,21 @@ int Config::load(const string& filename, void* gameActive)
 
 
 /**
- * Load_As_Config(): Load a user-selected configuration file.
+ * loadAs(): Load a user-selected configuration file.
  * @param Game_Active ???
- * @return 1 if a file was selected.
+ * @return 0 on success; non-zero on error (or if no file was selected).
  */
 int Config::loadAs(void* gameActive)
 {
-	string filename;
+	GSFT_UNUSED_PARAMETER(gameActive);
 	
-	filename = GensUI::openFile("Load Config", "", ConfigFile);
+	string filename = GensUI::openFile("Load Config", "", ConfigFile);
 	if (filename.length() == 0)
-		return 0;
+		return -1;
 	
 	// Filename selected for the config file.
 	load(filename, gameActive);
-	string dispText = "Config loaded from " + filename;
-	vdraw_text_write(dispText.c_str(), 2000);
-	return 1;
+	
+	vdraw_text_printf(2000, "Config loaded from %s", filename.c_str());
+	return 0;
 }
