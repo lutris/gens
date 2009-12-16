@@ -2104,12 +2104,10 @@ inline string Savestate::GetSRAMFilename(void)
 
 /**
  * LoadSRAM(): Load the SRAM file.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Savestate::LoadSRAM(void)
 {
-	FILE* SRAM_File = 0;
-	
 	memset(SRAM, 0x00, sizeof(SRAM));
 	
 #ifdef GENS_OS_WIN32
@@ -2118,26 +2116,27 @@ int Savestate::LoadSRAM(void)
 	
 	string filename = GetSRAMFilename();
 	if (filename.empty())
-		return 0;
-	if ((SRAM_File = fopen(filename.c_str(), "rb")) == 0)
-		return 0;
+		return -1;
+	
+	FILE *SRAM_File = fopen(filename.c_str(), "rb");
+	if (!SRAM_File)
+		return -2;
 	
 	fread(SRAM, sizeof(SRAM), 1, SRAM_File);
 	fclose(SRAM_File);
 	
 	string msg = "SRAM loaded from " + filename;
 	vdraw_text_write(msg.c_str(), 2000);
-	return 1;
+	return 0;
 }
 
 
 /**
  * SaveSRAM(): Save the SRAM file.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Savestate::SaveSRAM(void)
 {
-	FILE* SRAM_File = 0;
 	int size_to_save, i;
 	
 	i = (64 * 1024) - 1;
@@ -2145,7 +2144,7 @@ int Savestate::SaveSRAM(void)
 		i--;
 	
 	if (i < 0)
-		return 0;
+		return -1;
 	
 	i++;
 	
@@ -2159,16 +2158,18 @@ int Savestate::SaveSRAM(void)
 	
 	string filename = GetSRAMFilename();
 	if (filename.empty())
-		return 0;
-	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
-		return 0;
+		return -2;
+	
+	FILE *SRAM_File = fopen(filename.c_str(), "wb");
+	if (!SRAM_File)
+		return -3;
 	
 	fwrite(SRAM, size_to_save, 1, SRAM_File);
 	fclose(SRAM_File);
 	
 	string dispText = "SRAM saved in " + filename;
 	vdraw_text_write(dispText.c_str(), 2000);
-	return 1;
+	return 0;
 }
 
 
@@ -2224,12 +2225,10 @@ inline string Savestate::GetBRAMFilename(void)
 
 /**
  * LoadBRAM(): Load the BRAM file.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Savestate::LoadBRAM(void)
 {
-	FILE* BRAM_File = 0;
-	
 	Savestate::FormatSegaCD_BackupRAM();
 	
 #ifdef GENS_OS_WIN32
@@ -2238,9 +2237,11 @@ int Savestate::LoadBRAM(void)
 	
 	string filename = GetBRAMFilename();
 	if (filename.empty())
-		return 0;
-	if ((BRAM_File = fopen(filename.c_str(), "rb")) == 0)
-		return 0;
+		return -1;
+	
+	FILE *BRAM_File = fopen(filename.c_str(), "rb");
+	if (!BRAM_File)
+		return -2;
 	
 	fread(Ram_Backup, sizeof(Ram_Backup), 1, BRAM_File);
 	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
@@ -2248,7 +2249,7 @@ int Savestate::LoadBRAM(void)
 	
 	string dispText = "BRAM loaded from " + filename;
 	vdraw_text_write(dispText.c_str(), 2000);
-	return 1;
+	return 0;
 }
 
 /**
@@ -2257,17 +2258,17 @@ int Savestate::LoadBRAM(void)
  */
 int Savestate::SaveBRAM(void)
 {
-	FILE* BRAM_File = 0;
-	
 #ifdef GENS_OS_WIN32
 	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
 	string filename = GetBRAMFilename();
 	if (filename.empty())
-		return 0;
-	if ((BRAM_File = fopen(filename.c_str(), "wb")) == 0)
-		return 0;
+		return -1;
+	
+	FILE *BRAM_File = fopen(filename.c_str(), "wb");
+	if (!BRAM_File)
+		return -2;
 	
 	fwrite(Ram_Backup, 8 * 1024, 1, BRAM_File);
 	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
@@ -2275,5 +2276,5 @@ int Savestate::SaveBRAM(void)
 	
 	string dispText = "BRAM saved in " + filename;
 	vdraw_text_write(dispText.c_str(), 2000);
-	return 1;
+	return 0;
 }
