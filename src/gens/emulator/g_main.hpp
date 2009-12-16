@@ -76,7 +76,7 @@ typedef struct _Gens_PathNames_t
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific pathnames.
-	TCHAR Gens_EXE_Path[GENS_PATH_MAX];
+	char Gens_EXE_Path[GENS_PATH_MAX];
 #endif
 } Gens_PathNames_t;
 
