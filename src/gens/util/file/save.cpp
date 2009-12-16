@@ -24,9 +24,12 @@
 #define GENS_DEBUG_SAVESTATE
 #include <assert.h>
 
+// C includes.
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
+
 #include "save.hpp"
 
 #include "emulator/g_main.hpp"
@@ -96,7 +99,6 @@ int Current_State = 0;
 char State_Dir[GENS_PATH_MAX] = "";
 char SRAM_Dir[GENS_PATH_MAX] = "";
 char BRAM_Dir[GENS_PATH_MAX] = "";
-unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
 
 // C++ includes
 using std::string;
@@ -159,13 +161,9 @@ string Savestate::GetStateFilename(void)
  */
 int Savestate::LoadState(const string& filename)
 {
-	FILE *f;
-	unsigned char *buf;
-	int len;
-	
 	ice = 0;
 	
-	len = GENESIS_STATE_LENGTH;
+	int len = GENESIS_STATE_LENGTH;
 	if (Genesis_Started);
 	else if (SegaCD_Started)
 		len += SEGACD_LENGTH_EX;
@@ -174,55 +172,61 @@ int Savestate::LoadState(const string& filename)
 	else
 		return 0;
 	
-	buf = State_Buffer;
-	
 #ifdef GENS_OS_WIN32
 	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	if (!(f = fopen(filename.c_str(), "rb")))
+	FILE *f = fopen(filename.c_str(), "rb");
+	if (!f)
 		return 0;
 	
-	memset(buf, 0, len);
-	if (fread(buf, 1, len, f))
+	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
+	memset(State_Buffer, 0, len);
+	
+	if (fread(State_Buffer, 1, len, f) == 0)
 	{
-		// Verify that the savestate is in GSX format.
-		static const uint8_t gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
-		if (memcmp(&buf[0], &gsxHeader[0], sizeof(gsxHeader)))
-		{
-			// Header does not match GSX.
-			vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
-			fclose(f);
-			return 0;
-		}
-		
-		//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
-		/*
-		main68k_reset();
-		YM2612ResetChip(0);
-		Reset_VDP();
-		*/
-		
-		// Save functions updated from Gens Rerecording
-		buf += GsxImportGenesis(buf);
-		if (SegaCD_Started)
-		{
-			GsxImportSegaCD(buf);
-			buf += SEGACD_LENGTH_EX;
-		}
-		if (_32X_Started)
-		{
-			GsxImport32X(buf);
-			buf += G32X_LENGTH_EX;
-		}
-		
-		// Make sure CRAM and VRAM are updated.
-		Flag_Clr_Scr = 1;
-		CRam_Flag = 1;
-		VRam_Flag = 1;
-		
-		vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
+		// No data read from the savestate. Don't do anything.
+		fclose(f);
+		return 0;
 	}
+	
+	// Verify that the savestate is in GSX format.
+	static const uint8_t gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
+	if (memcmp(&State_Buffer[0], &gsxHeader[0], sizeof(gsxHeader)))
+	{
+		// Header does not match GSX.
+		vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
+		fclose(f);
+		return 0;
+	}
+	
+	//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
+	/*
+	main68k_reset();
+	YM2612ResetChip(0);
+	Reset_VDP();
+	*/
+	
+	// Save functions updated from Gens Rerecording
+	uint8_t *buf = &State_Buffer[0];
+	buf += GsxImportGenesis(buf);
+	if (SegaCD_Started)
+	{
+		GsxImportSegaCD(buf);
+		buf += SEGACD_LENGTH_EX;
+	}
+	if (_32X_Started)
+	{
+		GsxImport32X(buf);
+		buf += G32X_LENGTH_EX;
+	}
+	
+	// Make sure CRAM and VRAM are updated.
+	Flag_Clr_Scr = 1;
+	CRam_Flag = 1;
+	VRam_Flag = 1;
+	
+	vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
 	
 	fclose(f);
 	
@@ -237,8 +241,6 @@ int Savestate::LoadState(const string& filename)
  */
 int Savestate::SaveState(const string& filename)
 {
-	FILE *f;
-	unsigned char *buf;
 	int len;
 	
 	ice = 0;
@@ -247,8 +249,8 @@ int Savestate::SaveState(const string& filename)
 	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	buf = State_Buffer;
-	if ((f = fopen(filename.c_str(), "wb")) == NULL)
+	FILE *f = fopen(filename.c_str(), "wb");
+	if (!f)
 		return 0;
 	
 	len = GENESIS_STATE_LENGTH;
@@ -260,10 +262,10 @@ int Savestate::SaveState(const string& filename)
 	else
 		return 0;
 	
-	if (buf == NULL)
-		return 0;
-	memset(buf, 0, len);
+	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
+	memset(State_Buffer, 0, len);
 	
+	uint8_t *buf = &State_Buffer[0];
 	GsxExportGenesis(buf);
 	buf += GENESIS_STATE_LENGTH;
 	if (SegaCD_Started)
@@ -293,6 +295,7 @@ int Savestate::SaveState(const string& filename)
 // Version field is initialized in GsxImportGenesis(),
 // but is also used in GsxImportSegaCD() and GsxImport32X().
 // TODO: Move this to the Savestate class.
+// TODO: Make this non-global.
 static unsigned char m_Version;
 
 
