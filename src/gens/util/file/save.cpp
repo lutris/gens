@@ -180,14 +180,20 @@ int Savestate::LoadState(const string& filename)
 	if (!f)
 		return -2;
 	
-	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
+	uint8_t *State_Buffer = (uint8_t*)malloc(MAX_STATE_FILE_LENGTH);
+	if (!State_Buffer)
+	{
+		fclose(f);
+		return -3;
+	}
 	memset(State_Buffer, 0, len);
 	
 	if (fread(State_Buffer, 1, len, f) == 0)
 	{
 		// No data read from the savestate. Don't do anything.
 		fclose(f);
-		return -3;
+		free(State_Buffer);
+		return -4;
 	}
 	
 	// Verify that the savestate is in GSX format.
@@ -197,7 +203,8 @@ int Savestate::LoadState(const string& filename)
 		// Header does not match GSX.
 		vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
 		fclose(f);
-		return -4;
+		free(State_Buffer);
+		return -5;
 	}
 	
 	//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
@@ -208,7 +215,7 @@ int Savestate::LoadState(const string& filename)
 	*/
 	
 	// Save functions updated from Gens Rerecording
-	uint8_t *buf = &State_Buffer[0];
+	uint8_t *buf = State_Buffer;
 	buf += GsxImportGenesis(buf);
 	if (SegaCD_Started)
 	{
@@ -229,7 +236,7 @@ int Savestate::LoadState(const string& filename)
 	vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
 	
 	fclose(f);
-	
+	free(State_Buffer);
 	return 0;
 }
 
@@ -262,10 +269,15 @@ int Savestate::SaveState(const string& filename)
 	else
 		return -2;
 	
-	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
+	uint8_t *State_Buffer = (uint8_t*)malloc(MAX_STATE_FILE_LENGTH);
+	if (!State_Buffer)
+	{
+		fclose(f);
+		return -3;
+	}
 	memset(State_Buffer, 0, len);
 	
-	uint8_t *buf = &State_Buffer[0];
+	uint8_t *buf = State_Buffer;
 	GsxExportGenesis(buf);
 	buf += GENESIS_STATE_LENGTH;
 	if (SegaCD_Started)
@@ -281,6 +293,7 @@ int Savestate::SaveState(const string& filename)
 	
 	fwrite(State_Buffer, 1, len, f);
 	fclose(f);
+	free(State_Buffer);
 	
 	vdraw_text_printf(2000, "STATE %d SAVED", Current_State);
 	
