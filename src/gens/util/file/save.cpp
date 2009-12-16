@@ -157,7 +157,7 @@ string Savestate::GetStateFilename(void)
 /**
  * LoadState(): Load a savestate.
  * @param filename Filename of the savestate.
- * @return 1 if successful; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Savestate::LoadState(const string& filename)
 {
@@ -170,7 +170,7 @@ int Savestate::LoadState(const string& filename)
 	else if (_32X_Started)
 		len += G32X_LENGTH_EX;
 	else
-		return 0;
+		return -1;
 	
 #ifdef GENS_OS_WIN32
 	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
@@ -178,7 +178,7 @@ int Savestate::LoadState(const string& filename)
 	
 	FILE *f = fopen(filename.c_str(), "rb");
 	if (!f)
-		return 0;
+		return -2;
 	
 	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
 	memset(State_Buffer, 0, len);
@@ -187,7 +187,7 @@ int Savestate::LoadState(const string& filename)
 	{
 		// No data read from the savestate. Don't do anything.
 		fclose(f);
-		return 0;
+		return -3;
 	}
 	
 	// Verify that the savestate is in GSX format.
@@ -197,7 +197,7 @@ int Savestate::LoadState(const string& filename)
 		// Header does not match GSX.
 		vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
 		fclose(f);
-		return 0;
+		return -4;
 	}
 	
 	//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
@@ -230,14 +230,14 @@ int Savestate::LoadState(const string& filename)
 	
 	fclose(f);
 	
-	return 1;
+	return 0;
 }
 
 
 /**
  * SaveState(): Save a savestate.
  * @param filename Filename of the savestate.
- * @return 1 if successful; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Savestate::SaveState(const string& filename)
 {
@@ -251,7 +251,7 @@ int Savestate::SaveState(const string& filename)
 	
 	FILE *f = fopen(filename.c_str(), "wb");
 	if (!f)
-		return 0;
+		return -1;
 	
 	len = GENESIS_STATE_LENGTH;
 	if (Genesis_Started);
@@ -260,7 +260,7 @@ int Savestate::SaveState(const string& filename)
 	else if (_32X_Started)
 		len += G32X_LENGTH_EX;
 	else
-		return 0;
+		return -2;
 	
 	uint8_t State_Buffer[MAX_STATE_FILE_LENGTH];
 	memset(State_Buffer, 0, len);
@@ -284,7 +284,7 @@ int Savestate::SaveState(const string& filename)
 	
 	vdraw_text_printf(2000, "STATE %d SAVED", Current_State);
 	
-	return 1;
+	return 0;
 }
 
 
