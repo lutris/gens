@@ -131,6 +131,7 @@ void PSG_Write(int data)
 	
 	if (data & 0x80)
 	{
+		// LATCH/DATA byte.
 		PSG.Current_Register = (data & 0x70) >> 4;
 		PSG.Current_Channel = PSG.Current_Register >> 1;
 		
@@ -138,78 +139,53 @@ void PSG_Write(int data)
 		
 		PSG.Register[PSG.Current_Register] =
 			(PSG.Register[PSG.Current_Register] & 0x3F0) | data;
+	}
+	
+	if (PSG.Current_Register & 1)
+	{
+		// Volume
+		PSG_Special_Update();
+		PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
 		
-		if (PSG.Current_Register & 1)
-		{
-			// Volume
-			PSG_Special_Update();
-			PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
-			
-			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-				"channel %d    volume = %.8X",
-				PSG.Current_Channel,
-				PSG.Volume[PSG.Current_Channel]);
-		}
-		else
-		{
-			// Frequency
-			PSG_Special_Update();
-			
-			if (PSG.Current_Channel != 3)
-			{
-				// Normal channel
-				PSG.CntStep[PSG.Current_Channel] =
-					PSG_Step_Table[PSG.Register[PSG.Current_Register]];
-				
-				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
-					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
-				
-				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-					"channel %d    step = %.8X",
-					PSG.Current_Channel,
-					PSG.CntStep[PSG.Current_Channel]);
-			}
-			else
-			{
-				// Noise channel
-				PSG.LFSR = LFSR_INIT;
-				PSG_Noise_Step_Table[3] = PSG.CntStep[2] >> 1;
-				PSG.CntStep[3] = PSG_Noise_Step_Table[data & 3];
-				
-				// Check if we should use white noise or periodic noise.
-				if (data & 4)
-					PSG.LFSR_Mask = LFSR_MASK_WHITE;
-				else
-					PSG.LFSR_Mask = LFSR_MASK_PERIODIC;
-				
-				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-					"channel N    type = %.2X", data);
-			}
-		}
+		LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+			"channel %d    volume = %.8X",
+			PSG.Current_Channel,
+			PSG.Volume[PSG.Current_Channel]);
 	}
 	else
 	{
-		if (!(PSG.Current_Register & 1))
+		// Frequency
+		PSG_Special_Update();
+		
+		if (PSG.Current_Channel != 3)
 		{
-			// Frequency
-			if (PSG.Current_Channel != 3)
-			{
-				PSG_Special_Update();
-				
-				PSG.Register[PSG.Current_Register] =
-					(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
-				
-				PSG.CntStep[PSG.Current_Channel] =
-					PSG_Step_Table[PSG.Register[PSG.Current_Register]];
-				
-				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
-					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
-				
-				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-					"channel %d    step = %.8X",
-					PSG.Current_Channel,
-					PSG.CntStep[PSG.Current_Channel]);
-			}
+			// Normal channel
+			PSG.CntStep[PSG.Current_Channel] =
+				PSG_Step_Table[PSG.Register[PSG.Current_Register]];
+			
+			if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
+				PSG.CntStep[3] = PSG.CntStep[2] >> 1;
+			
+			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+				"channel %d    step = %.8X",
+				PSG.Current_Channel,
+				PSG.CntStep[PSG.Current_Channel]);
+		}
+		else
+		{
+			// Noise channel
+			PSG.LFSR = LFSR_INIT;
+			PSG_Noise_Step_Table[3] = PSG.CntStep[2] >> 1;
+			PSG.CntStep[3] = PSG_Noise_Step_Table[data & 3];
+			
+			// Check if we should use white noise or periodic noise.
+			if (data & 4)
+				PSG.LFSR_Mask = LFSR_MASK_WHITE;
+			else
+				PSG.LFSR_Mask = LFSR_MASK_PERIODIC;
+			
+			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+				"channel N    type = %.2X", data);
 		}
 	}
 }
