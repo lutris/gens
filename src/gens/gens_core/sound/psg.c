@@ -139,11 +139,20 @@ void PSG_Write(int data)
 		PSG.Register[PSG.Current_Register] =
 			(PSG.Register[PSG.Current_Register] & 0x3F0) | (data & 0x0F);
 	}
-	else if (!(PSG.Current_Register & 1) && PSG.Current_Channel != 3)
+	else
 	{
-		// DATA byte: Tone. (Upper 6 bits.)
-		PSG.Register[PSG.Current_Register] =
-			(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
+		// DATA byte.
+		if (!(PSG.Current_Register & 1) && PSG.Current_Channel != 3)
+		{
+			// TONE channel: Upper 6 bits.
+			PSG.Register[PSG.Current_Register] =
+				(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
+		}
+		else
+		{
+			// NOISE channel or Volume Register: Lower 4 bits.
+			PSG.Register[PSG.Current_Register] = (data & 0x0F);
+		}
 	}
 	
 	if (PSG.Current_Register & 1)
