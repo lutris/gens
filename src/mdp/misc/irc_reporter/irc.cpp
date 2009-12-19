@@ -78,7 +78,15 @@ int MDP_FNCALL irc_init(const mdp_host_t *host_srv)
 	irc_rom_string[0] = 0x00;
 	
 	// Initialize the D-BUS service.
-	irc_dbus_init();
+	if (irc_dbus_init() != 0)
+	{
+		// Error initializing D-BUS.
+		irc_host_srv->event_unregister(&mdp, MDP_EVENT_OPEN_ROM, irc_event_handler);
+		irc_host_srv->event_unregister(&mdp, MDP_EVENT_CLOSE_ROM, irc_event_handler);
+		
+		// TODO: Return a better error code.
+		return -MDP_ERR_UNKNOWN;
+	}
 	
 	// Initialized.
 	return MDP_ERR_OK;

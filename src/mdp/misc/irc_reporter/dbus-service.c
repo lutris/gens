@@ -5,28 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void lose(const char *fmt, ...) G_GNUC_NORETURN G_GNUC_PRINTF (1, 2);
-static void lose_gerror(const char *prefix, GError *error) G_GNUC_NORETURN;
-
-static void lose(const char *str, ...)
-{
-	va_list args;
-	
-	va_start (args, str);
-	
-	vfprintf (stderr, str, args);
-	fputc ('\n', stderr);
-	
-	va_end (args);
-	
-	exit (1);
-}
-
-static void lose_gerror(const char *prefix, GError *error) 
-{
-	lose("%s: %s", prefix, error->message);
-}
-
 typedef struct IrcReporter IrcReporter;
 typedef struct IrcReporterClass IrcReporterClass;
 
@@ -104,11 +82,15 @@ int irc_dbus_init(void)
 	GError *error = NULL;
 	guint request_name_result;
 	
-	dbus_g_object_type_install_info(SOME_TYPE_OBJECT, &dbus_glib_irc_reporter_object_info);
-	
+	// TODO: If dbus_g_bus_get() is successful but we return immediately afterwards,
+	// GTK+ fails initialization, resulting in a SIGSEGV.
 	bus = dbus_g_bus_get(DBUS_BUS_SESSION, &error);
 	if (!bus)
-		lose_gerror("Couldn't connect to session bus", error);
+	{
+		fprintf(stderr, "Couldn't connect to session bus: %s\n",
+			(error != NULL ? error->message : "(unknown error)"));
+		return -1;
+	}
 	
 	bus_proxy = dbus_g_proxy_new_for_name(bus, "org.freedesktop.DBus",
 						"/org/freedesktop/DBus",
@@ -121,9 +103,13 @@ int irc_dbus_init(void)
 				G_TYPE_UINT, &request_name_result,
 				G_TYPE_INVALID))
 	{
-		lose_gerror("Failed to acquire org.mdp.IrcService", error);
+		fprintf(stderr, "Failed to acquire org.mdp.IrcService: %s\n",
+			(error != NULL ? error->message : "(unknown error)"));
+		g_object_unref(bus_proxy);
+		return -2;
 	}
 	
+	dbus_g_object_type_install_info(SOME_TYPE_OBJECT, &dbus_glib_irc_reporter_object_info);
 	obj = g_object_new(SOME_TYPE_OBJECT, NULL);
 	
 	dbus_g_connection_register_g_object(bus, "/IrcReporter", G_OBJECT(obj));
