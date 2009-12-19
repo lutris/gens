@@ -317,9 +317,9 @@ void PSG_Update(int **buffer, int length)
 			}
 			
 			// Check if the LFSR should be shifted.
-			if (cur_cnt >= 0x10000)
+			if (cur_cnt & 0x10000)
 			{
-				cur_cnt -= 0x10000;
+				cur_cnt &= 0xFFFF;
 				PSG.LFSR = LFSR16_Shift(PSG.LFSR, PSG.LFSR_Mask);
 			}
 		}
