@@ -40,6 +40,14 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifndef PURE
+#ifdef __GNUC__
+#define PURE __attribute__ ((pure))
+#else
+#define PURE
+#endif /* __GNUC__ */
+#endif /* PURE */
+
 /** Defines **/
 
 #ifndef PI
@@ -50,12 +58,11 @@
 
 #define MAX_OUTPUT 0x4FFF
 
-#define W_NOISE 0x12000
-#define P_NOISE 0x08000
-
-//#define NOISE_DEF 0x0f35
-//#define NOISE_DEF 0x0001
-#define NOISE_DEF 0x4000
+// NOTE: SMS/GG/MD all have 16-bit LFSRs.
+// SG-1000 has a 15-bit LFSR.
+#define LFSR_MASK_WHITE		0x0009
+#define LFSR_MASK_PERIODIC	0x0001
+#define LFSR_INIT		0x8000
 
 
 /**
@@ -69,8 +76,10 @@ typedef struct _psg_chip_t
 	unsigned int Counter[4];
 	unsigned int CntStep[4];
 	int Volume[4];
-	unsigned int Noise_Type;
-	unsigned int Noise;
+	
+	/* White Noise variables. */
+	unsigned int LFSR_Mask;		// Linear Feedback Shift Register mask.
+	unsigned int LFSR;		// Linear Feedback Shift Register contents.
 } psg_chip_t;
 
 
@@ -163,14 +172,15 @@ void PSG_Write(int data)
 			else
 			{
 				// Noise channel
-				PSG.Noise = NOISE_DEF;
+				PSG.LFSR = LFSR_INIT;
 				PSG_Noise_Step_Table[3] = PSG.CntStep[2] >> 1;
 				PSG.CntStep[3] = PSG_Noise_Step_Table[data & 3];
 				
+				// Check if we should use white noise or periodic noise.
 				if (data & 4)
-					PSG.Noise_Type = W_NOISE;
+					PSG.LFSR_Mask = LFSR_MASK_WHITE;
 				else
-					PSG.Noise_Type = P_NOISE;
+					PSG.LFSR_Mask = LFSR_MASK_PERIODIC;
 				
 				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
 					"channel N    type = %.2X", data);
@@ -202,6 +212,38 @@ void PSG_Write(int data)
 			}
 		}
 	}
+}
+
+
+/** parity16() and LFSR16_Shift() from http://www.smspower.org/dev/docs/wiki/Sound/PSG#noisegeneration */
+
+/**
+ * parity16(): Get the parity of a 16-bit value.
+ * @param n Value to check.
+ * @return Parity.
+ */
+static inline unsigned int PURE parity16(unsigned int n)
+{
+	n ^= n >> 8;
+	n ^= n >> 4;
+	n ^= n >> 2;
+	n ^= n >> 1;
+	return (n & 1);
+}
+
+
+/**
+ * LFSR16_Shift(): Shift the Linear Feedback Shift Register. (16-bit LFSR)
+ * @param LFSR Current LFSR contents.
+ * @param LFSR_Mask LFSR mask.
+ * @return Shifted LFSR value.
+ */
+static inline unsigned int PURE LFSR16_Shift(unsigned int LFSR, unsigned int LFSR_Mask)
+{
+	return (LFSR >> 1) |
+		(((LFSR_Mask > 1)
+			? parity16(LFSR & LFSR_Mask)
+			: LFSR_Mask) << 15);
 }
 
 
@@ -278,21 +320,17 @@ void PSG_Update(int **buffer, int length)
 		{
 			cur_cnt += cur_step;
 			
-			if (PSG.Noise & 1)
+			if (PSG.LFSR & 1)
 			{
 				buffer[0][i] += cur_vol;
 				buffer[1][i] += cur_vol;
-				
-				if (cur_cnt & 0x10000)
-				{
-					cur_cnt &= 0xFFFF;
-					PSG.Noise = (PSG.Noise ^ PSG.Noise_Type) >> 1;
-				}
 			}
-			else if (cur_cnt & 0x10000)
+			
+			// Check if the LFSR should be shifted.
+			if (cur_cnt >= 0x10000)
 			{
-				cur_cnt &= 0xFFFF;
-				PSG.Noise >>= 1;
+				cur_cnt -= 0x10000;
+				PSG.LFSR = LFSR16_Shift(PSG.LFSR, PSG.LFSR_Mask);
 			}
 		}
 		
@@ -312,7 +350,7 @@ void PSG_Update(int **buffer, int length)
  */
 void PSG_Init(int clock, int rate)
 {
-	int i, j;
+	int i;
 	double out;
 	
 	// Step calculation
@@ -349,8 +387,8 @@ void PSG_Init(int clock, int rate)
 	// Clear PSG registers.
 	PSG.Current_Register = 0;
 	PSG.Current_Channel = 0;
-	PSG.Noise = 0;
-	PSG.Noise_Type = 0;
+	PSG.LFSR = 0;		// TODO: Should this be LFSR_INIT?
+	PSG.LFSR_Mask = 0;	// TODO: Should this be LFSR_MASK_WHITE or LFSR_MASK_PERIODIC?
 	
 	for (i = 0; i < 4; i++)
 	{
@@ -462,8 +500,8 @@ void PSG_Save_State_GSX_v7(struct _gsx_v7_psg *save)
 	save->volume[2]		= cpu_to_le32(PSG.Volume[2]);
 	save->volume[3]		= cpu_to_le32(PSG.Volume[3]);
 	
-	save->noise_type	= cpu_to_le32(PSG.Noise_Type);
-	save->noise		= cpu_to_le32(PSG.Noise);
+	save->noise_type	= cpu_to_le32(PSG.LFSR_Mask == LFSR_MASK_PERIODIC ? 0x08000 : 0x12000);
+	save->noise		= cpu_to_le32(PSG.LFSR);
 }
 
 
@@ -500,8 +538,10 @@ void PSG_Restore_State_GSX_v7(struct _gsx_v7_psg *save)
 	PSG.Volume[2]		= le32_to_cpu(save->volume[2]);
 	PSG.Volume[3]		= le32_to_cpu(save->volume[3]);
 	
-	PSG.Noise_Type		= le32_to_cpu(save->noise_type);
-	PSG.Noise		= le32_to_cpu(save->noise);
+	PSG.LFSR_Mask		= (le32_to_cpu(save->noise_type) == 0x08000
+					? LFSR_MASK_PERIODIC
+					: LFSR_MASK_WHITE);
+	PSG.LFSR		= le32_to_cpu(save->noise);
 }
 
 
