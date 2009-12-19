@@ -76,7 +76,6 @@ typedef struct _psg_chip_t
 
 /** Variables **/
 
-static unsigned int PSG_SIN_Table[16][512];
 static unsigned int PSG_Step_Table[1024];
 static unsigned int PSG_Volume_Table[16];
 static unsigned int PSG_Noise_Step_Table[4];
@@ -101,7 +100,6 @@ psg_chip_t PSG;
 extern int VDP_Current_Line;
 
 int PSG_Enable;
-int PSG_Improv;
 int PSG_Len = 0;
 
 // Pointers to segment buffers.
@@ -203,79 +201,6 @@ void PSG_Write(int data)
 					PSG.CntStep[PSG.Current_Channel]);
 			}
 		}
-	}
-}
-
-
-/**
- * PSG_Update_SIN(): Update the PSG audio output using sine waves.
- * @param buffer
- * @param length
- */
-void PSG_Update_SIN(int **buffer, int length)
-{
-	int i, j, out;
-	int cur_cnt, cur_step, cur_vol;
-	unsigned int *sin_t;
-	
-	// Channels 0-2 (in reverse order)
-	for (j = 2; j >= 0; j--)
-	{
-		if (PSG.Volume[j])
-		{
-			cur_cnt = PSG.Counter[j];
-			cur_step = PSG.CntStep[j];
-			sin_t = PSG_SIN_Table[PSG.Register[(j << 1) + 1]];
-			
-			for (i = 0; i < length; i++)
-			{
-				out = sin_t[(cur_cnt = (cur_cnt + cur_step) & 0x1FFFF) >> 8];
-				
-				buffer[0][i] += out;
-				buffer[1][i] += out;
-			}
-			
-			PSG.Counter[j] = cur_cnt;
-		}
-		else
-		{
-			PSG.Counter[j] += PSG.CntStep[j] * length;
-		}
-	}
-	
-	// Channel 3 - Noise
-	if ((cur_vol = PSG.Volume[3]))
-	{
-		cur_cnt = PSG.Counter[3];
-		cur_step = PSG.CntStep[3];
-		
-		for (i = 0; i < length; i++)
-		{
-			cur_cnt += cur_step;
-			
-			if (PSG.Noise & 1)
-			{
-				buffer[0][i] += cur_vol;
-				buffer[1][i] += cur_vol;
-				
-				if (cur_cnt & 0x10000)
-				{
-					cur_cnt &= 0xFFFF;
-					PSG.Noise = (PSG.Noise ^ PSG.Noise_Type) >> 1;
-				}
-			}
-			else if (cur_cnt & 0x10000)
-			{
-				cur_cnt &= 0xFFFF;
-				PSG.Noise >>= 1;
-			}
-		}
-		
-		PSG.Counter[3] = cur_cnt;
-	}
-	else
-	{
-		PSG.Counter[3] += PSG.CntStep[3] * length;
 	}
 }
 
@@ -421,18 +346,6 @@ void PSG_Init(int clock, int rate)
 	}
 	PSG_Volume_Table[15] = 0;
 	
-	// SIN table calculation
-	for (i = 0; i < 512; i++)
-	{
-		out = sin((2.0 * PI) * ((double)(i) / 512.0));
-		
-		for (j = 0; j < 16; j++)
-		{
-			PSG_SIN_Table[j][i] =
-				(unsigned int)(out * (double)PSG_Volume_Table[j]);
-		}
-	}
-	
 	// Clear PSG registers.
 	PSG.Current_Register = 0;
 	PSG.Current_Channel = 0;
@@ -495,17 +408,13 @@ int PSG_Get_Reg(int regID)
 
 /**
  * PSG_Special_Update(): Update the PSG buffer.
- * Calls the appropriate function depending on the "PSG Improved" setting.
  */
 void PSG_Special_Update(void)
 {
 	if (!(PSG_Len && PSG_Enable))
 		return;
 	
-	if (PSG_Improv)
-		PSG_Update_SIN(PSG_Buf, PSG_Len);
-	else
-		PSG_Update(PSG_Buf, PSG_Len);
+	PSG_Update(PSG_Buf, PSG_Len);
 	
 	// NOTE: Seg_L and Seg_R are arrays. This is pointer arithmetic.
 	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];

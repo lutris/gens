@@ -373,11 +373,6 @@ static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wPa
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case IDCMD_PSG_IMPROVED:
-			Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
-			Sync_Gens_Window_SoundMenu();
-			break;
-		
 		case IDCMD_FPS:
 			vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			break;

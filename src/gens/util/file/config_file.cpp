@@ -294,7 +294,6 @@ int Config::save(const string& filename)
 	
 	// Improved sound options.
 	cfg.writeInt("Sound", "YM2612 Improvement", YM2612_Improv & 1);
-	cfg.writeInt("Sound", "PSG Improvement", PSG_Improv & 1);
 	
 	// Country codes.
 	cfg.writeInt("CPU", "Country", Country);
@@ -659,7 +658,6 @@ int Config::load(const string& filename, void* gameActive)
 		
 		// Improved sound options
 		YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
-		PSG_Improv = cfg.getInt("Sound", "PSG Improvement", 0);
 	}
 	
 	// Country codes.

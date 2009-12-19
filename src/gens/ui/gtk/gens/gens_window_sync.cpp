@@ -573,7 +573,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Enabled
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_SOUND_ENABLE)), soundEnabled);
 	
-	const uint16_t soundMenuItems[10][2] =
+	const uint16_t soundMenuItems[9][2] =
 	{
 		{IDM_SOUND_STEREO,		audio_get_stereo()},
 		{IDM_SOUND_Z80,			Z80_State & Z80_STATE_ENABLED},
@@ -581,14 +581,13 @@ void Sync_Gens_Window_SoundMenu(void)
 		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
 		{IDM_SOUND_DAC,			DAC_Enable},
 		{IDM_SOUND_PSG,			PSG_Enable},
-		{IDM_SOUND_PSG_SINE,		PSG_Improv},
 		{IDM_SOUND_PCM,			PCM_Enable},
 		{IDM_SOUND_PWM,			PWM_Enable},
 		{IDM_SOUND_CDDA,		CDDA_Enable},
 	};
 	
 	GtkWidget *mnuItem;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		mnuItem = gens_menu_find_item(soundMenuItems[i][0]);
 		

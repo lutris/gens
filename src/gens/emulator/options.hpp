@@ -62,9 +62,6 @@ class Options
 		static bool soundPSG(void);
 		static void setSoundPSG(const bool newSoundPSG);
 		
-		static bool soundPSG_Sine(void);
-		static void setSoundPSG_Sine(const bool newSoundPSG_Sine);
-		
 		static bool soundPCM(void);
 		static void setSoundPCM(const bool newSoundPCM);
 		

@@ -652,30 +652,6 @@ void Options::setSoundPSG(const bool newSoundPSG)
 
 
 /**
- * soundPSG_Sine(): Get the sine wave PSG sound emulation setting.
- * @return Sine wave PSG sound emulation setting.
- */
-bool Options::soundPSG_Sine(void)
-{
-	return PSG_Improv;
-}
-
-/**
- * setSoundPSG_Sine(): Enable or disable sine wave PSG sound emulation.
- * @param newSoundPSG_Sine New sine wave PSG sound emulation setting.
- */
-void Options::setSoundPSG_Sine(const bool newSoundPSG_Sine)
-{
-	PSG_Improv = newSoundPSG_Sine;
-	
-	if (PSG_Improv)
-		vdraw_text_write("Sine wave PSG sound", 1000);
-	else
-		vdraw_text_write("Normal PSG sound", 1000);
-}
-
-
-/**
  * soundPCM(): Get the PCM sound emulation setting.
  * @return PCM sound emulation setting.
  */

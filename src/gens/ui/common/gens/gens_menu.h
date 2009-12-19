@@ -252,7 +252,6 @@ extern const GensMenuItem_t gmiMain[];
 #define IDM_SOUND_YM2612_IMPROVED	(IDM_SOUND_MENU + 5)
 #define IDM_SOUND_DAC			(IDM_SOUND_MENU + 6)
 #define IDM_SOUND_PSG			(IDM_SOUND_MENU + 7)
-#define IDM_SOUND_PSG_SINE		(IDM_SOUND_MENU + 8)
 #define IDM_SOUND_PCM			(IDM_SOUND_MENU + 9)
 #define IDM_SOUND_PWM			(IDM_SOUND_MENU + 10)
 #define IDM_SOUND_CDDA			(IDM_SOUND_MENU + 11)

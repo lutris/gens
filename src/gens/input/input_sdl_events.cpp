@@ -335,15 +335,8 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F11:
-			if (IS_KMOD_SHIFT(mod))
-			{
-				Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
-				Sync_Gens_Window_SoundMenu();
-			}
-			else if (IS_KMOD_NONE(mod))
-			{
+			if (IS_KMOD_NONE(mod))
 				Options::rendererPrev();
-			}
 			break;
 		
 		case GENS_KEY_F12:

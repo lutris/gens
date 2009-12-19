@@ -650,10 +650,6 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 			Options::setSoundPSG(!state);
 			break;
 		
-		case IDM_SOUND_PSG_SINE:
-			Options::setSoundPSG_Sine(!state);
-			break;
-		
 		case IDM_SOUND_PCM:
 			Options::setSoundPCM(!state);
 			break;
