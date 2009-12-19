@@ -417,7 +417,10 @@ void PSG_Restore_State(const uint32_t *buf)
 	for (i = 0; i < 8; i++)
 	{
 		PSG_Write(0x80 | (i << 4) | (buf[i] & 0xF));
-		if (!(i & 1))	// Don't write a DATA byte for volume registers.
+		
+		// Only write DATA bytes for tone registers.
+		// Don't write DATA bytes for volume or noise registers.
+		if (!(i & 1) && i < 6)
 			PSG_Write((buf[i] >> 4) & 0x3F);
 	}
 }
