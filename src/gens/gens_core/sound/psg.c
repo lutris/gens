@@ -135,17 +135,22 @@ void PSG_Write(int data)
 		PSG.Current_Register = (data & 0x70) >> 4;
 		PSG.Current_Channel = PSG.Current_Register >> 1;
 		
-		data &= 0x0F;
-		
+		// Save the data value in the register.
 		PSG.Register[PSG.Current_Register] =
-			(PSG.Register[PSG.Current_Register] & 0x3F0) | data;
+			(PSG.Register[PSG.Current_Register] & 0x3F0) | (data & 0x0F);
+	}
+	else if (!(PSG.Current_Register & 1) && PSG.Current_Channel != 3)
+	{
+		// DATA byte: Tone. (Upper 6 bits.)
+		PSG.Register[PSG.Current_Register] =
+			(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
 	}
 	
 	if (PSG.Current_Register & 1)
 	{
-		// Volume
+		// Volume register.
 		PSG_Special_Update();
-		PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
+		PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data & 0x0F];
 		
 		LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
 			"channel %d    volume = %.8X",
