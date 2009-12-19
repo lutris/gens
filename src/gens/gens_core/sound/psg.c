@@ -408,7 +408,8 @@ void PSG_Restore_State(const uint32_t *buf)
 	for (i = 0; i < 8; i++)
 	{
 		PSG_Write(0x80 | (i << 4) | (buf[i] & 0xF));
-		PSG_Write((buf[i] >> 4) & 0x3F);
+		if (!(i & 1))	// Don't write a DATA byte for volume registers.
+			PSG_Write((buf[i] >> 4) & 0x3F);
 	}
 }
 
