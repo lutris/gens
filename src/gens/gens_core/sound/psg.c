@@ -77,7 +77,7 @@ typedef struct _psg_chip_t
 	unsigned int CntStep[4];
 	int Volume[4];
 	
-	/* White Noise variables. */
+	/* Noise channel variables. */
 	unsigned int LFSR_Mask;		// Linear Feedback Shift Register mask.
 	unsigned int LFSR;		// Linear Feedback Shift Register contents.
 } psg_chip_t;
