@@ -221,7 +221,6 @@ static inline unsigned int PURE parity16(unsigned int n)
 	return (n & 1);
 }
 
-
 /**
  * LFSR16_Shift(): Shift the Linear Feedback Shift Register. (16-bit LFSR)
  * @param LFSR Current LFSR contents.
@@ -233,7 +232,7 @@ static inline unsigned int PURE LFSR16_Shift(unsigned int LFSR, unsigned int LFS
 	return (LFSR >> 1) |
 		(((LFSR_Mask > 1)
 			? parity16(LFSR & LFSR_Mask)
-			: LFSR_Mask) << 15);
+			: (LFSR & LFSR_Mask)) << 15);
 }
 
 
