@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 	{
 		// Don't run Gens/GS as root!
 		static const char gensRootErr[] =
-				"Error: Gens/GS should not be run as root.\n"
+				"Error: " GENS_APPNAME " should not be run as root.\n"
 				"Please log in as a regular user.";
 		
 		fprintf(stderr, "%s\n", gensRootErr);
