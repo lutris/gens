@@ -173,7 +173,7 @@ void GensUI::init(int *argc, char **argv[])
 		HMODULE pShell32 = LoadLibrary("shell32.dll");
 		if (pShell32)
 		{
-			typedef BOOL (*IsUserAnAdmin_fn)(void);
+			typedef BOOL (WINAPI *IsUserAnAdmin_fn)(void);
 			IsUserAnAdmin_fn pIsUserAnAdmin = (IsUserAnAdmin_fn)GetProcAddress(pShell32, "IsUserAnAdmin");
 			if (pIsUserAnAdmin)
 			{
