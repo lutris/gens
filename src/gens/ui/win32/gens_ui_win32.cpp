@@ -30,6 +30,7 @@
 #include "gens/gens_window.h"
 #include "ui/win32/gens/gens_menu.hpp"
 
+#include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
@@ -164,6 +165,32 @@ void GensUI::init(int *argc, char **argv[])
 	
 	// CommCtrlEx is initially disabled.
 	win32_CommCtrlEx = 0;
+	
+	// Make sure user is not an administrator.
+	// This is only done on NT, since 9x doesn't support permissions.
+	if (winVersion.dwPlatformId == VER_PLATFORM_WIN32_NT)
+	{
+		HMODULE pShell32 = LoadLibrary("shell32.dll");
+		if (pShell32)
+		{
+			typedef BOOL (*IsUserAnAdmin_fn)(void);
+			IsUserAnAdmin_fn pIsUserAnAdmin = (IsUserAnAdmin_fn)GetProcAddress(pShell32, "IsUserAnAdmin");
+			if (pIsUserAnAdmin)
+			{
+				if (pIsUserAnAdmin())
+				{
+					// User is an admin.
+					MessageBoxA(NULL, "Warning: " GENS_APPNAME " should not be run as an administrator.\n"
+							"Please log in as a regular user.\n\n"
+							"Note: This message may be changed to a fatal error in a\n"
+							"future release of " GENS_APPNAME ".",
+							GENS_APPNAME " - Permissions Error", MB_ICONWARNING);
+				}
+			}
+			
+			FreeLibrary(pShell32);
+		}
+	}
 	
 	if (winVersion.dwMajorVersion >= 5 ||
 	    (winVersion.dwMajorVersion == 4 && winVersion.dwMinorVersion >= 10))
