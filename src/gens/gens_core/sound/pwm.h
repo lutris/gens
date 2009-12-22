@@ -47,7 +47,11 @@ extern unsigned int PWM_Out_R;
 extern unsigned int PWM_Out_L;
 
 void PWM_Init(void);
+
+#if 0
+// TODO: Fix Chilly Willy's new scaling algorithm.
 void PWM_Recalc_Scale(void);
+#endif
 
 /* Functions called by x86 asm. */
 void PWM_Set_Cycle(unsigned int cycle);

@@ -1910,7 +1910,10 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	PWM_Out_R		= le32_to_cpu(sv.pwm_out_R);
 	PWM_Out_L		= le32_to_cpu(sv.pwm_out_L);
 	
+#if 0
+	// TODO: Fix Chilly Willy's new scaling algorithm.
 	PWM_Recalc_Scale();
+#endif
 	
 	// just in case some of these bytes are not in fact read-only
 	// as was apparently the case with Sega CD games (1024 seems acceptably small)

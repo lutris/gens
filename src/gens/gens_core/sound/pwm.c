@@ -72,10 +72,13 @@ unsigned int PWM_Int_Tmp;
 unsigned int PWM_FIFO_L_Tmp;
 unsigned int PWM_FIFO_R_Tmp;
 
+#if 0
+// TODO: Fix Chilly Willy's new scaling algorithm.
 /* PWM scaling variables. */
 static int PWM_Offset;
 static int PWM_Scale;
 static int PWM_Loudness;
+#endif
 
 
 /**
@@ -99,17 +102,24 @@ void PWM_Init(void)
 	PWM_FIFO_L_Tmp = 0;
 	PWM_FIFO_R_Tmp = 0;
 	
+#if 0
+// TODO: Fix Chilly Willy's new scaling algorithm.
 	PWM_Loudness = 0;
+#endif
+	
 	PWM_Set_Cycle(0);
 	PWM_Set_Int(0);
 }
 
 
+#if 0
+// TODO: Fix Chilly Willy's new scaling algorithm.
 void PWM_Recalc_Scale(void)
 {
 	PWM_Offset = (PWM_Cycle / 2) + 1;
 	PWM_Scale = 0x7FFF00 / PWM_Offset;
 }
+#endif
 
 
 void PWM_Set_Cycle(unsigned int cycle)
@@ -118,7 +128,10 @@ void PWM_Set_Cycle(unsigned int cycle)
 	PWM_Cycle = (cycle & 0xFFF);
 	PWM_Cycle_Cnt = PWM_Cycles;
 	
+#if 0
+	// TODO: Fix Chilly Willy's new scaling algorithm.
 	PWM_Recalc_Scale();
+#endif
 }
 
 
@@ -213,9 +226,6 @@ static void PWM_Shift_Data(void)
 void PWM_Update_Timer(unsigned int cycle)
 {
 	// Don't do anything if PWM is disabled in the Sound menu.
-	// FIXME: This seems to cause some games to freeze.
-	if (!PWM_Enable)
-		return;
 	
 	// Don't do anything if PWM isn't active.
 	if ((PWM_Mode & 0x0F) == 0x00)
@@ -241,25 +251,45 @@ void PWM_Update_Timer(unsigned int cycle)
 }
 
 
+static inline int PWM_Update_Scale(int PWM_In)
+{
+	if (PWM_In == 0)
+		return 0;
+	
+	// TODO: Chilly Willy's new scaling algorithm breaks drx's Sonic 1 32X (with PWM drums).
+	//return (((PWM_In & 0xFFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
+	const int PWM_adjust = (((PWM_Cycle >> 1) + 1) << 5);
+	int PWM_Ret = (((PWM_In & 0xFFFF) << 5) - PWM_adjust);
+	
+	// Multiply PWM by 4 so it's audible.
+	PWM_Ret <<= 2;
+	
+	// Make sure the PWM isn't oversaturated.
+	if (PWM_Ret > 32767)
+		PWM_Ret = 32767;
+	else if (PWM_Ret < -32768)
+		PWM_Ret = -32768;
+	
+	return PWM_Ret;
+}
+
+
 void PWM_Update(int **buf, int length)
 {
 	if (!PWM_Enable)
 		return;
 	
-	// New PWM scaling algorithm provided by Chilly Willy on the Sonic Retro forums.
-	int tmpOutL = (((int)(PWM_Out_L & 0xFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
-	int tmpOutR = (((int)(PWM_Out_R & 0xFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
+	if (PWM_Out_L == 0 && PWM_Out_R == 0)
+		return;
 	
-	// Multiply PWM by 4 so it's audible.
-	tmpOutL <<= 2;
-	tmpOutR <<= 2;
+	// New PWM scaling algorithm provided by Chilly Willy on the Sonic Retro forums.
+	int tmpOutL = PWM_Update_Scale((int)PWM_Out_L);
+	int tmpOutR = PWM_Update_Scale((int)PWM_Out_R);
 	
 	while (length > 0)
 	{
-		if (PWM_Out_L)
-			buf[0][length-1] += tmpOutL;
-		if (PWM_Out_R)
-			buf[1][length-1] += tmpOutR;
+		buf[0][length-1] += tmpOutL;
+		buf[1][length-1] += tmpOutR;
 		
 		length--;
 	}
