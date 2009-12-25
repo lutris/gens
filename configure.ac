@@ -943,6 +943,7 @@ AC_CONFIG_FILES([
 	src/mdp/misc/sgens/Makefile
 	src/mdp/misc/vdp_layer_options/Makefile
 	src/mdp/misc/irc_reporter/Makefile
+	src/mdp/misc/vdp_debugger/Makefile
 	src/mdp/render/2xsai/Makefile
 	src/mdp/render/Makefile
 	src/mdp/render/blargg_ntsc/Makefile
