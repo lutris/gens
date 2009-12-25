@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Win32 DllMain() function.)                     *
+ * MDP: Sonic Gens. (Win32 DllMain() function.)                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *

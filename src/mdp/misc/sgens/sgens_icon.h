@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Icon Data File)                                *
+ * MDP: Sonic Gens. (Icon Data File)                                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *

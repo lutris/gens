@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] VDP Layer Options. (Win32 Resource Script)                  *
+ * MDP: Sonic Gens. (Win32 Resource Script)                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
