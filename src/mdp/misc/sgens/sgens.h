@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #ifndef _MDP_MISC_SGENS_H
-#define _MDP_MISC_SGENS_HPP
+#define _MDP_MISC_SGENS_H
 
 #ifdef __cplusplus
 extern "C" {
