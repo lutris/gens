@@ -515,7 +515,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 				// H Interrupt.
 				// If this value is >= vertical resolution, then it has no effect.
 				
-				if (reg_value >= (reg_vdp->regs.mode_set2 & 0x08 ? (240-1) : (224-1)))
+				if (reg_value >= (reg_vdp->regs.mode_set2 & 0x08 ? (240) : (224)))
 				{
 					// No effect.
 					szprintf(desc, sizeof(desc), "%d lines (disabled)", reg_value + 1);
