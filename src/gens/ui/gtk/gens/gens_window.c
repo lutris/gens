@@ -215,7 +215,7 @@ void gens_window_create_menubar(void)
 	gens_menu_accel_group = gtk_accel_group_new();
 	
 	// Parse the menus.
-	gens_menu_parse(&gmiMain[0], gens_menu_bar, gens_menu_accel_group);
+	gens_menu_parse(&gmiMain[0], GTK_MENU_SHELL(gens_menu_bar), gens_menu_accel_group);
 	
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), gens_menu_accel_group);

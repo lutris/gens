@@ -32,7 +32,7 @@ extern "C" {
 
 extern int	gens_menu_do_callbacks;
 
-void		gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelGroup *accel_group);
+void		gens_menu_parse(const GensMenuItem_t *menu, GtkMenuShell *parent, GtkAccelGroup *accel_group);
 
 GtkWidget*	gens_menu_find_item(uint16_t id);
 void		gens_menu_clear(void);
