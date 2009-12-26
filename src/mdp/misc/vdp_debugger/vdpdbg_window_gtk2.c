@@ -582,7 +582,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 				// Window H Pos.
 				szprintf(desc, sizeof(desc), "%d cell%s in %s side from base point",
 						(reg_value & 0x1F),
-						(reg_value & 1 ? "" : "s"),
+						(reg_value == 1 ? "" : "s"),
 						(reg_value & 0x80 ? "right" : "left"));
 				break;
 			
@@ -590,7 +590,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 				// Window V Pos.
 				szprintf(desc, sizeof(desc), "%d cell%s in %s side from base point",
 						(reg_value & 0x1F),
-						(reg_value & 1 ? "" : "s"),
+						(reg_value == 1 ? "" : "s"),
 						(reg_value & 0x80 ? "lower" : "upper"));
 				break;
 			
