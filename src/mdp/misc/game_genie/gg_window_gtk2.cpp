@@ -447,7 +447,7 @@ static void gg_window_save(void)
 	// Add all codes in the listview to the code list.
 	GtkTreeIter iter;
 	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
-	for (int i = 0; valid == true; i++)
+	while (valid)
 	{
 		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 5, &stored_code, -1);
 		
