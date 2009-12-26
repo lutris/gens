@@ -18,12 +18,14 @@ mdp_misc_vdp_debugger_la_LIBADD		= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_vdp_debugger_la_SOURCES = \
 		vdpdbg_plugin.c \
-		vdpdbg.c
+		vdpdbg.c \
+		vdp_data.c
 
 noinst_HEADERS = \
 		vdpdbg_plugin.h \
 		vdpdbg.h \
-		vdpdbg_window.h
+		vdpdbg_window.h \
+		vdp_data.h
 
 if GENS_UI_GTK
 mdp_misc_vdp_debugger_la_SOURCES	+= vdpdbg_window_gtk2.c

@@ -32,6 +32,9 @@
 #include "vdpdbg_plugin.h"
 #include "vdpdbg.h"
 
+// VDP Data.
+#include "vdp_data.h"
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
@@ -57,10 +60,13 @@ void MDP_FNCALL vdpdbg_window_show(void *parent)
 {
 	if (vdpdbg_window)
 	{
-		// Sonic Gens window is already visible. Set focus.
+		// VDP Debugger window is already visible. Set focus.
 		gtk_widget_grab_focus(vdpdbg_window);
 		return;
 	}
+	
+	// Initialize VDP Data.
+	vdpdbg_data_init();
 	
 	// Create the window.
 	vdpdbg_window = gtk_dialog_new();
@@ -206,11 +212,8 @@ void vdpdbg_window_update(void)
 	{
 		for (int x = 0; x < 16; x++)
 		{
-			const uint16_t colorMD = CRam[x + (y & 0x30)];
-			const uint32_t colorRGB = 0xFF000000 |			// Alpha
-						  ((colorMD & 0xF00) << 12) |	// Red
-						  ((colorMD & 0x0F0) << 8) |	// Green
-						  ((colorMD & 0x00F) << 4);	// Blue
+			const uint16_t colorMD = CRam[x + (y & 0x30)] & 0xFFF;
+			const uint32_t colorRGB = vdp_color_MDtoSys[colorMD];
 			
 			// Draw 16 pixels of the current color.
 			for (unsigned int ix = 16; ix != 0; ix--)
