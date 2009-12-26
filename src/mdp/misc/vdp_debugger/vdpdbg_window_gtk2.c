@@ -52,6 +52,7 @@ static GtkWidget *vdpdbg_window = NULL;
 // CRAM dump.
 static GdkPixbuf *pbufCRam = NULL;
 static GtkWidget *imgCRam;
+static uint16_t prev_CRam[16*4];
 
 // Register listing.
 static GtkWidget *lstRegList;
@@ -84,6 +85,9 @@ void MDP_FNCALL vdpdbg_window_show(void *parent)
 	// Initialize VDP Data.
 	vdpdbg_data_init();
 	
+	// Clear previous CRam buffer.
+	memset(prev_CRam, 0, sizeof(prev_CRam));
+	
 	// Create the window.
 	vdpdbg_window = gtk_dialog_new();
 	gtk_container_set_border_width(GTK_CONTAINER(vdpdbg_window), 4);
@@ -113,6 +117,22 @@ void MDP_FNCALL vdpdbg_window_show(void *parent)
 	imgCRam = gtk_image_new_from_pixbuf(pbufCRam);
 	gtk_widget_show(imgCRam);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), imgCRam, FALSE, FALSE, 0);
+	
+	// Clear the pixel buffer.
+	uint32_t *pixels = (uint32_t*)gdk_pixbuf_get_pixels(pbufCRam);
+	int rowstride = gdk_pixbuf_get_rowstride(pbufCRam);
+	int n_channels = gdk_pixbuf_get_n_channels(pbufCRam);
+	int px_count = ((rowstride * 63) + (16*16*n_channels)) / 4;
+	
+	for (; px_count != 0; px_count -= 4)
+	{
+		*pixels = 0xFF000000U;
+		*(pixels + 1) = 0xFF000000U;
+		*(pixels + 2) = 0xFF000000U;
+		*(pixels + 3) = 0xFF000000U;
+		pixels += 4;
+	}
+	
 	
 	// Create the GtkTreeView for the register listing.
 	vdpdbg_window_create_lstRegList(vboxDialog);
@@ -328,17 +348,31 @@ void vdpdbg_window_update(void)
 	const int rowDiff = gdk_pixbuf_get_rowstride(pbufCRam) - (16*16*sizeof(uint32_t));
 	
 	// Each row has 16 colors. (Each color occupies a 16x16 area.)
+	gboolean CRam_needs_update = FALSE;
 	for (int y = 0; y < (4*16); y++)
 	{
 		for (int x = 0; x < 16; x++)
 		{
-			const uint16_t colorMD = CRam[x + (y & 0x30)] & 0xFFF;
+			const int color_index = (x + (y & 0x30));
+			const uint16_t colorMD = CRam[color_index] & 0xFFF;
+			if (colorMD == prev_CRam[color_index])
+			{
+				// Color hasn't changed.
+				pixel += 16;
+				continue;
+			}
+			
 			const uint32_t colorRGB = vdp_color_MDtoSys[colorMD];
+			CRam_needs_update = TRUE;
 			
 			// Draw 16 pixels of the current color.
-			for (unsigned int ix = 16; ix != 0; ix--)
+			for (unsigned int ix = 16; ix != 0; ix -= 4)
 			{
-				*pixel++ = colorRGB;
+				*pixel = colorRGB;
+				*(pixel + 1) = colorRGB;
+				*(pixel + 2) = colorRGB;
+				*(pixel + 3) = colorRGB;
+				pixel += 4;
 			}
 		}
 		
@@ -346,8 +380,14 @@ void vdpdbg_window_update(void)
 		pixel += (rowDiff / sizeof(*pixel));
 	}
 	
-	// Update the image.
-	gtk_image_set_from_pixbuf(GTK_IMAGE(imgCRam), pbufCRam);
+	if (CRam_needs_update)
+	{
+		// Copy the current CRam to prev_CRam.
+		memcpy(prev_CRam, CRam, sizeof(prev_CRam));
+		
+		// Update the image.
+		gtk_image_set_from_pixbuf(GTK_IMAGE(imgCRam), pbufCRam);
+	}
 	
 	// Register list.
 	mdp_reg_vdp_t reg_vdp;
