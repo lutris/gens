@@ -27,6 +27,7 @@
 // C includes.
 #include <stdio.h>
 #include <stdint.h>
+#include <errno.h>
 
 #include "vdpdbg_window.h"
 #include "vdpdbg_plugin.h"
@@ -64,6 +65,7 @@ static void vdpdbg_window_create_lstRegList(GtkWidget *container);
 // Callbacks.
 static gboolean	vdpdbg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	vdpdbg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	vdpdbg_window_callback_reg_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data);
 
 // Data functions.
 static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp);
@@ -201,6 +203,12 @@ static void vdpdbg_window_create_lstRegList(GtkWidget *container)
 	
 	// Value.
 	GtkCellRenderer  *rendValue = gtk_cell_renderer_text_new();
+	GValue editable = {0};
+	g_value_init(&editable, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&editable, TRUE);
+	g_object_set_property(G_OBJECT(rendValue), "editable", &editable);
+	g_signal_connect((gpointer)rendValue, "edited",
+			 G_CALLBACK(vdpdbg_window_callback_reg_edited), NULL);
 	GtkTreeViewColumn *colValue = gtk_tree_view_column_new_with_attributes("Value", rendValue, "text", 3, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstRegList), colValue);
 	
@@ -404,6 +412,7 @@ void vdpdbg_window_update(void)
 static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 {
 	// Go through the list and update the registers.
+	// TODO: If a user is editing a register, don't update that register.
 	GtkTreeIter iter;
 	int i;
 	char hex_value[16];
@@ -648,4 +657,39 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 		
 		gtk_list_store_set(GTK_LIST_STORE(lmRegList), &iter_DMA_Src, 4, desc, -1);
 	}
+}
+
+
+/**
+ * vdpdbg_window_callback_reg_edited(): A register was edited by the user.
+ * @param renderer Cell renderer.
+ * @param path Path in the list store.
+ * @param new_text New text entry.
+ * @param user_data User data.
+ */
+static void vdpdbg_window_callback_reg_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data)
+{
+	// Convert the text to a number.
+	errno = 0;
+	int new_value = strtol(new_text, NULL, 0);
+	if (errno != 0 || (new_value < 0 || new_value > 0xFF))
+		return;
+	
+	// Get the register number.
+	GtkTreePath *treePath;
+	GtkTreeIter iter;
+	
+	treePath = gtk_tree_path_new_from_string(path);
+	gtk_tree_model_get_iter(GTK_TREE_MODEL(lmRegList), &iter, treePath);
+	
+	int reg_number;
+	gtk_tree_model_get(GTK_TREE_MODEL(lmRegList), &iter, 0, &reg_number, -1);
+	if (reg_number < 0 || reg_number >= 24)
+	{
+		gtk_tree_path_free(treePath);
+		return;
+	}
+	
+	// Set the VDP register.
+	vdpdbg_host_srv->reg_set(&mdp, MDP_REG_IC_VDP, reg_number, new_value);
 }
