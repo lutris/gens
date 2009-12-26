@@ -118,13 +118,10 @@ static inline void T_Recalculate_Palettes(void)
 	// Calculate the MD palette.
 	for (unsigned int i = 0x0000; i < 0x1000; i++)
 	{
-		// Mask off the LSB of each MD color component.
-		unsigned int color = (i & 0x0FFF);
-		
 		// Process using 8-bit color components.
-		r = (color & 0x000F) << 4;
-		g = (color & 0x00F0);
-		b = (color >> 4) & 0xF0;
+		r = (i & 0x000F) << 4;
+		g = (i & 0x00F0);
+		b = (i >> 4) & 0xF0;
 		
 		// Scale the colors to full RGB.
 		if (ColorScaleMethod != COLSCALE_RAW)
