@@ -743,7 +743,7 @@ section .text align=64
 		push	eax				; Register value.
 		push	ebx				; Register number.
 		call	SYM(VDP_Set_Reg)
-		add	esp, 8
+		add	esp, byte 8
 		
 		pop	ebx
 		ret
