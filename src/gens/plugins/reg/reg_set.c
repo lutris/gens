@@ -111,7 +111,7 @@ static int mdp_host_reg_set_vdp(int regID, uint32_t new_value)
 	if (regID < 0 || regID >= 24)
 		return -MDP_ERR_REG_INVALID_REGID;
 	
-	Set_VDP_Reg(regID, (new_value & 0xFF));
+	VDP_Set_Reg(regID, (new_value & 0xFF));
 	return MDP_ERR_OK;
 }
 

@@ -522,7 +522,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	// VDP registers.
 	for (int i = 0; i < 24; i++)
 	{
-		Set_VDP_Reg(i, md_save.vdp_reg[i]);
+		VDP_Set_Reg(i, md_save.vdp_reg[i]);
 	}
 	
 	// MC68000 registers.

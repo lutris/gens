@@ -80,7 +80,7 @@ static int mdp_host_reg_set_all_vdp(void *reg_struct)
 	int i;
 	for (i = 0; i < 24; i++)
 	{
-		Set_VDP_Reg(i, reg_vdp->data[i]);
+		VDP_Set_Reg(i, reg_vdp->data[i]);
 	}
 	
 	return MDP_ERR_OK;

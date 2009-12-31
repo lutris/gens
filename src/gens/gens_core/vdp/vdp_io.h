@@ -21,8 +21,6 @@ extern "C" {
 // Constant data.
 extern const uint32_t CD_Table[64];
 extern const uint8_t  DMA_Timing_Table[16];
-extern const uint32_t Size_V_Scroll[4];
-extern const uint32_t H_Scroll_Mask_Table[4];
 
 // System status.
 extern int Genesis_Started;
@@ -127,7 +125,7 @@ uint8_t  Read_VDP_V_Counter(void);
 int Write_Byte_VDP_Data(uint8_t  Data);
 int Write_Word_VDP_Data(uint16_t Data);
 int Write_VDP_Ctrl(uint16_t Data);
-int Set_VDP_Reg(int Num_Reg, uint8_t Val);
+void VDP_Set_Reg(int reg_num, uint8_t val);
 
 uint8_t VDP_Int_Ack(void);
 void VDP_Update_IRQ_Line(void);

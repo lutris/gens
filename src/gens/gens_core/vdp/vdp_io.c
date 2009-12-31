@@ -84,10 +84,6 @@ const uint8_t DMA_Timing_Table[] =
 };
 
 
-const uint32_t Size_V_Scroll[4] = {255, 511, 255, 1023};
-const uint32_t H_Scroll_Mask_Table[4] = {0x0000, 0x0007, 0x01F8, 0x1FFF};
-
-
 // System status.
 int Genesis_Started = 0;
 int SegaCD_Started = 0;
@@ -138,7 +134,7 @@ void VDP_Reset(void)
 	unsigned int reg;
 	for (reg = 0; reg < sizeof(vdp_reg_init); reg++)
 	{
-		Set_VDP_Reg(reg, vdp_reg_init[reg]);
+		VDP_Set_Reg(reg, vdp_reg_init[reg]);
 	}
 	
 	// Reset the non-register parts of the VDP registers.
@@ -218,4 +214,278 @@ void VDP_Update_IRQ_Line(void)
 	
 	// No VDP interrupts.
 	main68k_context.interrupts[0] &= 0xF0;
+}
+
+
+// The following are pointers from vdp_io_x86.asm.
+extern uint8_t *ScrA_Addr;
+extern uint8_t *Win_Addr;
+extern uint8_t *ScrB_Addr;
+extern uint8_t *Spr_Addr;
+extern uint8_t *H_Scroll_Addr;
+
+// The following are internal scroll settings.
+extern int V_Scroll_MMask;
+extern int H_Scroll_Mask;
+
+extern int H_Scroll_CMul;
+extern int H_Scroll_CMask;
+extern int V_Scroll_CMask;
+
+// The following are internal H cell settings.
+extern int H_Cell;
+extern int H_Win_Mul;
+extern int H_Pix;
+extern int H_Pix_Begin;
+
+// The following are internal window settings that should be eliminated.
+extern int Win_X_Pos;
+extern int Win_Y_Pos;
+
+/**
+ * VDP_Set_Reg(): Set the value of a register. (Mode 5 only!)
+ * @param reg_num Register number.
+ * @param val New value for the register.
+ */
+void VDP_Set_Reg(int reg_num, uint8_t val)
+{
+	if (reg_num < 0 || reg_num >= 24)
+		return;
+	
+	// Save the new register value.
+	VDP_Reg.reg[reg_num] = val;
+	
+	// Temporary value for calculation.
+	unsigned int tmp;
+	
+	// Update things affected by the register.
+	switch (reg_num)
+	{
+		case 0:
+			// Mode Set 1.
+			VDP_Update_IRQ_Line();
+			
+			// VDP register 0, bit 2: Palette Select
+			// If cleared, only the LSBs of each CRAM component is used.
+			CRam_Flag = 1;
+			break;
+		
+		case 1:
+			// Mode Set 2.
+			VDP_Update_IRQ_Line();
+			break;
+		
+		case 2:
+			// Scroll A base address.
+			tmp = (val & 0x38) << 10;
+			ScrA_Addr = &VRam.u8[tmp];
+			break;
+		
+		case 3:
+			// Window base address.
+			if (VDP_Reg.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
+				tmp = (val & 0x3C) << 10;	// H40.
+			else
+				tmp = (val & 0x3E) << 10;	// H32.
+			
+			Win_Addr = &VRam.u8[tmp];
+			break;
+		
+		case 4:
+			// Scroll B base address.
+			tmp = (val & 0x07) << 13;
+			ScrB_Addr = &VRam.u8[tmp];
+			break;
+		
+		case 5:
+			// Sprite Attribute Table base address.
+			if (VDP_Reg.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
+				tmp = (val & 0x7E) << 9;
+			else
+				tmp = (val & 0x7F) << 9;
+			
+			Spr_Addr = &VRam.u8[tmp];
+			VRam_Flag |= 2;		// Spriteshave changed.
+			break;
+		
+		case 7:
+			// Background Color.
+			CRam_Flag = 1;
+			break;
+		
+		case 11:
+		{
+			// Mode Set 3.
+			static const unsigned int Size_V_Scroll[4] = {255, 511, 255, 1023};
+			static const unsigned int H_Scroll_Mask_Table[4] = {0x0000, 0x0007, 0x01F8, 0x1FFF};
+			
+			// Check the Vertical Scroll mode. (Bit 3)
+			// 0: Full scrolling. (Mask == 0)
+			// 1: 2CELL scrolling. (Mask == 0x7E)
+			V_Scroll_MMask = ((val & 4) ? 0x7E : 0);
+			
+			// Horizontal Scroll mode
+			H_Scroll_Mask = H_Scroll_Mask_Table[val & 3];
+			
+			break;
+		}
+		
+		case 12:
+			// Mode Set 4.
+			
+			// This register has the Shadow/Highlight setting,
+			// so set the CRam Flag to force a CRam update.
+			CRam_Flag = 1;
+			
+			if (val & 0x81)		// TODO: Original asm tests 0x81. Should this be done for other H40 tests?
+			{
+				// H40 mode.
+				H_Cell = 40;
+				H_Win_Mul = 6;
+				H_Pix = 320;
+				H_Pix_Begin = 0;
+				
+				// Check the window horizontal position.
+				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
+				if ((VDP_Reg.Win_H_Pos & 0x1F) > 40)
+					Win_X_Pos = 40;
+				
+				// Update the Window base address.
+				tmp = (VDP_Reg.Pat_Win_Adr & 0x3C) << 10;
+				Win_Addr = &VRam.u8[tmp];
+				
+				// Update the Sprite Attribute Table base address.
+				tmp = (VDP_Reg.Spr_Att_Adr & 0x7E) << 9;
+				Spr_Addr = &VRam.u8[tmp];
+			}
+			else
+			{
+				// H32 mode.
+				H_Cell = 32;
+				H_Win_Mul = 5;
+				H_Pix = 256;
+				H_Pix_Begin = 32;
+				
+				// Check the window horizontal position.
+				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
+				if ((VDP_Reg.Win_H_Pos & 0x1F) > 32)
+					Win_X_Pos = 32;
+				
+				// Update the Window base address.
+				tmp = (VDP_Reg.Pat_Win_Adr & 0x3E) << 10;
+				Win_Addr = &VRam.u8[tmp];
+				
+				// Update the Sprite Attribute Table base address.
+				tmp = (VDP_Reg.Spr_Att_Adr & 0x7F) << 9;
+				Spr_Addr = &VRam.u8[tmp];
+			}
+			
+			break;
+		
+		case 13:
+			// H Scroll Table base address.
+			tmp = (val & 0x3F) << 10;
+			H_Scroll_Addr = &VRam.u8[tmp];
+			break;
+		
+		case 16:
+		{
+			// Scroll Size.
+			tmp = (val & 0x3);
+			tmp |= (val & 0x30) >> 2;
+			switch (tmp)
+			{
+				case 0:		// V32_H32
+				case 8:		// VXX_H32
+					H_Scroll_CMul = 5;
+					H_Scroll_CMask = 31;
+					V_Scroll_CMask = 31;
+					break;
+				
+				case 4:		// V64_H32
+					H_Scroll_CMul = 5;
+					H_Scroll_CMask = 31;
+					V_Scroll_CMask = 64;
+					break;
+				
+				case 12:	// V128_H32
+					H_Scroll_CMul = 5;
+					H_Scroll_CMask = 31;
+					V_Scroll_CMask = 127;
+					break;
+				
+				case 1:		// V32_H64
+				case 9:		// VXX_H64
+					H_Scroll_CMul = 6;
+					H_Scroll_CMask = 63;
+					V_Scroll_CMask = 31;
+					break;
+				
+				case 5:		// V64_H64
+				case 13:	// V128_H64
+					H_Scroll_CMul = 6;
+					H_Scroll_CMask = 63;
+					V_Scroll_CMask = 63;
+					break;
+				
+				case 2:		// V32_HXX
+				case 6:		// V64_HXX
+				case 10:	// VXX_HXX
+				case 14:	// V128_HXX
+					H_Scroll_CMul = 6;
+					H_Scroll_CMask = 63;
+					V_Scroll_CMask = 0;
+					break;
+				
+				case 3:		// V32_H128
+				case 7:		// V64_H128
+				case 11:	// VXX_H128
+				case 15:	// V128_H128
+					H_Scroll_CMul = 7;
+					H_Scroll_CMask = 127;
+					V_Scroll_CMask = 31;
+					break;
+			}
+			
+			break;
+		}
+		
+		case 17:
+			// Window H position.
+			Win_X_Pos = (val & 0x1F);
+			if (Win_X_Pos > H_Cell)
+				Win_X_Pos = H_Cell;
+			break;
+			
+		case 18:
+			// Window V position.
+			Win_Y_Pos = (val & 0x1F);
+			break;
+		
+		case 19:
+			// DMA Length Low.
+			VDP_Reg.DMA_Length = (VDP_Reg.DMA_Length & 0xFFFFFF00) | val;
+			break;
+		
+		case 20:
+			// DMA Length High.
+			VDP_Reg.DMA_Length = (VDP_Reg.DMA_Length & 0xFFFF00FF) | (val << 8);
+			break;
+		
+		case 21:
+			// DMA Address Low.
+			VDP_Reg.DMA_Address = (VDP_Reg.DMA_Address & 0xFFFFFF00) | val;
+			break;
+		
+		case 22:
+			// DMA Address Mid.
+			VDP_Reg.DMA_Address = (VDP_Reg.DMA_Address & 0xFFFF00FF) | (val << 8);
+			break;
+		
+		case 23:
+			// DMA Address High.
+			VDP_Reg.DMA_Address = (VDP_Reg.DMA_Address & 0xFF00FFFF) | ((val & 0x7F) << 16);
+			Ctrl.DMA_Mode = (val & 0xC0);
+			break;
+	}
 }

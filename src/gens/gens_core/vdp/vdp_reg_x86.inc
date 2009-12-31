@@ -24,7 +24,7 @@ struc Reg_VDP_Type
 	.Set_1:			resb 1
 	.Set_2:			resb 1
 	.Pat_ScrA_Adr:		resb 1
-	.Pat_WIN_Adr:		resb 1
+	.Pat_Win_Adr:		resb 1
 	.Pat_ScrB_Adr:		resb 1
 	.Spr_Att_Adr:		resb 1
 	.Reg6:			resb 1
