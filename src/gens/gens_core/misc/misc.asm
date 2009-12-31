@@ -231,6 +231,7 @@ section .bss align=64
 	extern SYM(CDD.Frame)
 	extern SYM(CDD.Ext)
 	
+%include "vdp/vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	
 	; MD bpp
@@ -809,7 +810,7 @@ section .text align=64
 		test	eax, 0x1				; test the emulation mode
 		jz	short .No_Emulation
 		
-		test	byte [SYM(VDP_Reg) + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 1	; Check if we're using H40 or H32. (TODO: Test 0x81 instead?)
 		jnz	short .No_Emulation
 		
 		mov	ebx, 256				; Taille = 256
@@ -1021,7 +1022,7 @@ section .text align=64
 		test	eax, 0x1				; test the emulation mode
 		jz	short .No_Emulation
 		
-		test	byte [SYM(VDP_Reg) + 12 * 4], 1		; on teste si on est en mode 32 ou 40 cells
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 1	; Check if we're using H40 or H32. (TODO: Test 0x81 instead?)
 		jnz	short .No_Emulation
 		
 		mov ebx, 256					; Taille = 256
