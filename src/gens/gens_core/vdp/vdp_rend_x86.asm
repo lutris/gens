@@ -1977,11 +1977,11 @@ section .text align=64
 		mov	ebx, [SYM(VDP_Current_Line)]
 		xor	eax, eax
 		mov	edi, [SYM(TAB336) + ebx * 4]
-		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_1], 0x40	; test if the VDP is active
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x40	; test if the VDP is active
 		push	edi						; we need this value later
 		jnz	short .VDP_Enable				; if not, nothing is posted
 			
-		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_1], 0x08	; Check Shadow/Highlight.
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x08	; Check Shadow/Highlight.
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
