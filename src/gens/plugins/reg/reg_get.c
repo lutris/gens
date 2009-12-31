@@ -105,8 +105,7 @@ static int mdp_host_reg_get_vdp(int regID, uint32_t *ret_value)
 	if (regID < 0 || regID >= 24)
 		return -MDP_ERR_REG_INVALID_REGID;
 	
-	// VDP_Reg is an array of 24 unsigned ints.
-	*ret_value = VDP_Reg.reg[regID] & 0xFF;
+	*ret_value = VDP_Reg.reg[regID];
 	return MDP_ERR_OK;
 }
 

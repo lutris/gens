@@ -29,41 +29,44 @@ extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;
 
-typedef union
+typedef struct
 {
-	uint32_t reg[26];
-	struct
+	union
 	{
-		unsigned int Set1;
-		unsigned int Set2;
-		unsigned int Pat_ScrA_Adr;
-		unsigned int Pat_Win_Adr;
-		unsigned int Pat_ScrB_Adr;
-		unsigned int Spr_Att_Adr;
-		unsigned int Reg6;
-		unsigned int BG_Color;
-		unsigned int Reg8;
-		unsigned int Reg9;
-		unsigned int H_Int;
-		unsigned int Set3;
-		unsigned int Set4;
-		unsigned int H_Scr_Adr;
-		unsigned int Reg14;
-		unsigned int Auto_Inc;
-		unsigned int Scr_Size;
-		unsigned int Win_H_Pos;
-		unsigned int Win_V_Pos;
-		unsigned int DMA_Length_L;
-		unsigned int DMA_Length_H;
-		unsigned int DMA_Src_Adr_L;
-		unsigned int DMA_Src_Adr_M;
-		unsigned int DMA_Src_Adr_H;
-		
-		// These two variables are internal to Gens.
-		// They don't map to any actual VDP registers.
-		unsigned int DMA_Length;
-		unsigned int DMA_Address;
+		uint8_t reg[24];
+		struct
+		{
+			uint8_t Set1;
+			uint8_t Set2;
+			uint8_t Pat_ScrA_Adr;
+			uint8_t Pat_Win_Adr;
+			uint8_t Pat_ScrB_Adr;
+			uint8_t Spr_Att_Adr;
+			uint8_t Reg6;
+			uint8_t BG_Color;
+			uint8_t Reg8;
+			uint8_t Reg9;
+			uint8_t H_Int;
+			uint8_t Set3;
+			uint8_t Set4;
+			uint8_t H_Scr_Adr;
+			uint8_t Reg14;
+			uint8_t Auto_Inc;
+			uint8_t Scr_Size;
+			uint8_t Win_H_Pos;
+			uint8_t Win_V_Pos;
+			uint8_t DMA_Length_L;
+			uint8_t DMA_Length_H;
+			uint8_t DMA_Src_Adr_L;
+			uint8_t DMA_Src_Adr_M;
+			uint8_t DMA_Src_Adr_H;
+		};
 	};
+	
+	// These two variables are internal to Gens.
+	// They don't map to any actual VDP registers.
+	unsigned int DMA_Length;
+	unsigned int DMA_Address;
 } Reg_VDP_Type;
 
 extern union

@@ -99,6 +99,8 @@ section .bss align=64
 	extern SYM(VRam)
 	extern SYM(CRam)
 	extern SYM(VSRam)
+	
+%include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	
 	extern SYM(ScrA_Addr)
@@ -409,7 +411,7 @@ section .text align=64
 		jae	short %%End
 		
 		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [SYM(VDP_Reg) + 12 * 4], 1
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 1
 		jz	short %%H32
 		
 %%H40:
@@ -466,7 +468,7 @@ section .text align=64
 		jae	short %%End
 		
 		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [SYM(VDP_Reg) + 12 * 4], 1
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 1
 		jz	short %%H32
 		
 %%H40:
@@ -1205,7 +1207,7 @@ section .text align=64
 %macro RENDER_LINE_SCROLL_A_WIN 3
 	
 	mov	eax, [SYM(VDP_Current_Line)]
-	mov	cl, [SYM(VDP_Reg) + 18 * 4]
+	movzx	ecx, byte [SYM(VDP_Reg) + Reg_VDP_Type.Win_V_Pos]
 	shr	eax, 3
 	mov	ebx, [SYM(H_Cell)]
 	shr	cl, 7				; cl = 1 si window at bottom
@@ -1214,7 +1216,7 @@ section .text align=64
 	xor	cl, ch				; cl = 0 si line window sinon line Scroll A
 	jz	near %%Full_Win
 	
-	test	byte [SYM(VDP_Reg) + 17 * 4], 0x80
+	test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Win_H_Pos], 0x80
 	mov	edx, [SYM(Win_X_Pos)]
 	jz	short %%Win_Left
 	
@@ -1736,7 +1738,7 @@ section .text align=64
 
 %macro RENDER_LINE 2
 	
-	test	dword [SYM(VDP_Reg) + 11 * 4], 4
+	test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_3], 4
 	jz	near %%Full_VScroll
 	
 %%Cell_VScroll
@@ -1764,11 +1766,11 @@ section .text align=64
 		mov	ebx, [SYM(VDP_Current_Line)]
 		xor	eax, eax
 		mov	edi, [SYM(TAB336) + ebx * 4]
-		test	dword [SYM(VDP_Reg) + 1 * 4], 0x40		; test if the VDP is active
-		push	edi					; we need this value later
-		jnz	short .VDP_Enable			; if not, nothing is posted
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x40	; test if the VDP is active
+		push	edi						; we need this value later
+		jnz	short .VDP_Enable				; if not, nothing is posted
 		
-		test	byte [SYM(VDP_Reg) + 12 * 4], 0x08
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x08	; Check Shadow/Highlight.
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -1785,20 +1787,19 @@ section .text align=64
 	
 	.VDP_Enable:
 		mov	ebx, [SYM(VRam_Flag)]
-		mov	eax, [SYM(VDP_Reg) + 12 * 4]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4]
 		and	ebx, byte 3
-		and	eax, byte 4
+		and	eax, byte 4	; TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 		mov	byte [SYM(VRam_Flag)], 0
 		jmp	[.Table_Sprite_Struct + ebx * 8 + eax]
 	
 	align 16
 	
 	.Table_Sprite_Struct:
-		dd 	.Sprite_Struc_OK
-		dd 	.Sprite_Struc_OK
-		dd 	.MSS_Complete, .MSS_Complete_Interlace
-		dd 	.MSS_Partial, .MSS_Partial_Interlace
-		dd 	.MSS_Complete, .MSS_Complete_Interlace
+		dd 	.Sprite_Struc_OK,	.Sprite_Struc_OK
+		dd 	.MSS_Complete,		.MSS_Complete_Interlace
+		dd 	.MSS_Partial,		.MSS_Partial_Interlace
+		dd 	.MSS_Complete,		.MSS_Complete_Interlace
 	
 	align 16
 	
@@ -1822,7 +1823,7 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		mov	eax, [SYM(VDP_Reg) + 12 * 4]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4]
 		and	eax, byte 0xC
 		jmp	[.Table_Render_Line + eax]
 	
@@ -1864,7 +1865,7 @@ section .text align=64
 		test	byte [SYM(CRam_Flag)], 1		; teste si la palette a etait modifiee
 		jz	short .Palette_OK		; si oui
 		
-		test	byte [SYM(VDP_Reg) + 12 * 4], 8
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x08
 		jnz	short .Palette_HS
 		
 		call	SYM(VDP_Update_Palette)
@@ -1976,11 +1977,11 @@ section .text align=64
 		mov	ebx, [SYM(VDP_Current_Line)]
 		xor	eax, eax
 		mov	edi, [SYM(TAB336) + ebx * 4]
-		test	dword [SYM(VDP_Reg) + 1 * 4], 0x40		; test if the VDP is active
-		push	edi					; we need this value later
-		jnz	short .VDP_Enable			; if not, nothing is posted
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_1], 0x40	; test if the VDP is active
+		push	edi						; we need this value later
+		jnz	short .VDP_Enable				; if not, nothing is posted
 			
-		test	byte [SYM(VDP_Reg) + 12 * 4], 0x08
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_1], 0x08	; Check Shadow/Highlight.
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -2024,7 +2025,7 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		test	byte [SYM(VDP_Reg) + 12 * 4], 0x8	; no interlace in 32X mode
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x08	; no interlace in 32X mode
 		jnz	near .HS
 	
 	.NHS:

@@ -85,35 +85,10 @@ section .bss align=64
 	SYM(H_Counter_Table):
 		resb 512 * 2
 	
+%include "vdp_reg_x86.inc"
 	global SYM(VDP_Reg)
 	SYM(VDP_Reg):
-		.Set_1:			resd 1
-		.Set_2:			resd 1
-		.Pat_ScrA_Adr:		resd 1
-		.Pat_WIN_Adr:		resd 1
-		.Pat_ScrB_Adr:		resd 1
-		.Spr_Att_Adr:		resd 1
-		.Reg6:			resd 1
-		.BG_Color:		resd 1
-		.Reg8:			resd 1
-		.Reg9:			resd 1
-		.H_Int_Reg:		resd 1
-		.Set_3:			resd 1
-		.Set_4:			resd 1
-		.H_Scr_Adr:		resd 1
-		.Reg14:			resd 1
-		.Auto_Inc:		resd 1
-		.Scr_Size:		resd 1
-		.Win_H_Pos:		resd 1
-		.Win_V_Pos:		resd 1
-		.DMA_Length_L:		resd 1
-		.DMA_Length_H:		resd 1
-		.DMA_Src_Adr_L:		resd 1
-		.DMA_Src_Adr_M:		resd 1
-		.DMA_Src_Adr_H:		resd 1
-		
-		.DMA_Length:		resd 1
-		.DMA_Address:		resd 1
+		resb 24+(2*4)
 	
 	global SYM(ScrA_Addr)
 	SYM(ScrA_Addr):
@@ -368,7 +343,7 @@ section .text align=64
 		push	ecx
 		push	edx
 		
-		mov	ebx, [SYM(VDP_Reg) + 12 * 4]	; 32 / 40 Cell ?
+		movzx	ebx, byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4]	; 32 / 40 Cell ?
 		mov	edx, [SYM(DMAT_Type)]
 		mov	eax, [SYM(VDP_Current_Line)]
 		mov	ecx, [SYM(VDP_Num_Vis_Lines)]
@@ -377,7 +352,7 @@ section .text align=64
 		cmp	eax, ecx
 		lea	ebx, [ebx * 4 + edx]
 		jae	short .Blanking
-		test	byte [SYM(VDP_Reg) + 1 * 4], 0x40	; VDP Enable ?
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x40	; VDP Enable ?
 		jz	short .Blanking
 		
 		add	ebx, byte 8
@@ -443,7 +418,8 @@ section .text align=64
 	align 16
 	
 	.RD_VRAM:
-		add	ecx, [SYM(VDP_Reg.Auto_Inc)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
 		and	ebx, 0xFFFE
 		mov	[SYM(Ctrl.Address)], cx
 		mov	ax, [SYM(VRam) + ebx]
@@ -454,7 +430,8 @@ section .text align=64
 	align 16
 	
 	.RD_CRAM:
-		add	ecx, [SYM(VDP_Reg.Auto_Inc)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
 		and	ebx, byte 0x7E
 		mov	[SYM(Ctrl.Address)], cx
 		mov	ax, [SYM(CRam) + ebx]
@@ -465,12 +442,13 @@ section .text align=64
 	align 16
 	
 	.RD_VSRAM:
-		add ecx, [SYM(VDP_Reg.Auto_Inc)]
-		and ebx, byte 0x7E
-		mov [SYM(Ctrl.Address)], cx
-		mov ax, [SYM(VSRam) + ebx]
-		pop ecx
-		pop ebx
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
+		and	ebx, byte 0x7E
+		mov	[SYM(Ctrl.Address)], cx
+		mov	ax, [SYM(VSRam) + ebx]
+		pop	ecx
+		pop	ebx
 		ret
 	
 	align 16
@@ -489,7 +467,7 @@ section .text align=64
 		
 	.In_VBlank:
 		mov	[SYM(VDP_Status)], ax
-		test	byte [SYM(VDP_Reg.Set_2)], 0x40
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x40
 		pop	ax
 		jz	short .Display_OFF
 		ret
@@ -514,7 +492,7 @@ section .text align=64
 		sub	eax, ebx			; Nb cycles effectués sur cette ligne.
 		xor	ebx, ebx
 		and	eax, 0x1FF
-		test	byte [SYM(VDP_Reg.Set_4)], 0x81	; 40 cell mode ?
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x81	; 40 cell mode ?
 		setnz	bl
 		mov	al, [SYM(H_Counter_Table) + eax * 2 + ebx]
 		xor	ah, ah
@@ -536,7 +514,7 @@ section .text align=64
 		sub	eax, ebx			; Nb cycles effectués sur cette ligne.
 		xor	ebx, ebx
 		and	eax, 0x1FF
-		test	byte [SYM(VDP_Reg.Set_4)], 0x81	; 40 cell mode ?
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x81	; 40 cell mode ?
 		jz	short .mode_32
 		
 	.mode_40:
@@ -580,7 +558,7 @@ section .text align=64
 		sub	eax, byte 56
 
 	.No_Over_Line_XX:
-		test	byte [SYM(VDP_Reg.Set_4)], 2
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 2	; NOTE: 2 is LSM0. Should check both LSM1 and LSM0!
 		jz	short .No_Interlace
 		
 		rol	al, 1
@@ -639,8 +617,9 @@ section .text align=64
 		rol	ax, 8
 	
 	.Address_Even:
-		add	ecx, [SYM(VDP_Reg.Auto_Inc)]
 		mov	[SYM(VRam) + ebx * 2], ax
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
 		mov	[SYM(Ctrl.Address)], cx
 		pop	ecx
 		pop	ebx
@@ -651,10 +630,11 @@ section .text align=64
 	.WR_CRAM:
 		mov	ecx, ebx
 		and	ebx, byte 0x7E
-		add	ecx, [SYM(VDP_Reg.Auto_Inc)]
 		mov	byte [SYM(CRam_Flag)], 1
-		mov	[SYM(Ctrl.Address)], cx
 		mov	[SYM(CRam) + ebx], ax
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
+		mov	[SYM(Ctrl.Address)], cx
 		pop	ecx
 		pop	ebx
 		ret
@@ -664,8 +644,9 @@ section .text align=64
 	.WR_VSRAM:
 		mov	ecx, ebx
 		and	ebx, byte 0x7E
-		add	ecx, [SYM(VDP_Reg.Auto_Inc)]
 		mov	[SYM(VSRam) + ebx], ax
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
+		add	ecx, eax
 		mov	[SYM(Ctrl.Address)], cx
 		pop	ecx
 		pop	ebx
@@ -678,12 +659,12 @@ section .text align=64
 		push	ecx
 		push	edx
 		
-		mov	ebx, [SYM(Ctrl.Address)]		; bx = Address Dest
-		mov	ecx, [SYM(VDP_Reg.DMA_Length)]	; DMA Length
-		mov	edx, [SYM(VDP_Reg.Auto_Inc)]	; edx = Auto_Inc
-		mov	dword [SYM(VDP_Reg.DMA_Length)], 0	; Clear DMA.Length
+		mov	ebx, [SYM(Ctrl.Address)]				; bx = Address Dest
+		mov	ecx, [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length]		; DMA Length
+		movzx	edx, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]	; edx = Auto_Inc
+		mov	dword [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length], 0	; Clear DMA.Length
 		and	ebx, 0xFFFF
-		mov	dword [SYM(Ctrl.DMA)], 0		; Flag DMA Fill = 0
+		mov	dword [SYM(Ctrl.DMA)], 0				; Flag DMA Fill = 0
 		xor	ebx, 1
 		or	word [SYM(VDP_Status)], 0x0002
 		mov	[SYM(VRam) + ebx], al
@@ -823,9 +804,9 @@ section .text align=64
 		push	edi
 		push	esi
 		
-		test	dword [SYM(VDP_Reg.Set_2)], 0x10		; DMA enable ?
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x10	; DMA enable ?
 		jz	near .NO_DMA
-		test	al, 0x4					; DMA FILL ?
+		test	al, 0x4						; DMA FILL ?
 		jz	short .No_Fill
 			
 			cmp	byte [SYM(Ctrl.DMA_Mode)], 0x80
@@ -841,9 +822,9 @@ section .text align=64
 	align 16
 	
 	.No_Fill:
-		mov 	ecx, [SYM(VDP_Reg.DMA_Length)]		; ecx = DMA Length
-		mov	esi, [SYM(VDP_Reg.DMA_Address)]		; esi = DMA Source Address / 2
-		and	eax, byte 3				; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
+		mov 	ecx, [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length]	; ecx = DMA Length
+		mov	esi, [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address]	; esi = DMA Source Address / 2
+		and	eax, byte 3					; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
 		and	ecx, 0xFFFF
 		mov	edi, [SYM(Ctrl.Address)]			; edi = Address Dest
 		
@@ -867,9 +848,9 @@ section .text align=64
 		mov	ecx, 0x10000
 		
 	.non_zero_DMA:
-		and	edi, 0xFFFF				; edi = Address Dest
-		cmp	byte [SYM(Ctrl.DMA_Mode)], 0xC0		; DMA Copy ?
-		mov	edx, [SYM(VDP_Reg.Auto_Inc)]		; edx = Auto Inc
+		and	edi, 0xFFFF						; edi = Address Dest
+		cmp	byte [SYM(Ctrl.DMA_Mode)], 0xC0				; DMA Copy ?
+		movzx	edx, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]	; edx = Auto Inc
 		je	near .V_RAM_Copy
 	
 	.MEM_To_V_RAM:
@@ -1052,17 +1033,17 @@ section .text align=64
 	align 16
 	
 	.End_DMA:
-		mov	eax, [SYM(VDP_Reg.DMA_Length)]
+		mov	eax, [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length]
 		mov	[SYM(Ctrl.Address)], bx
-		mov	esi, [SYM(VDP_Reg.DMA_Address)]
+		mov	esi, [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address]
 		sub	eax, ecx
-		mov	[SYM(VDP_Reg.DMA_Length)], ecx
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length], ecx
 		lea	esi, [esi + eax]
 		jbe	short .Nothing_To_Do
 		
 		and	esi, 0x7FFFFF
 		mov	[SYM(DMAT_Length)], eax
-		mov	[SYM(VDP_Reg.DMA_Address)], esi
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address], esi
 		call	SYM(Update_DMA)
 		call	SYM(main68k_releaseCycles)
 		pop	esi
@@ -1088,7 +1069,7 @@ section .text align=64
 	.V_RAM_Copy:
 		or	word [SYM(VDP_Status)], 0x0002
 		and	esi, 0xFFFF
-		mov	dword [SYM(VDP_Reg.DMA_Length)], 0
+		mov	dword [SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length], 0
 		mov	dword [SYM(DMAT_Length)], ecx
 		mov	dword [SYM(DMAT_Type)], 0x3
 		mov	dword [SYM(VRam_Flag)], 1
@@ -1104,7 +1085,7 @@ section .text align=64
 			dec	ecx				; un transfert de moins
 			jnz	short .VRam_Copy_Loop		; si DMA Length >= 0 alors on continue le transfert DMA
 		
-		mov	[SYM(VDP_Reg.DMA_Address)], esi
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address], esi
 		mov	[SYM(Ctrl.Address)], di			; on stocke la nouvelle Data_Address
 		pop	esi
 		pop	edi
@@ -1156,14 +1137,14 @@ section .text align=64
 	; ebx = numero de registre
 	; ne pas oublier de depiler ebx a la fin
 		
-		mov	[SYM(VDP_Reg) + ebx * 4], al
+		mov	[SYM(VDP_Reg) + ebx], al
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Set1:
-		mov	[SYM(VDP_Reg.Set_1)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Set_1], al
 		call	SYM(VDP_Update_IRQ_Line)
 		
 		; VDP register 0, bit 2: Palette Select
@@ -1176,7 +1157,7 @@ section .text align=64
 	align 16
 	
 	.Set2:
-		mov	[SYM(VDP_Reg.Set_2)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Set_2], al
 		call	SYM(VDP_Update_IRQ_Line)
 		pop	ebx
 		ret
@@ -1185,7 +1166,7 @@ section .text align=64
 	
 	.Set3:
 		test	al, 4
-		mov	[SYM(VDP_Reg.Set_3)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Set_3], al
 		jnz	short .VScroll_Cell
 		
 		and	eax, 3
@@ -1208,7 +1189,7 @@ section .text align=64
 	align 16
 	
 	.Set4:
-		mov	[SYM(VDP_Reg.Set_4)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Set_4], al
 		mov	byte [SYM(CRam_Flag)], 1
 		test	al, 0x81
 		pop	ebx
@@ -1219,13 +1200,13 @@ section .text align=64
 		mov	dword [SYM(H_Pix)], 320
 		mov	dword [SYM(H_Pix_Begin)], 0
 		
-		mov	eax, [SYM(VDP_Reg.Pat_WIN_Adr)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Pat_WIN_Adr]
 		and	eax, byte 0x3C
 		shl	eax, 10
 		add	eax, SYM(VRam)
 		mov	[SYM(Win_Addr)], eax
 		
-		mov	al, [SYM(VDP_Reg.Win_H_Pos)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Win_H_Pos]
 		and	al, 0x1F
 		add	al, al
 		cmp	al, 40
@@ -1235,7 +1216,7 @@ section .text align=64
 		
 	.HCell_40_ok:
 		mov	[SYM(Win_X_Pos)], al
-		mov	eax, [SYM(VDP_Reg.Spr_Att_Adr)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Spr_Att_Adr]
 		and	eax, byte 0x7E
 		shl	eax, 9
 		add	eax, SYM(VRam)
@@ -1250,13 +1231,13 @@ section .text align=64
 		mov	dword [SYM(H_Pix)], 256
 		mov	dword [SYM(H_Pix_Begin)], 32
 		
-		mov	eax, [SYM(VDP_Reg.Pat_WIN_Adr)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Pat_WIN_Adr]
 		and	eax, byte 0x3E
 		shl	eax, 10
 		add	eax, SYM(VRam)
 		mov	[SYM(Win_Addr)], eax
 		
-		mov	al, [SYM(VDP_Reg.Win_H_Pos)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Win_H_Pos]
 		and	al, 0x1F
 		add	al, al
 		cmp	al, 32
@@ -1266,7 +1247,7 @@ section .text align=64
 		
 	.HCell_32_ok:
 		mov	[SYM(Win_X_Pos)], al
-		mov	eax, [SYM(VDP_Reg.Spr_Att_Adr)]
+		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Spr_Att_Adr]
 		and	eax, byte 0x7F
 		shl	eax, 9
 		add	eax, SYM(VRam)
@@ -1276,7 +1257,7 @@ section .text align=64
 	align 16
 	
 	.ScrA:
-		mov	[SYM(VDP_Reg.Pat_ScrA_Adr)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Pat_ScrA_Adr], al
 		and	eax, 0x38
 		shl	eax, 10
 		pop	ebx
@@ -1287,8 +1268,8 @@ section .text align=64
 	align 16
 	
 	.Win:
-		test	byte [SYM(VDP_Reg.Set_4)], 0x1
-		mov	[SYM(VDP_Reg.Pat_WIN_Adr)], al
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x1
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Pat_WIN_Adr], al
 		jnz	short .w2
 		
 		and	eax, 0x3E
@@ -1311,7 +1292,7 @@ section .text align=64
 	align 16
 	
 	.ScrB:
-		mov	[SYM(VDP_Reg.Pat_ScrB_Adr)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Pat_ScrB_Adr], al
 		and	eax, 0x7
 		shl	eax, 13
 		pop	ebx
@@ -1322,8 +1303,8 @@ section .text align=64
 	align 16
 	
 	.Spr:
-		test	byte [SYM(VDP_Reg.Set_4)], 0x1
-		mov	[SYM(VDP_Reg.Spr_Att_Adr)], al
+		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_4], 0x1
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Spr_Att_Adr], al
 		jnz	short .spr2
 		
 		and	eax, 0x7F
@@ -1351,20 +1332,20 @@ section .text align=64
 		and	eax, 0x3F
 		pop	ebx
 		mov	byte [SYM(CRam_Flag)], 1
-		mov	[SYM(VDP_Reg.BG_Color)], eax
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.BG_Color], eax
 		ret
 	
 	align 16
 	
 	.HInt:
-		mov	[SYM(VDP_Reg.H_Int_Reg)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.H_Int_Reg], al
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.HScr:
-		mov	[SYM(VDP_Reg.H_Scr_Adr)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.H_Scr_Adr], al
 		and	eax, 0x3F
 		shl	eax, 10
 		pop	ebx
@@ -1376,7 +1357,7 @@ section .text align=64
 	
 	.ScrSize:
 		mov	ebx, eax
-		mov	[SYM(VDP_Reg.Scr_Size)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Scr_Size], al
 		and	ebx, 0x03
 		and	eax, 0x30
 		jmp	[.ScrSize_Table + eax + ebx * 4]
@@ -1464,7 +1445,7 @@ section .text align=64
 	align 16
 	
 	.WinH:
-		mov	[SYM(VDP_Reg.Win_H_Pos)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Win_H_Pos], al
 		and	eax, 0x1F
 		pop	ebx
 		add	eax, eax
@@ -1480,7 +1461,7 @@ section .text align=64
 	align 16
 	
 	.WinV:
-		mov	[SYM(VDP_Reg.Win_V_Pos)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.Win_V_Pos], al
 		and	eax, 0x1F
 		pop	ebx
 		mov	[SYM(Win_Y_Pos)], eax
@@ -1489,44 +1470,44 @@ section .text align=64
 	align 16
 	
 	.DMALL:
-		mov	[SYM(VDP_Reg.DMA_Length_L)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length_L], al
 		pop	ebx
-		mov	[SYM(VDP_Reg.DMA_Length)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length], al
 		ret
 	
 	align 16
 	
 	.DMALH:
-		mov	[SYM(VDP_Reg.DMA_Length_H)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length_H], al
 		pop	ebx
-		mov	[SYM(VDP_Reg.DMA_Length) + 1], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Length + 1], al
 		ret
 	
 	align 16
 	
 	.DMAAL:
-		mov	[SYM(VDP_Reg.DMA_Src_Adr_L)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Src_Adr_L], al
 		pop	ebx
-		mov	[SYM(VDP_Reg.DMA_Address)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address], al
 		ret
 	
 	align 16
 	
 	.DMAAM:
-		mov	[SYM(VDP_Reg.DMA_Src_Adr_M)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Src_Adr_M], al
 		pop	ebx
-		mov	[SYM(VDP_Reg.DMA_Address) + 1], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address + 1], al
 		ret
 	
 	align 16
 	
 	.DMAAH:
-		mov	[SYM(VDP_Reg.DMA_Src_Adr_H)], al
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Src_Adr_H], al
 		mov	ebx, eax
 		and	eax, 0x7F
 		and	ebx, 0xC0
-		mov	[SYM(VDP_Reg.DMA_Address) + 2], al
-		mov	[SYM(Ctrl.DMA_Mode)], ebx				; DMA Mode
+		mov	[SYM(VDP_Reg) + Reg_VDP_Type.DMA_Address + 2], al
+		mov	[SYM(Ctrl.DMA_Mode)], ebx	; DMA Mode
 		pop	ebx
 		ret
 	

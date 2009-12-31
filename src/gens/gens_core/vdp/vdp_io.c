@@ -202,6 +202,7 @@ uint8_t VDP_Int_Ack(void)
 
 void VDP_Update_IRQ_Line(void)
 {
+	// TODO: HBlank interrupt should take priority over VBlank interrupt.
 	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
 	{
 		// VBlank interrupt.

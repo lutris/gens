@@ -521,7 +521,9 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	
 	// VDP registers.
 	for (int i = 0; i < 24; i++)
+	{
 		Set_VDP_Reg(i, md_save.vdp_reg[i]);
+	}
 	
 	// MC68000 registers.
 	for (int i = 0; i < 8; i++)
@@ -570,32 +572,32 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.sr		= le16_to_cpu(md_save_v6.mc68000_reg.sr);
 		Context_68K.contextfiller00 = le16_to_cpu(md_save_v6.mc68000_reg.contextfiller00);
 		
-		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
-		VDP_Reg.Set1		= le32_to_cpu(md_save_v6.vdp_reg.Set1);
-		VDP_Reg.Set2		= le32_to_cpu(md_save_v6.vdp_reg.Set2);
-		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
-		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
-		VDP_Reg.Pat_Win_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
-		VDP_Reg.Pat_ScrB_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
-		VDP_Reg.Spr_Att_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
-		VDP_Reg.Reg6		= le32_to_cpu(md_save_v6.vdp_reg.Reg6);
-		VDP_Reg.BG_Color	= le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
-		VDP_Reg.Reg8		= le32_to_cpu(md_save_v6.vdp_reg.Reg8);
-		VDP_Reg.Reg9		= le32_to_cpu(md_save_v6.vdp_reg.Reg9);
-		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.H_Int);
-		VDP_Reg.Set3		= le32_to_cpu(md_save_v6.vdp_reg.Set3);
-		VDP_Reg.Set4		= le32_to_cpu(md_save_v6.vdp_reg.Set4);
-		VDP_Reg.H_Scr_Adr	= le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
-		VDP_Reg.Reg14		= le32_to_cpu(md_save_v6.vdp_reg.Reg14);
-		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
-		VDP_Reg.Scr_Size	= le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
-		VDP_Reg.Win_H_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
-		VDP_Reg.Win_V_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
-		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
-		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
-		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
-		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
-		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
+		VDP_Reg.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
+		VDP_Reg.Set1		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set1);
+		VDP_Reg.Set2		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set2);
+		VDP_Reg.Pat_ScrA_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
+		VDP_Reg.Pat_ScrA_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
+		VDP_Reg.Pat_Win_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
+		VDP_Reg.Pat_ScrB_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
+		VDP_Reg.Spr_Att_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
+		VDP_Reg.Reg6		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg6);
+		VDP_Reg.BG_Color	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
+		VDP_Reg.Reg8		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg8);
+		VDP_Reg.Reg9		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg9);
+		VDP_Reg.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Int);
+		VDP_Reg.Set3		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set3);
+		VDP_Reg.Set4		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set4);
+		VDP_Reg.H_Scr_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
+		VDP_Reg.Reg14		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg14);
+		VDP_Reg.Auto_Inc	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
+		VDP_Reg.Scr_Size	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
+		VDP_Reg.Win_H_Pos	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
+		VDP_Reg.Win_V_Pos	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
+		VDP_Reg.DMA_Length_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
+		VDP_Reg.DMA_Length_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
+		VDP_Reg.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
+		VDP_Reg.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
+		VDP_Reg.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
 		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
 		
@@ -683,11 +685,11 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		//extern int DMAT_Tmp, VSRam_Over;
 		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
 		//ImportDataAuto(&VSRam_Over, data, offset, 4);
-		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
-		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
-		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
-		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
-		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
+		VDP_Reg.DMA_Length_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
+		VDP_Reg.DMA_Length_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
+		VDP_Reg.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
+		VDP_Reg.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
+		VDP_Reg.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
 		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
 	}
@@ -863,7 +865,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		// VDP registers.
 		for (unsigned int i = 0; i < 26; i++)
 		{
-			VDP_Reg.reg[i] = le32_to_cpu(md_save_v7.vdp_reg[i]);
+			VDP_Reg.reg[i] = (uint8_t)le32_to_cpu(md_save_v7.vdp_reg[i]);
 		}
 		
 		// VDP control.
@@ -996,13 +998,9 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	VDP_Reg.DMA_Src_Adr_H |= Ctrl.DMA_Mode & 0xC0;
 	
-	// Registers are currently stored as 32-bit unsigned int,
-	// but only the lower byte is used.
-	uint32_t *vdp_src = (uint32_t*)&(VDP_Reg.Set1);
 	for (unsigned int i = 0; i < 24; i++)
 	{
-		md_save.vdp_reg[i] = (uint8_t)(*vdp_src);
-		vdp_src++;
+		md_save.vdp_reg[i] = VDP_Reg.reg[i];
 	}
 	
 	// CRAM and VSRAM.
@@ -1228,7 +1226,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// VDP registers.
 	for (unsigned int i = 0; i < 26; i++)
 	{
-		md_save_v7.vdp_reg[i] = cpu_to_le32(VDP_Reg.reg[i]);
+		md_save_v7.vdp_reg[i] = (uint8_t)cpu_to_le32(VDP_Reg.reg[i]);
 	}
 	
 	// VDP control.

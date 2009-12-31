@@ -93,20 +93,21 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	}
 	
 	// Update the background color.
-	MD_palette[0] = MD_palette[VDP_Reg.BG_Color & 0x3F];
+	unsigned int BG_Color = (VDP_Reg.BG_Color & 0x3F);
+	MD_palette[0] = MD_palette[BG_Color];
 	
 	if (hs)
 	{
 		// Update the background color for highlight and shadow.
 		
 		// Normal color.
-		MD_palette[192] = MD_palette[VDP_Reg.BG_Color & 0x3F];
+		MD_palette[192] = MD_palette[BG_Color];
 		
 		// Shadow color.
-		MD_palette[64] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 64];
+		MD_palette[64] = MD_palette[BG_Color + 64];
 		
 		// Highlight color.
-		MD_palette[128] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 128];
+		MD_palette[128] = MD_palette[BG_Color + 128];
 	}
 }
 
