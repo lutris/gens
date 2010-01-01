@@ -29,6 +29,56 @@
 // C includes.
 #include <string.h>
 
+// VDP registers and control.
+VDP_Reg_t VDP_Reg;
+VDP_Ctrl_t VDP_Ctrl;
+
+// Memory variables.
+VDP_VRam_t VRam;
+VDP_CRam_t CRam;
+
+// VDP address pointers.
+uint8_t *ScrA_Addr;
+uint8_t *ScrB_Addr;
+uint8_t *Win_Addr;
+uint8_t *Spr_Addr;
+uint8_t *H_Scroll_Addr;
+
+// VDP convenience values: Horizontal.
+unsigned int H_Cell;
+unsigned int H_Win_Mul;
+unsigned int H_Pix;
+unsigned int H_Pix_Begin;
+
+// VDP convenience values: Scroll.
+unsigned int V_Scroll_MMask;
+unsigned int H_Scroll_Mask;
+
+unsigned int H_Scroll_CMul;
+unsigned int H_Scroll_CMask;
+unsigned int V_Scroll_CMask;
+
+// TODO: Eliminate these.
+unsigned int Win_X_Pos;
+unsigned int Win_Y_Pos;
+
+// Miscellaneous. (TODO: Determine if these should be signed or unsigned.)
+int VDP_Status;
+int VDP_Int;
+int VDP_Current_Line;
+int VDP_Num_Lines;
+int VDP_Num_Vis_Lines;
+
+// Flags. (TODO: Combine into one variable?)
+int CRam_Flag;
+int VRam_Flag;
+
+// Enable zero-length DMA.
+int Zero_Length_DMA;
+
+
+// Tables.
+uint8_t H_Counter_Table[512][2];
 
 const uint32_t CD_Table[64] =
 {
@@ -83,7 +133,6 @@ const uint8_t DMA_Timing_Table[] =
 	9,    18,  17,   9
 };
 
-
 // System status.
 int Genesis_Started = 0;
 int SegaCD_Started = 0;
@@ -137,23 +186,25 @@ void VDP_Reset(void)
 		VDP_Set_Reg(reg, vdp_reg_init[reg]);
 	}
 	
-	// Reset the non-register parts of the VDP registers.
+	// Reset the non-register parts of the VDP register struct.
 	VDP_Reg.DMA_Length = 0;
 	VDP_Reg.DMA_Address = 0;
+	VDP_Reg.DMAT_Tmp = 0;
+	VDP_Reg.DMAT_Length = 0;
+	VDP_Reg.DMAT_Type = 0;
 	
 	// Other variables.
 	VDP_Status = 0x0200;
 	VDP_Int = 0;
-	DMAT_Tmp = 0;
-	DMAT_Length = 0;
-	DMAT_Type = 0;
-	Ctrl.Flag = 0;
-	Ctrl.Data = 0;
-	Ctrl.Write = 0;
-	Ctrl.Access = 0;
-	Ctrl.Address = 0;
-	Ctrl.DMA_Mode = 0;
-	Ctrl.DMA = 0;
+	
+	// VDP Control struct.
+	VDP_Ctrl.Flag = 0;
+	VDP_Ctrl.Data = 0;
+	VDP_Ctrl.Write = 0;
+	VDP_Ctrl.Access = 0;
+	VDP_Ctrl.Address = 0;
+	VDP_Ctrl.DMA_Mode = 0;
+	VDP_Ctrl.DMA = 0;
 	
 	// Set the CRam and VRam flags.
 	CRam_Flag = 1;
@@ -218,31 +269,6 @@ void VDP_Update_IRQ_Line(void)
 	main68k_context.interrupts[0] &= 0xF0;
 }
 
-
-// The following are pointers from vdp_io_x86.asm.
-extern uint8_t *ScrA_Addr;
-extern uint8_t *Win_Addr;
-extern uint8_t *ScrB_Addr;
-extern uint8_t *Spr_Addr;
-extern uint8_t *H_Scroll_Addr;
-
-// The following are internal scroll settings.
-extern int V_Scroll_MMask;
-extern int H_Scroll_Mask;
-
-extern int H_Scroll_CMul;
-extern int H_Scroll_CMask;
-extern int V_Scroll_CMask;
-
-// The following are internal H cell settings.
-extern int H_Cell;
-extern int H_Win_Mul;
-extern int H_Pix;
-extern int H_Pix_Begin;
-
-// The following are internal window settings that should be eliminated.
-extern int Win_X_Pos;
-extern int Win_Y_Pos;
 
 /**
  * VDP_Set_Reg(): Set the value of a register. (Mode 5 only!)
@@ -487,7 +513,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 23:
 			// DMA Address High.
 			VDP_Reg.DMA_Address = (VDP_Reg.DMA_Address & 0xFF00FFFF) | ((val & 0x7F) << 16);
-			Ctrl.DMA_Mode = (val & 0xC0);
+			VDP_Ctrl.DMA_Mode = (val & 0xC0);
 			break;
 	}
 }
@@ -621,28 +647,28 @@ uint16_t VDP_Read_Data(void)
 	//printf("%s() called. Ctrl.Access == %d\n", __func__, Ctrl.Access);
 	
 	// Reset the Control flag.
-	Ctrl.Flag = 0;
+	VDP_Ctrl.Flag = 0;
 	
 	uint16_t data;
 	
-	switch (Ctrl.Access)
+	switch (VDP_Ctrl.Access)
 	{
 		case 5:
 			// VRam Read.
-			data = VRam.u16[(Ctrl.Address & 0xFFFE) >> 1];
-			Ctrl.Address += VDP_Reg.Auto_Inc;
+			data = VRam.u16[(VDP_Ctrl.Address & 0xFFFE) >> 1];
+			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
 			break;
 		
 		case 6:
 			// CRam Read.
-			data = CRam.u16[(Ctrl.Address & 0x7E) >> 1];
-			Ctrl.Address += VDP_Reg.Auto_Inc;
+			data = CRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
+			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
 			break;
 		
 		case 7:
 			// VSRam Read.
-			data = VSRam.u16[(Ctrl.Address & 0x7E) >> 1];
-			Ctrl.Address += VDP_Reg.Auto_Inc;
+			data = VSRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
+			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
 			break;
 		
 		default:

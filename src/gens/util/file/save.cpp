@@ -426,7 +426,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
 		// TODO: Create a struct fr this.
-		ImportData(&Ctrl, data, 0x30, 7 * 4);
+		ImportData(&VDP_Ctrl, data, 0x30, 7 * 4);
 		
 		// 0x440: Z80 busreq
 		// 0x444: Z80 reset
@@ -473,17 +473,17 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		}
 		
 		// Clear VDP control.
-		memset(&Ctrl, 0x00, sizeof(Ctrl));
+		memset(&VDP_Ctrl, 0x00, sizeof(VDP_Ctrl));
 		
 		// Load VDP control settings.
 		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
 		Write_VDP_Ctrl(lastCtrlData >> 16);
 		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
 		
-		Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
-		Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
-		Ctrl.Access = le16_to_cpu(md_save.vdp_ctrl.ctrl_access); //Nitsuja added this
-		Ctrl.Address = le32_to_cpu(md_save.vdp_ctrl.write_address) & 0xFFFF;
+		VDP_Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
+		VDP_Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
+		VDP_Ctrl.Access = le16_to_cpu(md_save.vdp_ctrl.ctrl_access); //Nitsuja added this
+		VDP_Ctrl.Address = le32_to_cpu(md_save.vdp_ctrl.write_address) & 0xFFFF;
 		
 		// Load the Z80 bank register.
 		Bank_Z80 = le32_to_cpu(md_save.z80_reg.bank);
@@ -641,10 +641,10 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player1, 1);
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player2, 2);
 		
-		// MIscellaneous.
-		DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
-		DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
-		DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
+		// Miscellaneous.
+		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v6.dmat_length);
+		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v6.dmat_type);
+		VDP_Reg.DMAT_Tmp	= le32_to_cpu(md_save_v6.dmat_tmp);
 		VDP_Current_Line	= le32_to_cpu(md_save_v6.vdp_current_line);
 		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
 		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
@@ -664,9 +664,9 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Cycles_Z80		= le32_to_cpu(md_save_v6.cycles_z80);
 		VDP_Status		= le32_to_cpu(md_save_v6.vdp_status);
 		VDP_Int			= le32_to_cpu(md_save_v6.vdp_int);
-		Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
-		Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
-		Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
+		VDP_Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
+		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
+		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
 		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
@@ -819,8 +819,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		VDP_Current_Line	= le32_to_cpu(md_save_v7.vdp_current_line);
 		VDP_Num_Lines		= le32_to_cpu(md_save_v7.vdp_num_lines);
 		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
-		DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
-		DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
+		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v7.dmat_length);
+		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v7.dmat_type);
 		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
@@ -871,7 +871,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		// VDP control.
 		for (unsigned int i = 0; i < 7; i++)
 		{
-			Ctrl.ureg[i] = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
+			VDP_Ctrl.ureg[i] = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
 		}
 		
 		// Extra Starscream MC68000 information.
@@ -978,15 +978,15 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	}
 	
 	// VDP control data.
-	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(Ctrl.Data);
+	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data);
 	
-	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(Ctrl.Flag);
-	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((Ctrl.DMA >> 2) & 1);
+	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(VDP_Ctrl.Flag);
+	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((VDP_Ctrl.DMA >> 2) & 1);
 	
-	// Ctrl.Access added by Gens Rerecording.
-	md_save.vdp_ctrl.ctrl_access = cpu_to_le16((uint16_t)(Ctrl.Access));
+	// VDP_Ctrl.Access added by Gens Rerecording.
+	md_save.vdp_ctrl.ctrl_access = cpu_to_le16((uint16_t)(VDP_Ctrl.Access));
 	
-	md_save.vdp_ctrl.write_address = cpu_to_le32(Ctrl.Address & 0xFFFF);
+	md_save.vdp_ctrl.write_address = cpu_to_le32(VDP_Ctrl.Address & 0xFFFF);
 	
 	// VDP registers.
 	VDP_Reg.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
@@ -996,7 +996,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	VDP_Reg.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
 	VDP_Reg.DMA_Src_Adr_H = (VDP_Reg.DMA_Address >> 16) & 0xFF;
 	
-	VDP_Reg.DMA_Src_Adr_H |= Ctrl.DMA_Mode & 0xC0;
+	VDP_Reg.DMA_Src_Adr_H |= VDP_Ctrl.DMA_Mode & 0xC0;
 	
 	for (unsigned int i = 0; i < 24; i++)
 	{
@@ -1181,8 +1181,8 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Current_Line);
 	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Num_Lines);
 	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Num_Vis_Lines);
-	md_save_v7.dmat_length		= cpu_to_le32(DMAT_Length);
-	md_save_v7.dmat_type		= cpu_to_le32(DMAT_Type);
+	md_save_v7.dmat_length		= cpu_to_le32(VDP_Reg.DMAT_Length);
+	md_save_v7.dmat_type		= cpu_to_le32(VDP_Reg.DMAT_Type);
 	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]
 	// TODO: LagCount for Gens Rerecording.
 	//md_save_v7.lag_count		= cpu_to_le32(LagCount);
@@ -1232,7 +1232,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// VDP control.
 	for (unsigned int i = 0; i < 7; i++)
 	{
-		md_save_v7.vdp_ctrl[i] = cpu_to_le32(Ctrl.ureg[i]);
+		md_save_v7.vdp_ctrl[i] = cpu_to_le32(VDP_Ctrl.ureg[i]);
 	}
 	
 	// Extra Starscream MC68000 information.

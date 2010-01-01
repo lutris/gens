@@ -804,7 +804,7 @@ static void Refresh_VDP_State(void)
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 102, BLANC);
 	sprintf(Dbg_Out_Str, "DMA Busy %d  PAL Mode %d Line Num %d", (tmp >> 1) & 1, tmp & 1, VDP_Current_Line);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 110, BLANC);
-	sprintf(Dbg_Out_Str, "VDP Int =%.2X DMA_Length=%.4X", VDP_Int, DMAT_Length);
+	sprintf(Dbg_Out_Str, "VDP Int =%.2X DMA_Length=%.4X", VDP_Int, VDP_Reg.DMAT_Length);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 118, BLANC);
 }
 
@@ -880,15 +880,15 @@ static void Refresh_VDP_Palette(void)
 	
 	sprintf(Dbg_Out_Str, "Status : %.4X", VDP_Read_Status());
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 70, BLANC);
-	sprintf(Dbg_Out_Str, "Flag : %.2X       Data : %.8X", Ctrl.Flag, Ctrl.Data);
+	sprintf(Dbg_Out_Str, "Flag : %.2X       Data : %.8X", VDP_Ctrl.Flag, VDP_Ctrl.Data);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 78, BLANC);
-	sprintf(Dbg_Out_Str, "Write : %.2X      Access : %.2X", Ctrl.Write, Ctrl.Access);
+	sprintf(Dbg_Out_Str, "Write : %.2X      Access : %.2X", VDP_Ctrl.Write, VDP_Ctrl.Access);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 86, BLANC);
-	sprintf(Dbg_Out_Str, "Address : %.4X  DMA_Mode : %.2X", Ctrl.Address, Ctrl.DMA_Mode);
+	sprintf(Dbg_Out_Str, "Address : %.4X  DMA_Mode : %.2X", VDP_Ctrl.Address, VDP_Ctrl.DMA_Mode);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 94, BLANC);
 	sprintf(Dbg_Out_Str, "DMA adr: %.8X  DMA len: %.4X", VDP_Reg.DMA_Address, VDP_Reg.DMA_Length);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 102, BLANC);
-	sprintf(Dbg_Out_Str, "DMA : %.2X", Ctrl.DMA);
+	sprintf(Dbg_Out_Str, "DMA : %.2X", VDP_Ctrl.DMA);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 110, BLANC);
 	
 	Print_Text_Constant("Sprite List:", strlen(Dbg_Out_Str), 176, 126, BLANC);

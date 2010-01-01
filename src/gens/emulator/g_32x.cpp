@@ -399,7 +399,7 @@ static inline int T_gens_do_32X_frame(void)
 		Cycles_SSH2 += CPL_SSH2;
 		Cycles_Z80 += CPL_Z80;
 		PWM_Cycles += CPL_PWM;
-		if (DMAT_Length)
+		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -473,7 +473,7 @@ static inline int T_gens_do_32X_frame(void)
 	Cycles_SSH2 += CPL_SSH2;
 	Cycles_Z80 += CPL_Z80;
 	PWM_Cycles += CPL_PWM;
-	if (DMAT_Length)
+	if (VDP_Reg.DMAT_Length)
 		main68k_addCycles(Update_DMA());
 	
 	if (--HInt_Counter < 0)
@@ -568,7 +568,7 @@ static inline int T_gens_do_32X_frame(void)
 		Cycles_SSH2 += CPL_SSH2;
 		Cycles_Z80 += CPL_Z80;
 		PWM_Cycles += CPL_PWM;
-		if (DMAT_Length)
+		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1

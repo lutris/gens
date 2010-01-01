@@ -20,7 +20,7 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 	
-struc Reg_VDP_Type
+struc VDP_Reg_t
 	.Set_1:			resb 1
 	.Set_2:			resb 1
 	.Pat_ScrA_Adr:		resb 1
@@ -48,4 +48,19 @@ struc Reg_VDP_Type
 	
 	.DMA_Length:		resd 1
 	.DMA_Address:		resd 1
+	
+	; DMAT variables.
+	.DMAT_Tmp:		resd 1
+	.DMAT_Length:		resd 1
+	.DMAT_Type:		resd 1
+endstruc
+
+struc VDP_Ctrl_t
+	.Flag:		resd 1
+	.Data:		resd 1
+	.Write:		resd 1
+	.Access:	resd 1
+	.Address:	resd 1
+	.DMA_Mode:	resd 1
+	.DMA:		resd 1
 endstruc

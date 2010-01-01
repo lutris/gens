@@ -27,6 +27,9 @@ extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;
 
+/**
+ * VDP_Reg_t: VDP Register struct.
+ */
 typedef struct
 {
 	union
@@ -65,29 +68,59 @@ typedef struct
 	// They don't map to any actual VDP registers.
 	unsigned int DMA_Length;
 	unsigned int DMA_Address;
-} Reg_VDP_Type;
+	
+	// DMAT variables.
+	unsigned int DMAT_Tmp;
+	unsigned int DMAT_Length;
+	unsigned int DMAT_Type;
+} VDP_Reg_t;
+extern VDP_Reg_t VDP_Reg;
 
-extern union
+/**
+ * VDP_Ctrl_t: VDP Control struct.
+ */
+typedef union
+{
+	int reg[7];
+	uint32_t ureg[7];
+	struct
+	{
+		unsigned int Flag;
+		unsigned int Data;
+		unsigned int Write;
+		unsigned int Access;
+		unsigned int Address;
+		unsigned int DMA_Mode;
+		unsigned int DMA;
+	};
+} VDP_Ctrl_t;
+extern VDP_Ctrl_t VDP_Ctrl;
+
+typedef union
 {
 	uint8_t  u8[64*1024];
 	uint16_t u16[(64*1024)>>1];
 	uint32_t u32[(64*1024)>>2];
-} VRam;
-extern union
+} VDP_VRam_t;
+extern VDP_VRam_t VRam;
+ 
+typedef union
 {
 	uint8_t  u8[64<<1];
 	uint16_t u16[64];
 	uint32_t u32[64>>1];
-} CRam;
+} VDP_CRam_t;
+extern VDP_CRam_t CRam;
+
+extern uint32_t VSRam_Over[8];
 extern union
 {
 	uint8_t  u8[128<<1];
 	uint16_t u16[128];
 } VSRam;
-extern uint32_t VSRam_Over[8];
+
 extern uint8_t  H_Counter_Table[512][2];
 
-extern Reg_VDP_Type VDP_Reg;
 extern int VDP_Current_Line;
 extern int VDP_Num_Lines;
 extern int VDP_Num_Vis_Lines;
@@ -95,30 +128,35 @@ extern int CRam_Flag;
 extern int VRam_Flag;
 extern int VDP_Int;
 extern int VDP_Status;
-extern int DMAT_Length;
-extern int DMAT_Type;
-extern int DMAT_Tmp;
-
-typedef union
-{
-	int reg[7];
-	uint32_t ureg[7];
-	struct
-	{
-		int Flag;
-		int Data;
-		int Write;
-		int Access;
-		int Address;
-		int DMA_Mode;
-		int DMA;
-	};
-} VDP_Ctrl_t;
-extern VDP_Ctrl_t Ctrl;
 
 // Set this to 1 to enable zero-length DMA requests.
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
+
+// VDP address pointers.
+extern uint8_t *ScrA_Addr;
+extern uint8_t *ScrB_Addr;
+extern uint8_t *Win_Addr;
+extern uint8_t *Spr_Addr;
+extern uint8_t *H_Scroll_Addr;
+
+// VDP convenience values: Horizontal.
+extern unsigned int H_Cell;
+extern unsigned int H_Win_Mul;
+extern unsigned int H_Pix;
+extern unsigned int H_Pix_Begin;
+
+// VDP convenience values: Scroll.
+extern unsigned int V_Scroll_MMask;
+extern unsigned int H_Scroll_Mask;
+
+extern unsigned int H_Scroll_CMul;
+extern unsigned int H_Scroll_CMask;
+extern unsigned int V_Scroll_CMask;
+
+// TODO: Eliminate these.
+extern unsigned int Win_X_Pos;
+extern unsigned int Win_Y_Pos;
 
 void     VDP_Reset(void);
 uint8_t  VDP_Read_H_Counter(void);
