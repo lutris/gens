@@ -24,10 +24,13 @@
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "mdZ80/mdZ80.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
+
+// VDP Rendering Functions.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -404,7 +407,7 @@ int Do_VDP_Only(void)
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
 	     VDP_Current_Line++)
 	{
-		Render_Line();
+		VDP_Render_Line_m5();
 	}
 
 	return 0;
@@ -496,7 +499,7 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP)
 		{
 			// VDP needs to be updated.
-			Render_Line();
+			VDP_Render_Line_m5();
 		}
 		
 		main68k_exec(Cycles_M68K);
