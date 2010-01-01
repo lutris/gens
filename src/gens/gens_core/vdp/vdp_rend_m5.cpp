@@ -47,12 +47,37 @@ extern "C" void VDP_Render_Line_m5_asm(void);
 
 
 /**
+ * T_Render_LineBuf(): Render the line buffer to the destination surface.
+ * @param pixel Type of pixel.
+ * @param md_palette MD palette buffer.
+ * @param num_px Number of pixels to render.
+ * @param src Source. (Line buffer)
+ * @param dest Destination surface.
+ */
+template<typename pixel, pixel *md_palette>
+static inline void T_Render_LineBuf(unsigned int num_px, uint8_t *src, pixel *dest)
+{
+	// Render the line buffer to the destination surface.
+	// Line buffer is accessed using bytes for some reason.
+	for (unsigned int i = (num_px / 4); i != 0; i--)
+	{
+		// TODO: Endianness conversions.
+		*dest     = md_palette[*src];
+		*(dest+1) = md_palette[*(src+2)];
+		*(dest+2) = md_palette[*(src+4)];
+		*(dest+3) = md_palette[*(src+6)];
+			
+		dest += 4;
+		src += 8;
+	}
+}
+
+
+/**
  * VDP_Render_Line_m5(): Render a line. (Mode 5)
  */
 void VDP_Render_Line_m5(void)
 {
-	unsigned int i;
-	
 	// Check if the VDP is active.
 	if (!(VDP_Reg.Set2 & 0x40))
 	{
@@ -85,42 +110,17 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Render the image.
-	const register unsigned int num_2px = (160 - H_Pix_Begin) >> 1;
+	const unsigned int num_px = (160 - H_Pix_Begin) * 2;
 	const unsigned int LineStart = (TAB336[VDP_Current_Line] + 8);
-		
-	// Line Buffer is accessed using bytes for some reason.
-	uint8_t *src = &LineBuf.u8[8<<1];
 	
 	if (bppMD == 32)
 	{
-		// 32-bit color.
-		uint32_t *dest = &MD_Screen32[LineStart];
-		for (i = num_2px; i != 0; i--)
-		{
-			// TODO: Endianness conversions.
-			*dest     = MD_Palette32[*src];
-			*(dest+1) = MD_Palette32[*(src+2)];
-			*(dest+2) = MD_Palette32[*(src+4)];
-			*(dest+3) = MD_Palette32[*(src+6)];
-			
-			dest += 4;
-			src += 8;
-		}
+		T_Render_LineBuf<uint32_t, MD_Palette32>
+				(num_px, &LineBuf.u8[8<<1], &MD_Screen32[LineStart]);
 	}
 	else
 	{
-		// 15/16-bit color.
-		uint16_t *dest = &MD_Screen[LineStart];
-		for (i = num_2px; i != 0; i--)
-		{
-			// TODO: Endianness conversions.
-			*dest     = MD_Palette[*src];
-			*(dest+1) = MD_Palette[*(src+2)];
-			*(dest+2) = MD_Palette[*(src+4)];
-			*(dest+3) = MD_Palette[*(src+6)];
-			
-			dest += 4;
-			src += 8;
-		}
+		T_Render_LineBuf<uint16_t, MD_Palette>
+				(num_px, &LineBuf.u8[8<<1], &MD_Screen[LineStart]);
 	}
 }
