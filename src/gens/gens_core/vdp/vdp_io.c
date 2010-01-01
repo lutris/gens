@@ -164,9 +164,11 @@ void VDP_Reset(void)
 	unsigned int hc_val;
 	for (hc = 0; hc < 512; hc++)
 	{
+		// H32
 		hc_val = ((hc * 170) / 488) - 0x18;
 		H_Counter_Table[hc][0] = (unsigned char)hc_val;
 		
+		// H40
 		hc_val = ((hc * 205) / 488) - 0x1C;
 		H_Counter_Table[hc][1] = (unsigned char)hc_val;
 	}
@@ -488,4 +490,93 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			Ctrl.DMA_Mode = (val & 0xC0);
 			break;
 	}
+}
+
+
+/**
+ * VDP_Read_H_Counter(): Read the H Counter.
+ * @return H Counter.
+ */
+uint8_t VDP_Read_H_Counter(void)
+{
+	unsigned int odo_68K = main68k_readOdometer();
+	odo_68K -= (Cycles_M68K - CPL_M68K);
+	odo_68K &= 0x1FF;
+	
+	// H_Counter_Table[][0] == H32.
+	// H_Counter_Table[][1] == H40.
+	
+	if (VDP_Reg.Set4 & 0x81)
+		return H_Counter_Table[odo_68K][1];
+	else
+		return H_Counter_Table[odo_68K][0];
+}
+
+
+/**
+ * VDP_Read_V_Counter(): Read the V Counter.
+ * @return V Counter.
+ */
+uint8_t VDP_Read_V_Counter(void)
+{
+	unsigned int odo_68K = main68k_readOdometer();
+	odo_68K -= (Cycles_M68K - CPL_M68K);
+	odo_68K &= 0x1FF;
+	
+	unsigned int H_Counter;
+	uint8_t bl, bh;		// TODO: Figure out what this actually means.
+	
+	if (VDP_Reg.Set4 & 0x81)
+	{
+		// H40
+		H_Counter = H_Counter_Table[odo_68K][0];
+		bl = 0xA4;
+	}
+	else
+	{
+		// H32
+		H_Counter = H_Counter_Table[odo_68K][1];
+		bl = 0x84;
+	}
+	
+	bh = ((H_Counter <= 0xE0) ? 1 : 0);
+	bl = ((H_Counter >= bl) ? 1 : 0);
+	bl &= bh;
+	
+	unsigned int V_Counter = VDP_Current_Line;
+	V_Counter += (bl ? 1 : 0);
+	
+	// V_Counter_Overflow depends on PAL/NTSC status.
+	// (VDP_Status & 1) == 1 for PAL, 0 for NTSC.
+	if (VDP_Status & 1)
+	{
+		// PAL.
+		if (V_Counter >= 0x103)
+		{
+			// Overflow.
+			V_Counter -= 56;
+		}
+	}
+	else
+	{
+		// NTSC.
+		if (V_Counter >= 0xEB)
+		{
+			// Overflow.
+			V_Counter -= 6;
+		}
+	}
+	
+	// Check for interlaced mode.
+	// NOTE: Bit 1 is LSM0. Should check both LSM1 and LSM0!
+	if (VDP_Reg.Set4 & 2)
+	{
+		// Interlaced mode is enabled.
+		uint8_t vc_tmp = (V_Counter & 0xFF);
+		vc_tmp = (vc_tmp << 1) | (vc_tmp >> 7);
+		return vc_tmp;
+	}
+	
+	// Interlaced mode is not enabled.
+	return (uint8_t)(V_Counter & 0xFF);
 }

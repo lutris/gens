@@ -260,9 +260,9 @@ uint8_t FASTCALL Z80_ReadB_PSG(uint32_t address)
 	{
 		// VDP counter.
 		if (address & 1)
-			return Read_VDP_H_Counter();
+			return VDP_Read_H_Counter();
 		else
-			return Read_VDP_V_Counter();
+			return VDP_Read_V_Counter();
 	}
 }
 
@@ -355,7 +355,7 @@ uint16_t FASTCALL Z80_ReadW_PSG(uint32_t address)
 	else //if (address >= 0x7F08 && address <= 0x7F09)
 	{
 		// VDP counter.
-		return ((Read_VDP_V_Counter() << 8) | (Read_VDP_H_Counter()));
+		return ((VDP_Read_V_Counter() << 8) | (VDP_Read_H_Counter()));
 	}
 }
 

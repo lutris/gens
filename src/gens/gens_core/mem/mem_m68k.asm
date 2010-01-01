@@ -280,8 +280,8 @@ section .text align=64
 	
 	extern SYM(Read_VDP_Data)
 	extern SYM(Read_VDP_Status)
-	extern SYM(Read_VDP_V_Counter) 
-	extern SYM(Read_VDP_H_Counter)
+	extern SYM(VDP_Read_V_Counter) 
+	extern SYM(VDP_Read_H_Counter)
 	extern SYM(Write_Byte_VDP_Data)
 	extern SYM(Write_Word_VDP_Data)
 	extern SYM(Write_VDP_Ctrl)
@@ -780,14 +780,14 @@ section .text align=64
 		jnz	short .vdp_h_counter
 	
 	.vdp_v_counter:
-		call	SYM(Read_VDP_V_Counter)
+		call	SYM(VDP_Read_V_Counter)
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.vdp_h_counter:
-		call	SYM(Read_VDP_H_Counter)
+		call	SYM(VDP_Read_H_Counter)
 		pop	ebx
 		ret
 	
@@ -1138,9 +1138,9 @@ section .text align=64
 	.no_vdp_status:
 		cmp	ebx, 0xC00009
 		ja	short .bad
-		call	SYM(Read_VDP_V_Counter)
+		call	SYM(VDP_Read_V_Counter)
 		mov	bl, al
-		call	SYM(Read_VDP_H_Counter)
+		call	SYM(VDP_Read_H_Counter)
 		mov	ah, bl
 		pop	ebx
 		ret
