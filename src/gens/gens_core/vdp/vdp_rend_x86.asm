@@ -38,6 +38,34 @@ NOSHAD_D	equ 0xBFBFBFBF
 
 section .data align=64
 	
+	; VDP layer flags (ported from Gens Rerecording; original by Nitsuja)
+	VDP_LAYER_SCROLLA_LOW		equ	(1 << 0)
+	VDP_LAYER_SCROLLA_HIGH		equ	(1 << 1)
+	VDP_LAYER_SCROLLA_SWAP		equ	(1 << 2)
+	VDP_LAYER_SCROLLB_LOW		equ	(1 << 3)
+	VDP_LAYER_SCROLLB_HIGH		equ	(1 << 4)
+	VDP_LAYER_SCROLLB_SWAP		equ	(1 << 5)
+	VDP_LAYER_SPRITE_LOW		equ	(1 << 6)
+	VDP_LAYER_SPRITE_HIGH		equ	(1 << 7)
+	VDP_LAYER_SPRITE_SWAP		equ	(1 << 8)
+	VDP_LAYER_SPRITE_ALWAYSONTOP	equ	(1 << 9)
+	VDP_LAYER_PALETTE_LOCK		equ	(1 << 10)
+	
+	; Default layer flags
+	VDP_LAYER_DEFAULT		equ	VDP_LAYER_SCROLLA_LOW	| \
+						VDP_LAYER_SCROLLA_HIGH	| \
+						VDP_LAYER_SCROLLB_LOW	| \
+						VDP_LAYER_SCROLLB_HIGH	| \
+						VDP_LAYER_SPRITE_LOW	| \
+						VDP_LAYER_SPRITE_HIGH
+	
+	; VDP_Layers: Active layers and layer settings.
+	global SYM(VDP_Layers)
+	SYM(VDP_Layers):
+		dd VDP_LAYER_DEFAULT
+	
+section .rodata align=64
+	
 	global SYM(TAB336)
 	SYM(TAB336):
 	%assign i 0
@@ -65,35 +93,7 @@ section .data align=64
 	Mask_F:
 		dd 0xFFFFFFFF, 0xFFFF0FFF, 0xFFFF00FF, 0xFFFF000F
 		dd 0xFFFF0000, 0x0FFF0000, 0x00FF0000, 0x000F0000
-	
-	align 32
-	
-	; VDP layer flags (ported from Gens Rerecording; original by Nitsuja)
-	VDP_LAYER_SCROLLA_LOW		equ	(1 << 0)
-	VDP_LAYER_SCROLLA_HIGH		equ	(1 << 1)
-	VDP_LAYER_SCROLLA_SWAP		equ	(1 << 2)
-	VDP_LAYER_SCROLLB_LOW		equ	(1 << 3)
-	VDP_LAYER_SCROLLB_HIGH		equ	(1 << 4)
-	VDP_LAYER_SCROLLB_SWAP		equ	(1 << 5)
-	VDP_LAYER_SPRITE_LOW		equ	(1 << 6)
-	VDP_LAYER_SPRITE_HIGH		equ	(1 << 7)
-	VDP_LAYER_SPRITE_SWAP		equ	(1 << 8)
-	VDP_LAYER_SPRITE_ALWAYSONTOP	equ	(1 << 9)
-	VDP_LAYER_PALETTE_LOCK		equ	(1 << 10)
-	
-	; Default layer flags
-	VDP_LAYER_DEFAULT		equ	VDP_LAYER_SCROLLA_LOW	| \
-						VDP_LAYER_SCROLLA_HIGH	| \
-						VDP_LAYER_SCROLLB_LOW	| \
-						VDP_LAYER_SCROLLB_HIGH	| \
-						VDP_LAYER_SPRITE_LOW	| \
-						VDP_LAYER_SPRITE_HIGH
-	
-	; VDP_Layers: Active layers and layer settings.
-	global SYM(VDP_Layers)
-	SYM(VDP_Layers):
-		dd VDP_LAYER_DEFAULT
-	
+
 section .bss align=64
 	
 	extern SYM(VRam)
