@@ -83,12 +83,12 @@ static inline void adjustContrast(int& r, int& g, int& b, int contrast)
 
 
 /**
- * Recalculate_Palettes(): Recalculates the MD and 32X palettes for brightness, contrast, and various effects.
+ * T_Recalculate_Palette_MD(): Recalculates the MD palette for brightness, contrast, and various effects.
  */
-template<typename pixel, pixel *palMD, pixel *pal32X, pixel *cramAdjusted32X,
+template<typename pixel,
 	int RBits, int GBits, int BBits,
 	int RMask, int GMask, int BMask>
-static inline void T_Recalculate_Palettes(void)
+static inline void T_Recalculate_Palette_MD(pixel *palMD)
 {
 	int r, g, b;
 	
@@ -178,6 +178,26 @@ static inline void T_Recalculate_Palettes(void)
 			   (g << (BBits)) |
 			   (b);
 	}
+}
+
+
+/**
+ * T_Recalculate_Palette_32X(): Recalculates the 32X palette for brightness, contrast, and various effects.
+ */
+template<typename pixel,
+	int RBits, int GBits, int BBits,
+	int RMask, int GMask, int BMask>
+static inline void T_Recalculate_Palette_32X(pixel *pal32X, pixel *cramAdjusted32X)
+{
+	int r, g, b;
+	
+	// Brightness / Contrast
+	// These values are scaled to positive numbers.
+	// Normal brightness: (Brightness_Level == 100)
+	// Normal contrast:   (  Contrast_Level == 100)
+
+	const int brightness = (Brightness_Level - 100);
+	const int contrast = Contrast_Level;
 	
 	// Calculate the 32X palette.
 	for (unsigned int i = 0; i < 0x10000; i++)
@@ -253,13 +273,32 @@ static inline void T_Recalculate_Palettes(void)
 
 void Recalculate_Palettes(void)
 {
+	// Always recalculate both the 16-bit and 32-bit MD palettes.
 	if (bppMD == 15)
-		T_Recalculate_Palettes<uint16_t, Palette, _32X_Palette_16B, _32X_VDP_CRam_Adjusted, 5, 5, 5, 0x1F, 0x1F, 0x1F>();
-	else //if (bppMD == 16)
-		T_Recalculate_Palettes<uint16_t, Palette, _32X_Palette_16B, _32X_VDP_CRam_Adjusted, 5, 6, 5, 0x1F, 0x3F, 0x1F>();
+		T_Recalculate_Palette_MD<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>(Palette);
+	else
+		T_Recalculate_Palette_MD<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>(Palette);
 	
-	// 32-bit color.
-	T_Recalculate_Palettes<uint32_t, Palette32, _32X_Palette_32B, _32X_VDP_CRam_Adjusted32, 8, 8, 8, 0xFF, 0xFF, 0xFF>();
+	T_Recalculate_Palette_MD<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>(Palette32);
+	
+	// Recalculate only one 32X palette.
+	switch (bppMD)
+	{
+		case 15:
+			T_Recalculate_Palette_32X<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>
+					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
+			break;
+		
+		case 16:
+			T_Recalculate_Palette_32X<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>
+					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
+			break;
+		
+		case 32:
+			T_Recalculate_Palette_32X<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>
+					(_32X_Palette_32B, _32X_VDP_CRam_Adjusted32);
+			break;
+	}
 	
 	// Set CRam_Flag.
 	CRam_Flag = 1;
