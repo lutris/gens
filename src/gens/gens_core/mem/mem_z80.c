@@ -250,7 +250,7 @@ uint8_t FASTCALL Z80_ReadB_PSG(uint32_t address)
 	if (address < 0x7F08)
 	{
 		// VDP status.
-		int rval = Read_VDP_Status();
+		int rval = VDP_Read_Status();
 		if (address & 1)
 			return (rval & 0xFF);
 		else
@@ -350,7 +350,7 @@ uint16_t FASTCALL Z80_ReadW_PSG(uint32_t address)
 	if (address < 0x7F08)
 	{
 		// VDP status.
-		return Read_VDP_Status();
+		return VDP_Read_Status();
 	}
 	else //if (address >= 0x7F08 && address <= 0x7F09)
 	{

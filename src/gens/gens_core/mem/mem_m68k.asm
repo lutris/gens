@@ -279,7 +279,7 @@ section .text align=64
 	extern SYM(Z80_WriteB_Table)
 	
 	extern SYM(Read_VDP_Data)
-	extern SYM(Read_VDP_Status)
+	extern SYM(VDP_Read_Status)
 	extern SYM(VDP_Read_V_Counter) 
 	extern SYM(VDP_Read_H_Counter)
 	extern SYM(Write_Byte_VDP_Data)
@@ -801,7 +801,7 @@ section .text align=64
 	align 16
 	
 	.vdp_status:
-		call	SYM(Read_VDP_Status)
+		call	SYM(VDP_Read_Status)
 		test	ebx, 1
 		jnz	.no_swap_status
 		mov	al, ah			; on lit que le poids fort
@@ -1129,7 +1129,7 @@ section .text align=64
 		cmp	ebx, 0xC00007
 		ja	.no_vdp_status
 		
-		call	SYM(Read_VDP_Status)
+		call	SYM(VDP_Read_Status)
 		pop	ebx
 		ret
 	

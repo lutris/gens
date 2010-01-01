@@ -580,3 +580,31 @@ uint8_t VDP_Read_V_Counter(void)
 	// Interlaced mode is not enabled.
 	return (uint8_t)(V_Counter & 0xFF);
 }
+
+
+/**
+ * VDP_Read_Status(): Read the VDP status register.
+ * @return VDP status register.
+ */
+uint16_t VDP_Read_Status(void)
+{
+	// Toggle the upper 8 bits of VDP_Status. (TODO: Is this correct?)
+	VDP_Status ^= 0xFF00;
+	
+	// Mask the SOVR ("Sprite Overflow") and C ("Collision between non-zero pixels in two sprites") bits.
+	// TODO: Should these be masked? This might be why some games are broken...
+	VDP_Status &= ~(0x0040 | 0x0020);
+	
+	// Check if we're currently in VBlank.
+	if (!(VDP_Status & 0x0008))
+	{
+		// Not in VBlank. Mask the F bit. ("Vertical Interrupt Happened")
+		VDP_Status &= ~0x0080;
+	}
+	
+	// If the Display is disabled, OR the result with 0x0008.
+	if (VDP_Reg.Set2 & 0x40)
+		return VDP_Status;
+	else
+		return (VDP_Status | 0x0008);
+}

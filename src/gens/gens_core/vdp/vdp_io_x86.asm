@@ -450,33 +450,6 @@ section .text align=64
 	
 	align 16
 	
-	; uint16_t Read_VDP_Status(void)
-	global SYM(Read_VDP_Status)
-	SYM(Read_VDP_Status):
-		
-		mov	ax, [SYM(VDP_Status)]
-		push	ax
-		xor	ax, 0xFF00
-		and	ax, 0xFF9F
-		test	ax, 0x0008
-		jnz	short .In_VBlank
-		and	ax, 0xFF1F
-		
-	.In_VBlank:
-		mov	[SYM(VDP_Status)], ax
-		test	byte [SYM(VDP_Reg) + Reg_VDP_Type.Set_2], 0x40
-		pop	ax
-		jz	short .Display_OFF
-		ret
-	
-	align 16
-	
-	.Display_OFF:
-		or	ax, 8
-		ret
-	
-	align 16
-	
 	; void Write_Byte_VDP_Data(uint8_t Data)
 	global SYM(Write_Byte_VDP_Data)
 	SYM(Write_Byte_VDP_Data):

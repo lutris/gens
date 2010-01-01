@@ -795,7 +795,7 @@ static void Refresh_VDP_State(void)
 			VDP_Reg.DMA_Src_Adr_H);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 78, BLANC);
 	
-	int tmp = Read_VDP_Status ();
+	int tmp = VDP_Read_Status();
 	sprintf(Dbg_Out_Str, "V Int Happened %d  Sprite overflow %d", (tmp >> 7) & 1, (tmp >> 6) & 1);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 86, BLANC);
 	sprintf(Dbg_Out_Str, "Collision Spr  %d  Odd Frame in IM %d", (tmp >> 5) & 1, (tmp >> 4) & 1);
@@ -878,7 +878,7 @@ static void Refresh_VDP_Palette(void)
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
 	
-	sprintf(Dbg_Out_Str, "Status : %.4X", Read_VDP_Status ());
+	sprintf(Dbg_Out_Str, "Status : %.4X", VDP_Read_Status());
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 70, BLANC);
 	sprintf(Dbg_Out_Str, "Flag : %.2X       Data : %.8X", Ctrl.Flag, Ctrl.Data);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 78, BLANC);
