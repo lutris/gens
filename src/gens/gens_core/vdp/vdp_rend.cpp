@@ -46,8 +46,8 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	if (VDP_Layers & VDP_LAYER_PALETTE_LOCK)
 		return;
 	
-	// Disable the CRAM flag, since the palette is being updated.
-	CRam_Flag = 0;
+	// Clear the CRam flag, since the palette is being updated.
+	VDP_Flags.CRam = 0;
 	
 	// Color mask. Depends on VDP register 0, bit 2 (Palette Select).
 	// If set, allows full MD palette.

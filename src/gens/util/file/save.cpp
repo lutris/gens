@@ -230,8 +230,8 @@ int Savestate::LoadState(const string& filename)
 	
 	// Make sure CRAM and VRAM are updated.
 	Flag_Clr_Scr = 1;
-	CRam_Flag = 1;
-	VRam_Flag = 1;
+	VDP_Flags.CRam = 1;
+	VDP_Flags.VRam = 1;
 	
 	vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
 	
@@ -673,7 +673,11 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		// TODO: LagCount from Gens Rerecording.
 		//LadCount		= le32_to_cpu(md_save_v6.lag_count);
 		
-		VRam_Flag		= le32_to_cpu(md_save_v6.vram_flag);
+		// VRam Flag.
+		unsigned int tmp	= le32_to_cpu(md_save_v6.vram_flag);
+		VDP_Flags.VRam		= (tmp & 1);
+		VDP_Flags.VRam_Spr	= ((tmp >> 1) & 1);
+		
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE1_vdp_reg_dma_length);
 		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE2_vdp_reg_dma_length);
@@ -825,7 +829,11 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// TODO: LagCount for Gens Rerecording.
 		//Lag_Count		= le32_to_cpu(md_save_v7.lag_count);
-		VRam_Flag		= le32_to_cpu(md_save_v7.vram_flag);
+		
+		// VRam Flag.
+		unsigned int tmp	= le32_to_cpu(md_save_v7.vram_flag);
+		VDP_Flags.VRam		= (tmp & 1);
+		VDP_Flags.VRam_Spr	= ((tmp >> 1) & 1);
 		
 		// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 		memcpy(&CRam, &md_save_v7.cram, sizeof(CRam));
@@ -1186,7 +1194,9 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]
 	// TODO: LagCount for Gens Rerecording.
 	//md_save_v7.lag_count		= cpu_to_le32(LagCount);
-	md_save_v7.vram_flag		= cpu_to_le32(VRam_Flag);
+	
+	// VRam Flag.
+	md_save_v7.vram_flag		= cpu_to_le32(VDP_Flags.VRam | (VDP_Flags.VRam_Spr << 1));
 	
 	// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 	memcpy(&md_save_v7.cram, &CRam, sizeof(CRam));

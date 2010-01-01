@@ -300,8 +300,8 @@ void Recalculate_Palettes(void)
 			break;
 	}
 	
-	// Set CRam_Flag.
-	CRam_Flag = 1;
+	// Set the CRam flag to force a palette update.
+	VDP_Flags.CRam = 1;
 	
 	// TODO: Do_VDP_Only() / Do_32X_VDP_Only() if paused.
 	

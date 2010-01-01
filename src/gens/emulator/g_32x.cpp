@@ -362,7 +362,8 @@ static inline int T_gens_do_32X_frame(void)
 	// Raise the MDP_EVENT_PRE_FRAME event.
 	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
 	
-	VRam_Flag = 1;
+	// Set the VRam flag to force a VRam update.
+	VDP_Flags.VRam = 1;
 	
 	VDP_Status &= 0xFFF7;		// Clear V Blank
 	if (VDP_Reg.Set4 & 0x2)

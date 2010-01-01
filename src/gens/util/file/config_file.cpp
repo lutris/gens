@@ -439,7 +439,8 @@ int Config::load(const string& filename, void* gameActive)
 	
 	INI cfg(filename);
 	
-	CRam_Flag = 1;
+	// Force a palette update after the configuration is loaded.
+	VDP_Flags.CRam = 1;
 	
 	// Paths.
 	cfg.getString("Directories", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));

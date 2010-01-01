@@ -124,8 +124,12 @@ section .bss align=64
 	
 	extern SYM(VDP_Status)
 	extern SYM(VDP_Current_Line)
-	extern SYM(CRam_Flag)
-	extern SYM(VRam_Flag)
+	
+	; Flags.
+	extern SYM(VDP_Flags)
+	VDP_FLAG_VRAM			equ	(1 << 0)
+	VDP_FLAG_VRAM_SPR		equ	(1 << 1)
+	VDP_FLAG_CRAM			equ	(1 << 2)
 	
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP)
@@ -1786,11 +1790,11 @@ section .text align=64
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [SYM(VRam_Flag)]
+		mov	ebx, [SYM(VDP_Flags)]
 		movzx	eax, byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4]
-		and	ebx, byte 3
+		and	ebx, byte (VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
 		and	eax, byte 4	; TODO: This checks LSM1 only. Check both LSM1 and LSM0!
-		mov	byte [SYM(VRam_Flag)], 0
+		and	dword [SYM(VDP_Flags)], ~(VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
 		jmp	[.Table_Sprite_Struct + ebx * 8 + eax]
 	
 	align 16
@@ -1862,8 +1866,8 @@ section .text align=64
 	align 16
 	
 	.VDP_OK:
-		test	byte [SYM(CRam_Flag)], 1		; teste si la palette a etait modifiee
-		jz	short .Palette_OK		; si oui
+		test	dword [SYM(VDP_Flags)], VDP_FLAG_CRAM	; Check if the palette was modified.
+		jz	short .Palette_OK			; If it wasn't, don't update it.
 		
 		test	byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4], 0x08
 		jnz	short .Palette_HS
@@ -1875,13 +1879,13 @@ section .text align=64
 		
 	.Palette_HS:
 		call	SYM(VDP_Update_Palette_HS)
-
+	
 	align 16
 	
 	.Palette_OK:
 		cmp	byte [SYM(bppMD)], 32	; check if this is 32-bit color
 		jne	short .Render16
-		
+	
 	.Render32: ; 32-bit color
 		mov	ecx, 160
 		mov	eax, [SYM(H_Pix_Begin)]
@@ -1997,10 +2001,9 @@ section .text align=64
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [SYM(VRam_Flag)]
-		xor	eax, eax
-		and	ebx, byte 3
-		mov	[SYM(VRam_Flag)], eax
+		mov	ebx, [SYM(VDP_Flags)]
+		and	ebx, byte (VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
+		and	dword [SYM(VDP_Flags)], ~(VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
 		jmp	[.Table_Sprite_Struct + ebx * 4]
 	
 	align 16
@@ -2030,7 +2033,7 @@ section .text align=64
 	
 	.NHS:
 			RENDER_LINE 0, 0
-			test	byte [SYM(CRam_Flag)], 1		; test if palette was modified
+			test	dword [SYM(VDP_Flags)], VDP_FLAG_CRAM	; Check if the palette was modified.
 			jz	near .VDP_OK
 			call	SYM(VDP_Update_Palette)
 			jmp	near .VDP_OK
@@ -2039,7 +2042,7 @@ section .text align=64
 
 	.HS:
 			RENDER_LINE 0, 1
-			test	byte [SYM(CRam_Flag)], 1		; test if palette was modified
+			test	dword [SYM(VDP_Flags)], VDP_FLAG_CRAM	; Check if the palette was modified.
 			jz	short .VDP_OK
 			call	SYM(VDP_Update_Palette_HS)
 	

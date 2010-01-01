@@ -82,8 +82,12 @@ section .bss align=64
 	extern SYM(VDP_Current_Line)
 	extern SYM(VDP_Num_Lines)
 	extern SYM(VDP_Num_Vis_Lines)
-	extern SYM(CRam_Flag)
-	extern SYM(VRam_Flag)
+	
+	; Flags.
+	extern SYM(VDP_Flags)
+	VDP_FLAG_VRAM			equ	(1 << 0)
+	VDP_FLAG_VRAM_SPR		equ	(1 << 1)
+	VDP_FLAG_CRAM			equ	(1 << 2)
 	
 	extern SYM(Zero_Length_DMA)
 	
@@ -136,11 +140,11 @@ section .text align=64
 %endif
 	mov	ebx, edi
 %if %2 < 1
-	mov	dword [SYM(VRam_Flag)], 1
+	or	dword [SYM(VDP_Flags)], VDP_FLAG_VRAM
 	mov	byte [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 0
 %else
 	%if %2 < 2
-		mov	dword [SYM(CRam_Flag)], 1
+		or	dword [SYM(VDP_Flags)], VDP_FLAG_CRAM
 	%endif
 	mov	byte [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 1
 %endif
@@ -337,7 +341,7 @@ section .text align=64
 	.WR_VRAM:
 		mov	ecx, ebx
 		shr	ebx, 1
-		mov	byte [SYM(VRam_Flag)], 1
+		or	dword [SYM(VDP_Flags)], VDP_FLAG_VRAM
 		jnc	short .Address_Even
 		rol	ax, 8
 	
@@ -355,7 +359,7 @@ section .text align=64
 	.WR_CRAM:
 		mov	ecx, ebx
 		and	ebx, byte 0x7E
-		mov	byte [SYM(CRam_Flag)], 1
+		or	dword [SYM(VDP_Flags)], VDP_FLAG_CRAM
 		mov	[SYM(CRam) + ebx], ax
 		movzx	eax, byte [SYM(VDP_Reg) + VDP_Reg_t.Auto_Inc]
 		add	ecx, eax
@@ -396,7 +400,7 @@ section .text align=64
 		xor	ebx, 1
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 0x2
 		and	ecx, 0xFFFF
-		mov	byte [SYM(VRam_Flag)], 1
+		or	dword [SYM(VDP_Flags)], VDP_FLAG_VRAM
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], ecx
 		jnz	short .Loop
 		
@@ -805,7 +809,7 @@ section .text align=64
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMA_Length], 0
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], ecx
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 0x3
-		mov	dword [SYM(VRam_Flag)], 1
+		or	dword [SYM(VDP_Flags)], VDP_FLAG_VRAM
 		jmp	short .VRam_Copy_Loop
 	
 	align 16

@@ -124,10 +124,21 @@ extern uint8_t  H_Counter_Table[512][2];
 extern int VDP_Current_Line;
 extern int VDP_Num_Lines;
 extern int VDP_Num_Vis_Lines;
-extern int CRam_Flag;
-extern int VRam_Flag;
 extern int VDP_Int;
 extern int VDP_Status;
+
+// Flags.
+typedef union
+{
+	unsigned int flags;
+	struct
+	{
+		unsigned int VRam	:1;	// VRam was modified. (Implies VRam_Spr.)
+		unsigned int VRam_Spr	:1;	// Sprite Attribute Table was modified.
+		unsigned int CRam	:1;	// CRam was modified.
+	};
+} VDP_Flags_t;
+extern VDP_Flags_t VDP_Flags;
 
 // Set this to 1 to enable zero-length DMA requests.
 // Default is 0. (hardware-accurate)

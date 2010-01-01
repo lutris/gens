@@ -69,9 +69,8 @@ int VDP_Current_Line;
 int VDP_Num_Lines;
 int VDP_Num_Vis_Lines;
 
-// Flags. (TODO: Combine into one variable?)
-int CRam_Flag;
-int VRam_Flag;
+// Flags.
+VDP_Flags_t VDP_Flags;
 
 // Enable zero-length DMA.
 int Zero_Length_DMA;
@@ -207,8 +206,8 @@ void VDP_Reset(void)
 	VDP_Ctrl.DMA = 0;
 	
 	// Set the CRam and VRam flags.
-	CRam_Flag = 1;
-	VRam_Flag = 1;
+	VDP_Flags.CRam = 1;
+	VDP_Flags.VRam = 1;
 	
 	// Initialize the Horizontal Counter table.
 	unsigned int hc;
@@ -295,7 +294,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			
 			// VDP register 0, bit 2: Palette Select
 			// If cleared, only the LSBs of each CRAM component is used.
-			CRam_Flag = 1;
+			// TODO: Only set this if Palette Select was changed.
+			VDP_Flags.CRam = 1;
 			break;
 		
 		case 1:
@@ -333,12 +333,16 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				tmp = (val & 0x7F) << 9;
 			
 			Spr_Addr = &VRam.u8[tmp];
-			VRam_Flag |= 2;		// Spriteshave changed.
+			
+			// Update the Sprite Attribute Table.
+			// TODO: Only set this if the actual value has changed.
+			VDP_Flags.VRam_Spr = 1;
 			break;
 		
 		case 7:
 			// Background Color.
-			CRam_Flag = 1;
+			// TODO: Only set this if the actual value has changed.
+			VDP_Flags.CRam = 1;
 			break;
 		
 		case 11:
@@ -363,7 +367,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			
 			// This register has the Shadow/Highlight setting,
 			// so set the CRam Flag to force a CRam update.
-			CRam_Flag = 1;
+			// TODO: Only set this if the actual value has changed.
+			VDP_Flags.CRam = 1;
 			
 			if (val & 0x81)		// TODO: Original asm tests 0x81. Should this be done for other H40 tests?
 			{
