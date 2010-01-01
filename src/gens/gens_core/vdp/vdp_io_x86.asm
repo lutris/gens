@@ -392,64 +392,6 @@ section .text align=64
 	
 	align 16
 	
-	; uint16_t Read_VDP_Data(void)
-	global SYM(Read_VDP_Data)
-	SYM(Read_VDP_Data):
-		
-		push	ebx
-		mov	byte [SYM(Ctrl.Flag)], 0		; on en a finit avec Address Set
-		push	ecx
-		mov	ebx, [SYM(Ctrl.Address)]
-		mov	eax, [SYM(Ctrl.Access)]
-		mov	ecx, ebx
-		jmp	[.Table_Read + eax * 4]
-	
-	align 16
-	
-	.Table_Read:
-		dd	error, error, error, error		; Wrong
-		dd	error, .RD_VRAM, .RD_CRAM, .RD_VSRAM	; READ
-		dd	error, error, error, error		; WRITE
-		dd	error, error, error, error		; WRITE & READ (WRONG)
-	
-	align 16
-	
-	.RD_VRAM:
-		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
-		add	ecx, eax
-		and	ebx, 0xFFFE
-		mov	[SYM(Ctrl.Address)], cx
-		mov	ax, [SYM(VRam) + ebx]
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
-	.RD_CRAM:
-		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
-		add	ecx, eax
-		and	ebx, byte 0x7E
-		mov	[SYM(Ctrl.Address)], cx
-		mov	ax, [SYM(CRam) + ebx]
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
-	.RD_VSRAM:
-		movzx	eax, byte [SYM(VDP_Reg) + Reg_VDP_Type.Auto_Inc]
-		add	ecx, eax
-		and	ebx, byte 0x7E
-		mov	[SYM(Ctrl.Address)], cx
-		mov	ax, [SYM(VSRam) + ebx]
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
 	; void Write_Byte_VDP_Data(uint8_t Data)
 	global SYM(Write_Byte_VDP_Data)
 	SYM(Write_Byte_VDP_Data):

@@ -79,7 +79,11 @@ extern union
 	uint16_t u16[64];
 	uint32_t u32[64>>1];
 } CRam;
-extern uint8_t  VSRam[256];
+extern union
+{
+	uint8_t  u8[128<<1];
+	uint16_t u16[128];
+} VSRam;
 extern uint32_t VSRam_Over[8];
 extern uint8_t  H_Counter_Table[512][2];
 
@@ -120,9 +124,9 @@ void     VDP_Reset(void);
 uint8_t  VDP_Read_H_Counter(void);
 uint8_t  VDP_Read_V_Counter(void);
 uint16_t VDP_Read_Status(void);
+uint16_t VDP_Read_Data(void);
 
 /* Functions that need to be ported to C. */
-uint16_t Read_VDP_Data(void);
 int Write_Byte_VDP_Data(uint8_t  Data);
 int Write_Word_VDP_Data(uint16_t Data);
 int Write_VDP_Ctrl(uint16_t Data);

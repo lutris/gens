@@ -278,7 +278,7 @@ section .text align=64
 	extern SYM(Z80_ReadB_Table)
 	extern SYM(Z80_WriteB_Table)
 	
-	extern SYM(Read_VDP_Data)
+	extern SYM(VDP_Read_Data)
 	extern SYM(VDP_Read_Status)
 	extern SYM(VDP_Read_V_Counter) 
 	extern SYM(VDP_Read_H_Counter)
@@ -1119,7 +1119,7 @@ section .text align=64
 		cmp	ebx, 0xC00003
 		ja	short .no_vdp_data
 		
-		call	SYM(Read_VDP_Data)
+		call	SYM(VDP_Read_Data)
 		pop	ebx
 		ret
 	

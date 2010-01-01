@@ -608,3 +608,48 @@ uint16_t VDP_Read_Status(void)
 	else
 		return (VDP_Status | 0x0008);
 }
+
+
+/**
+ * VDP_Read_Data(): Read data from the VDP.
+ * @return Data.
+ */
+uint16_t VDP_Read_Data(void)
+{
+	// TODO: Test this function.
+	// I can't find any MD games that read data from the VDP.
+	//printf("%s() called. Ctrl.Access == %d\n", __func__, Ctrl.Access);
+	
+	// Reset the Control flag.
+	Ctrl.Flag = 0;
+	
+	uint16_t data;
+	
+	switch (Ctrl.Access)
+	{
+		case 5:
+			// VRam Read.
+			data = VRam.u16[(Ctrl.Address & 0xFFFE) >> 1];
+			Ctrl.Address += VDP_Reg.Auto_Inc;
+			break;
+		
+		case 6:
+			// CRam Read.
+			data = CRam.u16[(Ctrl.Address & 0x7E) >> 1];
+			Ctrl.Address += VDP_Reg.Auto_Inc;
+			break;
+		
+		case 7:
+			// VSRam Read.
+			data = VSRam.u16[(Ctrl.Address & 0x7E) >> 1];
+			Ctrl.Address += VDP_Reg.Auto_Inc;
+			break;
+		
+		default:
+			// Invalid read specification.
+			data = 0;
+			break;
+	}
+	
+	return data;
+}
