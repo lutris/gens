@@ -131,7 +131,7 @@ static inline void T_Make_Sprite_Struct(void)
 
 
 /**
- * C wrapper functions for T_Make_Sprite_Struct.
+ * C wrapper functions for T_Make_Sprite_Struct().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -177,7 +177,7 @@ static inline uint16_t T_Get_X_Offset(void)
 }
 
 /**
- * C wrapper functions for T_Get_X_Offset.
+ * C wrapper functions for T_Get_X_Offset().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -192,6 +192,81 @@ uint16_t Get_X_Offset_ScrollA(void)
 uint16_t Get_X_Offset_ScrollB(void)
 {
 	return T_Get_X_Offset<false>();
+}
+
+
+/**
+ * T_Update_Y_Offset(): Update the Y offset.
+ * @param plane True for Scroll A; false for Scroll B.
+ * @param interlaced True for interlaced; false for non-interlaced.
+ * @param cur Current Y offset. (Returned if we're outside of VRam limits.)
+ * @return Y offset.
+ */
+template<bool plane, bool interlaced>
+static inline unsigned int T_Update_Y_Offset(unsigned int cur)
+{
+	// TODO: This function is untested!
+	// Find a ROM that uses 2-cell VScroll to test it.
+	
+	if (VDP_Data_Misc.Cell & 0xFF81)
+	{
+		// Outside of VRam limits. Don't change anything.
+		return cur;
+	}
+	
+	// Get the vertical scroll offset.
+	unsigned int VScroll_Offset = VDP_Data_Misc.Cell;
+	if (plane)
+	{
+		// Scroll A.
+		VScroll_Offset = VSRam.u16[VScroll_Offset];
+	}
+	else
+	{
+		// Scroll B.
+		VScroll_Offset = VSRam.u16[VScroll_Offset + 1];
+	}
+	
+	if (interlaced)
+	{
+		// Divide Y scroll by 2.
+		// TODO: Don't do this! Handle interlaced mode properly.
+		VScroll_Offset /= 2;
+	}
+	
+	VScroll_Offset += VDP_Current_Line;
+	VDP_Data_Misc.Line_7 = VScroll_Offset & 0x07;	// Pattern line.
+	VScroll_Offset >>= 3;				// Get the V Cell offset.
+	VScroll_Offset &= V_Scroll_CMask;		// Prevent V Cell offset from overflowing.
+	return VScroll_Offset;
+}
+
+/**
+ * C wrapper functions for T_Update_Y_Offset().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	unsigned int Update_Y_Offset_ScrollA(unsigned int cur);
+	unsigned int Update_Y_Offset_ScrollB(unsigned int cur);
+	unsigned int Update_Y_Offset_ScrollA_Interlaced(unsigned int cur);
+	unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur);
+}
+
+unsigned int Update_Y_Offset_ScrollA(unsigned int cur)
+{
+	return T_Update_Y_Offset<true, false>(cur);
+}
+unsigned int Update_Y_Offset_ScrollB(unsigned int cur)
+{
+	return T_Update_Y_Offset<false, false>(cur);
+}
+unsigned int Update_Y_Offset_ScrollA_Interlaced(unsigned int cur)
+{
+	return T_Update_Y_Offset<true, true>(cur);
+}
+unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
+{
+	return T_Update_Y_Offset<false, true>(cur);
 }
 
 

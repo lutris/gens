@@ -159,46 +159,11 @@ section .text align=64
 	extern SYM(Get_X_Offset_ScrollA)
 	extern SYM(Get_X_Offset_ScrollB)
 	
-;****************************************
-
-; macro UPDATE_Y_OFFSET
-; takes :
-; eax = cell courant
-; param :
-; %1 = 0 for scroll B and 1 for scroll A
-; %2 = 0 for normal mode and 1 for interlaced mode
-; returns :
-; edi = Y Offset in function of current cell
-
-%macro UPDATE_Y_OFFSET 2
+	extern SYM(Update_Y_Offset_ScrollA)
+	extern SYM(Update_Y_Offset_ScrollB)
+	extern SYM(Update_Y_Offset_ScrollA_Interlaced)
+	extern SYM(Update_Y_Offset_ScrollB_Interlaced)
 	
-	mov	eax, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell]	; Current cell for the V Scroll
-	test	eax, 0xFF81						; outside the limits of the VRAM? Then don't change...
-	jnz	short %%End
-	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
-	
-%if %1 > 0
-	mov	eax, [SYM(VSRam) + eax * 2 + 0]
-%else
-	mov	ax, [SYM(VSRam) + eax * 2 + 2]
-%endif
-	
-%if %2 > 0
-	shr	eax, 1				; divide Y scroll by 2 if interlaced
-%endif
-	
-	add	edi, eax
-	mov	eax, edi
-	shr	edi, 3				; V Cell Offset
-	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]	; prevent V Cell Offset from overflowing
-	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], eax
-	
-%%End
-
-%endmacro
-
-
 ;****************************************
 
 ; macro GET_PATTERN_INFO
@@ -923,7 +888,14 @@ section .text align=64
 	%%Loop
 	
 %if %2 > 0
-		UPDATE_Y_OFFSET 0, %1
+		push	edi
+		%if %1 > 0
+			call Update_Y_Offset_ScrollB_Interlaced
+		%else
+			call Update_Y_Offset_ScrollB
+		%endif
+		add	esp, byte 4
+		mov	edi, eax
 %endif
 	
 	%%First_Loop
@@ -1088,7 +1060,14 @@ section .text align=64
 %%Loop_SCA
 
 %if %2 > 0
-		UPDATE_Y_OFFSET 1, %1
+		push	edi
+		%if %1 > 0
+			call Update_Y_Offset_ScrollA_Interlaced
+		%else
+			call Update_Y_Offset_ScrollA
+		%endif
+		add	esp, byte 4
+		mov	edi, eax
 %endif
 
 %%First_Loop_SCA
@@ -1148,7 +1127,14 @@ section .text align=64
 %%LC_SCA
 
 %if %2 > 0
-	UPDATE_Y_OFFSET 1, %1
+	push	edi
+	%if %1 > 0
+		call Update_Y_Offset_ScrollA_Interlaced
+	%else
+		call Update_Y_Offset_ScrollA
+	%endif
+	add	esp, byte 4
+	mov	edi, eax
 %endif
 
 	GET_PATTERN_INFO 1
