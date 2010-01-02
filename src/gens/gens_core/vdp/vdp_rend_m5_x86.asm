@@ -170,6 +170,11 @@ section .text align=64
 	extern SYM(Get_Pattern_Data)
 	extern SYM(Get_Pattern_Data_Interlaced)
 	
+	extern SYM(PutPixel_P0_ScrollA)
+	extern SYM(PutPixel_P0_ScrollA_SH)
+	extern SYM(PutPixel_P0_ScrollB)
+	extern SYM(PutPixel_P0_ScrollB_SH)
+	
 ;****************************************
 
 ; macro UPDATE_MASK_SPRITE
@@ -308,44 +313,36 @@ section .text align=64
 
 %macro PUTPIXEL_P0 5
 	
-	mov	eax, ebx
-	and	eax, %2
-	jz	short %%Trans
+	push	edx	; This gets clobbered for some reason.
+	push	edx	; palette
+	push	ebx	; pattern
+	push	%3	; shift
+	push	%2	; mask
+	push	%1	; pattern pixel number
+	push	ebp	; display pixel number
 	
 %if %4 > 0
+	; Scroll A
 	%if %5 > 0
-		mov	cl, [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 1]
-		test	cl, PRIO_B
-		jnz	short %%Trans
+		; S/H
+		call SYM(PutPixel_P0_ScrollA_SH)
 	%else
-		test	byte [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 1], PRIO_B
-		jnz	short %%Trans
-	%endif
-%endif
-
-%if %3 > 0
-	shr	eax, %3
-%endif
-
-%if %4 > 0
-	%if %5 > 0
-		and	cl, SHAD_B
-		add	al, dl
-		add	al, cl
-	%else
-		add	al, dl
+		; No S/H
+		call SYM(PutPixel_P0_ScrollA)
 	%endif
 %else
+	; Scroll B
 	%if %5 > 0
-		lea	eax, [eax + edx + SHAD_W]
+		; S/H
+		call SYM(PutPixel_P0_ScrollB_SH)
 	%else
-		add	al, dl
+		; No S/H
+		call SYM(PutPixel_P0_ScrollB)
 	%endif
 %endif
 	
-	mov	[SYM(LineBuf) + ebp * 2 + (%1 * 2)], al	; set the pixel
-	
-%%Trans
+	add	esp, byte 6*4
+	pop	edx
 
 %endmacro
 

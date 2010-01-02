@@ -334,6 +334,109 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
 }
 
 
+#define LINEBUF_HIGH_B	0x80
+#define LINEBUF_SHAD_B	0x40
+#define LINEBUF_PRIO_B	0x01
+#define LINEBUF_SPR_B	0x20
+
+#define LINEBUF_HIGH_W	0x8080
+#define LINEBUF_SHAD_W	0x4040
+#define LINEBUF_PRIO_W	0x0100
+#define LINEBUF_SPR_W	0x2000
+
+/**
+ * T_Render_PutPixel_P0: Put pixel in background graphics layer 0.
+ * @param plane		[in] True for Scroll A; false for Scroll B.
+ * @param s_h		[in] Shadow/Highlight enable.
+ * @param disp_pixnum	[in] Display pixel number.
+ * @param pat_pixnum	[in] Pattern pixel number.
+ * @param mask		[in] Mask to isolate the good pixel.
+ * @param shift		[in] Shift.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ */
+template<bool plane, bool s_h>
+static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
+				 uint32_t mask, int shift,
+				 uint32_t pattern, unsigned int palette)
+{
+	// TODO: Convert mask and shift to template parameters.
+	
+	// Check if this is a transparent pixel.
+	if (!(pattern & mask))
+		return;
+	
+	// Check the layer bits of the current pixel.
+	const unsigned int LineBuf_pixnum = ((disp_pixnum + pat_pixnum) * 2);
+	
+	// TODO: Endianness conversions.
+	uint8_t layer_bits = LineBuf.u8[LineBuf_pixnum + 1];
+	if (plane && (layer_bits & LINEBUF_PRIO_B))
+	{
+		// Scroll A; however, pixel has priority set.
+		return;
+	}
+	
+	// Shift the pattern data.
+	uint8_t pat8 = (pattern >> shift) & 0x0F;
+	
+	// Apply palette data.
+	pat8 |= palette;
+	
+	// If Shadow/Highlight is enabled, mark this pixel as shadow.
+	if (s_h)
+		pat8 |= LINEBUF_SHAD_B;
+	
+	// Write the new pixel to the line buffer.
+	LineBuf.u8[LineBuf_pixnum] = pat8;
+}
+
+
+/**
+ * C wrapper functions for T_Get_Pattern_Info().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
+				 uint32_t mask, int shift,
+				 uint32_t pattern, unsigned int palette);
+	void PutPixel_P0_ScrollA_SH(int disp_pixnum, int pat_pixnum,
+				    uint32_t mask, int shift,
+				    uint32_t pattern, unsigned int palette);
+	void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
+				 uint32_t mask, int shift,
+				 uint32_t pattern, unsigned int palette);
+	void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
+				    uint32_t mask, int shift,
+				    uint32_t pattern, unsigned int palette);
+}
+
+void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
+			 uint32_t mask, int shift,
+			 uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P0<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+void PutPixel_P0_ScrollA_SH(int disp_pixnum, int pat_pixnum,
+			    uint32_t mask, int shift,
+			    uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P0<true, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
+			 uint32_t mask, int shift,
+			 uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P0<false, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
+			    uint32_t mask, int shift,
+			    uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P0<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+
+
 /**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
