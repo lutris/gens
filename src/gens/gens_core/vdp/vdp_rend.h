@@ -45,7 +45,7 @@ extern unsigned int _32X_Rend_Mode;
 
 extern unsigned int TAB336[336];
 
-extern struct
+typedef struct
 {
 	int Pos_X;
 	int Pos_Y;
@@ -53,9 +53,11 @@ extern struct
 	unsigned int Size_Y;
 	int Pos_X_Max;
 	int Pos_Y_Max;
-	unsigned int Num_Tile;
+	unsigned int Num_Tile;	// Inclues palette, priority, and flip bits.
 	int dirt;
-} Sprite_Struct[256];
+} Sprite_Struct_t;
+extern Sprite_Struct_t Sprite_Struct[256];
+
 extern int Sprite_Visible[256];
 
 extern int Sprite_Over;

@@ -45,6 +45,114 @@ LineBuf_t LineBuf;
 // asm rendering code.
 extern "C" void VDP_Render_Line_m5_asm(void);
 
+VDP_Data_Misc_t VDP_Data_Misc;
+
+
+/**
+ * T_Make_Sprite_Struct(): Fill Sprite_Struct[] with information from the Sprite Attribute Table.
+ * @param interlaced If true, using Interlaced Mode 2. (2x res)
+ * @param partial If true, only do a partial update. (X pos, X size)
+ */
+template<bool interlaced, bool partial>
+static inline void T_Make_Sprite_Struct(void)
+{
+	uint16_t *CurSpr = (uint16_t*)Spr_Addr;
+	unsigned int spr_num = 0;
+	unsigned int link;
+	
+	// H40 allows 80 sprites; H32 allows 64 sprites.
+	// TODO: Test 0x81 instead of 0x01?
+	const unsigned int max_spr = (VDP_Reg.Set4 & 0x01) ? 80 : 64;
+	
+	do
+	{
+		// Sprite position.
+		Sprite_Struct[spr_num].Pos_X = (*(CurSpr + 3) & 0x1FF) - 128;
+		if (!partial)
+		{
+			if (interlaced)
+			{
+				// TODO: Don't do this!
+				// Use proper interlaced mode instead.
+				
+				// Interlaced: Y-pos is divided by 2.
+				Sprite_Struct[spr_num].Pos_Y = ((*CurSpr & 0x3FF) / 2) - 128;
+			}
+			else
+			{
+				// Non-Interlaced. Y-pos is kept as-is.
+				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x1FF) - 128;
+			}
+		}
+		
+		// Sprite size.
+		uint8_t sz = (*(CurSpr + 1) >> 8);
+		Sprite_Struct[spr_num].Size_X = ((sz >> 2) & 3) + 1;	// 1 more than the original value.
+		if (!partial)
+			Sprite_Struct[spr_num].Size_Y = sz & 3;		// Exactly the original value.
+		
+		// Determine the maximum positions.
+		Sprite_Struct[spr_num].Pos_X_Max =
+				Sprite_Struct[spr_num].Pos_X +
+				((Sprite_Struct[spr_num].Size_X * 8) - 1);
+		
+		if (!partial)
+		{
+			Sprite_Struct[spr_num].Pos_Y_Max =
+					Sprite_Struct[spr_num].Pos_Y +
+					((Sprite_Struct[spr_num].Size_Y * 8) + 7);
+			
+			// Tile number. (Also includes palette, priority, and flip bits.)
+			Sprite_Struct[spr_num].Num_Tile = *(CurSpr + 2);
+		}
+		
+		// Link number.
+		link = (*(CurSpr + 1) & 0x7F);
+		
+		// Increment the sprite number.
+		spr_num++;
+		
+		if (link == 0)
+			break;
+		
+		// Go to the next sprite.
+		CurSpr = ((uint16_t*)Spr_Addr) + (link * (8>>1));
+		
+		// Stop processing after:
+		// - Link number is 0. (checked above)
+		// - Link number exceeds maximum number of sprites.
+		// - We've processed the maximum number of sprites.
+	} while (link < max_spr && spr_num < max_spr);
+	
+	// Store the byte index of the last sprite.
+	if (!partial)
+		VDP_Data_Misc.Spr_End = (spr_num - 1) * sizeof(Sprite_Struct_t);
+}
+
+
+/**
+ * C wrapper functions for T_Make_Sprite_Struct.
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+void Make_Sprite_Struct(void);
+void Make_Sprite_Struct_Interlaced(void);
+void Make_Sprite_Struct_Partial(void);
+}
+
+void Make_Sprite_Struct(void)
+{
+	T_Make_Sprite_Struct<false, false>();
+}
+void Make_Sprite_Struct_Interlaced(void)
+{
+	T_Make_Sprite_Struct<true, false>();
+}
+void Make_Sprite_Struct_Partial(void)
+{
+	T_Make_Sprite_Struct<false, true>();
+}
+
 
 /**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.

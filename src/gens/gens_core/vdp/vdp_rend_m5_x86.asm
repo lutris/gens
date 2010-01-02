@@ -136,20 +136,8 @@ section .bss align=64
 	
 	alignb 32
 	
-	Data_Misc:
-		.Pattern_Adr:	resd 1
-		.Line_7:	resd 1
-		.X:		resd 1
-		.Cell:		resd 1
-		.Start_A:	resd 1
-		.Length_A:	resd 1
-		.Start_W:	resd 1
-		.Length_W:	resd 1
-		.Mask:		resd 1
-		.Spr_End:	resd 1
-		.Next_Cell:	resd 1
-		.Palette:	resd 1
-		.Borne:		resd 1
+%include "vdp/vdp_data_misc_x86.inc"
+	extern SYM(VDP_Data_Misc)
 	
 	; SYM(Sprite_Over): If set, enforces the sprite limit.
 	extern SYM(Sprite_Over)
@@ -200,8 +188,8 @@ section .text align=64
 
 %macro UPDATE_Y_OFFSET 2
 	
-	mov	eax, [Data_Misc.Cell]		; Current cell for the V Scroll
-	test	eax, 0xFF81			; outside the limits of the VRAM? Then don't change...
+	mov	eax, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell]	; Current cell for the V Scroll
+	test	eax, 0xFF81						; outside the limits of the VRAM? Then don't change...
 	jnz	short %%End
 	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
 	
@@ -219,8 +207,8 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
-	mov	[Data_Misc.Line_7], eax
+	and	edi, [SYM(V_Scroll_CMask)]	; prevent V Cell Offset from overflowing
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], eax
 	
 %%End
 
@@ -267,16 +255,16 @@ section .text align=64
 ; takes :
 ; - ax = Pattern Info
 ; - edi contains Y offset (if %2 = 0)
-; - Data_Misc.Line_7 contains Line & 7 (if %2! = 0)
+; - VDP_Data_Misc.Line_7 contains Line & 7 (if %2! = 0)
 ; returns :
 ; - ebx = Pattern Data
 ; - edx = Palette Num * 16
 
 %macro GET_PATTERN_DATA 2
 	
-	mov	ebx, [Data_Misc.Line_7]		; ebx = V Offset
-	mov	edx, eax			; edx = Cell Info
-	mov	ecx, eax			; ecx = Cell Info
+	mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7]	; ebx = V Offset
+	mov	edx, eax						; edx = Cell Info
+	mov	ecx, eax						; ecx = Cell Info
 	shr	edx, 9
 	and	ecx, 0x7FF
 	and	edx, byte 0x30			; edx = Palette
@@ -300,133 +288,6 @@ section .text align=64
 	mov	ebx, [SYM(VRam) + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
 %endif
 	
-%endmacro
-
-
-;****************************************
-
-; macro MAKE_SPRITE_STRUCT
-; param :
-; %1 = 0 for normal mode and 1 for interlaced mode
-
-%macro MAKE_SPRITE_STRUCT 1
-	
-	mov	ebp, [SYM(Spr_Addr)]
-	xor	edi, edi				; edi = 0
-	mov	esi, ebp				; esi point on the table of sprite data
-	jmp	short %%Loop
-	
-	align 16
-	
-%%Loop:
-		mov	ax, [ebp + 0]			; ax = Pos Y
-		mov	cx, [ebp + 6]			; cx = Pos X
-		mov	dl, [ebp + (2 ^ 1)]		; dl = Sprite Size
-	%if %1 > 0
-		shr	eax, 1				; if interlaced, the position is divided by 2
-	%endif
-		mov	dh, dl
-		and	eax, 0x1FF
-		and	ecx, 0x1FF
-		and	edx, 0x0C03				; isolate Size X and Size Y in dh and dl respectively
-		sub	eax, 0x80				; eax = Pos Y correct
-		sub	ecx, 0x80				; ecx = Pos X correct
-		shr	dh, 2					; dh = Size X - 1
-		mov	[SYM(Sprite_Struct) + edi + 4], eax		; store Pos Y
-		inc	dh					; dh = Size X
-		mov	[SYM(Sprite_Struct) + edi + 0], ecx		; store Pos X
-		mov	bl, dh					; bl = Size X
-		mov	[SYM(Sprite_Struct) + edi + 8], dh		; store Size X
-		and	ebx, byte 7				; ebx = Size X
-		mov	[SYM(Sprite_Struct) + edi + 12], dl		; store Size Y - 1
-		and	edx, byte 3				; edx = Size Y - 1
-		lea	ecx, [ecx + ebx * 8 - 1]		; ecx = Pos X Max
-		lea	eax, [eax + edx * 8 + 7]		; eax = Pos Y Max
-		mov	bl, [ebp + (3 ^ 1)]			; bl = Pointer towards next the sprite
-		mov	[SYM(Sprite_Struct) + edi + 16], ecx	; store Pos X Max
-		mov	dx, [ebp + 4]				; dx = 1st tile of the sprite
-		mov	[SYM(Sprite_Struct) + edi + 20], eax	; store Pos Y Max
-		add	edi, byte (8 * 4)			; advance to the next sprite structure
-		and	ebx, byte 0x7F				; clear the highest order bit.
-		mov	[SYM(Sprite_Struct) + edi - 32 + 24], dx	; store the first tile of the sprite
-		jz	short %%End				; if the next pointer is 0, end
-		lea	ebp, [esi + ebx * 8]			; ebp Pointer towards next the sprite
-		
-		; Don't allow more than 80 sprites, regardless of sprite numbers.
-		cmp	edi, (8 * 4 * 80)
-		jae	short %%End
-		
-		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4], 1
-		jz	short %%H32
-		
-%%H40:
-		cmp	ebx, byte 80				; if the next sprite number is >=80 then stop
-		jb	near  %%Loop
-		jmp	short %%End
-%%H32:
-		cmp	ebx, byte 64				; if the next sprite number is >=64 then stop
-		jb	near %%Loop
-		
-%%End:
-	sub	edi, 8 * 4
-	mov	[Data_Misc.Spr_End], edi		; store the pointer to the last sprite
-	
-%endmacro
-
-
-;****************************************
-
-; macro MAKE_SPRITE_STRUCT_PARTIAL
-; param :
-
-%macro MAKE_SPRITE_STRUCT_PARTIAL 0
-	
-	mov	ebp, [SYM(Spr_Addr)]
-;	xor	eax, eax
-	xor	ebx, ebx
-	xor	edi, edi				; edi = 0
-	mov	esi, ebp				; esi point on the table of sprite data
-	jmp	short %%Loop
-	
-	align 16
-	
-%%Loop
-		mov	al, [ebp + (2 ^ 1)]			; al = Sprite Size
-		mov	bl, [ebp + (3 ^ 1)]			; bl = point towards the next sprite
-		mov	cx, [ebp + 6]				; cx = Pos X
-		mov	dx, [ebp + 4]				; dx = 1st tile of the sprite
-		and	ecx, 0x1FF
-		mov	[SYM(Sprite_Struct) + edi + 24], dx		; store the 1st tile of the sprite
-		sub	ecx, 0x80				; ecx = Pos X correct
-		and	eax, 0x0C
-		mov	[SYM(Sprite_Struct) + edi + 0], ecx		; store Pos X
-		lea	ecx, [ecx + eax * 2 + 7]		; ecx = Pos X Max
-		and	bl, 0x7F				; clear the highest order bit.
-		mov	[SYM(Sprite_Struct) + edi + 16], ecx	; store Pos X Max
-		jz	short %%End				; if the next pointer is 0, end
-		
-		add	edi, byte (8 * 4)			; advance to the next sprite structure
-		lea	ebp, [esi + ebx * 8]			; ebp Pointer towards next the sprite
-		
-		; Don't allow more than 80 sprites, regardless of sprite numbers.
-		cmp	edi, (8 * 4 * 80)
-		jae	short %%End
-		
-		; H40 allows 80 sprites; H32 allows 64 sprites.
-		test	byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4], 1
-		jz	short %%H32
-		
-%%H40:
-		cmp	ebx, byte 80				; if the next sprite number is >=80 then stop
-		jb	short %%Loop
-		jmp	short %%End
-%%H32:
-		cmp	ebx, byte 64				; if the next sprite number is >=64 then stop
-		jb	short %%Loop
-
-%%End:
-
 %endmacro
 
 
@@ -474,7 +335,7 @@ section .text align=64
 		
 %%Out_Line_1_2
 		add	edi, byte (8 * 4)
-		cmp	edi, [Data_Misc.Spr_End]
+		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
 		jle	short %%Loop_2
 		
 		jmp	%%End
@@ -483,7 +344,7 @@ section .text align=64
 	
 %%Out_Line_1
 		add	edi, byte (8 * 4)
-		cmp	edi, [Data_Misc.Spr_End]
+		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
 		jle	short %%Loop_1
 		
 		jmp	%%End
@@ -517,14 +378,14 @@ section .text align=64
 		cmp	ecx, byte 0
 		jle	short %%Sprite_Overflow
 %endif
-		cmp	edi, [Data_Misc.Spr_End]
+		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
 		jle	short %%Loop_2
 		jmp	short %%End
 		
 	align 16
 	
 %%Sprite_Overflow
-	cmp	edi, [Data_Misc.Spr_End]
+	cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
 	jg	short %%End
 	jmp	short %%Loop_3
 	
@@ -541,14 +402,14 @@ section .text align=64
 		
 %%Out_Line_3
 		add	edi, byte (8 * 4)
-		cmp	edi, [Data_Misc.Spr_End]
+		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
 		jle	short %%Loop_3
 		jmp	short %%End
 	
 	align 16
 	
 %%End
-	mov	[Data_Misc.Borne], esi
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Borne], esi
 	
 %endmacro
 
@@ -1053,8 +914,8 @@ section .text align=64
 	and	ebx, byte 1
 	mov	eax, [SYM(H_Cell)]
 	sub	ebx, byte 2			; start with cell -2 or -1 (for V Scroll)
-	mov	[Data_Misc.X], eax		; number of cells to post
-	mov	[Data_Misc.Cell], ebx		; Current cell for the V Scroll
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], eax		; number of cells to post
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell], ebx	; Current cell for the V Scroll
 	
 	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
 	mov	eax, [SYM(VSRam) + 2]
@@ -1068,7 +929,7 @@ section .text align=64
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
 	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
-	mov	[Data_Misc.Line_7], eax
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], eax
 	
 	jmp	short %%First_Loop
 	
@@ -1129,11 +990,11 @@ section .text align=64
 				align 16
 				
 	%%End_Loop
-		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
-		inc	esi				; Next H cell
-		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
-		dec	byte [Data_Misc.X]		; decrement number of cells to treat
+		inc	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell]	; Next H cell for the V Scroll
+		inc	esi							; Next H cell
+		add	ebp, byte 8						; advance to the next pattern
+		and	esi, [SYM(H_Scroll_CMask)]				; prevent H Offset from overflowing
+		dec	byte [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X]		; decrement number of cells to treat
 		jns	near %%Loop
 		
 %%End
@@ -1168,11 +1029,11 @@ section .text align=64
 	
 %%Win_Right
 	sub	ebx, edx
-	mov	[Data_Misc.Start_W], edx	; Start Win (Cell)
-	mov	[Data_Misc.Length_W], ebx	; Length Win (Cell)
-	dec	edx				; 1 cell en moins car on affiche toujours le dernier à part
-	mov	dword [Data_Misc.Start_A], 0	; Start Scroll A (Cell)
-	mov	[Data_Misc.Length_A], edx	; Length Scroll A (Cell)
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_W], edx	; Start Win (Cell)
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_W], ebx	; Length Win (Cell)
+	dec	edx							; 1 cell en moins car on affiche toujours le dernier à part
+	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_A], 0	; Start Scroll A (Cell)
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_A], edx	; Length Scroll A (Cell)
 	jns	short %%Scroll_A
 	jmp	%%Window
 	
@@ -1180,11 +1041,11 @@ section .text align=64
 	
 %%Win_Left
 	sub	ebx, edx
-	mov	dword [Data_Misc.Start_W], 0	; Start Win (Cell)
-	mov	[Data_Misc.Length_W], edx	; Length Win (Cell)
-	dec	ebx				; 1 cell en moins car on affiche toujours le dernier à part
-	mov	[Data_Misc.Start_A], edx	; Start Scroll A (Cell)
-	mov	[Data_Misc.Length_A], ebx	; Length Scroll A (Cell)
+	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_W], 0	; Start Win (Cell)
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_W], edx	; Length Win (Cell)
+	dec	ebx							; 1 cell en moins car on affiche toujours le dernier à part
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_A], edx	; Start Scroll A (Cell)
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_A], ebx	; Length Scroll A (Cell)
 	jns	short %%Scroll_A
 	jmp	%%Window
 	
@@ -1196,11 +1057,11 @@ section .text align=64
 	GET_X_OFFSET 1
 	
 	mov	eax, esi			; eax = scroll X inv
-	mov	ebx, [Data_Misc.Start_A]	; Premier Cell
+	mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_A]	; Premier Cell
 	xor	esi, 0x3FF			; esi = scroll X norm
 	and	eax, byte 7			; eax = completion pour offset
 	shr	esi, 3				; esi = cell courant (début scroll A)
-	mov	[Data_Misc.Mask], eax		; mask pour le dernier pattern
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Mask], eax	; mask pour le dernier pattern
 	mov	ecx, esi			; ecx = cell courant (début scroll A) 
 	add	esi, ebx			; esi = cell courant ajusté pour window clip
 	and	ecx, byte 1
@@ -1210,8 +1071,8 @@ section .text align=64
 	add	ebp, eax			; ebp mis à jour pour clipping + window clip
 	add	ebx, ecx			; ebx = Cell courant pour le V Scroll
 	
-	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
-	mov	[Data_Misc.Cell], ebx		; Cell courant pour le V Scroll
+	mov	edi, [SYM(VDP_Current_Line)]				; edi = line number
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell], ebx	; Cell courant pour le V Scroll
 	jns	short %%Not_First_Cell
 	
 	mov	eax, [SYM(VSRam) + 0]
@@ -1232,7 +1093,7 @@ section .text align=64
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
 	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
-	mov	[Data_Misc.Line_7], eax
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], eax
 	
 	jmp	short %%First_Loop_SCA
 	
@@ -1291,11 +1152,11 @@ section .text align=64
 				align 16
 				
 	%%End_Loop
-		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
-		inc	esi				; Next H cell
-		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
-		dec	byte [Data_Misc.Length_A]	; decrement number of cells to treat for Scroll A
+		inc	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell]	; Next H cell for the V Scroll
+		inc	esi							; Next H cell
+		add	ebp, byte 8						; advance to the next pattern
+		and	esi, [SYM(H_Scroll_CMask)]				; prevent H Offset from overflowing
+		dec	byte [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_A]	; decrement number of cells to treat for Scroll A
 		jns	near %%Loop_SCA
 
 %%LC_SCA
@@ -1314,7 +1175,7 @@ section .text align=64
 	
 %%No_Swap_ScrollA_Priority_2
 	test	eax, 0x0800			; test if H-Flip ?
-	mov	ecx, [Data_Misc.Mask]
+	mov	ecx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Mask]
 	jz	near %%LC_SCA_No_H_Flip		; if yes, then
 
 	%%LC_SCA_H_Flip
@@ -1352,7 +1213,7 @@ section .text align=64
 			align 16
 			
 %%LC_SCA_End
-	test	byte [Data_Misc.Length_W], 0xFF
+	test	byte [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_W], 0xFF
 	jnz	short %%Window
 	jmp	%%End
 	
@@ -1366,8 +1227,8 @@ section .text align=64
 	align 16
 	
 %%Window
-	mov	esi, [Data_Misc.Start_W]
-	mov	edi, [Data_Misc.Length_W]		; edi = # of cells to render
+	mov	esi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_W]
+	mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_W]		; edi = # of cells to render
 	
 %%Window_Initialised
 	mov	edx, [SYM(VDP_Current_Line)]
@@ -1380,14 +1241,14 @@ section .text align=64
 	lea	ebp, [ebp + esi * 8 + 8]		; no clipping for the window, return directly to the first pixel
 	lea	eax, [eax + edx * 2]			; eax point on the pattern data for the window
 	and	ebx, byte 7				; ebx = Line & 7 for the V Flip
-	mov	[Data_Misc.Pattern_Adr], eax		; store this pointer
-	mov	[Data_Misc.Line_7], ebx			; store Line & 7
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Pattern_Adr], eax		; store this pointer
+	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], ebx		; store Line & 7
 	jmp	short %%Loop_Win
 	
 	align 16
 	
 %%Loop_Win
-		mov	ebx, [Data_Misc.Pattern_Adr]
+		mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Pattern_Adr]
 		mov	ax, [ebx + esi * 2]
 		
 		GET_PATTERN_DATA %1, 1
@@ -1455,7 +1316,7 @@ section .text align=64
 	UPDATE_MASK_SPRITE 1			; edi point on the sprite to post
 	xor	edi, edi
 	test	esi, esi
-	mov	dword [Data_Misc.X], edi
+	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
 	jnz	near %%First_Loop
 	jmp	%%End				; quit
 	
@@ -1464,7 +1325,7 @@ section .text align=64
 	UPDATE_MASK_SPRITE 0			; edi = point on the sprite to post
 	xor	edi, edi
 	test	esi, esi
-	mov	dword [Data_Misc.X], edi
+	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
 	jnz	short %%First_Loop
 	jmp	%%End				; quit
 	
@@ -1489,11 +1350,11 @@ section .text align=64
 		mov	ecx, edx				; ecx = Y Offset
 		and	ebx, 0x30				; keep the palette number an even multiple of 16
 		
-		and	esi, 0x7FF				; esi = number of the first pattern of the sprite
-		mov	[Data_Misc.Palette], ebx		; store the palette number * 64 in Palette
-		and	edx, 0xF8				; one erases the 3 least significant bits = Num Pattern * 8
-		mov	ebx, [SYM(Sprite_Struct) + edi + 12]	; ebx = Size Y
-		and	ecx, byte 7				; ecx = (Y Offset & 7) = Line of the current pattern
+		and	esi, 0x7FF						; esi = number of the first pattern of the sprite
+		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Palette], ebx	; store the palette number * 64 in Palette
+		and	edx, 0xF8						; one erases the 3 least significant bits = Num Pattern * 8
+		mov	ebx, [SYM(Sprite_Struct) + edi + 12]			; ebx = Size Y
+		and	ecx, byte 7						; ecx = (Y Offset & 7) = Line of the current pattern
 %if %1 > 0
 		shl	ebx, 6					; ebx = Size Y * 64
 		lea	edx, [edx * 8]				; edx = Num Pattern * 64
@@ -1534,8 +1395,8 @@ section .text align=64
 %endif
 		
 	%%Suite
-		mov	 [Data_Misc.Next_Cell], ebx		; next Cell X of this sprite is with ebx bytes
-		mov	edx, [Data_Misc.Palette]		; edx = Palette number * 64
+		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell], ebx	; next Cell X of this sprite is with ebx bytes
+		mov	edx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Palette]	; edx = Palette number * 64
 		
 		test	eax, 0x800				; test H Flip
 		jz	near %%No_H_Flip
@@ -1544,7 +1405,7 @@ section .text align=64
 		mov	ebx, [SYM(Sprite_Struct) + edi + 0]
 		mov	ebp, [SYM(Sprite_Struct) + edi + 16]	; position for X
 		cmp	ebx, -7					; test for the minimum edge of the sprite
-		mov	edi, [Data_Misc.Next_Cell]
+		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell]
 		jg	short %%Spr_X_Min_Norm
 		mov	ebx, -7					; minimum edge = clip screen
 		
@@ -1606,7 +1467,7 @@ section .text align=64
 		mov	ecx, [SYM(H_Pix)]
 		mov	ebp, [SYM(Sprite_Struct) + edi + 0]		; position the pointer ebp
 		cmp	ebx, ecx				; test for the maximum edge of the sprite
-		mov	edi, [Data_Misc.Next_Cell]
+		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell]
 		jl	%%Spr_X_Max_Norm
 		mov	[Data_Spr.H_Max], ecx			; max edge = clip screan
 		jmp	short %%Spr_Test_X_Min
@@ -1664,10 +1525,10 @@ section .text align=64
 		align 16
 		
 	%%End_Sprite_Loop
-		mov	edi, [Data_Misc.X]
+		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X]
 		add	edi, byte 4
-		cmp	edi, [Data_Misc.Borne]
-		mov	[Data_Misc.X], edi
+		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Borne]
+		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
 		jb	near %%Sprite_Loop
 		
 %%End
@@ -1704,6 +1565,11 @@ section .text align=64
 
 ; *******************************************************
 	
+	extern SYM(Make_Sprite_Struct)
+	extern SYM(Make_Sprite_Struct_Interlaced)
+	extern SYM(Make_Sprite_Struct_Partial)
+	extern SYM(Make_Sprite_Struct_Partial_Interlaced)
+	
 	global SYM(VDP_Render_Line_m5_asm)
 	SYM(VDP_Render_Line_m5_asm):
 		
@@ -1734,20 +1600,20 @@ section .text align=64
 	align 16
 	
 	.MSS_Complete:
-			MAKE_SPRITE_STRUCT 0
+			call Make_Sprite_Struct
 			jmp .Sprite_Struc_OK
 	
 	align 16
 	
 	.MSS_Complete_Interlace:
-			MAKE_SPRITE_STRUCT 1
+			call Make_Sprite_Struct_Interlaced
 			jmp .Sprite_Struc_OK
 	
 	align 16
 	
 	.MSS_Partial:
 	.MSS_Partial_Interlace:
-			MAKE_SPRITE_STRUCT_PARTIAL
+			call Make_Sprite_Struct_Partial
 			jmp short .Sprite_Struc_OK
 	
 	align 16

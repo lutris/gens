@@ -29,6 +29,24 @@ extern "C" {
 
 void VDP_Render_Line_m5(void);
 
+typedef struct
+{
+	unsigned int Pattern_Adr;
+	unsigned int Line_7;
+	unsigned int X;
+	unsigned int Cell;
+	unsigned int Start_A;
+	unsigned int Length_A;
+	unsigned int Start_W;
+	unsigned int Length_W;
+	unsigned int Mask;
+	unsigned int Spr_End;	// Contains sprite index, in multiples of sizeof(Sprite_Struct_t) == 8*4 == 32.
+	unsigned int Next_Cell;
+	unsigned int Palette;
+	unsigned int Borne;
+} VDP_Data_Misc_t;
+extern VDP_Data_Misc_t VDP_Data_Misc;
+
 #ifdef __cplusplus
 }
 #endif
