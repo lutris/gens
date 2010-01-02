@@ -279,7 +279,7 @@ unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
  * @return Pattern info.
  */
 template<bool plane>
-static inline unsigned int T_Get_Pattern_Info(unsigned int x, unsigned int y)
+static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// H_Scroll_CMul is the shift value required for the proper vertical offset.
@@ -294,17 +294,67 @@ static inline unsigned int T_Get_Pattern_Info(unsigned int x, unsigned int y)
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
-	unsigned int Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y);
-	unsigned int Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y);
+	uint16_t Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y);
+	uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y);
 }
 
-unsigned int Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y)
+uint16_t Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y)
 {
 	return T_Get_Pattern_Info<true>(x, y);
 }
-unsigned int Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
+uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
 {
 	return T_Get_Pattern_Info<false>(x, y);
+}
+
+
+/**
+ * T_Get_Pattern_Data(): Get pattern data for a given tile for the current line.
+ * @param interlaced True for interlaced; false for non-interlaced.
+ * @param pattern Pattern info.
+ * @return Pattern data.
+ */
+template<bool interlaced>
+static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
+{
+	unsigned int V_Offset = VDP_Data_Misc.Line_7;	// Vertical offset.
+	unsigned int TileAddr = (pattern & 0x7FF);	// Tile number.
+	
+	// Get the tile address.
+	if (interlaced)
+		TileAddr <<= 6;
+	else
+		TileAddr <<= 5;
+	
+	if (pattern & 0x1000)
+	{
+		// V Flip enabled. Flip the tile vertically.
+		// TODO: Proper interlace support requires 8x16 cells.
+		V_Offset ^= 7;
+	}
+	
+	if (interlaced)
+		return VRam.u32[(TileAddr + (V_Offset * 8)) >> 2];
+	else
+		return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
+}
+
+/**
+ * C wrapper functions for T_Get_Pattern_Info().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	unsigned int Get_Pattern_Data(uint16_t pattern);
+	unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern);
+}
+
+unsigned int Get_Pattern_Data(uint16_t pattern)
+{
+	return T_Get_Pattern_Data<false>(pattern);
+}
+unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
+{
+	return T_Get_Pattern_Data<true>(pattern);
 }
 
 

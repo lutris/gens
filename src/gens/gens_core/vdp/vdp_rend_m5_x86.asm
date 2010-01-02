@@ -167,51 +167,9 @@ section .text align=64
 	extern SYM(Get_Pattern_Info_ScrollA)
 	extern SYM(Get_Pattern_Info_ScrollB)
 	
-;****************************************
-
-; macro GET_PATTERN_DATA
-; param :
-; %1 = 0 for normal mode and 1 for interlaced mode
-; %2 = 0 pour les scrolls, 1 for la window
-; takes :
-; - ax = Pattern Info
-; - edi contains Y offset (if %2 = 0)
-; - VDP_Data_Misc.Line_7 contains Line & 7 (if %2! = 0)
-; returns :
-; - ebx = Pattern Data
-; - edx = Palette Num * 16
-
-%macro GET_PATTERN_DATA 2
+	extern SYM(Get_Pattern_Data)
+	extern SYM(Get_Pattern_Data_Interlaced)
 	
-	mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7]	; ebx = V Offset
-	mov	edx, eax						; edx = Cell Info
-	mov	ecx, eax						; ecx = Cell Info
-	shr	edx, 9
-	and	ecx, 0x7FF
-	and	edx, byte 0x30			; edx = Palette
-	
-%if %1 > 0
-	shl	ecx, 6				; numero pattern * 64 (entrelacé)
-%else
-	shl	ecx, 5				; numero pattern * 32 (normal)
-%endif
-	
-	test 	eax, 0x1000			; V-Flip?
-	jz	%%No_V_Flip			; if yes, then
-	
-	xor	ebx, byte 7
-	
-%%No_V_Flip
-	
-%if %1 > 0
-	mov	ebx, [SYM(VRam) + ecx + ebx * 8]		; ebx = Line of the pattern = Pattern Data (interlaced)
-%else
-	mov	ebx, [SYM(VRam) + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
-%endif
-	
-%endmacro
-
-
 ;****************************************
 
 ; macro UPDATE_MASK_SPRITE
@@ -877,7 +835,17 @@ section .text align=64
 		call	SYM(Get_Pattern_Info_ScrollB)
 		add	esp, byte 8
 		
-		GET_PATTERN_DATA %1, 0
+		push	eax
+%if %1 > 0
+		call	SYM(Get_Pattern_Data_Interlaced)
+%else
+		call	SYM(Get_Pattern_Data)
+%endif
+		mov	ebx, eax	; Save the pattern data.
+		pop	eax		; Restore the pattern info. ("pattern" isn't modified in Get_Pattern_Data().)
+		mov	edx, eax	; Get the palette number. (PalNum * 16: >> 13, << 4: >> 9 total.)
+		shr	edx, 9		
+		and	edx, byte 0x30
 		
 		; Check for swapped Scroll B priority.
 		test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_SWAP
@@ -1053,7 +1021,17 @@ section .text align=64
 		call	SYM(Get_Pattern_Info_ScrollA)
 		add	esp, byte 8
 		
-		GET_PATTERN_DATA %1, 0
+		push	eax
+%if %1 > 0
+		call	SYM(Get_Pattern_Data_Interlaced)
+%else
+		call	SYM(Get_Pattern_Data)
+%endif
+		mov	ebx, eax	; Save the pattern data.
+		pop	eax		; Restore the pattern info. ("pattern" isn't modified in Get_Pattern_Data().)
+		mov	edx, eax	; Get the palette number. (PalNum * 16: >> 13, << 4: >> 9 total.)
+		shr	edx, 9		
+		and	edx, byte 0x30
 		
 		; Check for swapped Scroll A priority.
 		test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_SWAP
@@ -1122,7 +1100,17 @@ section .text align=64
 	call	SYM(Get_Pattern_Info_ScrollA)
 	add	esp, byte 8
 	
-	GET_PATTERN_DATA %1, 0
+	push	eax
+%if %1 > 0
+	call	SYM(Get_Pattern_Data_Interlaced)
+%else
+	call	SYM(Get_Pattern_Data)
+%endif
+	mov	ebx, eax	; Save the pattern data.
+	pop	eax		; Restore the pattern info. ("pattern" isn't modified in Get_Pattern_Data().)
+	mov	edx, eax	; Get the palette number. (PalNum * 16: >> 13, << 4: >> 9 total.)
+	shr	edx, 9		
+	and	edx, byte 0x30
 	
 	; Check for swapped Scroll A priority.
 	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_SWAP
@@ -1207,7 +1195,17 @@ section .text align=64
 		mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Pattern_Adr]
 		mov	ax, [ebx + esi * 2]
 		
-		GET_PATTERN_DATA %1, 1
+		push	eax
+%if %1 > 0
+		call	SYM(Get_Pattern_Data_Interlaced)
+%else
+		call	SYM(Get_Pattern_Data)
+%endif
+		mov	ebx, eax	; Save the pattern data.
+		pop	eax		; Restore the pattern info. ("pattern" isn't modified in Get_Pattern_Data().)
+		mov	edx, eax	; Get the palette number. (PalNum * 16: >> 13, << 4: >> 9 total.)
+		shr	edx, 9		
+		and	edx, byte 0x30
 		
 		test	ax, 0x0800		; test if H-Flip ?
 		jz	near %%W_No_H_Flip	; if yes, then
