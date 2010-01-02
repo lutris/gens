@@ -823,7 +823,7 @@ section .text align=64
 	
 	mov	ebp, [esp]			; ebp point on surface where one renders
 	
-	call	Get_X_Offset_ScrollB
+	call	SYM(Get_X_Offset_ScrollB)
 	mov	esi, eax
 	
 	;mov	eax, esi			; eax = scroll X inv
@@ -862,9 +862,9 @@ section .text align=64
 %if %2 > 0
 		push	edi
 		%if %1 > 0
-			call Update_Y_Offset_ScrollB_Interlaced
+			call SYM(Update_Y_Offset_ScrollB_Interlaced)
 		%else
-			call Update_Y_Offset_ScrollB
+			call SYM(Update_Y_Offset_ScrollB)
 		%endif
 		add	esp, byte 4
 		mov	edi, eax
@@ -987,7 +987,7 @@ section .text align=64
 %%Scroll_A
 	mov	ebp, [esp]			; ebp point on surface where one renders
 	
-	call	Get_X_Offset_ScrollA
+	call	SYM(Get_X_Offset_ScrollA)
 	mov	esi, eax
 	
 	;mov	eax, esi			; eax = scroll X inv
@@ -1038,9 +1038,9 @@ section .text align=64
 %if %2 > 0
 		push	edi
 		%if %1 > 0
-			call Update_Y_Offset_ScrollA_Interlaced
+			call SYM(Update_Y_Offset_ScrollA_Interlaced)
 		%else
-			call Update_Y_Offset_ScrollA
+			call SYM(Update_Y_Offset_ScrollA)
 		%endif
 		add	esp, byte 4
 		mov	edi, eax
@@ -1109,9 +1109,9 @@ section .text align=64
 %if %2 > 0
 	push	edi
 	%if %1 > 0
-		call Update_Y_Offset_ScrollA_Interlaced
+		call SYM(Update_Y_Offset_ScrollA_Interlaced)
 	%else
-		call Update_Y_Offset_ScrollA
+		call SYM(Update_Y_Offset_ScrollA)
 	%endif
 	add	esp, byte 4
 	mov	edi, eax
@@ -1551,20 +1551,20 @@ section .text align=64
 	align 16
 	
 	.MSS_Complete:
-			call Make_Sprite_Struct
+			call SYM(Make_Sprite_Struct)
 			jmp .Sprite_Struc_OK
 	
 	align 16
 	
 	.MSS_Complete_Interlace:
-			call Make_Sprite_Struct_Interlaced
+			call SYM(Make_Sprite_Struct_Interlaced)
 			jmp .Sprite_Struc_OK
 	
 	align 16
 	
 	.MSS_Partial:
 	.MSS_Partial_Interlace:
-			call Make_Sprite_Struct_Partial
+			call SYM(Make_Sprite_Struct_Partial)
 			jmp short .Sprite_Struc_OK
 	
 	align 16
