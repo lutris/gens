@@ -163,17 +163,17 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 			continue;
 		}
 		
+		if (sprite_limit)
+		{
+			max_cells -= Sprite_Struct[spr_num].Size_X;
+			max_sprites--;
+		}
+		
 		// Is the sprite a mask? (Sprite Masking Mode 1)
 		if (Sprite_Struct[spr_num].Pos_X == -128)
 		{
 			// Sprite is a mask. Skip the rest of the sprites.
 			break;
-		}
-		
-		if (sprite_limit)
-		{
-			max_cells -= Sprite_Struct[spr_num].Size_X;
-			max_sprites--;
 		}
 		
 		// Check if the sprite is onscreen.
