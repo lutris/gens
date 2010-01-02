@@ -174,10 +174,11 @@ extern uint8_t *Spr_Addr;
 extern uint16_t *H_Scroll_Addr;
 
 // VDP convenience values: Horizontal.
-extern unsigned int H_Cell;
-extern unsigned int H_Win_Mul;
-extern unsigned int H_Pix;
-extern unsigned int H_Pix_Begin;
+// NOTE: These must be signed for VDP arithmetic to work properly!
+extern int H_Cell;
+extern int H_Win_Mul;
+extern int H_Pix;
+extern int H_Pix_Begin;
 
 // VDP convenience values: Scroll.
 extern unsigned int V_Scroll_MMask;
@@ -188,8 +189,8 @@ extern unsigned int H_Scroll_CMask;
 extern unsigned int V_Scroll_CMask;
 
 // TODO: Eliminate these.
-extern unsigned int Win_X_Pos;
-extern unsigned int Win_Y_Pos;
+extern int Win_X_Pos;
+extern int Win_Y_Pos;
 
 void     VDP_Reset(void);
 uint8_t  VDP_Read_H_Counter(void);

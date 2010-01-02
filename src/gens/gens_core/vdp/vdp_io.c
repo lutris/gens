@@ -45,10 +45,11 @@ uint8_t *Spr_Addr;
 uint16_t *H_Scroll_Addr;
 
 // VDP convenience values: Horizontal.
-unsigned int H_Cell;
-unsigned int H_Win_Mul;
-unsigned int H_Pix;
-unsigned int H_Pix_Begin;
+// NOTE: These must be signed for VDP arithmetic to work properly!
+int H_Cell;
+int H_Win_Mul;
+int H_Pix;
+int H_Pix_Begin;
 
 // VDP convenience values: Scroll.
 unsigned int V_Scroll_MMask;
@@ -59,8 +60,8 @@ unsigned int H_Scroll_CMask;
 unsigned int V_Scroll_CMask;
 
 // TODO: Eliminate these.
-unsigned int Win_X_Pos;
-unsigned int Win_Y_Pos;
+int Win_X_Pos;
+int Win_Y_Pos;
 
 // Miscellaneous. (TODO: Determine if these should be signed or unsigned.)
 int VDP_Status;

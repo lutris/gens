@@ -156,6 +156,9 @@ section .text align=64
 	extern SYM(Make_Sprite_Struct_Partial)
 	extern SYM(Make_Sprite_Struct_Partial_Interlaced)
 	
+	extern SYM(Update_Mask_Sprite)
+	extern SYM(Update_Mask_Sprite_Limit)
+	
 	extern SYM(Get_X_Offset_ScrollA)
 	extern SYM(Get_X_Offset_ScrollB)
 	
@@ -183,129 +186,6 @@ section .text align=64
 	extern SYM(PutPixel_Sprite_HS)
 	extern SYM(PutPixel_Sprite_Prio_HS)
 	
-;****************************************
-
-; macro UPDATE_MASK_SPRITE
-; param :
-; %1 = Sprite Limit Emulation (1 = enable et 0 = disable)
-; takes :
-; - Sprite_Struct must be correctly initialized
-; returns :
-; - edi points on the first sprite structure to post.
-; - edx contains the number of line
-
-%macro UPDATE_MASK_SPRITE 1
-	
-	xor	edi, edi
-%if %1 > 0
-	mov	ecx, [SYM(H_Cell)]
-%endif
-	xor	ax, ax				; used for masking
-	mov	ebx, [SYM(H_Pix)]
-	xor	esi, esi
-	mov	edx, [SYM(VDP_Current_Line)]
-	jmp	short %%Loop_1
-	
-	align 16
-	
-%%Loop_1
-		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
-		jg	short %%Out_Line_1
-		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
-		jl	short %%Out_Line_1
-		
-%if %1 > 0
-		sub	ecx, [SYM(Sprite_Struct) + edi + 8]
-%endif
-		cmp	[SYM(Sprite_Struct) + edi + 0], ebx		; one tests if the sprite is not outside of the screen
-		jge	short %%Out_Line_1_2
-		cmp	dword [SYM(Sprite_Struct) + edi + 16], 0	; one tests if the sprite is not outside of the screen
-		jl	short %%Out_Line_1_2
-		
-		mov	[SYM(Sprite_Visible) + esi], edi
-		add	esi, byte 4
-		
-%%Out_Line_1_2
-		add	edi, byte (8 * 4)
-		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
-		jle	short %%Loop_2
-		
-		jmp	%%End
-	
-	align 16
-	
-%%Out_Line_1
-		add	edi, byte (8 * 4)
-		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
-		jle	short %%Loop_1
-		
-		jmp	%%End
-	
-	align 16
-	
-%%Loop_2
-		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
-		jg	short %%Out_Line_2
-		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
-		jl	short %%Out_Line_2
-		
-%%Loop_2_First
-		cmp	dword [SYM(Sprite_Struct) + edi + 0], -128	; is the sprite is a mask?
-		je	short %%End				; next sprites are masked
-		
-%if %1 > 0
-		sub	ecx, [SYM(Sprite_Struct) + edi + 8]
-%endif
-		cmp	[SYM(Sprite_Struct) + edi + 0], ebx		; one tests if the sprite is not outside of the screen
-		jge	short %%Out_Line_2
-		cmp	dword [SYM(Sprite_Struct) + edi + 16], 0	; one tests if the sprite is not outside of the screen
-		jl	short %%Out_Line_2
-		
-		mov	[SYM(Sprite_Visible) + esi], edi
-		add	esi, byte 4
-
-%%Out_Line_2
-		add	edi, byte (8 * 4)
-%if %1 > 0
-		cmp	ecx, byte 0
-		jle	short %%Sprite_Overflow
-%endif
-		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
-		jle	short %%Loop_2
-		jmp	short %%End
-		
-	align 16
-	
-%%Sprite_Overflow
-	cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
-	jg	short %%End
-	jmp	short %%Loop_3
-	
-	align 16
-	
-	%%Loop_3
-		cmp	[SYM(Sprite_Struct) + edi + 4], edx		; one tests if the sprite is on the current line
-		jg	short %%Out_Line_3
-		cmp	[SYM(Sprite_Struct) + edi + 20], edx	; one tests if the sprite is on the current line
-		jl	short %%Out_Line_3
-
-		or 	byte [SYM(VDP_Status)], 0x40
-		jmp	short %%End
-		
-%%Out_Line_3
-		add	edi, byte (8 * 4)
-		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Spr_End]
-		jle	short %%Loop_3
-		jmp	short %%End
-	
-	align 16
-	
-%%End
-	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Borne], esi
-	
-%endmacro
-
-
 ;****************************************
 
 ; macro PUTPIXEL_P0
@@ -1256,27 +1136,32 @@ section .text align=64
 	
 %%Sprite_Over
 	
-	UPDATE_MASK_SPRITE 1			; edi point on the sprite to post
+	call	SYM(Update_Mask_Sprite_Limit)	; edi point on the sprite to post
+	mov	esi, eax
+	;UPDATE_MASK_SPRITE 1
+	
 	xor	edi, edi
 	test	esi, esi
 	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
-	jnz	near %%First_Loop
+	jnz	near %%Sprite_Loop
 	jmp	%%End				; quit
 	
 %%No_Sprite_Over
 	
-	UPDATE_MASK_SPRITE 0			; edi = point on the sprite to post
+	call	SYM(Update_Mask_Sprite)		; edi = point on the sprite to post
+	mov	esi, eax
+	;UPDATE_MASK_SPRITE 0
+	
 	xor	edi, edi
 	test	esi, esi
 	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
-	jnz	short %%First_Loop
+	jnz	short %%Sprite_Loop
 	jmp	%%End				; quit
 	
 	align 16
 	
 %%Sprite_Loop
 		mov	edx, [SYM(VDP_Current_Line)]
-%%First_Loop
 		mov	edi, [SYM(Sprite_Visible) + edi]
 		mov	eax, [SYM(Sprite_Struct) + edi + 24]		; eax = CellInfo of the sprite
 		sub	edx, [SYM(Sprite_Struct) + edi + 4]			; edx = Line - Y Pos (Y Offset)

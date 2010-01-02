@@ -131,6 +131,107 @@ static inline void T_Make_Sprite_Struct(void)
 
 
 /**
+ * T_Update_Mask_Sprite(): Update Sprite_Visible using sprite masking.
+ * @param sprite_limit If true, emulates sprite limits.
+ * @return Last sprite visible * sizeof(Sprite_Visible[0]).
+ */
+template<bool sprite_limit>
+static inline unsigned int T_Update_Mask_Sprite(void)
+{
+	int max_cells = (sprite_limit ? H_Cell : 0);
+	bool overflow = false;
+	
+	unsigned int spr_num = 0;
+	unsigned int spr_vis = 0;
+	
+	// Number of sprites in Sprite_Struct.
+	const unsigned int TotalSprites = (VDP_Data_Misc.Spr_End / sizeof(Sprite_Struct_t)) + 1;
+	
+	// Search for all sprites visible on the current scanline.
+	for (; spr_num < TotalSprites; spr_num++)
+	{
+		// Check if the sprite is on the current line.
+		if (Sprite_Struct[spr_num].Pos_Y > VDP_Current_Line ||
+		    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Current_Line)
+		{
+			// Sprite is not on the current line.
+			continue;
+		}
+		
+		// Is the sprite a mask? (Sprite Masking Mode 1)
+		if (Sprite_Struct[spr_num].Pos_X == -128)
+		{
+			// Sprite is a mask. Skip the rest of the sprites.
+			break;
+		}
+		
+		if (sprite_limit)
+			max_cells -= Sprite_Struct[spr_num].Size_X;
+		
+		// Check if the sprite is onscreen.
+		if (Sprite_Struct[spr_num].Pos_X < H_Pix &&
+		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
+		{
+			// Sprite is onscreen.
+			Sprite_Visible[spr_vis] = (spr_num * sizeof(Sprite_Struct_t));
+			spr_vis++;
+		}
+		
+		if (sprite_limit && max_cells <= 0)
+		{
+			// Sprite overflow!
+			overflow = true;
+			spr_num++;
+			break;
+		}
+	}
+	
+	if (sprite_limit && overflow)
+	{
+		// Sprite overflow. Check if there are any more sprites.
+		for (; spr_num < TotalSprites; spr_num++)
+		{
+			// Check if the sprite is on the current line.
+			if (Sprite_Struct[spr_num].Pos_Y > VDP_Current_Line ||
+			    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Current_Line)
+			{
+				// Sprite is not on the current line.
+				continue;
+			}
+			
+			// Sprite is on the current line.
+			// Set the SOVR flag.
+			VDP_Status |= 0x40;
+			break;
+		}
+	}
+	
+	// Save the number of visible sprites.
+	VDP_Data_Misc.Borne = (spr_vis * sizeof(Sprite_Visible[0]));
+	return VDP_Data_Misc.Borne;
+}
+
+
+/**
+ * C wrapper functions for T_Update_Mask_Sprite().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	unsigned int Update_Mask_Sprite(void);
+	unsigned int Update_Mask_Sprite_Limit(void);
+}
+
+unsigned int Update_Mask_Sprite(void)
+{
+	return T_Update_Mask_Sprite<false>();
+}
+unsigned int Update_Mask_Sprite_Limit(void)
+{
+	return T_Update_Mask_Sprite<true>();
+}
+
+
+/**
  * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
  * @param plane True for Scroll A; false for Scroll B.
  * @return X offset.
