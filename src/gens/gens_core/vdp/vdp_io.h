@@ -167,8 +167,8 @@ extern VDP_Flags_t VDP_Flags;
 extern int Zero_Length_DMA;
 
 // VDP address pointers.
-extern uint8_t *ScrA_Addr;
-extern uint8_t *ScrB_Addr;
+extern uint16_t *ScrA_Addr;
+extern uint16_t *ScrB_Addr;
 extern uint8_t *Win_Addr;
 extern uint8_t *Spr_Addr;
 extern uint16_t *H_Scroll_Addr;

@@ -271,6 +271,44 @@ unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
 
 
 /**
+ * T_Get_Pattern_Info(): Get pattern info.
+ * H_Scroll_CMul must be initialized correctly.
+ * @param plane True for Scroll A; false for Scroll B.
+ * @param x X tile number.
+ * @param y Y tile number.
+ * @return Pattern info.
+ */
+template<bool plane>
+static inline unsigned int T_Get_Pattern_Info(unsigned int x, unsigned int y)
+{
+	// Get the offset.
+	// H_Scroll_CMul is the shift value required for the proper vertical offset.
+	unsigned int offset = (y << H_Scroll_CMul) + x;
+	
+	// Return the pattern information.
+	return (plane ? ScrA_Addr[offset] : ScrB_Addr[offset]);
+}
+
+/**
+ * C wrapper functions for T_Get_Pattern_Info().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	unsigned int Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y);
+	unsigned int Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y);
+}
+
+unsigned int Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y)
+{
+	return T_Get_Pattern_Info<true>(x, y);
+}
+unsigned int Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
+{
+	return T_Get_Pattern_Info<false>(x, y);
+}
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.

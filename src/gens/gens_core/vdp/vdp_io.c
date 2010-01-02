@@ -38,8 +38,8 @@ VDP_VRam_t VRam;
 VDP_CRam_t CRam;
 
 // VDP address pointers.
-uint8_t *ScrA_Addr;
-uint8_t *ScrB_Addr;
+uint16_t *ScrA_Addr;
+uint16_t *ScrB_Addr;
 uint8_t *Win_Addr;
 uint8_t *Spr_Addr;
 uint16_t *H_Scroll_Addr;
@@ -306,7 +306,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 2:
 			// Scroll A base address.
 			tmp = (val & 0x38) << 10;
-			ScrA_Addr = &VRam.u8[tmp];
+			ScrA_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 3:
@@ -322,7 +322,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 4:
 			// Scroll B base address.
 			tmp = (val & 0x07) << 13;
-			ScrB_Addr = &VRam.u8[tmp];
+			ScrB_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 5:

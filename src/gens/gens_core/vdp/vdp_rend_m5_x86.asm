@@ -164,37 +164,9 @@ section .text align=64
 	extern SYM(Update_Y_Offset_ScrollA_Interlaced)
 	extern SYM(Update_Y_Offset_ScrollB_Interlaced)
 	
-;****************************************
-
-; macro GET_PATTERN_INFO
-; takes :
-; - H_Scroll_CMul must be correctly initialized
-; - esi and edi contain X offset and Y offset respectively
-; param :
-; %1 = 0 for scroll B and 1 for scroll A
-; returns :
-; -  ax = Pattern Info
-
-%macro GET_PATTERN_INFO 1
+	extern SYM(Get_Pattern_Info_ScrollA)
+	extern SYM(Get_Pattern_Info_ScrollB)
 	
-	mov	cl, [SYM(H_Scroll_CMul)]
-	mov	eax, edi			; eax = V Cell Offset
-	mov	edx, esi			; edx = H Cell Offset
-	
-	shl	eax, cl				; eax = V Cell Offset * H Width
-	
-%if %1 > 0
-	mov	ebx, [SYM(ScrA_Addr)]
-%else
-	mov	ebx, [SYM(ScrB_Addr)]
-%endif
-	
-	add	edx, eax			; edx = (V Offset / 8) * H Width + (H Offset / 8)
-	mov	ax, [ebx + edx * 2]		; ax = Cell Info inverse
-	
-%endmacro
-
-
 ;****************************************
 
 ; macro GET_PATTERN_DATA
@@ -900,7 +872,11 @@ section .text align=64
 	
 	%%First_Loop
 		
-		GET_PATTERN_INFO 0
+		push	edi	; Y tile number.
+		push	esi	; X tile number.
+		call	SYM(Get_Pattern_Info_ScrollB)
+		add	esp, byte 8
+		
 		GET_PATTERN_DATA %1, 0
 		
 		; Check for swapped Scroll B priority.
@@ -1072,7 +1048,11 @@ section .text align=64
 
 %%First_Loop_SCA
 		
-		GET_PATTERN_INFO 1
+		push	edi	; Y tile number.
+		push	esi	; X tile number.
+		call	SYM(Get_Pattern_Info_ScrollA)
+		add	esp, byte 8
+		
 		GET_PATTERN_DATA %1, 0
 		
 		; Check for swapped Scroll A priority.
@@ -1137,7 +1117,11 @@ section .text align=64
 	mov	edi, eax
 %endif
 
-	GET_PATTERN_INFO 1
+	push	edi	; Y tile number.
+	push	esi	; X tile number.
+	call	SYM(Get_Pattern_Info_ScrollA)
+	add	esp, byte 8
+	
 	GET_PATTERN_DATA %1, 0
 	
 	; Check for swapped Scroll A priority.
