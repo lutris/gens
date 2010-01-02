@@ -1138,7 +1138,6 @@ section .text align=64
 	
 	call	SYM(Update_Mask_Sprite_Limit)	; edi point on the sprite to post
 	mov	esi, eax
-	;UPDATE_MASK_SPRITE 1
 	
 	xor	edi, edi
 	test	esi, esi
@@ -1150,7 +1149,6 @@ section .text align=64
 	
 	call	SYM(Update_Mask_Sprite)		; edi = point on the sprite to post
 	mov	esi, eax
-	;UPDATE_MASK_SPRITE 0
 	
 	xor	edi, edi
 	test	esi, esi
