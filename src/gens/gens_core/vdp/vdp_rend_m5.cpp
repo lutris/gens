@@ -508,51 +508,6 @@ static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * C wrapper functions for T_PutPixel_P0().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
-				 uint32_t mask, int shift,
-				 uint32_t pattern, unsigned int palette);
-	void PutPixel_P0_ScrollA_HS(int disp_pixnum, int pat_pixnum,
-				    uint32_t mask, int shift,
-				    uint32_t pattern, unsigned int palette);
-	void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
-				 uint32_t mask, int shift,
-				 uint32_t pattern, unsigned int palette);
-	void PutPixel_P0_ScrollB_HS(int disp_pixnum, int pat_pixnum,
-				    uint32_t mask, int shift,
-				    uint32_t pattern, unsigned int palette);
-}
-
-void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
-			 uint32_t mask, int shift,
-			 uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P0<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-void PutPixel_P0_ScrollA_HS(int disp_pixnum, int pat_pixnum,
-			    uint32_t mask, int shift,
-			    uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P0<true, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
-			 uint32_t mask, int shift,
-			 uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P0<false, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-void PutPixel_P0_ScrollB_HS(int disp_pixnum, int pat_pixnum,
-			    uint32_t mask, int shift,
-			    uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P0<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-
-
-/**
  * T_PutPixel_P1(): Put a pixel in background graphics layer 1.
  * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.

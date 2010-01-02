@@ -173,11 +173,6 @@ section .text align=64
 	extern SYM(Get_Pattern_Data)
 	extern SYM(Get_Pattern_Data_Interlaced)
 	
-	extern SYM(PutPixel_P0_ScrollA)
-	extern SYM(PutPixel_P0_ScrollA_HS)
-	extern SYM(PutPixel_P0_ScrollB)
-	extern SYM(PutPixel_P0_ScrollB_HS)
-	
 	extern SYM(PutPixel_P1)
 	extern SYM(PutPixel_P1_HS)
 	
@@ -196,54 +191,6 @@ section .text align=64
 	extern SYM(PutLine_P0_Flip_ScrollB)
 	extern SYM(PutLine_P0_Flip_ScrollB_HS)
 	
-;****************************************
-
-; macro PUTPIXEL_P0
-; param :
-; %1 = Number of the pixel
-; %2 = Mask to isolate the good pixel
-; %3 = Shift
-; %4 = 0 for scroll B and one if not
-; %5 = Shadow/Highlight enable
-; takes :
-; - ebx = Pattern Data
-; - edx = Palette number * 64
-
-%macro PUTPIXEL_P0 5
-	
-	push	edx	; palette (not modified, so we can restore it later)
-	push	ebx	; pattern
-	push	%3	; shift
-	push	%2	; mask
-	push	%1	; pattern pixel number
-	push	ebp	; display pixel number
-	
-%if %4 > 0
-	; Scroll A
-	%if %5 > 0
-		; S/H
-		call SYM(PutPixel_P0_ScrollA_HS)
-	%else
-		; No S/H
-		call SYM(PutPixel_P0_ScrollA)
-	%endif
-%else
-	; Scroll B
-	%if %5 > 0
-		; S/H
-		call SYM(PutPixel_P0_ScrollB_HS)
-	%else
-		; No S/H
-		call SYM(PutPixel_P0_ScrollB)
-	%endif
-%endif
-	
-	add	esp, byte 5*4
-	pop	edx
-
-%endmacro
-
-
 ;****************************************
 ; background layer graphics background graphics layer 1
 ; macro PUTPIXEL_P1
