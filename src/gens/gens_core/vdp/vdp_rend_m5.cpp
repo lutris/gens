@@ -146,8 +146,11 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	
 	bool overflow = false;
 	
-	unsigned int spr_num = 0;
-	unsigned int spr_vis = 0;
+	// Sprite masking variables.
+	bool sprite_on_line = false;	// True if at least one sprite is on the scanline.
+	
+	unsigned int spr_num = 0;	// Current sprite number in Sprite_Struct[].
+	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
 	
 	// Number of sprites in Sprite_Struct.
 	const unsigned int TotalSprites = (VDP_Data_Misc.Spr_End / sizeof(Sprite_Struct_t)) + 1;
@@ -169,12 +172,15 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 			max_sprites--;
 		}
 		
-		// Is the sprite a mask? (Sprite Masking Mode 1)
-		if (Sprite_Struct[spr_num].Pos_X == -128)
-		{
-			// Sprite is a mask. Skip the rest of the sprites.
+		// Check sprite masking, mode 1.
+		// This mode only works if at least one non-masking sprite
+		// is present on the scanline, regardless of whether it's
+		// visible or not.
+		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
 			break;
-		}
+		
+		// Sprite is on the current scanline.
+		sprite_on_line = true;
 		
 		// Check if the sprite is onscreen.
 		if (Sprite_Struct[spr_num].Pos_X < H_Pix &&
