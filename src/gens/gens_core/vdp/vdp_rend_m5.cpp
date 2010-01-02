@@ -347,7 +347,7 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
 /**
  * T_PutPixel_P0(): Put pixel in background graphics layer 0.
  * @param plane		[in] True for Scroll A; false for Scroll B.
- * @param s_h		[in] Shadow/Highlight enable.
+ * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
@@ -355,7 +355,7 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
  * @param pattern	[in] Pattern data.
  * @param palette	[in] Palette number * 16.
  */
-template<bool plane, bool s_h>
+template<bool plane, bool h_s>
 static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
 				 uint32_t mask, int shift,
 				 uint32_t pattern, unsigned int palette)
@@ -383,8 +383,8 @@ static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
 	// Apply palette data.
 	pat8 |= palette;
 	
-	// If Shadow/Highlight is enabled, mark this pixel as shadow.
-	if (s_h)
+	// If Highlight/Shadow is enabled, mark this pixel as shadow.
+	if (h_s)
 		pat8 |= LINEBUF_SHAD_B;
 	
 	// Write the new pixel to the line buffer.
@@ -400,13 +400,13 @@ extern "C" {
 	void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
 				 uint32_t mask, int shift,
 				 uint32_t pattern, unsigned int palette);
-	void PutPixel_P0_ScrollA_SH(int disp_pixnum, int pat_pixnum,
+	void PutPixel_P0_ScrollA_HS(int disp_pixnum, int pat_pixnum,
 				    uint32_t mask, int shift,
 				    uint32_t pattern, unsigned int palette);
 	void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
 				 uint32_t mask, int shift,
 				 uint32_t pattern, unsigned int palette);
-	void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
+	void PutPixel_P0_ScrollB_HS(int disp_pixnum, int pat_pixnum,
 				    uint32_t mask, int shift,
 				    uint32_t pattern, unsigned int palette);
 }
@@ -417,7 +417,7 @@ void PutPixel_P0_ScrollA(int disp_pixnum, int pat_pixnum,
 {
 	T_PutPixel_P0<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
-void PutPixel_P0_ScrollA_SH(int disp_pixnum, int pat_pixnum,
+void PutPixel_P0_ScrollA_HS(int disp_pixnum, int pat_pixnum,
 			    uint32_t mask, int shift,
 			    uint32_t pattern, unsigned int palette)
 {
@@ -429,7 +429,7 @@ void PutPixel_P0_ScrollB(int disp_pixnum, int pat_pixnum,
 {
 	T_PutPixel_P0<false, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
-void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
+void PutPixel_P0_ScrollB_HS(int disp_pixnum, int pat_pixnum,
 			    uint32_t mask, int shift,
 			    uint32_t pattern, unsigned int palette)
 {
@@ -439,7 +439,7 @@ void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
 
 /**
  * T_PutPixel_P1(): Put pixel in background graphics layer 1.
- * @param s_h		[in] Shadow/Highlight enable.
+ * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
@@ -447,7 +447,7 @@ void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
  * @param pattern	[in] Pattern data.
  * @param palette	[in] Palette number * 16.
  */
-template<bool s_h>
+template<bool h_s>
 static inline void T_PutPixel_P1(int disp_pixnum, int pat_pixnum,
 				 uint32_t mask, int shift,
 				 uint32_t pattern, unsigned int palette)
@@ -481,7 +481,7 @@ extern "C" {
 	void PutPixel_P1(int disp_pixnum, int pat_pixnum,
 				uint32_t mask, int shift,
 				uint32_t pattern, unsigned int palette);
-	void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
+	void PutPixel_P1_HS(int disp_pixnum, int pat_pixnum,
 				uint32_t mask, int shift,
 				uint32_t pattern, unsigned int palette);
 }
@@ -492,7 +492,7 @@ void PutPixel_P1(int disp_pixnum, int pat_pixnum,
 {
 	T_PutPixel_P1<false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
-void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
+void PutPixel_P1_HS(int disp_pixnum, int pat_pixnum,
 			uint32_t mask, int shift,
 			uint32_t pattern, unsigned int palette)
 {
@@ -503,7 +503,7 @@ void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
 /**
  * T_PutPixel_Sprite(): Put pixel in the sprite layer.
  * @param priority	[in] Sprite priority.
- * @param s_h		[in] Shadow/Highlight enable.
+ * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
@@ -512,7 +512,7 @@ void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
  * @param palette	[in] Palette number * 16.
  * @return Linebuffer byte.
  */
-template<bool priority, bool s_h>
+template<bool priority, bool h_s>
 static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
 					uint32_t mask, int shift,
 					uint32_t pattern, unsigned int palette)
@@ -546,9 +546,9 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
 	// Shift the pixel and apply the palette.
 	px = ((px >> shift) | palette);
 	
-	if (s_h)
+	if (h_s)
 	{
-		// Shadow/Highlight enabled.
+		// Highlight/Shadow enabled.
 		if (px == 0x3E)
 		{
 			// Palette 3, color 14: Highlight. (Sprite pixel doesn't show up.)
@@ -593,10 +593,10 @@ extern "C" {
 	uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
 					uint32_t mask, int shift,
 					uint32_t pattern, unsigned int palette);
-	uint8_t PutPixel_Sprite_SH(int disp_pixnum, int pat_pixnum,
+	uint8_t PutPixel_Sprite_HS(int disp_pixnum, int pat_pixnum,
 					uint32_t mask, int shift,
 					uint32_t pattern, unsigned int palette);
-	uint8_t PutPixel_Sprite_Prio_SH(int disp_pixnum, int pat_pixnum,
+	uint8_t PutPixel_Sprite_Prio_HS(int disp_pixnum, int pat_pixnum,
 					uint32_t mask, int shift,
 					uint32_t pattern, unsigned int palette);
 }
@@ -613,13 +613,13 @@ uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
 {
 	return T_PutPixel_Sprite<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
-uint8_t PutPixel_Sprite_SH(int disp_pixnum, int pat_pixnum,
+uint8_t PutPixel_Sprite_HS(int disp_pixnum, int pat_pixnum,
 				uint32_t mask, int shift,
 				uint32_t pattern, unsigned int palette)
 {
 	return T_PutPixel_Sprite<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
-uint8_t PutPixel_Sprite_Prio_SH(int disp_pixnum, int pat_pixnum,
+uint8_t PutPixel_Sprite_Prio_HS(int disp_pixnum, int pat_pixnum,
 				uint32_t mask, int shift,
 				uint32_t pattern, unsigned int palette)
 {
@@ -665,12 +665,12 @@ void VDP_Render_Line_m5(void)
 		// VDP isn't active. Clear the line buffer.
 		if (VDP_Reg.Set4 & 0x08)
 		{
-			// Shadow/Highlight is enabled. Clear with 0x40.
+			// Highlight/Shadow is enabled. Clear with 0x40.
 			memset(LineBuf.u8, 0x40, sizeof(LineBuf.u8));
 		}
 		else
 		{
-			// Shadow/Highlight is disabled. Clear with 0x00.
+			// Highlight/Shadow is disabled. Clear with 0x00.
 			memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
 		}
 	}

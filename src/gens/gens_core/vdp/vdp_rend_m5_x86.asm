@@ -171,17 +171,17 @@ section .text align=64
 	extern SYM(Get_Pattern_Data_Interlaced)
 	
 	extern SYM(PutPixel_P0_ScrollA)
-	extern SYM(PutPixel_P0_ScrollA_SH)
+	extern SYM(PutPixel_P0_ScrollA_HS)
 	extern SYM(PutPixel_P0_ScrollB)
-	extern SYM(PutPixel_P0_ScrollB_SH)
+	extern SYM(PutPixel_P0_ScrollB_HS)
 	
 	extern SYM(PutPixel_P1)
-	extern SYM(PutPixel_P1_SH)
+	extern SYM(PutPixel_P1_HS)
 	
 	extern SYM(PutPixel_Sprite)
 	extern SYM(PutPixel_Sprite_Prio)
-	extern SYM(PutPixel_Sprite_SH)
-	extern SYM(PutPixel_Sprite_Prio_SH)
+	extern SYM(PutPixel_Sprite_HS)
+	extern SYM(PutPixel_Sprite_Prio_HS)
 	
 ;****************************************
 
@@ -332,7 +332,7 @@ section .text align=64
 	; Scroll A
 	%if %5 > 0
 		; S/H
-		call SYM(PutPixel_P0_ScrollA_SH)
+		call SYM(PutPixel_P0_ScrollA_HS)
 	%else
 		; No S/H
 		call SYM(PutPixel_P0_ScrollA)
@@ -341,7 +341,7 @@ section .text align=64
 	; Scroll B
 	%if %5 > 0
 		; S/H
-		call SYM(PutPixel_P0_ScrollB_SH)
+		call SYM(PutPixel_P0_ScrollB_HS)
 	%else
 		; No S/H
 		call SYM(PutPixel_P0_ScrollB)
@@ -377,7 +377,7 @@ section .text align=64
 
 %if %4 > 0
 	; S/H
-	call SYM(PutPixel_P1_SH)
+	call SYM(PutPixel_P1_HS)
 %else
 	; No S/H
 	call SYM(PutPixel_P1)
@@ -415,7 +415,7 @@ section .text align=64
 	; High Priority
 	%if %5 > 0
 		; S/H
-		call SYM(PutPixel_Sprite_Prio_SH)
+		call SYM(PutPixel_Sprite_Prio_HS)
 	%else
 		; No S/H
 		call SYM(PutPixel_Sprite_Prio)
@@ -424,7 +424,7 @@ section .text align=64
 	; Regular Priority
 	%if %5 > 0
 		; S/H
-		call SYM(PutPixel_Sprite_SH)
+		call SYM(PutPixel_Sprite_HS)
 	%else
 		; No S/H
 		call SYM(PutPixel_Sprite)
