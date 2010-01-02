@@ -463,17 +463,15 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
  * T_PutPixel_P0(): Put a pixel in background graphics layer 0.
  * @param plane		[in] True for Scroll A; false for Scroll B.
  * @param h_s		[in] Highlight/Shadow enable.
- * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
  * @param shift		[in] Shift.
+ * @param disp_pixnum	[in] Display pixel number.
  * @param pattern	[in] Pattern data.
  * @param palette	[in] Palette number * 16.
  */
-template<bool plane, bool h_s>
-static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
-				 uint32_t mask, int shift,
-				 uint32_t pattern, unsigned int palette)
+template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
+static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -544,7 +542,7 @@ static inline void T_PutPixel_P1(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * C wrapper functions for T_PutPixel_P0().
+ * C wrapper functions for T_PutPixel_P1().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -653,7 +651,7 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * C wrapper functions for T_PutPixel_P0().
+ * C wrapper functions for T_PutPixel_Sprite().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -750,26 +748,26 @@ static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
 	if (!flip)
 	{
 		// No flip.
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 0, 0x0000F000, 12, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 1, 0x00000F00,  8, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 2, 0x000000F0,  4, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 3, 0x0000000F,  0, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 4, 0xF0000000, 28, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 5, 0x0F000000, 24, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 6, 0x00F00000, 20, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 7, 0x000F0000, 16, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 0, 0x0000F000, 12>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 1, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 2, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 3, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 4, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 5, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 6, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 7, 0x000F0000, 16>(disp_pixnum, pattern, palette);
 	}
 	else
 	{
 		// Horizontal flip.
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 0, 0x000F0000, 16, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 1, 0x00F00000, 20, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 2, 0x0F000000, 24, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 3, 0xF0000000, 28, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 4, 0x0000000F,  0, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 5, 0x000000F0,  4, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 6, 0x00000F00,  8, pattern, palette);
-		T_PutPixel_P0<plane, h_s>(disp_pixnum, 7, 0x0000F000, 12, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 0, 0x000F0000, 16>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 1, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 2, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 3, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 4, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 5, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 6, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		T_PutPixel_P0<plane, h_s, 7, 0x0000F000, 12>(disp_pixnum, pattern, palette);
 	}
 }
 
