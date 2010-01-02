@@ -175,6 +175,9 @@ section .text align=64
 	extern SYM(PutPixel_P0_ScrollB)
 	extern SYM(PutPixel_P0_ScrollB_SH)
 	
+	extern SYM(PutPixel_P1)
+	extern SYM(PutPixel_P1_SH)
+	
 ;****************************************
 
 ; macro UPDATE_MASK_SPRITE
@@ -313,8 +316,7 @@ section .text align=64
 
 %macro PUTPIXEL_P0 5
 	
-	push	edx	; This gets clobbered for some reason.
-	push	edx	; palette
+	push	edx	; palette (not modified, so we can restore it later)
 	push	ebx	; pattern
 	push	%3	; shift
 	push	%2	; mask
@@ -341,7 +343,7 @@ section .text align=64
 	%endif
 %endif
 	
-	add	esp, byte 6*4
+	add	esp, byte 5*4
 	pop	edx
 
 %endmacro
@@ -361,18 +363,23 @@ section .text align=64
 
 %macro PUTPIXEL_P1 4
 	
-	mov	eax, ebx
-	and	eax, %2
-	jz	short %%Trans
-	
-%if %3 > 0
-	shr	eax, %3
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	%3	; shift
+	push	%2	; mask
+	push	%1	; pattern pixel number
+	push	ebp	; display pixel number
+
+%if %4 > 0
+	; S/H
+	call SYM(PutPixel_P1_SH)
+%else
+	; No S/H
+	call SYM(PutPixel_P1)
 %endif
 	
-	lea	eax, [eax + edx + PRIO_W]
-	mov	[SYM(LineBuf) + ebp * 2 + (%1 * 2)], ax
-	
-%%Trans
+	add	esp, byte 5*4
+	pop	edx
 
 %endmacro
 

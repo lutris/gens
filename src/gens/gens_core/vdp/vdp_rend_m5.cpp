@@ -316,7 +316,7 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 }
 
 /**
- * C wrapper functions for T_Get_Pattern_Info().
+ * C wrapper functions for T_Get_Pattern_Data().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -393,7 +393,7 @@ static inline void T_PutPixel_P0(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * C wrapper functions for T_Get_Pattern_Info().
+ * C wrapper functions for T_PutPixel_P0().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -434,6 +434,69 @@ void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
 			    uint32_t pattern, unsigned int palette)
 {
 	T_PutPixel_P0<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+
+
+/**
+ * T_Render_PutPixel_P1: Put pixel in background graphics layer 1.
+ * @param s_h		[in] Shadow/Highlight enable.
+ * @param disp_pixnum	[in] Display pixel number.
+ * @param pat_pixnum	[in] Pattern pixel number.
+ * @param mask		[in] Mask to isolate the good pixel.
+ * @param shift		[in] Shift.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ */
+template<bool s_h>
+static inline void T_PutPixel_P1(int disp_pixnum, int pat_pixnum,
+				 uint32_t mask, int shift,
+				 uint32_t pattern, unsigned int palette)
+{
+	// TODO: Convert mask and shift to template parameters.
+	
+	// Check if this is a transparent pixel.
+	unsigned int px = (pattern & mask);
+	if (px == 0)
+		return;
+	
+	// Shift the pixel.
+	px >>= shift;
+	
+	// Update the pixel:
+	// - Add palette information.
+	// - Mark the pixel as priority.
+	// - Save it to the linebuffer.
+	px |= palette | LINEBUF_PRIO_W;
+	
+	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum);
+	LineBuf.u16[LineBuf_pixnum] = (uint16_t)px;
+}
+
+
+/**
+ * C wrapper functions for T_PutPixel_P0().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void PutPixel_P1(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette);
+	void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette);
+}
+
+void PutPixel_P1(int disp_pixnum, int pat_pixnum,
+			uint32_t mask, int shift,
+			uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P1<false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
+			uint32_t mask, int shift,
+			uint32_t pattern, unsigned int palette)
+{
+	T_PutPixel_P1<true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
 
 
