@@ -131,30 +131,6 @@ static inline void T_Make_Sprite_Struct(void)
 
 
 /**
- * C wrapper functions for T_Make_Sprite_Struct().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-void Make_Sprite_Struct(void);
-void Make_Sprite_Struct_Interlaced(void);
-void Make_Sprite_Struct_Partial(void);
-}
-
-void Make_Sprite_Struct(void)
-{
-	T_Make_Sprite_Struct<false, false>();
-}
-void Make_Sprite_Struct_Interlaced(void)
-{
-	T_Make_Sprite_Struct<true, false>();
-}
-void Make_Sprite_Struct_Partial(void)
-{
-	T_Make_Sprite_Struct<false, true>();
-}
-
-
-/**
  * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
  * @param plane True for Scroll A; false for Scroll B.
  * @return X offset.
@@ -408,6 +384,31 @@ void VDP_Render_Line_m5(void)
 	else
 	{
 		// VDP is active.
+		
+		// Check if sprite structures need to be updated.
+		if (VDP_Reg.Set4 & 0x04)
+		{
+			// Interlaced.
+			// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
+			if (VDP_Flags.VRam)
+				T_Make_Sprite_Struct<true, false>();
+			else if (VDP_Flags.VRam_Spr)
+				T_Make_Sprite_Struct<true, true>();
+		}
+		else
+		{
+			// Non-Interlaced.
+			if (VDP_Flags.VRam)
+				T_Make_Sprite_Struct<false, false>();
+			else if (VDP_Flags.VRam_Spr)
+				T_Make_Sprite_Struct<false, true>();
+		}
+		
+		// Clear the VRam flags.
+		VDP_Flags.VRam = 0;
+		VDP_Flags.VRam_Spr = 0;
+		
+		// Run the rest of the asm code.
 		VDP_Render_Line_m5_asm();
 	}
 	

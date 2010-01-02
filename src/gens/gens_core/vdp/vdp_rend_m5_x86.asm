@@ -1530,43 +1530,6 @@ section .text align=64
 		xor	edi, edi	; Rendering to linebuffer, so the line number is always 0.
 		push	edi		; we need this value later
 	
-	.VDP_Enable:
-		mov	ebx, [SYM(VDP_Flags)]
-		movzx	eax, byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4]
-		and	ebx, byte (VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
-		and	eax, byte 4	; TODO: This checks LSM1 only. Check both LSM1 and LSM0!
-		and	dword [SYM(VDP_Flags)], ~(VDP_FLAG_VRAM | VDP_FLAG_VRAM_SPR)
-		jmp	[.Table_Sprite_Struct + ebx * 8 + eax]
-	
-	align 16
-	
-	.Table_Sprite_Struct:
-		dd 	.Sprite_Struc_OK,	.Sprite_Struc_OK
-		dd 	.MSS_Complete,		.MSS_Complete_Interlace
-		dd 	.MSS_Partial,		.MSS_Partial_Interlace
-		dd 	.MSS_Complete,		.MSS_Complete_Interlace
-	
-	align 16
-	
-	.MSS_Complete:
-			call SYM(Make_Sprite_Struct)
-			jmp .Sprite_Struc_OK
-	
-	align 16
-	
-	.MSS_Complete_Interlace:
-			call SYM(Make_Sprite_Struct_Interlaced)
-			jmp .Sprite_Struc_OK
-	
-	align 16
-	
-	.MSS_Partial:
-	.MSS_Partial_Interlace:
-			call SYM(Make_Sprite_Struct_Partial)
-			jmp short .Sprite_Struc_OK
-	
-	align 16
-	
 	.Sprite_Struc_OK:
 		movzx	eax, byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4]
 		and	eax, byte 0xC
