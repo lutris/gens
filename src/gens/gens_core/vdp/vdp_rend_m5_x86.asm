@@ -178,6 +178,11 @@ section .text align=64
 	extern SYM(PutPixel_P1)
 	extern SYM(PutPixel_P1_SH)
 	
+	extern SYM(PutPixel_Sprite)
+	extern SYM(PutPixel_Sprite_Prio)
+	extern SYM(PutPixel_Sprite_SH)
+	extern SYM(PutPixel_Sprite_Prio_SH)
+	
 ;****************************************
 
 ; macro UPDATE_MASK_SPRITE
@@ -399,58 +404,38 @@ section .text align=64
 
 %macro PUTPIXEL_SPRITE 5
 
-	mov	eax, ebx
-	and	eax, %2
-	jz	short %%Trans
-
-	mov	cl, [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 16 + 1]
-	test	cl, (PRIO_B + SPR_B - %4)
-	jz	short %%Affich
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	%3	; shift
+	push	%2	; mask
+	push	%1	; pattern pixel number
+	push	ebp	; display pixel number
 	
-%%Prio
-	or	ch, cl
-%if %4 < 1
-	or	byte [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 16 + 1], SPR_B
-%endif
-	jmp	%%Trans
-	
-	align 16
-	
-%%Affich
-	
-%if %3 > 0
-	shr	eax, %3
-%endif
-	
-	lea	eax, [eax + edx + SPR_W]
-	
-%if %5 > 0
-	%if %4 < 1
-		and	cl, SHAD_B | HIGH_B
+%if %4 > 0
+	; High Priority
+	%if %5 > 0
+		; S/H
+		call SYM(PutPixel_Sprite_Prio_SH)
 	%else
-		and	cl, HIGH_B
+		; No S/H
+		call SYM(PutPixel_Sprite_Prio)
 	%endif
-	
-	cmp	eax, (0x3E + SPR_W)
-	jb	short %%Normal
-	ja	short %%Shadow
-	
-%%Highlight
-	or	word [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 16], HIGH_W
-	jmp	short %%Trans
-	
-%%Shadow
-	or	word [SYM(LineBuf) + ebp * 2 + (%1 * 2) + 16], SHAD_W
-	jmp	short %%Trans
-
-%%Normal
-	add	al, cl
-	
+%else
+	; Regular Priority
+	%if %5 > 0
+		; S/H
+		call SYM(PutPixel_Sprite_SH)
+	%else
+		; No S/H
+		call SYM(PutPixel_Sprite)
+	%endif
 %endif
 	
-	mov	[SYM(LineBuf) + ebp * 2 + (%1 * 2) + 16], ax
+	add	esp, byte 5*4
+	pop	edx
 	
-%%Trans
+	; Save the return value.
+	or	ch, al
 
 %endmacro
 

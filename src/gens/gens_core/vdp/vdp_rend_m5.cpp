@@ -345,7 +345,7 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
 #define LINEBUF_SPR_W	0x2000
 
 /**
- * T_Render_PutPixel_P0: Put pixel in background graphics layer 0.
+ * T_PutPixel_P0(): Put pixel in background graphics layer 0.
  * @param plane		[in] True for Scroll A; false for Scroll B.
  * @param s_h		[in] Shadow/Highlight enable.
  * @param disp_pixnum	[in] Display pixel number.
@@ -438,7 +438,7 @@ void PutPixel_P0_ScrollB_SH(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * T_Render_PutPixel_P1: Put pixel in background graphics layer 1.
+ * T_PutPixel_P1(): Put pixel in background graphics layer 1.
  * @param s_h		[in] Shadow/Highlight enable.
  * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
@@ -497,6 +497,133 @@ void PutPixel_P1_SH(int disp_pixnum, int pat_pixnum,
 			uint32_t pattern, unsigned int palette)
 {
 	T_PutPixel_P1<true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+
+
+/**
+ * T_PutPixel_Sprite(): Put pixel in the sprite layer.
+ * @param priority	[in] Sprite priority.
+ * @param s_h		[in] Shadow/Highlight enable.
+ * @param disp_pixnum	[in] Display pixel number.
+ * @param pat_pixnum	[in] Pattern pixel number.
+ * @param mask		[in] Mask to isolate the good pixel.
+ * @param shift		[in] Shift.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ * @return Linebuffer byte.
+ */
+template<bool priority, bool s_h>
+static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
+					uint32_t mask, int shift,
+					uint32_t pattern, unsigned int palette)
+{
+	// TODO: Convert mask and shift to template parameters.
+	
+	// Check if this is a transparent pixel.
+	unsigned int px = (pattern & mask);
+	if (px == 0)
+		return 0;
+	
+	// Get the pixel number in the linebuffer.
+	const unsigned int LineBuf_pixnum = ((disp_pixnum + pat_pixnum + 8) * 2);
+	
+	// TODO: Endianness conversions.
+	uint8_t layer_bits = LineBuf.u8[LineBuf_pixnum + 1];
+	
+	if (layer_bits & (LINEBUF_PRIO_B + LINEBUF_SPR_B - priority))
+	{
+		// Priority bit is set. (TODO: Is that what this means?)
+		if (!priority)
+		{
+			// Set the sprite bit in the linebuffer.
+			LineBuf.u8[LineBuf_pixnum + 1] |= LINEBUF_SPR_B;
+		}
+		
+		// Return the original linebuffer priority data.
+		return layer_bits;
+	}
+	
+	// Shift the pixel and apply the palette.
+	px = ((px >> shift) | palette);
+	
+	if (s_h)
+	{
+		// Shadow/Highlight enabled.
+		if (px == 0x3E)
+		{
+			// Palette 3, color 14: Highlight. (Sprite pixel doesn't show up.)
+			LineBuf.u16[LineBuf_pixnum>>1] |= LINEBUF_HIGH_W;
+			return 0;
+		}
+		else if (px == 0x3F)
+		{
+			// Palette 3, color 15: Shadow. (Sprite pixel doesn't show up.)
+			LineBuf.u16[LineBuf_pixnum>>1] |= LINEBUF_SHAD_W;
+			return 0;
+		}
+		
+		// Apply highlight/shadow based on priority.
+		if (!priority)
+			layer_bits &= (LINEBUF_SHAD_B | LINEBUF_HIGH_B);
+		else
+			layer_bits &= LINEBUF_HIGH_B;
+		
+		// Apply the layer bits.
+		px |= layer_bits;
+	}
+	
+	// Mark the pixel as a sprite pixel.
+	px |= LINEBUF_SPR_W;
+	
+	// Save the pixel in the linebuffer.
+	LineBuf.u16[LineBuf_pixnum>>1] = px;
+	
+	return 0;
+}
+
+
+/**
+ * C wrapper functions for T_PutPixel_P0().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	uint8_t PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette);
+	uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
+					uint32_t mask, int shift,
+					uint32_t pattern, unsigned int palette);
+	uint8_t PutPixel_Sprite_SH(int disp_pixnum, int pat_pixnum,
+					uint32_t mask, int shift,
+					uint32_t pattern, unsigned int palette);
+	uint8_t PutPixel_Sprite_Prio_SH(int disp_pixnum, int pat_pixnum,
+					uint32_t mask, int shift,
+					uint32_t pattern, unsigned int palette);
+}
+
+uint8_t PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
+			uint32_t mask, int shift,
+			uint32_t pattern, unsigned int palette)
+{
+	return T_PutPixel_Sprite<false, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette)
+{
+	return T_PutPixel_Sprite<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+uint8_t PutPixel_Sprite_SH(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette)
+{
+	return T_PutPixel_Sprite<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+uint8_t PutPixel_Sprite_Prio_SH(int disp_pixnum, int pat_pixnum,
+				uint32_t mask, int shift,
+				uint32_t pattern, unsigned int palette)
+{
+	return T_PutPixel_Sprite<true, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
 }
 
 
