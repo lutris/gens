@@ -150,31 +150,15 @@ section .text align=64
 	extern SYM(VDP_Update_Palette)
 	extern SYM(VDP_Update_Palette_HS)
 	
-;****************************************
-
-; macro GET_X_OFFSET
-; param :
-; %1 = 0 for scroll B and 1 scroll A
-; return :
-; - esi: contains X offset of the line in court
-; - edi: contains the number of line in court
-
-%macro GET_X_OFFSET 1
+	; C wrapper functions for templated C++ functions.
+	extern SYM(Make_Sprite_Struct)
+	extern SYM(Make_Sprite_Struct_Interlaced)
+	extern SYM(Make_Sprite_Struct_Partial)
+	extern SYM(Make_Sprite_Struct_Partial_Interlaced)
 	
-	mov	eax, [SYM(VDP_Current_Line)]
-	mov	ebx, [SYM(H_Scroll_Addr)]		; ebx points to the H-Scroll data
-	mov	edi, eax
-	and	eax, [SYM(H_Scroll_Mask)]
+	extern SYM(Get_X_Offset_ScrollA)
+	extern SYM(Get_X_Offset_ScrollB)
 	
-%if %1 > 0
-	mov	esi, [ebx + eax * 4]		; X Cell offset
-%else
-	mov	si, [ebx + eax * 4 + 2]		; X Cell offset
-%endif
-	
-%endmacro
-
-
 ;****************************************
 
 ; macro UPDATE_Y_OFFSET
@@ -902,9 +886,10 @@ section .text align=64
 	
 	mov	ebp, [esp]			; ebp point on surface where one renders
 	
-	GET_X_OFFSET 0
+	call	Get_X_Offset_ScrollB
+	mov	esi, eax
 	
-	mov	eax, esi			; eax = scroll X inv
+	;mov	eax, esi			; eax = scroll X inv
 	xor	esi, 0x3FF			; esi = scroll X norm
 	and	eax, byte 7			; eax = completion for offset
 	shr	esi, 3				; esi = current cell
@@ -1054,9 +1039,10 @@ section .text align=64
 %%Scroll_A
 	mov	ebp, [esp]			; ebp point on surface where one renders
 	
-	GET_X_OFFSET 1
+	call	Get_X_Offset_ScrollA
+	mov	esi, eax
 	
-	mov	eax, esi			; eax = scroll X inv
+	;mov	eax, esi			; eax = scroll X inv
 	mov	ebx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Start_A]	; Premier Cell
 	xor	esi, 0x3FF			; esi = scroll X norm
 	and	eax, byte 7			; eax = completion pour offset
@@ -1564,11 +1550,6 @@ section .text align=64
 
 
 ; *******************************************************
-	
-	extern SYM(Make_Sprite_Struct)
-	extern SYM(Make_Sprite_Struct_Interlaced)
-	extern SYM(Make_Sprite_Struct_Partial)
-	extern SYM(Make_Sprite_Struct_Partial_Interlaced)
 	
 	global SYM(VDP_Render_Line_m5_asm)
 	SYM(VDP_Render_Line_m5_asm):

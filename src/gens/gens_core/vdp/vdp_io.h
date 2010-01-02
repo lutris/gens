@@ -171,7 +171,7 @@ extern uint8_t *ScrA_Addr;
 extern uint8_t *ScrB_Addr;
 extern uint8_t *Win_Addr;
 extern uint8_t *Spr_Addr;
-extern uint8_t *H_Scroll_Addr;
+extern uint16_t *H_Scroll_Addr;
 
 // VDP convenience values: Horizontal.
 extern unsigned int H_Cell;

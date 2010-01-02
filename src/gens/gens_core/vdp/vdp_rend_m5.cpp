@@ -155,6 +155,47 @@ void Make_Sprite_Struct_Partial(void)
 
 
 /**
+ * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
+ * @param plane True for Scroll A; false for Scroll B.
+ * @return X offset.
+ */
+template<bool plane>
+static inline uint16_t T_Get_X_Offset(void)
+{
+	const unsigned int H_Scroll_Offset = (VDP_Current_Line & H_Scroll_Mask) * 2;
+	
+	if (plane)
+	{
+		// Scroll A.
+		return H_Scroll_Addr[H_Scroll_Offset];
+	}
+	else
+	{
+		// Scroll B.
+		return H_Scroll_Addr[H_Scroll_Offset + 1];
+	}
+}
+
+/**
+ * C wrapper functions for T_Get_X_Offset.
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	uint16_t Get_X_Offset_ScrollA(void);
+	uint16_t Get_X_Offset_ScrollB(void);
+}
+
+uint16_t Get_X_Offset_ScrollA(void)
+{
+	return T_Get_X_Offset<true>();
+}
+uint16_t Get_X_Offset_ScrollB(void)
+{
+	return T_Get_X_Offset<false>();
+}
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.

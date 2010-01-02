@@ -42,7 +42,7 @@ uint8_t *ScrA_Addr;
 uint8_t *ScrB_Addr;
 uint8_t *Win_Addr;
 uint8_t *Spr_Addr;
-uint8_t *H_Scroll_Addr;
+uint16_t *H_Scroll_Addr;
 
 // VDP convenience values: Horizontal.
 unsigned int H_Cell;
@@ -418,7 +418,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 13:
 			// H Scroll Table base address.
 			tmp = (val & 0x3F) << 10;
-			H_Scroll_Addr = &VRam.u8[tmp];
+			H_Scroll_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 16:
