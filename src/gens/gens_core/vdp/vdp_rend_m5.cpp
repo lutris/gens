@@ -271,7 +271,7 @@ unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
 
 
 /**
- * T_Get_Pattern_Info(): Get pattern info.
+ * T_Get_Pattern_Info(): Get pattern info from a scroll plane.
  * H_Scroll_CMul must be initialized correctly.
  * @param plane True for Scroll A; false for Scroll B.
  * @param x X tile number.
