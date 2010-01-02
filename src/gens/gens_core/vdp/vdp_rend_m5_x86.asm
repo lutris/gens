@@ -186,6 +186,11 @@ section .text align=64
 	extern SYM(PutPixel_Sprite_HS)
 	extern SYM(PutPixel_Sprite_Prio_HS)
 	
+	extern SYM(PutLine_P0_ScrollA)
+	extern SYM(PutLine_P0_ScrollA_HS)
+	extern SYM(PutLine_P0_ScrollB)
+	extern SYM(PutLine_P0_ScrollB_HS)
+	
 ;****************************************
 
 ; macro PUTPIXEL_P0
@@ -332,41 +337,32 @@ section .text align=64
 
 %macro PUTLINE_P0 2
 
-%if %1 < 1
-	%if %2 > 0
-		mov	dword [SYM(LineBuf) + ebp * 2 +  0], SHAD_D
-		mov	dword [SYM(LineBuf) + ebp * 2 +  4], SHAD_D
-		mov	dword [SYM(LineBuf) + ebp * 2 +  8], SHAD_D
-		mov	dword [SYM(LineBuf) + ebp * 2 + 12], SHAD_D
-	%else
-		mov	dword [SYM(LineBuf) + ebp * 2 +  0], 0x00000000
-		mov	dword [SYM(LineBuf) + ebp * 2 +  4], 0x00000000
-		mov	dword [SYM(LineBuf) + ebp * 2 +  8], 0x00000000
-		mov	dword [SYM(LineBuf) + ebp * 2 + 12], 0x00000000
-	%endif
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	ebp	; display pixel number
 	
-	; If ScrollB Low is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_LOW
-	jz	near %%Full_Trans
+%if %1 > 0
+	; Scroll A
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_P0_ScrollA_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P0_ScrollA)
+	%endif
 %else
-	; If ScrollA Low is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_LOW
-	jz	near %%Full_Trans
+	; Scroll B
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_P0_ScrollB_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P0_ScrollB)
+	%endif
 %endif
 	
-	test	ebx, ebx
-	jz	near %%Full_Trans
-	
-	PUTPIXEL_P0 0, 0x0000f000, 12, %1, %2
-	PUTPIXEL_P0 1, 0x00000f00,  8, %1, %2
-	PUTPIXEL_P0 2, 0x000000f0,  4, %1, %2
-	PUTPIXEL_P0 3, 0x0000000f,  0, %1, %2
-	PUTPIXEL_P0 4, 0xf0000000, 28, %1, %2
-	PUTPIXEL_P0 5, 0x0f000000, 24, %1, %2
-	PUTPIXEL_P0 6, 0x00f00000, 20, %1, %2
-	PUTPIXEL_P0 7, 0x000f0000, 16, %1, %2
-	
-%%Full_Trans
+	add	esp, byte 2*4
+	pop	edx
 
 %endmacro
 

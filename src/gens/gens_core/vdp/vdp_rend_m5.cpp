@@ -460,7 +460,7 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
 #define LINEBUF_SPR_W	0x2000
 
 /**
- * T_PutPixel_P0(): Put pixel in background graphics layer 0.
+ * T_PutPixel_P0(): Put a pixel in background graphics layer 0.
  * @param plane		[in] True for Scroll A; false for Scroll B.
  * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
@@ -553,7 +553,7 @@ void PutPixel_P0_ScrollB_HS(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * T_PutPixel_P1(): Put pixel in background graphics layer 1.
+ * T_PutPixel_P1(): Put a pixel in background graphics layer 1.
  * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
@@ -616,7 +616,7 @@ void PutPixel_P1_HS(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * T_PutPixel_Sprite(): Put pixel in the sprite layer.
+ * T_PutPixel_Sprite(): Put a pixel in the sprite layer.
  * @param priority	[in] Sprite priority.
  * @param h_s		[in] Highlight/Shadow enable.
  * @param disp_pixnum	[in] Display pixel number.
@@ -739,6 +739,94 @@ uint8_t PutPixel_Sprite_Prio_HS(int disp_pixnum, int pat_pixnum,
 				uint32_t pattern, unsigned int palette)
 {
 	return T_PutPixel_Sprite<true, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
+}
+
+
+#define LINEBUF_HIGH_D	0x80808080
+#define LINEBUF_SHAD_D	0x40404040
+#define LINEBUF_PRIO_D	0x01000100
+#define LINEBUF_SPR_D	0x20002000
+
+/**
+ * T_PutLine_P0(): Put a line in background graphics layer 0.
+ * @param plane		[in] True for Scroll A; false for Scroll B.
+ * @param h_s		[in] Highlight/Shadow enable.
+ * @param disp_pixnum	[in] Display pixel nmber.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ */
+template<bool plane, bool h_s>
+static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
+{
+	if (!plane)
+	{
+		// Scroll B.
+		if (h_s)
+		{
+			// Highlight/Shadow is enabled.
+			// Set the line to shadow by default.
+			memset(&LineBuf.u16[disp_pixnum], LINEBUF_SHAD_B, 8*2);
+		}
+		else
+		{
+			// Highlight/Shadow is disabled.
+			// Clear the line.
+			memset(&LineBuf.u16[disp_pixnum], 0x00, 8*2);
+		}
+		
+		// If ScrollB_Low is disabled, don't do anything.
+		if (!(VDP_Layers & VDP_LAYER_SCROLLB_LOW))
+			return;
+	}
+	else
+	{
+		// Scroll A.
+		// If ScrollA_Low is disabled. don't do anything.
+		if (!(VDP_Layers & VDP_LAYER_SCROLLA_LOW))
+			return;
+	}
+	
+	// Don't do anything if the pattern is empty.
+	if (pattern == 0)
+		return;
+	
+	// Put the pixels.
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 0, 0x0000F000, 12, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 1, 0x00000F00,  8, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 2, 0x000000F0,  4, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 3, 0x0000000F,  0, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 4, 0xF0000000, 28, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 5, 0x0F000000, 24, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 6, 0x00F00000, 20, pattern, palette);
+	T_PutPixel_P0<plane, h_s>(disp_pixnum, 7, 0x000F0000, 16, pattern, palette);
+}
+
+/**
+ * C wrapper functions for T_PutLine_P0().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void PutLine_P0_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P0_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P0_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P0_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
+}
+
+void PutLine_P0_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P0<true, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P0_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P0<true, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_P0_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P0<false, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P0_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P0<false, true>(disp_pixnum, pattern, palette);
 }
 
 
