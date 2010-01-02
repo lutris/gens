@@ -138,7 +138,12 @@ static inline void T_Make_Sprite_Struct(void)
 template<bool sprite_limit>
 static inline unsigned int T_Update_Mask_Sprite(void)
 {
-	int max_cells = (sprite_limit ? H_Cell : 0);
+	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
+	// - Maximum sprite dots per line: 256/320
+	// - Maximum sprites per line: 16/20
+	int max_cells = H_Cell;
+	int max_sprites = (H_Cell / 2);
+	
 	bool overflow = false;
 	
 	unsigned int spr_num = 0;
@@ -166,7 +171,10 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		}
 		
 		if (sprite_limit)
+		{
 			max_cells -= Sprite_Struct[spr_num].Size_X;
+			max_sprites--;
+		}
 		
 		// Check if the sprite is onscreen.
 		if (Sprite_Struct[spr_num].Pos_X < H_Pix &&
@@ -177,7 +185,7 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 			spr_vis++;
 		}
 		
-		if (sprite_limit && max_cells <= 0)
+		if (sprite_limit && (max_cells <= 0 || max_sprites == 0))
 		{
 			// Sprite overflow!
 			overflow = true;
