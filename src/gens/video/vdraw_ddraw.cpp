@@ -94,7 +94,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int msg_width = (vdp_isH40() ? 320 : 256) * vdraw_scale;
+	const int msg_width = VDP_Reg.H_Pix * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -620,7 +620,8 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 		RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
 		RectSrc.bottom = (240 * vdraw_scale);
 	}
-
+	
+	// TODO: Use VDP_Reg.H_Pix and VDP_Reg.H_Pix_Begin.
 	if (vdp_isH40())
 	{
 		Dep = 0;

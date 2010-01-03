@@ -627,7 +627,7 @@ static inline int T_gens_do_32X_frame(void)
 		post_frame.md_screen = &MD_Screen32[8];
 	else
 		post_frame.md_screen = &MD_Screen[8];
-	post_frame.width = (vdp_isH40() ? 320 : 256);
+	post_frame.width = VDP_Reg.H_Pix;
 	post_frame.height = VDP_Num_Vis_Lines;
 	post_frame.pitch = 336;
 	post_frame.bpp = bppMD;

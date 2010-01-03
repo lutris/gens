@@ -435,11 +435,9 @@ int vdraw_flip(int md_screen_updated)
 	}
 	
 	// Check if the display width changed.
+	// TODO: Eliminate this.
 	vdraw_border_h_old = vdraw_border_h;
-	if (vdp_isH40())
-		vdraw_border_h = 0;	// 320x224
-	else
-		vdraw_border_h = 64;	// 256x224
+	vdraw_border_h = VDP_Reg.H_Pix_Begin * 2;
 	
 	if (vdraw_border_h != vdraw_border_h_old)
 	{
@@ -448,6 +446,7 @@ int vdraw_flip(int md_screen_updated)
 			vdraw_cur_backend->stretch_adjust();
 	}
 	
+	// TODO: This check seems to be inverted...
 	if (vdraw_border_h > vdraw_border_h_old)
 	{
 		// New screen width is smaller than old screen width.
