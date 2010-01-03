@@ -540,13 +540,20 @@ static inline int T_gens_do_MD_frame(void)
 	main68k_exec(Cycles_M68K);
 	Z80_EXEC(0);
 	
-	for (VDP_Current_Line++;
+	// TODO: Why was VDP_Current_Line incremented below?
+	if (VDP)
+	{
+		// VDP needs to be updated.
+		VDP_Render_Line_m5();
+	}
+	
+	for (VDP_Current_Line++;	// TODO: Why was this incremented here?
 	     VDP_Current_Line < VDP_Num_Lines;
 	     VDP_Current_Line++)
 	{
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		
