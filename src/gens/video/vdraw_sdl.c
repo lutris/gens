@@ -172,7 +172,6 @@ static int vdraw_sdl_flip(void)
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	const int pitch = vdraw_sdl_screen->pitch;
 	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
 	const int startPos = HBorder * vdraw_scale;		// Starting position from within the screen.
 	
@@ -184,7 +183,7 @@ static int vdraw_sdl_flip(void)
 	vdraw_rInfo.destScreen = (void*)start;
 	vdraw_rInfo.width = 320 - vdraw_border_h;
 	vdraw_rInfo.height = 240;
-	vdraw_rInfo.destPitch = pitch;
+	vdraw_rInfo.destPitch = vdraw_sdl_screen->pitch;
 	
 	if (vdraw_needs_conversion)
 	{
@@ -201,13 +200,14 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	vdraw_rInfo.height -= ((240 - VDP_Num_Vis_Lines) / 2);
+	start += vdraw_sdl_screen->pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, vdraw_sdl_screen->w,
 			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
@@ -215,7 +215,7 @@ static int vdraw_sdl_flip(void)
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,
 			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	

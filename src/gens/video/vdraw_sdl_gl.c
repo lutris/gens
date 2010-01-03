@@ -413,17 +413,22 @@ static int vdraw_sdl_gl_flip(void)
 	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
 	// Draw the message and/or FPS counter.
-	const int msg_height = (VDP_Num_Vis_Lines + ((240 - VDP_Num_Vis_Lines) / 2)) * vdraw_scale;
+	start += pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text(filterBuffer, rowLength, texWidth, msg_height,
+		draw_text(start, rowLength,
+			  texWidth * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
-		draw_text(filterBuffer, rowLength, texWidth, msg_height,
+		draw_text(start, rowLength,
+			  texWidth * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	
