@@ -220,7 +220,7 @@ void VDP_Update_IRQ_Line(void);
  */
 static inline int vdp_getHPix(void)
 {
-	// Default when no game is loaded is 1. (320x224)
+	// Default when no game is loaded is 320. (320x224)
 #ifdef GENS_DEBUGGER
 	if (!Game || debug_mode != DEBUG_NONE)
 		return 320;
@@ -240,24 +240,28 @@ static inline int vdp_getHPix(void)
 
 
 /**
- * vdp_isH40(): Determine if the current horiontal resolution is H40.
- * @return Zero if V28 (224); non-zero if V30 (240).
+ * vdp_getVPix(): Get the current vertical resolution.
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.Set2 directly.
+ * @return Vertical resolution, in pixels.
  */
-static inline int vdp_isV30(void)
+static inline int vdp_getVPix(void)
 {
-	// Default when no game is loaded is 0. (320x224)
-	int rval = 0;
-	if (((CPU_Mode == 1) && (VDP_Reg.Set2 & 0x8)) && Game)
-		rval = 1;
+	// Default when no game is loaded is 224. (320x224)
 #ifdef GENS_DEBUGGER
-	if (debug_mode != DEBUG_NONE)
-		rval = 1;
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 224;
+#else
+	if (!Game)
+		return 224;
 #endif
+	
 #if 0
 	if (!FrameCount)
-		rval = 1;
+	rval = 1;
 #endif
-	return rval;
+	
+	return VDP_Num_Vis_Lines;
 }
 
 #ifdef __cplusplus
