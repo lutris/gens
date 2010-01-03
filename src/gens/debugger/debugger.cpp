@@ -616,7 +616,7 @@ static void Refresh_M68k_State(void)
 	Print_Text(Dbg_Out_Str, 162, 186, TEXT_WHITE);
 	sprintf(Dbg_Out_Str, "Cycles=%.10d \n", main68k_context.odometer);
 	Print_Text(Dbg_Out_Str, 162, 194, TEXT_WHITE);
-	sprintf(Dbg_Out_Str, "Bank for Z80 = %.8X\n", Bank_Z80);
+	sprintf(Dbg_Out_Str, "Bank for Z80 = %.6X\n", Bank_Z80);
 	Print_Text(Dbg_Out_Str, 162, 202, TEXT_WHITE);
 	/*
 	sprintf(Dbg_Out_Str, "Bank = %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n",
