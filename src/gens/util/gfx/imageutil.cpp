@@ -486,6 +486,7 @@ int ImageUtil::ScreenShot(void)
 	// TODO: Use macros in video/v_inline.h
 	const int w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
 	const int h = VDP_Num_Vis_Lines;
+	const int start = (((240 - VDP_Num_Vis_Lines) / 2) * 336) + 8;
 	
 	// Build the filename.
 	int num = -1;
@@ -517,9 +518,9 @@ int ImageUtil::ScreenShot(void)
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
-		screen = (void*)(&MD_Screen[8]);
+		screen = (void*)(&MD_Screen[start]);
 	else //if (bppMD == 32)
-		screen = (void*)(&MD_Screen32[8]);
+		screen = (void*)(&MD_Screen32[start]);
 	
 	// Attempt to save the screenshot.
 	int rval = WriteImage(filename, fmt, w, h, 336, screen, bppMD);
