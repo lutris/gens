@@ -272,14 +272,15 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		return;
 	
 	// Determine the starting position.
-	Pos_Y += (240 - VDP_Num_Vis_Lines) / 2;		// Compensate for the screen border.
-	if (Pos_Y + 7 >= VDP_Num_Vis_Lines)
+	const int curVPix = vdp_getVPix();
+	Pos_Y += (240 - curVPix) / 2;		// Compensate for the screen border.
+	if (Pos_Y + 7 >= curVPix)
 	{
 		// Offscreen. Don't draw anything.
 		return;
 	}
 	
-	// Row length.
+	// Row length. (TODO: Use vdp_getHPix() instead.)
 	int row_length = 320;	// Assume 320px if emulation isn't running.
 	if (Style & TEXT_EMU_MODE)
 	{
