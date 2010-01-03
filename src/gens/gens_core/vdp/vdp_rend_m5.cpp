@@ -1181,15 +1181,48 @@ void VDP_Render_Line_m5(void)
 	const int BorderArea = (240 - VDP_Num_Vis_Lines) / 2;
 	const int TopBorder = (VDP_Num_Lines - BorderArea);
 	
+	// Determine what part of the screen we're in.
+	bool in_border = false;
 	if (VDP_Current_Line >= (VDP_Num_Vis_Lines + BorderArea) &&
 	    VDP_Current_Line < TopBorder)
 	{
 		// Not in any part of the screen.
 		return;
 	}
+	else if (VDP_Current_Line >= VDP_Num_Vis_Lines)
+	{
+		// In border area.
+		in_border = true;
+	}
+	
+	// Determine the starting line in MD_Screen.
+	unsigned int LineStart;
+	
+	if (BorderArea > 0 && VDP_Current_Line >= TopBorder)
+	{
+		// Top border area.
+		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line - 1] + 8);
+	}
+	else
+	{
+		// Regular visible area.
+		LineStart = (TAB336[VDP_Current_Line + BorderArea] + 8);
+	}
+	
+	if (in_border && !Video.borderColorEmulation)
+	{
+		// We're in the border area, but border color emulation is disabled.
+		// Clear the border area.
+		// TODO: Only clear this if the option changes or V/H mode changes.
+		if (bppMD == 32)
+			memset(&MD_Screen32[LineStart], 0x00, H_Pix*sizeof(uint32_t));
+		else
+			memset(&MD_Screen[LineStart], 0x00, H_Pix*sizeof(uint16_t));
+		return;
+	}
 	
 	// Check if the VDP is active.
-	if (!(VDP_Reg.Set2 & 0x40) || VDP_Current_Line >= VDP_Num_Vis_Lines)
+	if (!(VDP_Reg.Set2 & 0x40) || in_border)
 	{
 		// VDP isn't active, or this is the border region.
 		// Clear the line buffer.
@@ -1246,19 +1279,6 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Render the image.
-	unsigned int LineStart;
-	
-	if (BorderArea > 0 && VDP_Current_Line >= TopBorder)
-	{
-		// Top border area.
-		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line - 1] + 8);
-	}
-	else
-	{
-		// Regular visible area.
-		LineStart = (TAB336[VDP_Current_Line + BorderArea] + 8);
-	}
-	
 	const unsigned int num_px = (160 - H_Pix_Begin) * 2;
 	if (bppMD == 32)
 	{
