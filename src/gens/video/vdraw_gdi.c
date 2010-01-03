@@ -334,7 +334,7 @@ static int vdraw_gdi_flip(void)
 		draw_text(start, szGDIBuf.cx,
 			  vdraw_rInfo.width * vdraw_scale,
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style, FALSE);
+			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
@@ -342,7 +342,7 @@ static int vdraw_gdi_flip(void)
 		draw_text(start, szGDIBuf.cx,
 			  vdraw_rInfo.width * vdraw_scale,
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style, FALSE);
+			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	// Blit the image to the GDI window.

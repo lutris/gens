@@ -419,17 +419,17 @@ static int vdraw_sdl_gl_flip(void)
 	{
 		// Message is visible.
 		draw_text(start, rowLength,
-			  texWidth * vdraw_scale,
+			  texWidth,
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style, FALSE);
+			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, rowLength,
-			  texWidth * vdraw_scale,
+			  texWidth,
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style, FALSE);
+			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	// Set the GL MAG filter.
