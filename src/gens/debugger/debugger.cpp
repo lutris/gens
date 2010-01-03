@@ -831,6 +831,16 @@ static void Refresh_VDP_Pattern(void)
 template<typename pixel>
 static inline void T_Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned int numPalettes)
 {
+	// Check if the palettes need to be updated.
+	if (VDP_Flags.CRam)
+	{
+		// Palettes need to be updated.
+		if (VDP_Reg.Set4 & 0x10)
+			VDP_Update_Palette_HS();
+		else
+			VDP_Update_Palette();
+	}
+	
 	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
 	pixel *pLine = &screen[(336 * (VBorder + 10)) + 180];
 	
