@@ -328,7 +328,7 @@ static void WINAPI ca_window_save(void)
 	if (Game)
 	{
 		// Emulation is running. Update the CRAM.
-		CRam_Flag = 1;
+		VDP_Flags.CRam = 1;
 		
 		if (!Settings.Paused)
 		{
