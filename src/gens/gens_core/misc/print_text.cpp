@@ -21,7 +21,6 @@
  ***************************************************************************/
 
 #include "print_text.hpp"
-#include "misc.h"
 
 // C includes.
 #include <stdint.h>
@@ -230,7 +229,7 @@ static inline void T_Print_Text(const char *str, int row_length, const pixel *pa
 	pixel *screen_ptr = &screen[8 + (Pos_Y * 336) + Pos_X];
 	
 	// TODO: 2x text rendering and transparency rendering.
-	if (Style & (SIZE_X2 | TRANS))
+	if (Style & (TEXT_SIZE_X2 | TEXT_TRANS))
 		return;
 	
 	// Process the string.
@@ -282,7 +281,7 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 	
 	// Row length.
 	int row_length = 320;	// Assume 320px if emulation isn't running.
-	if (Style & 0x01)
+	if (Style & TEXT_EMU_MODE)
 	{
 		// Emulation is running. (TODO: That's what this is used for?!)
 		row_length = VDP_Reg.H_Pix;

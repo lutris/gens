@@ -29,6 +29,15 @@ extern "C" {
 
 void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
+// Text style defines.
+#define TEXT_EMU_MODE	0x01
+#define TEXT_WHITE	0x00
+#define TEXT_BLUE	0x02
+#define TEXT_GREEN	0x04
+#define TEXT_RED	0x06
+#define TEXT_TRANS	0x08
+#define TEXT_SIZE_X2	0x10
+
 #ifdef __cplusplus
 }
 #endif
