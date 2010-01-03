@@ -203,6 +203,15 @@ section .text align=64
 	extern SYM(PutLine_Sprite_Flip_Low)
 	extern SYM(PutLine_Sprite_Flip_Low_HS)
 	
+	extern SYM(Render_Line_ScrollB)
+	extern SYM(Render_Line_ScrollB_Interlaced)
+	extern SYM(Render_Line_ScrollB_VScroll)
+	extern SYM(Render_Line_ScrollB_VScroll_Interlaced)
+	extern SYM(Render_Line_ScrollB_HS)
+	extern SYM(Render_Line_ScrollB_HS_Interlaced)
+	extern SYM(Render_Line_ScrollB_HS_VScroll)
+	extern SYM(Render_Line_ScrollB_HS_VScroll_Interlaced)
+	
 ;****************************************
 
 ; macro PUTLINE_P0
@@ -466,128 +475,50 @@ section .text align=64
 ; %3 = Highlight/Shadow enable
 
 %macro RENDER_LINE_SCROLL_B 3
-	
-	mov	ebp, [esp]			; ebp point on surface where one renders
-	
-	call	SYM(Get_X_Offset_ScrollB)
-	mov	esi, eax
-	
-	;mov	eax, esi			; eax = scroll X inv
-	xor	esi, 0x3FF			; esi = scroll X norm
-	and	eax, byte 7			; eax = completion for offset
-	shr	esi, 3				; esi = current cell
-	add	ebp, eax			; ebp updated for clipping
-	mov	ebx, esi
-	and	esi, [SYM(H_Scroll_CMask)]		; prevent H Cell Offset from overflowing
-	and	ebx, byte 1
-	mov	eax, [SYM(H_Cell)]
-	sub	ebx, byte 2			; start with cell -2 or -1 (for V Scroll)
-	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], eax		; number of cells to post
-	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell], ebx	; Current cell for the V Scroll
-	
-	mov	edi, [SYM(VDP_Current_Line)]	; edi = line number
-	mov	eax, [SYM(VSRam) + 2]
-	
-%if %1 > 0
-	shr	eax, 1				; divide Y scroll in 2 if interlaced
-%endif
-	
-	add	edi, eax
-	mov	eax, edi
-	shr	edi, 3				; V Cell Offset
-	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
-	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Line_7], eax
-	
-	jmp	short %%First_Loop
-	
-	align 16
-	
-	%%Loop
-	
-%if %2 > 0
-		push	edi
-		%if %1 > 0
-			call SYM(Update_Y_Offset_ScrollB_Interlaced)
-		%else
-			call SYM(Update_Y_Offset_ScrollB)
-		%endif
-		add	esp, byte 4
-		mov	edi, eax
-%endif
-	
-	%%First_Loop
-		
-		push	edi	; Y tile number.
-		push	esi	; X tile number.
-		call	SYM(Get_Pattern_Info_ScrollB)
-		add	esp, byte 8
-		
-		push	eax
-%if %1 > 0
-		call	SYM(Get_Pattern_Data_Interlaced)
-%else
-		call	SYM(Get_Pattern_Data)
-%endif
-		mov	ebx, eax	; Save the pattern data.
-		pop	eax		; Restore the pattern info. ("pattern" isn't modified in Get_Pattern_Data().)
-		mov	edx, eax	; Get the palette number. (PalNum * 16: >> 13, << 4: >> 9 total.)
-		shr	edx, 9		
-		and	edx, byte 0x30
-		
-		; Check for swapped Scroll B priority.
-		test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_SWAP
-		jz	short %%No_Swap_ScrollB_Priority
-		xor	ax, 0x8000
-		
-	%%No_Swap_ScrollB_Priority
-		test	eax, 0x0800		; test if H-Flip?
-		jz	near %%No_H_Flip	; if yes, then
-		
-	%%H_Flip
-			
-			test	eax, 0x8000		; test the priority of the current pattern
-			jnz	near %%H_Flip_P1
-			
-	%%H_Flip_P0
-				PUTLINE_FLIP_P0 0, %3
-				jmp	%%End_Loop
-				
-				align 16
-				
-	%%H_Flip_P1
-				PUTLINE_FLIP_P1 0, %3
-				jmp	%%End_Loop
-				
-				align 16
-				
-	%%No_H_Flip
-			
-			test	eax, 0x8000		; test the priority of the current pattern
-			jnz	near %%No_H_Flip_P1
-			
-	%%No_H_Flip_P0
-				PUTLINE_P0 0, %3
-				jmp 	%%End_Loop
-				
-				align 16
-				
-	%%No_H_Flip_P1
-				PUTLINE_P1 0, %3
-				jmp	short %%End_Loop
-				
-				align 16
-				
-	%%End_Loop
-		inc	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell]	; Next H cell for the V Scroll
-		inc	esi							; Next H cell
-		add	ebp, byte 8						; advance to the next pattern
-		and	esi, [SYM(H_Scroll_CMask)]				; prevent H Offset from overflowing
-		dec	byte [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X]		; decrement number of cells to treat
-		jns	near %%Loop
-		
-%%End
 
+%if %1 > 0
+	; Interlaced.
+	%if %2 > 0
+		; VScroll is 2 cell.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_HS_VScroll_Interlaced)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_VScroll_Interlaced)
+		%endif
+	%else
+		; VScroll is Full.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_HS_Interlaced)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_Interlaced)
+		%endif
+	%endif
+%else
+	; Not Interlaced.
+	%if %2 > 0
+		; VScroll is 2 cell.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_HS_VScroll)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_VScroll)
+		%endif
+	%else
+		; VScroll is Full.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollB_HS)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollB)
+		%endif
+	%endif
+%endif
 
 %endmacro
 

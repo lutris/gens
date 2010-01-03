@@ -965,6 +965,128 @@ void PutLine_Sprite_Flip_Low_HS(int disp_pixnum, uint32_t pattern, int palette)
 
 
 /**
+ * T_Render_Line_ScrollB(): Render a line for Scroll B.
+ * @param interlaced	[in] True for interlaced; false for non-interlaced.
+ * @param vscroll	[in] True for 2-cell mode; false for full scroll.
+ * @param h_s		[in] Highlight/Shadow enable.
+ */
+template<bool interlaced, bool vscroll, bool h_s>
+static inline void T_Render_Line_ScrollB(void)
+{
+	// Get the ScrollB offset. (cell and fine offset)
+	unsigned int X_offset_cell = T_Get_X_Offset<false>() & 0x3FF;
+	unsigned int X_offset_fine = X_offset_cell & 7;	// Fine offset.
+	
+	// Get the correct cell offset:
+	// - Invert the cell position.
+	// - Right-shift by 3 for the cell number.
+	// - AND with the horizontal scrolling cell mask to prevent overflow.
+	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & H_Scroll_CMask);
+	
+	VDP_Data_Misc.X = H_Cell;			// Number of cells to draw.
+	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;	// Current cell for VScroll.
+	
+	// Drawing will start at LineBuf.u16[offset_fine].
+	unsigned int disp_pixnum = X_offset_fine;
+	
+	// Initialize the Y offset.
+	unsigned int Y_offset_cell = VSRam.u16[1];	// Index 1 is the first VSRam entry for Scroll B.
+	
+	if (interlaced)
+	{
+		// Divide Y scroll by 2.
+		// TODO: Don't do this! Handle interlaced mode properly.
+		Y_offset_cell /= 2;
+	}
+	
+	Y_offset_cell += VDP_Current_Line;
+	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);
+	Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
+	goto Start_Loop;
+	
+	// Loop through the cells.
+	for (; VDP_Data_Misc.X >= 0; VDP_Data_Misc.X--)
+	{
+		if (vscroll)
+		{
+			// 2-cell vertical scrolling.
+			// Update the Y offset.
+			Y_offset_cell = T_Update_Y_Offset<false, interlaced>(Y_offset_cell);
+		}
+		
+Start_Loop:
+		// Get pattern info and data for the current tile.
+		uint32_t pattern_info = T_Get_Pattern_Info<false>(X_offset_cell, Y_offset_cell);
+		uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
+		
+		// Extract the palette number.
+		// Resulting number is palette * 16.
+		unsigned int palette = (pattern_info >> 9) & 0x30;
+		
+		// Check for swapped Scroll B priority.
+		if (VDP_Layers & VDP_LAYER_SCROLLB_SWAP)
+			pattern_info ^= 0x8000;
+		
+		// Check for horizontal flip.
+		if (pattern_info & 0x0800)
+		{
+			// Pattern has H-Flip enabled.
+			if (pattern_info & 0x8000)
+				T_PutLine_P1<false, h_s, true>(disp_pixnum, pattern_data, palette);
+			else
+				T_PutLine_P0<false, h_s, true>(disp_pixnum, pattern_data, palette);
+		}
+		else
+		{
+			// Pattern doesn't have flip enabled.
+			if (pattern_info & 0x8000)
+				T_PutLine_P1<false, h_s, false>(disp_pixnum, pattern_data, palette);
+			else
+				T_PutLine_P0<false, h_s, false>(disp_pixnum, pattern_data, palette);
+		}
+		
+		// Go to the next H cell.
+		VDP_Data_Misc.Cell++;
+		X_offset_cell = (X_offset_cell + 1) & H_Scroll_CMask;
+		
+		// Go to the next pattern.
+		disp_pixnum += 8;
+	}
+}
+
+/**
+ * C wrapper functions for T_PutLine_Sprite().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void Render_Line_ScrollB(void);
+	void Render_Line_ScrollB_Interlaced(void);
+	void Render_Line_ScrollB_VScroll(void);
+	void Render_Line_ScrollB_VScroll_Interlaced(void);
+	void Render_Line_ScrollB_HS(void);
+	void Render_Line_ScrollB_HS_Interlaced(void);
+	void Render_Line_ScrollB_HS_VScroll(void);
+	void Render_Line_ScrollB_HS_VScroll_Interlaced(void);
+}
+void Render_Line_ScrollB(void)
+{ T_Render_Line_ScrollB<false, false, false>(); }
+void Render_Line_ScrollB_Interlaced(void)
+{ T_Render_Line_ScrollB<true, false, false>(); }
+void Render_Line_ScrollB_VScroll(void)
+{ T_Render_Line_ScrollB<false, true, false>(); }
+void Render_Line_ScrollB_VScroll_Interlaced(void)
+{ T_Render_Line_ScrollB<true, true, false>(); }
+void Render_Line_ScrollB_HS(void)
+{ T_Render_Line_ScrollB<false, false, true>(); }
+void Render_Line_ScrollB_HS_Interlaced(void)
+{ T_Render_Line_ScrollB<true, false, true>(); }
+void Render_Line_ScrollB_HS_VScroll(void)
+{ T_Render_Line_ScrollB<false, true, true>(); }
+void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
+{ T_Render_Line_ScrollB<true, true, true>(); }
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.

@@ -33,8 +33,8 @@ typedef struct
 {
 	unsigned int Pattern_Adr;
 	unsigned int Line_7;
-	unsigned int X;
-	unsigned int Cell;
+	int X;			// Render_Line_*() needs to check for less-than-zero condition. (jns)
+	int Cell;		// VSRam cell can be -1 or -2.
 	unsigned int Start_A;
 	unsigned int Length_A;
 	unsigned int Start_W;
