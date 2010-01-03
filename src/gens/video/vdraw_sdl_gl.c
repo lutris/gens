@@ -67,7 +67,6 @@ static void	vdraw_sdl_gl_update_renderer(void);
 static int	vdraw_sdl_gl_reinit_gens_window(void);
 
 // Used internally. (Not used in vdraw_backend_t.)
-static void	vdraw_sdl_gl_draw_border(void);
 static int	vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitSDL);
 
 // Miscellaneous.
@@ -311,6 +310,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 #endif
 	
 	glDisable(GL_DEPTH_TEST);
+	
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
 	
@@ -361,11 +361,9 @@ static int vdraw_sdl_gl_end(void)
 static void vdraw_sdl_gl_clear_screen(void)
 {
 	// Clear the screen.
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	memset(filterBuffer, 0x00, filterBufferSize);
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
 
@@ -375,8 +373,11 @@ static void vdraw_sdl_gl_clear_screen(void)
  */
 static int vdraw_sdl_gl_flip(void)
 {
-	// Draw the border.
-	vdraw_sdl_gl_draw_border();
+	// Clear the GL surface.
+	// This is needed in order to make sure that we have the
+	// correct video mode for some reason.
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
@@ -389,7 +390,7 @@ static int vdraw_sdl_gl_flip(void)
 	// Set up the render information.
 	vdraw_rInfo.destScreen = (void*)start;
 	vdraw_rInfo.width = 320 - vdraw_border_h;
-	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
 	if (vdraw_needs_conversion)
@@ -408,20 +409,21 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// Calculate the texture size.
 	const int totalHeight = ((rowLength * 3) / 4);
-	const int texHeight = (VDP_Num_Vis_Lines * vdraw_scale);
+	const int texHeight = (240 * vdraw_scale);
 	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
 	// Draw the message and/or FPS counter.
+	const int msg_height = (VDP_Num_Vis_Lines + ((240 - VDP_Num_Vis_Lines) / 2)) * vdraw_scale;
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text(filterBuffer, rowLength, texWidth, texHeight,
+		draw_text(filterBuffer, rowLength, texWidth, msg_height,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
-		draw_text(filterBuffer, rowLength, texWidth, texHeight,
+		draw_text(filterBuffer, rowLength, texWidth, msg_height,
 			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	
@@ -501,56 +503,6 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// TODO: Return appropriate error code.
 	return 0;
-}
-
-
-/**
- * vdraw_sdl_gl_draw_border(): Draw the border color.
- * Called from vdraw_sdl_gl_flip().
- */
-static void vdraw_sdl_gl_draw_border(void)
-{
-	// Clear the OpenGL buffer.
-	if (!Video.borderColorEmulation)
-	{
-		// Border color should be black.
-		glClearColor(0.0, 0.0, 0.0, 0.0);
-	}
-	else
-	{
-		if ((Game == NULL) || IS_DEBUGGING())
-		{
-			// Either no system is active or the debugger is enabled.
-			// Make sure the border color is black.
-			vdraw_border_color_32 = 0;
-		}
-		else
-		{
-			// Set the border color to the first palette entry.
-			vdraw_border_color_32 = MD_Palette32[0];
-		}
-		
-		// Set the border color.
-		// TODO: This may not work properly on big-endian systems.
-		union
-		{
-			struct
-			{
-				uint8_t b;
-				uint8_t g;
-				uint8_t r;
-				uint8_t a;
-			};
-			uint32_t b32;
-		} colorU;
-		
-		colorU.b32 = vdraw_border_color_32;
-		glClearColor((GLclampf)colorU.r / 255.0,
-			     (GLclampf)colorU.g / 255.0,
-			     (GLclampf)colorU.b / 255.0, 0.0);
-	}
-	
-	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
