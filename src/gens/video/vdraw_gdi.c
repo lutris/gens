@@ -326,13 +326,14 @@ static int vdraw_gdi_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	vdraw_rInfo.height -= ((240 - VDP_Num_Vis_Lines) / 2);
+	start += pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, szGDIBuf.cx,
 			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
@@ -340,7 +341,7 @@ static int vdraw_gdi_flip(void)
 		// FPS is enabled.
 		draw_text(start, szGDIBuf.cx,
 			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
+			  VDP_Num_Vis_Lines * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	
