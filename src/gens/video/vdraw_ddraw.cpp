@@ -94,7 +94,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int w = (vdp_isH40() ? 320 : 256) * vdraw_scale;
+	const int msg_width = (vdp_isH40() ? 320 : 256) * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -119,17 +119,17 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	{
 		// Message is visible.
 		draw_text(start, pddsd->lPitch / bytespp,
-			  w, 
+			  msg_width, 
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style, true);
+			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, pddsd->lPitch / bytespp,
-			  w,
+			  msg_width,
 			  VDP_Num_Vis_Lines * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style, true);
+			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	if (lock)
