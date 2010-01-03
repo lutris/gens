@@ -159,8 +159,6 @@ vdraw_style_t	vdraw_msg_style;
 
 // Screen border.
 int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
-uint16_t	vdraw_border_color_16 = ~0;
-uint32_t	vdraw_border_color_32 = ~0;
 
 // RGB color conversion functions.
 #include "vdraw_RGB.h"
@@ -504,10 +502,6 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
  */
 void vdraw_refresh_video(void)
 {
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
-	
 	if (vdraw_cur_backend)
 	{
 		vdraw_cur_backend->end();

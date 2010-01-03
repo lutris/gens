@@ -177,8 +177,6 @@ extern int vdraw_scale;
 
 // Screen border.
 extern int vdraw_border_h, vdraw_border_h_old;
-extern uint16_t vdraw_border_color_16;
-extern uint32_t vdraw_border_color_32;
 
 // RGB color conversion variables.
 extern BOOL vdraw_needs_conversion;
