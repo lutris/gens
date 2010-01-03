@@ -829,20 +829,29 @@ static void Refresh_VDP_Pattern(void)
 
 
 template<typename pixel>
-static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned short numPalettes)
+static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned int numPalettes)
 {
-	for (unsigned int i = 0; i < 8; i++)
+	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
+	pixel *pLine = &screen[(336 * (VBorder + 10)) + 180];
+	
+	// Palette number.
+	int pal_num = -1;
+	
+	for (unsigned int line = (numPalettes * 8); line != 0; line--, pLine += (336-(16*8)))
 	{
-		for (unsigned int j = 0; j < 16; j++)
+		// Check if we're starting a new palette.
+		if (!(line & 7))
+			pal_num++;
+		
+		// Draw the palette line.
+		int color_num = (pal_num * 16) - 1;
+		for (unsigned int col = (16*8); col != 0; col -= 2, pLine += 2)
 		{
-			for (unsigned int k = 0; k < 8; k++)
-			{
-				unsigned int col = (i * 336) + 180 + (j * 8) + k;
-				for (unsigned int l = 0; l < numPalettes; l++)
-				{
-					screen[(336 * (10 + (l * 8))) + col] = palette[j + (16 * l)];
-				}
-			}
+			if (!(col & 7))
+				color_num++;
+			
+			*pLine		= palette[color_num];
+			*(pLine + 1)	= palette[color_num];
 		}
 	}
 }
@@ -851,10 +860,16 @@ template<typename pixel>
 static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned int paletteMask, pixel outlineColor)
 {
 	// Outline the selected palette. Ported from Gens Rerecording.
-	for (unsigned int i = 0; i < 16 * 8; i++)
+	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
+	pixel *line1 = &screen[(336 * (VBorder + 9 + ((pattern_pal & paletteMask) * 8))) + 180];
+	pixel *line2 = line1 + (336 * 9);
+	
+	for (unsigned int i = 16 * 8; i != 0; i -= 2, line1 += 2, line2 += 2)
 	{
-		screen[(336 * (9 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
-		screen[(336 * (18 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
+		*line1		= outlineColor;
+		*line2		= outlineColor;
+		*(line1 + 1)	= outlineColor;
+		*(line2 + 1)	= outlineColor;
 	}
 }
 
