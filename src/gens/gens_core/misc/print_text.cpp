@@ -240,6 +240,7 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		return;
 	}
 	
+	// Get the screen pointer.
 	uint16_t *screen_ptr = &MD_Screen[8 + (Pos_Y * 336) + Pos_X];
 	
 	// Row length.
