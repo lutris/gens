@@ -191,6 +191,16 @@ section .text align=64
 	extern SYM(PutLine_P0_Flip_ScrollB)
 	extern SYM(PutLine_P0_Flip_ScrollB_HS)
 	
+	extern SYM(PutLine_P1_ScrollA)
+	extern SYM(PutLine_P1_ScrollA_HS)
+	extern SYM(PutLine_P1_ScrollB)
+	extern SYM(PutLine_P1_ScrollB_HS)
+	
+	extern SYM(PutLine_P1_Flip_ScrollA)
+	extern SYM(PutLine_P1_Flip_ScrollA_HS)
+	extern SYM(PutLine_P1_Flip_ScrollB)
+	extern SYM(PutLine_P1_Flip_ScrollB_HS)
+	
 ;****************************************
 ; background layer graphics background graphics layer 1
 ; macro PUTPIXEL_P1
@@ -372,54 +382,32 @@ section .text align=64
 
 %macro PUTLINE_P1 2
 
-%if %1 < 1
-	mov	dword [SYM(LineBuf) + ebp * 2 +  0], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 +  4], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 +  8], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 + 12], 0x00000000
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	ebp	; display pixel number
 	
-	; If ScrollB High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_HIGH
-	jz	near %%Full_Trans
-%else
-	; If ScrollA High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_HIGH
-	jz	near %%Full_Trans
-	
+%if %1 > 0
+	; Scroll A
 	%if %2 > 0
-		; Faster on most CPUs (because of pairable instructions)
-		mov	eax, [SYM(LineBuf) + ebp * 2 +  0]
-		mov	ecx, [SYM(LineBuf) + ebp * 2 +  4]
-		and	eax, NOSHAD_D
-		and	ecx, NOSHAD_D
-		mov	[SYM(LineBuf) + ebp * 2 +  0], eax
-		mov	[SYM(LineBuf) + ebp * 2 +  4], ecx
-		mov	eax, [SYM(LineBuf) + ebp * 2 +  8]
-		mov	ecx, [SYM(LineBuf) + ebp * 2 + 12]
-		and	eax, NOSHAD_D
-		and	ecx, NOSHAD_D
-		mov	[SYM(LineBuf) + ebp * 2 +  8], eax
-		mov	[SYM(LineBuf) + ebp * 2 + 12], ecx
-		
-		; Faster on K6 CPU
-		;and	dword [SYM(LineBuf) + ebp * 2 +  0], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 +  4], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 +  8], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 + 12], NOSHAD_D
+		; S/H
+		call SYM(PutLine_P1_ScrollA_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P1_ScrollA)
+	%endif
+%else
+	; Scroll B
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_P1_ScrollB_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P1_ScrollB)
 	%endif
 %endif
 	
-	test	ebx, ebx
-	jz	near %%Full_Trans
-	
-	PUTPIXEL_P1 0, 0x0000f000, 12, %2
-	PUTPIXEL_P1 1, 0x00000f00,  8, %2
-	PUTPIXEL_P1 2, 0x000000f0,  4, %2
-	PUTPIXEL_P1 3, 0x0000000f,  0, %2
-	PUTPIXEL_P1 4, 0xf0000000, 28, %2
-	PUTPIXEL_P1 5, 0x0f000000, 24, %2
-	PUTPIXEL_P1 6, 0x00f00000, 20, %2
-	PUTPIXEL_P1 7, 0x000f0000, 16, %2
+	add	esp, byte 2*4
+	pop	edx
 	
 %%Full_Trans
 
@@ -437,54 +425,32 @@ section .text align=64
 
 %macro PUTLINE_FLIP_P1 2
 
-%if %1 < 1
-	mov	dword [SYM(LineBuf) + ebp * 2 +  0], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 +  4], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 +  8], 0x00000000
-	mov	dword [SYM(LineBuf) + ebp * 2 + 12], 0x00000000
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	ebp	; display pixel number
 	
-	; If ScrollB High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLB_HIGH
-	jz	near %%Full_Trans
-%else
-	; If ScrollA High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SCROLLA_HIGH
-	jz	near %%Full_Trans
-	
+%if %1 > 0
+	; Scroll A
 	%if %2 > 0
-		; Faster on most CPUs (because of pairable instructions)
-		mov	eax, [SYM(LineBuf) + ebp * 2 +  0]
-		mov	ecx, [SYM(LineBuf) + ebp * 2 +  4]
-		and	eax, NOSHAD_D
-		and	ecx, NOSHAD_D
-		mov	[SYM(LineBuf) + ebp * 2 +  0], eax
-		mov	[SYM(LineBuf) + ebp * 2 +  4], ecx
-		mov	eax, [SYM(LineBuf) + ebp * 2 +  8]
-		mov	ecx, [SYM(LineBuf) + ebp * 2 + 12]
-		and	eax, NOSHAD_D
-		and	ecx, NOSHAD_D
-		mov	[SYM(LineBuf) + ebp * 2 +  8], eax
-		mov	[SYM(LineBuf) + ebp * 2 + 12], ecx
-
-		; Faster on K6 CPU
-		;and	dword [SYM(LineBuf) + ebp * 2 +  0], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 +  4], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 +  8], NOSHAD_D
-		;and	dword [SYM(LineBuf) + ebp * 2 + 12], NOSHAD_D
+		; S/H
+		call SYM(PutLine_P1_Flip_ScrollA_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P1_Flip_ScrollA)
+	%endif
+%else
+	; Scroll B
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_P1_Flip_ScrollB_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_P1_Flip_ScrollB)
 	%endif
 %endif
 	
-	test	ebx, ebx
-	jz	near %%Full_Trans
-	
-	PUTPIXEL_P1 0, 0x000f0000, 16, %2
-	PUTPIXEL_P1 1, 0x00f00000, 20, %2
-	PUTPIXEL_P1 2, 0x0f000000, 24, %2
-	PUTPIXEL_P1 3, 0xf0000000, 28, %2
-	PUTPIXEL_P1 4, 0x0000000f,  0, %2
-	PUTPIXEL_P1 5, 0x000000f0,  4, %2
-	PUTPIXEL_P1 6, 0x00000f00,  8, %2
-	PUTPIXEL_P1 7, 0x0000f000, 12, %2
+	add	esp, byte 2*4
+	pop	edx
 	
 %%Full_Trans
 

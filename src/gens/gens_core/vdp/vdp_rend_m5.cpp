@@ -735,7 +735,7 @@ static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
 	else
 	{
 		// Scroll A.
-		// If ScrollA_Low is disabled. don't do anything.
+		// If ScrollA Low is disabled. don't do anything.
 		if (!(VDP_Layers & VDP_LAYER_SCROLLA_LOW))
 			return;
 	}
@@ -817,6 +817,127 @@ void PutLine_P0_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
 void PutLine_P0_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
 {
 	T_PutLine_P0<false, true, true>(disp_pixnum, pattern, palette);
+}
+
+
+/**
+ * T_PutLine_P1(): Put a line in background graphics layer 1.
+ * @param plane		[in] True for Scroll A; false for Scroll B.
+ * @param h_s		[in] Highlight/Shadow enable.
+ * @param flip		[in] True to flip the line horizontally.
+ * @param disp_pixnum	[in] Display pixel nmber.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ */
+template<bool plane, bool h_s, bool flip>
+static inline void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
+{
+	if (!plane)
+	{
+		// Scroll B.
+		// Clear the line.
+		memset(&LineBuf.u16[disp_pixnum], 0x00, 8*2);
+		
+		// If ScrollB_Low is disabled, don't do anything.
+		if (!(VDP_Layers & VDP_LAYER_SCROLLB_LOW))
+			return;
+	}
+	else
+	{
+		// Scroll A.
+		// If ScrollA Low is disabled. don't do anything.
+		if (!(VDP_Layers & VDP_LAYER_SCROLLA_LOW))
+			return;
+		
+		// AND the linebuffer with ~LINEBUF_SHAD_W.
+		// TODO: Optimize this to use 32-bit operations instead of 16-bit.
+		LineBuf.u16[disp_pixnum]   &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+1] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+2] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+3] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+4] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+5] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+6] &= ~LINEBUF_SHAD_W;
+		LineBuf.u16[disp_pixnum+7] &= ~LINEBUF_SHAD_W;
+	}
+	
+	// Don't do anything if the pattern is empty.
+	if (pattern == 0)
+		return;
+	
+	// Put the pixels.
+	if (!flip)
+	{
+		// No flip.
+		T_PutPixel_P1<h_s>(disp_pixnum, 0, 0x0000F000, 12, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 1, 0x00000F00,  8, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 2, 0x000000F0,  4, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 3, 0x0000000F,  0, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 4, 0xF0000000, 28, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 5, 0x0F000000, 24, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 6, 0x00F00000, 20, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 7, 0x000F0000, 16, pattern, palette);
+	}
+	else
+	{
+		// Horizontal flip.
+		T_PutPixel_P1<h_s>(disp_pixnum, 0, 0x000F0000, 16, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 1, 0x00F00000, 20, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 2, 0x0F000000, 24, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 3, 0xF0000000, 28, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 4, 0x0000000F,  0, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 5, 0x000000F0,  4, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 6, 0x00000F00,  8, pattern, palette);
+		T_PutPixel_P1<h_s>(disp_pixnum, 7, 0x0000F000, 12, pattern, palette);
+	}
+}
+
+/**
+ * C wrapper functions for T_PutLine_P0().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void PutLine_P1_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_P1_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
+}
+
+void PutLine_P1_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<true, false, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<true, true, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<false, false, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<false, true, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<true, false, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<true, true, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<false, false, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_P1_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_P1<false, true, true>(disp_pixnum, pattern, palette);
 }
 
 
