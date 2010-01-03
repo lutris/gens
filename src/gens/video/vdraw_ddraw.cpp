@@ -94,7 +94,8 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int msg_width = vdp_getHPix() * vdraw_scale;
+	const int curHPix = vdp_getHPix();
+	const int msg_width = curHPix * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -113,6 +114,11 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		// DirectDraw's 1x rendering uses MD_Screen / MD_Screen32 directly.
 		// Thus, it has an invisible 8px column at the beginning.
 		start += (8 * bytespp);
+	}
+	else if (curHPix < 320)
+	{
+		// Starting position needs to be adjusted for H32.
+		start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
 	}
 	
 	if (vdraw_msg_visible)
