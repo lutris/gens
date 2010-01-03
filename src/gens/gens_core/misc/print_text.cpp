@@ -24,10 +24,15 @@
 
 // C includes.
 #include <stdint.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "gens_core/vdp/vdp_rend.h"	// For MD_Screen[] / MD_Screen32[].
 #include "gens_core/vdp/vdp_io.h"	// For VDP_Reg.H_Pix.
 #include "emulator/g_main.hpp"		// For bppMD.
+
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
 
 
 /**
@@ -309,4 +314,26 @@ void Print_Text(const char *str, int Pos_X, int Pos_Y, int Style)
 							&Text_Palette_32[palette_num][0],
 							Pos_X, Pos_Y, Style);
 	}
+}
+
+
+/**
+ * Print_Text(): Print formatted text directly to MD_Screen[] / MD_Screen32[].
+ * @param Pos_X X position.
+ * @param Pos_Y Y position.
+ * @param Style Text style.
+ * @param str Text to print. (printf-formatted)
+ * @param ... Format arguments.
+ */
+void PrintF_Text(int Pos_X, int Pos_Y, int Style, const char *str, ...)
+{
+	char buf[1024];
+	
+	va_list ap;
+	va_start(ap, str);
+	vszprintf(buf, sizeof(buf), str, ap);
+	va_end(ap);
+	
+	// Call Print_Text() with the formatted text.
+	Print_Text(buf, Pos_X, Pos_Y, Style);
 }

@@ -29,6 +29,9 @@ extern "C" {
 
 void Print_Text(const char *str, int Pos_X, int Pos_Y, int Style);
 
+void PrintF_Text(int Pos_X, int Pos_Y, int Style, const char *str, ...)
+	__attribute__ ((format (printf, 4, 5)));
+
 // Text style defines.
 #define TEXT_EMU_MODE	0x01
 #define TEXT_WHITE	0x00
