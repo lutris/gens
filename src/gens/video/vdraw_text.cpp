@@ -174,6 +174,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	x = 8;
 	y = h;
 	
+#if 0
 #if defined(GENS_OS_WIN32)
 	if (isDDraw)
 	{
@@ -211,6 +212,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		}
 	}
 #endif /* defined(GENS_OS_WIN32) */
+#endif
 	
 	// Character size is 8x16 normal, 16x32 double.
 	y -= (8 + (charSize * 2));

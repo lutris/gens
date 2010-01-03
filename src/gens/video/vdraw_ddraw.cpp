@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -87,10 +87,6 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 static HRESULT vdraw_ddraw_restore_graphics(void);
 static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
 
-// Border drawing.
-static void WINAPI vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest);
-static DDBLTFX ddbltfx_Border_Color;
-
 
 static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
 {
@@ -99,7 +95,6 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	
 	// Determine the window size using the scaling factor.
 	const int w = (vdp_isH40() ? 320 : 256) * vdraw_scale;
-	const int h = VDP_Num_Vis_Lines * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -111,17 +106,30 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	// DirectDraw likes to use absurdly large line lengths in full screen mode.
 	// (pddsd->lPitch / bytespp) does match pddsd->dwWidth in windowed mode, though.
 	
+	unsigned char *start = (unsigned char*)pddsd->lpSurface;
+	start += pddsd->lPitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	if (vdraw_scale == 1)
+	{
+		// DirectDraw's 1x rendering uses MD_Screen / MD_Screen32 directly.
+		// Thus, it has an invisible 8px column at the beginning.
+		start += (8 * bytespp);
+	}
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
-			  w, h, vdraw_msg_text, &vdraw_msg_style, true);
+		draw_text(start, pddsd->lPitch / bytespp,
+			  w, 
+			  VDP_Num_Vis_Lines * vdraw_scale,
+			  vdraw_msg_text, &vdraw_msg_style, true);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
-		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
-			  w, h, vdraw_msg_text, &vdraw_fps_style, true);
+		draw_text(start, pddsd->lPitch / bytespp,
+			  w,
+			  VDP_Num_Vis_Lines * vdraw_scale,
+			  vdraw_msg_text, &vdraw_fps_style, true);
 	}
 	
 	if (lock)
@@ -463,10 +471,6 @@ int vdraw_ddraw_init(void)
 		}
 	}
 	
-	// Clear ddbltfx for the border color.
-	memset(&ddbltfx_Border_Color, 0, sizeof(ddbltfx_Border_Color));
-	ddbltfx_Border_Color.dwSize = sizeof(ddbltfx_Border_Color);
-	
 	// Reset the render mode.
 	vdraw_reset_renderer(false);
 	
@@ -603,35 +607,18 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 	
 	const uint8_t stretch = vdraw_get_stretch();
 	
-	if (vdraw_scale == 1)
+	if (VDP_Num_Vis_Lines < 240 && (stretch & STRETCH_V))
 	{
-		RectSrc.top = 0;
-		RectSrc.bottom = VDP_Num_Vis_Lines;
-
-		if ((VDP_Num_Vis_Lines == 224) && !(stretch & STRETCH_V))
-		{
-			RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
-			RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis
-		}
+		// Less than 240 lines, vertical stretch enabled.
+		int diff = (240 - VDP_Num_Vis_Lines) / 2;
+		RectSrc.top = diff * vdraw_scale;
+		RectSrc.bottom = (VDP_Num_Vis_Lines + diff) * vdraw_scale;
 	}
 	else
 	{
-		if (VDP_Num_Vis_Lines == 224)
-		{
-			RectSrc.top = 8 * vdraw_scale;
-			RectSrc.bottom = (224 + 8) * vdraw_scale;
-
-			if (!(stretch & STRETCH_V))
-			{
-				RectDest.top = (int) ((q.y - (224 * Ratio_Y)) / 2); //Upth-Modif - Centering the screen properly
-				RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis again
-			}
-		}
-		else
-		{
-			RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
-			RectSrc.bottom = (240 * vdraw_scale);
-		}
+		// 240 lines or vertical stretch disabled.
+		RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
+		RectSrc.bottom = (240 * vdraw_scale);
 	}
 
 	if (vdp_isH40())
@@ -681,8 +668,6 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
  */
 int vdraw_ddraw_flip(void)
 {
-	// TODO: Add border drawing, like in vdraw_sdl.
-	
 	if (!lpDD)
 		return -1;
 	
@@ -845,6 +830,8 @@ int vdraw_ddraw_flip(void)
 		if (vdraw_scale == 1)
 		{
 			// 1x rendering.
+			// TODO: Test this with border color stuff.
+			// Wine doesn't seem to have a 320x240 fullscreen mode available...
 			if (vdraw_get_sw_render())
 			{
 				// Software rendering is enabled.
@@ -855,17 +842,15 @@ int vdraw_ddraw_flip(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 				const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
-				
-				const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+				const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
 				
 				// Start of the DDraw framebuffer.
 				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 				
 				vdraw_rInfo.destScreen = (void*)start;
 				vdraw_rInfo.width = 320 - vdraw_border_h;
-				vdraw_rInfo.height = VDP_Num_Vis_Lines;
+				vdraw_rInfo.height = 240;
 				vdraw_rInfo.destPitch = ddsd.lPitch;
 				
 				vdraw_blitFS(&vdraw_rInfo);
@@ -874,9 +859,6 @@ int vdraw_ddraw_flip(void)
 				vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, false);
 				
 				lpDDS_Blit->Unlock(NULL);
-				
-				// Draw the border.
-				vdraw_ddraw_draw_border(lpDDS_Blit, RectDest);
 				
 				if (Video.VSync_FS)
 				{
@@ -917,12 +899,10 @@ int vdraw_ddraw_flip(void)
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					vdraw_ddraw_draw_border(lpDDS_Flip, RectDest);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 				else
 				{
-					vdraw_ddraw_draw_border(lpDDS_Primary, RectDest);
 					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 					//lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 				}
@@ -938,17 +918,15 @@ int vdraw_ddraw_flip(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
-				
-			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+			const int HBorder = Dep * (bytespp / 2);	// Left border width, in pixels.
+			const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
 				
 			// Start of the DDraw framebuffer.
 			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
 			vdraw_rInfo.destScreen = (void*)start;
 			vdraw_rInfo.width = 320 - vdraw_border_h;
-			vdraw_rInfo.height = VDP_Num_Vis_Lines;
+			vdraw_rInfo.height = 240;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
 			if (vdraw_needs_conversion)
@@ -966,10 +944,6 @@ int vdraw_ddraw_flip(void)
 			vdraw_ddraw_draw_text(&ddsd, curBlit, false);
 			
 			curBlit->Unlock(NULL);
-			
-			// Draw the border.
-			// TODO: This doesn't work here due to weird border calculations.
-			vdraw_ddraw_draw_border(curBlit, RectDest);
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
@@ -1020,17 +994,15 @@ int vdraw_ddraw_flip(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
-				
-			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+			const int HBorder = Dep * (bytespp / 2);	// Left border width, in pixels.
+			const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
 				
 			// Start of the DDraw framebuffer.
 			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
 			vdraw_rInfo.destScreen = (void*)start;
 			vdraw_rInfo.width = 320 - vdraw_border_h;
-			vdraw_rInfo.height = VDP_Num_Vis_Lines;
+			vdraw_rInfo.height = 240;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
 			if (vdraw_needs_conversion)
@@ -1058,9 +1030,6 @@ int vdraw_ddraw_flip(void)
 		p.x = p.y = 0;
 		ClientToScreen(gens_window, &p);
 		
-		// Draw the border.
-		vdraw_ddraw_draw_border(lpDDS_Primary, RectDest);
-		
 		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
 		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
 		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
@@ -1087,116 +1056,6 @@ cleanup_flip:
 		rval = vdraw_ddraw_restore_graphics();
 	
 	return 1;
-}
-
-
-/**
- * vdraw_ddraw_draw_border(): Draw the border color.
- * Called from vdraw_ddraw_flip().
- * @param lpDDS_Surface
- * @param RectDest Destination rectangle.
- */
-static void WINAPI vdraw_ddraw_draw_border(LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest)
-{
-	uint8_t stretch = vdraw_get_stretch();
-	if (stretch == STRETCH_FULL)
-		return;
-	
-	if (!Video.borderColorEmulation || (Game == NULL) || IS_DEBUGGING())
-	{
-		// Border color emulation is disabled.
-		// Use a black border.
-		ddbltfx_Border_Color.dwFillColor = 0;
-	}
-	else if (bppOut == 15 || bppOut == 16)
-	{
-		// 15-bit/16-bit color.
-		uint16_t bc16 = MD_Palette[0];
-		
-		// Check if the border color needs to be converted.
-		if (bppMD == 15 && bppOut == 16)
-		{
-			// MD palette is 15-bit; output is 16-bit.
-			// MD:  0RRRRRGG GGGBBBBB
-			// Out: RRRRRGGG GGGBBBBB
-			bc16 = ((bc16 & 0x7C00) << 1) | ((bc16 & 0x03E0) << 1) | (bc16 & 0x1F);
-		}
-		else if (bppMD == 16 && bppOut == 15)
-		{
-			// MD palette is 16-bit; output is 15-bit.
-			// MD:  RRRRRGGG GGGBBBBB
-			// Out: 0RRRRRGG GGGBBBBB
-			bc16 = ((bc16 & 0xF800) >> 1) | ((bc16 & 0x07C0) >> 1) | (bc16 & 0x1F);
-		}
-		
-		ddbltfx_Border_Color.dwFillColor = bc16;
-	}
-	else //if (bppOut == 32)
-	{
-		// 32-bit color.
-		ddbltfx_Border_Color.dwFillColor = MD_Palette32[0];
-	}
-	
-	RECT rectDD;
-	
-	if (vdraw_get_fullscreen())
-	{
-		// Fullscreen.
-		rectDD.left = 0;
-		rectDD.top = 0;
-		rectDD.right = 320 * vdraw_scale;
-		rectDD.bottom = 240 * vdraw_scale;
-	}
-	else
-	{
-		// Windowed.
-		POINT ptWin;
-		ptWin.x = 0;
-		ptWin.y = 0;
-		GetClientRect(gens_window, &rectDD);
-		ClientToScreen(gens_window, &ptWin);
-		
-		rectDD.left += ptWin.x;
-		rectDD.top += ptWin.y;
-		rectDD.right += ptWin.x;
-		rectDD.bottom += ptWin.y;
-	}
-	
-	RECT rectBorder;
-	
-	int drawHeight = RectDest.bottom - RectDest.top;
-	int viewHeight = rectDD.bottom - rectDD.top;
-	if ((viewHeight > drawHeight) && !(stretch & STRETCH_V))
-	{
-		// Vertical stretch is disabled.
-		
-		// Draw top border.
-		rectBorder = rectDD;
-		rectBorder.bottom = ((viewHeight - drawHeight) / 2) + rectBorder.top;
-		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
-		
-		// Draw bottom border.
-		rectBorder = rectDD;
-		rectBorder.top = ((viewHeight - drawHeight) / 2) + rectBorder.top + drawHeight;
-		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
-	}
-	
-	int drawWidth = RectDest.right - RectDest.left;
-	int viewWidth = rectDD.right - rectDD.left;
-	if ((viewWidth > drawWidth) && !(stretch & STRETCH_H))
-	{
-		// Horizontal stretch is disabled.
-		
-		// Draw left border.
-		rectBorder = rectDD;
-		rectBorder.right = ((viewWidth - drawWidth) / 2) + rectBorder.left;
-		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
-		
-		// Draw bottom border.
-		rectBorder = rectDD;
-		rectBorder.left = ((viewWidth - drawWidth) / 2) + rectBorder.left + drawWidth;
-		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
-	}
 }
 
 
