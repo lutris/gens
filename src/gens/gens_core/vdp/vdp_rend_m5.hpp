@@ -45,7 +45,7 @@ typedef struct
 	unsigned int Palette;
 	unsigned int Borne;
 	
-	unsigned int Y_FineOffset;
+	unsigned int Y_FineOffset;	// Fine offset. (0-7 normal; 0-15 interlaced.)
 } VDP_Data_Misc_t;
 extern VDP_Data_Misc_t VDP_Data_Misc;
 
