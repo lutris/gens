@@ -543,18 +543,16 @@ static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int
  * T_PutPixel_Sprite(): Put a pixel in the sprite layer.
  * @param priority	[in] Sprite priority.
  * @param h_s		[in] Highlight/Shadow enable.
- * @param disp_pixnum	[in] Display pixel number.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
  * @param shift		[in] Shift.
+ * @param disp_pixnum	[in] Display pixel number.
  * @param pattern	[in] Pattern data.
  * @param palette	[in] Palette number * 16.
  * @return Linebuffer byte.
  */
-template<bool priority, bool h_s>
-static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
-					uint32_t mask, int shift,
-					uint32_t pattern, unsigned int palette)
+template<bool priority, bool h_s, int pat_pixnum, uint32_t mask, int shift>
+static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -891,26 +889,26 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
 	if (!flip)
 	{
 		// No flip.
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 0, 0x0000F000, 12, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 1, 0x00000F00,  8, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 2, 0x000000F0,  4, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 3, 0x0000000F,  0, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 4, 0xF0000000, 28, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 5, 0x0F000000, 24, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 6, 0x00F00000, 20, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 7, 0x000F0000, 16, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 0, 0x0000F000, 12>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 1, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 2, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 3, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 4, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 5, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 6, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 7, 0x000F0000, 16>(disp_pixnum, pattern, palette);
 	}
 	else
 	{
 		// Horizontal flip.
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 0, 0x000F0000, 16, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 1, 0x00F00000, 20, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 2, 0x0F000000, 24, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 3, 0xF0000000, 28, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 4, 0x0000000F,  0, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 5, 0x000000F0,  4, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 6, 0x00000F00,  8, pattern, palette);
-		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 7, 0x0000F000, 12, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 0, 0x000F0000, 16>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 1, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 2, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 3, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 4, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 5, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 6, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s, 7, 0x0000F000, 12>(disp_pixnum, pattern, palette);
 	}
 	
 	// Check for sprite collision.
