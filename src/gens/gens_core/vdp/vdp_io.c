@@ -37,13 +37,6 @@ VDP_Ctrl_t VDP_Ctrl;
 VDP_VRam_t VRam;
 VDP_CRam_t CRam;
 
-// VDP address pointers.
-uint16_t *ScrA_Addr;
-uint16_t *ScrB_Addr;
-uint8_t *Win_Addr;
-uint8_t *Spr_Addr;
-uint16_t *H_Scroll_Addr;
-
 // VDP convenience values: Horizontal.
 // NOTE: These must be signed for VDP arithmetic to work properly!
 int H_Cell;
@@ -307,7 +300,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 2:
 			// Scroll A base address.
 			tmp = (val & 0x38) << 10;
-			ScrA_Addr = &VRam.u16[tmp>>1];
+			VDP_Reg.ScrA_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 3:
@@ -317,13 +310,13 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			else
 				tmp = (val & 0x3E) << 10;	// H32.
 			
-			Win_Addr = &VRam.u8[tmp];
+			VDP_Reg.Win_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 4:
 			// Scroll B base address.
 			tmp = (val & 0x07) << 13;
-			ScrB_Addr = &VRam.u16[tmp>>1];
+			VDP_Reg.ScrB_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 5:
@@ -333,7 +326,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			else
 				tmp = (val & 0x7F) << 9;
 			
-			Spr_Addr = &VRam.u8[tmp];
+			VDP_Reg.Spr_Addr = &VRam.u16[tmp>>1];
 			
 			// Update the Sprite Attribute Table.
 			// TODO: Only set this if the actual value has changed.
@@ -386,11 +379,11 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Update the Window base address.
 				tmp = (VDP_Reg.Pat_Win_Adr & 0x3C) << 10;
-				Win_Addr = &VRam.u8[tmp];
+				VDP_Reg.Win_Addr = &VRam.u16[tmp>>1];
 				
 				// Update the Sprite Attribute Table base address.
 				tmp = (VDP_Reg.Spr_Att_Adr & 0x7E) << 9;
-				Spr_Addr = &VRam.u8[tmp];
+				VDP_Reg.Spr_Addr = &VRam.u16[tmp>>1];
 			}
 			else
 			{
@@ -407,11 +400,11 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Update the Window base address.
 				tmp = (VDP_Reg.Pat_Win_Adr & 0x3E) << 10;
-				Win_Addr = &VRam.u8[tmp];
+				VDP_Reg.Win_Addr = &VRam.u16[tmp>>1];
 				
 				// Update the Sprite Attribute Table base address.
 				tmp = (VDP_Reg.Spr_Att_Adr & 0x7F) << 9;
-				Spr_Addr = &VRam.u8[tmp];
+				VDP_Reg.Spr_Addr = &VRam.u16[tmp>>1];
 			}
 			
 			break;
@@ -419,7 +412,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 13:
 			// H Scroll Table base address.
 			tmp = (val & 0x3F) << 10;
-			H_Scroll_Addr = &VRam.u16[tmp>>1];
+			VDP_Reg.H_Scroll_Addr = &VRam.u16[tmp>>1];
 			break;
 		
 		case 16:

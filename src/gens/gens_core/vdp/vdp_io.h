@@ -95,6 +95,14 @@ typedef struct
 	unsigned int DMAT_Tmp;
 	unsigned int DMAT_Length;
 	unsigned int DMAT_Type;
+	
+	// VDP address pointers.
+	// These are relative to VRam[] and are based on register values.
+	uint16_t *ScrA_Addr;
+	uint16_t *ScrB_Addr;
+	uint16_t *Win_Addr;
+	uint16_t *Spr_Addr;
+	uint16_t *H_Scroll_Addr;
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 
@@ -165,13 +173,6 @@ extern VDP_Flags_t VDP_Flags;
 // Set this to 1 to enable zero-length DMA requests.
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
-
-// VDP address pointers.
-extern uint16_t *ScrA_Addr;
-extern uint16_t *ScrB_Addr;
-extern uint8_t *Win_Addr;
-extern uint8_t *Spr_Addr;
-extern uint16_t *H_Scroll_Addr;
 
 // VDP convenience values: Horizontal.
 // NOTE: These must be signed for VDP arithmetic to work properly!

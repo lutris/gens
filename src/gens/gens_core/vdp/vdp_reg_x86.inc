@@ -53,6 +53,14 @@ struc VDP_Reg_t
 	.DMAT_Tmp:		resd 1
 	.DMAT_Length:		resd 1
 	.DMAT_Type:		resd 1
+	
+	; VDP address pointers.
+	; These are relative to VRam[] and are based on register values.
+	.ScrA_Addr:		resd 1
+	.ScrB_Addr:		resd 1
+	.Win_Addr:		resd 1
+	.Spr_Addr:		resd 1
+	.H_Scroll_Addr:		resd 1
 endstruc
 
 struc VDP_Ctrl_t

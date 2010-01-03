@@ -103,11 +103,6 @@ section .bss align=64
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	
-	extern SYM(ScrA_Addr)
-	extern SYM(ScrB_Addr)
-	extern SYM(Win_Addr)
-	extern SYM(Spr_Addr)
-	extern SYM(H_Scroll_Addr)
 	extern SYM(H_Cell)
 	extern SYM(H_Win_Mul)
 	extern SYM(H_Pix)
@@ -232,7 +227,7 @@ section .text align=64
 %macro GET_X_OFFSET 1
 	
 	mov	eax, [SYM(VDP_Current_Line)]
-	mov	ebx, [SYM(H_Scroll_Addr)]		; ebx points to the H-Scroll data
+	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_Addr]	; ebx points to the H-Scroll data
 	mov	edi, eax
 	and	eax, [SYM(H_Scroll_Mask)]
 	
@@ -305,9 +300,9 @@ section .text align=64
 	shl	eax, cl				; eax = V Cell Offset * H Width
 	
 %if %1 > 0
-	mov	ebx, [SYM(ScrA_Addr)]
+	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.ScrA_Addr]
 %else
-	mov	ebx, [SYM(ScrB_Addr)]
+	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.ScrB_Addr]
 %endif
 	
 	add	edx, eax			; edx = (V Offset / 8) * H Width + (H Offset / 8)
@@ -369,7 +364,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT 1
 	
-	mov	ebp, [SYM(Spr_Addr)]
+	mov	ebp, [SYM(VDP_Reg) + VDP_Reg_t.Spr_Addr]
 	xor	edi, edi				; edi = 0
 	mov	esi, ebp				; esi point on the table of sprite data
 	jmp	short %%Loop
@@ -440,7 +435,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT_PARTIAL 0
 	
-	mov	ebp, [SYM(Spr_Addr)]
+	mov	ebp, [SYM(VDP_Reg) + VDP_Reg_t.Spr_Addr]
 ;	xor	eax, eax
 	xor	ebx, ebx
 	xor	edi, edi				; edi = 0
@@ -1433,7 +1428,7 @@ section .text align=64
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
 	shr	edx, 3					; edx = Line / 8
-	mov	eax, [SYM(Win_Addr)]
+	mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.Win_Addr]
 	shl	edx, cl
 	lea	ebp, [ebp + esi * 8 + 8]		; no clipping for the window, return directly to the first pixel
 	lea	eax, [eax + edx * 2]			; eax point on the pattern data for the window

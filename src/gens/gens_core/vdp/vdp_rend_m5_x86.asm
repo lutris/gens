@@ -85,11 +85,6 @@ section .bss align=64
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	
-	extern SYM(ScrA_Addr)
-	extern SYM(ScrB_Addr)
-	extern SYM(Win_Addr)
-	extern SYM(Spr_Addr)
-	extern SYM(H_Scroll_Addr)
 	extern SYM(H_Cell)
 	extern SYM(H_Win_Mul)
 	extern SYM(H_Pix)
@@ -799,7 +794,7 @@ section .text align=64
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
 	shr	edx, 3					; edx = Line / 8
-	mov	eax, [SYM(Win_Addr)]
+	mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.Win_Addr]
 	shl	edx, cl
 	lea	ebp, [ebp + esi * 8 + 8]		; no clipping for the window, return directly to the first pixel
 	lea	eax, [eax + edx * 2]			; eax point on the pattern data for the window

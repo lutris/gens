@@ -67,7 +67,7 @@ VDP_Data_Misc_t VDP_Data_Misc;
 template<bool interlaced, bool partial>
 static inline void T_Make_Sprite_Struct(void)
 {
-	uint16_t *CurSpr = (uint16_t*)Spr_Addr;
+	uint16_t *CurSpr = VDP_Reg.Spr_Addr;
 	unsigned int spr_num = 0;
 	unsigned int link;
 	
@@ -127,7 +127,7 @@ static inline void T_Make_Sprite_Struct(void)
 			break;
 		
 		// Go to the next sprite.
-		CurSpr = ((uint16_t*)Spr_Addr) + (link * (8>>1));
+		CurSpr = VDP_Reg.Spr_Addr + (link * (8>>1));
 		
 		// Stop processing after:
 		// - Link number is 0. (checked above)
@@ -269,12 +269,12 @@ static inline uint16_t T_Get_X_Offset(void)
 	if (plane)
 	{
 		// Scroll A.
-		return H_Scroll_Addr[H_Scroll_Offset];
+		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset];
 	}
 	else
 	{
 		// Scroll B.
-		return H_Scroll_Addr[H_Scroll_Offset + 1];
+		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset + 1];
 	}
 }
 
@@ -410,7 +410,7 @@ static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 	unsigned int offset = (y << H_Scroll_CMul) + x;
 	
 	// Return the pattern information.
-	return (plane ? ScrA_Addr[offset] : ScrB_Addr[offset]);
+	return (plane ? VDP_Reg.ScrA_Addr[offset] : VDP_Reg.ScrB_Addr[offset]);
 }
 
 /**
