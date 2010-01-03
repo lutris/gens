@@ -31,6 +31,11 @@
 #include <string.h>
 
 
+// Flickering Interlaced display testing.
+// USE AT YOUR OWN RISK!
+//#define FLICKERING_INTERLACED 1
+
+
 // Line buffer for current line.
 // TODO: Mark as static once VDP_Render_Line_m5_asm is ported to C.
 // TODO: Endianness conversions.
@@ -302,9 +307,6 @@ uint16_t Get_X_Offset_ScrollB(void)
 template<bool plane, bool interlaced>
 static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 {
-	// TODO: This function is untested!
-	// Find a ROM that uses 2-cell VScroll to test it.
-	
 	if (VDP_Data_Misc.Cell & 0xFF81)
 	{
 		// Outside of VRam limits. Don't change anything.
@@ -324,17 +326,42 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 		VScroll_Offset = VSRam.u16[VScroll_Offset + 1];
 	}
 	
+#ifdef FLICKERING_INTERLACED
+	// Flickering Interlaced mode is disabled.
 	if (interlaced)
-	{
-		// Divide Y scroll by 2.
-		// TODO: Don't do this! Handle interlaced mode properly.
 		VScroll_Offset /= 2;
-	}
 	
 	VScroll_Offset += VDP_Current_Line;
-	VDP_Data_Misc.Line_7 = VScroll_Offset & 0x07;	// Pattern line.
-	VScroll_Offset >>= 3;				// Get the V Cell offset.
-	VScroll_Offset &= V_Scroll_CMask;		// Prevent V Cell offset from overflowing.
+	VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
+	
+	// Get the V Cell offset and prevent it from overflowing.
+	VScroll_Offset = (VScroll_Offset >> 3) & V_Scroll_CMask;
+#else
+	if (!interlaced)
+	{
+		// Normal mode.
+		VScroll_Offset += VDP_Current_Line;
+		VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
+		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 7);
+		
+		// Get the V Cell offset and prevent it from overflowing.
+		VScroll_Offset = (VScroll_Offset >> 3) & V_Scroll_CMask;
+	}
+	else
+	{
+		// Interlaced mode.
+		VScroll_Offset += (VDP_Current_Line * 2);
+		if (VDP_Status & 0x0010)
+			VScroll_Offset++;
+		
+		VDP_Data_Misc.Line_7 = (VScroll_Offset >> 2) & 7;	// NOTE: Obsolete!
+		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 0x0F);
+		
+		// Get the V Cell offset and prevent it from overflowing.
+		VScroll_Offset = (VScroll_Offset >> 4) & V_Scroll_CMask;
+	}
+#endif
+	
 	return VScroll_Offset;
 }
 
@@ -414,8 +441,12 @@ uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
 template<bool interlaced>
 static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
-	unsigned int V_Offset = VDP_Data_Misc.Line_7;	// Vertical offset.
-	unsigned int TileAddr = (pattern & 0x7FF);	// Tile number.
+#ifdef FLICKERING_INTERLACED
+	unsigned int V_Offset = VDP_Data_Misc.Y_FineOffset;	// Vertical offset.
+#else
+	unsigned int V_Offset = VDP_Data_Misc.Line_7;
+#endif
+	unsigned int TileAddr = (pattern & 0x7FF);		// Tile number.
 	
 	// Get the tile address.
 	if (interlaced)
@@ -426,13 +457,19 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 	if (pattern & 0x1000)
 	{
 		// V Flip enabled. Flip the tile vertically.
-		// TODO: Proper interlace support requires 8x16 cells.
-		V_Offset ^= 7;
+#ifdef FLICKERING_INTERLACED
+		if (interlaced)
+			V_Offset ^= 15;
+		else
+#endif
+			V_Offset ^= 7;
 	}
 	
+#ifndef FLICKERING_INTERLACED
 	if (interlaced)
 		return VRam.u32[(TileAddr + (V_Offset * 8)) >> 2];
 	else
+#endif
 		return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
 }
 
@@ -996,16 +1033,35 @@ static inline void T_Render_Line_ScrollB(void)
 	// Initialize the Y offset.
 	unsigned int Y_offset_cell = VSRam.u16[1];	// Index 1 is the first VSRam entry for Scroll B.
 	
-	if (interlaced)
+#ifdef FLICKERING_INTERLACED
+	if (!interlaced)
 	{
-		// Divide Y scroll by 2.
-		// TODO: Don't do this! Handle interlaced mode properly.
-		Y_offset_cell /= 2;
+		// Normal mode.
+		Y_offset_cell += VDP_Current_Line;
+		VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
+		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 7);
+		Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
 	}
-	
+	else
+	{
+		// Interlaced mode.
+		Y_offset_cell += (VDP_Current_Line * 2);
+		if (VDP_Status & 0x0010)
+			Y_offset_cell++;
+		
+		VDP_Data_Misc.Line_7 = (Y_offset_cell >> 2) & 7;	// NOTE: Obsolete!
+		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 0x0F);
+		Y_offset_cell = (Y_offset_cell >> 4) & V_Scroll_CMask;
+	}
+#else
+	// Flickering Interlaced mode disabled.
+	if (interlaced)
+		Y_offset_cell /= 2;
 	Y_offset_cell += VDP_Current_Line;
-	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);
+	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
 	Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
+#endif
+	
 	goto Start_Loop;
 	
 	// Loop through the cells.

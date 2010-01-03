@@ -32,7 +32,7 @@ void VDP_Render_Line_m5(void);
 typedef struct
 {
 	unsigned int Pattern_Adr;
-	unsigned int Line_7;
+	unsigned int Line_7;	// NOTE: OBSOLETE - Replace with Y_FineOffset.
 	int X;			// Render_Line_*() needs to check for less-than-zero condition. (jns)
 	int Cell;		// VSRam cell can be -1 or -2.
 	unsigned int Start_A;
@@ -44,6 +44,8 @@ typedef struct
 	unsigned int Next_Cell;
 	unsigned int Palette;
 	unsigned int Borne;
+	
+	unsigned int Y_FineOffset;
 } VDP_Data_Misc_t;
 extern VDP_Data_Misc_t VDP_Data_Misc;
 
