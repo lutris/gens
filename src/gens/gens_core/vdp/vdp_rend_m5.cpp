@@ -1181,7 +1181,7 @@ void VDP_Render_Line_m5(void)
 	const unsigned int BorderArea = (240 - VDP_Num_Vis_Lines) / 2;
 	const unsigned int TopBorder = (VDP_Num_Lines - BorderArea);
 	
-	if (VDP_Current_Line > (VDP_Num_Vis_Lines + BorderArea) &&
+	if (VDP_Current_Line >= (VDP_Num_Vis_Lines + BorderArea) &&
 	    VDP_Current_Line < TopBorder)
 	{
 		// Not in any part of the screen.
