@@ -1053,20 +1053,6 @@ static void Refresh_Word_RAM_Pattern(void)
 {
 	// Improved Word RAM pattern display function ported from Gens Rerecording.
 	
-	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, TEXT_GREEN);
-	
-	for (unsigned int i = 0; i < 24; i++)
-	{
-		sprintf(Dbg_Out_Str, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
-		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, TEXT_WHITE);
-	}
-	
-	// Word RAM patterns can be either 16x16 or 32x32.
-	if (Rot_Comp.Stamp_Size & 2)
-		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
-	else
-		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
-	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, TEXT_RED);
 	
 	if (bppMD == 32)
@@ -1081,6 +1067,20 @@ static void Refresh_Word_RAM_Pattern(void)
 		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen, MD_Palette, 16);
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x0F, 0xFFFF);
 	}
+	
+	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, TEXT_GREEN);
+	
+	for (unsigned int i = 0; i < 24; i++)
+	{
+		sprintf(Dbg_Out_Str, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
+		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, TEXT_WHITE);
+	}
+	
+	// Word RAM patterns can be either 16x16 or 32x32.
+	if (Rot_Comp.Stamp_Size & 2)
+		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
+	else
+		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
 }
 
 
@@ -1124,8 +1124,8 @@ void Update_Debug_Screen(void)
 			
 			case DEBUG_GENESIS_VDP:
 				// Genesis VDP
-				Refresh_VDP_Pattern();
 				Refresh_VDP_Palette();
+				Refresh_VDP_Pattern();
 				break;
 			
 			case DEBUG_SUB_68000_REG:
