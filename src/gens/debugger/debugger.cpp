@@ -474,15 +474,14 @@ static void Refresh_SH2_Inst(int num)
 	
 	if (num)
 	{
-		strcpy(Dbg_Out_Str, "** SLAVE SH2 DEBUG **");
+		Print_Text("** SLAVE SH2 DEBUG **", 24, 1, TEXT_GREEN);
 		sh = &S_SH2;
 	}
 	else
 	{
-		strcpy(Dbg_Out_Str, "** MASTER SH2 DEBUG **");
+		Print_Text("** MASTER SH2 DEBUG **", 24, 1, TEXT_GREEN);
 		sh = &M_SH2;
 	}
-	Print_Text(Dbg_Out_Str, 24, 1, TEXT_GREEN);
 	
 	unsigned int PC = (sh->PC - sh->Base_PC) - 4;
 	
@@ -712,15 +711,14 @@ static void Refresh_SH2_State(int num)
 	
 	if (num)
 	{
-		strcpy(Dbg_Out_Str, "** SLAVE SH2 STATUS **");
+		Print_Text("** SLAVE SH2 STATUS **", 196, 130, TEXT_GREEN);
 		sh = &S_SH2;
 	}
 	else
 	{
-		strcpy(Dbg_Out_Str, "** MASTER SH2 STATUS **");
+		Print_Text("** MASTER SH2 STATUS **", 196, 130, TEXT_GREEN);
 		sh = &M_SH2;
 	}
-	Print_Text(Dbg_Out_Str, 196, 130, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "R0=%.8X R1=%.8X R2=%.8X T=%d\n", SH2_Get_R(sh, 0),
 			SH2_Get_R(sh, 1), SH2_Get_R(sh, 2), SH2_Get_SR(sh) & 1);
