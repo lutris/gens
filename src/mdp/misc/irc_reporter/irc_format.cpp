@@ -36,6 +36,24 @@ using std::stringstream;
 // libgsft includes.
 #include "libgsft/gsft_space_elim.h"
 
+
+/** 
+ * REPLACE_HIGH_CHRS(): Replace characters with high bit set with '?'.
+ * This is a temporary workaround to prevent D-Bus from crashing on Shift-JIS text.
+ * TODO: Properly handle Shift-JIS text, and check for other invalid UTF-8 text.
+ * @param buf Character buffer.
+ * @param len Length of the buffer.
+ */
+static inline void REPLACE_HIGH_CHRS(char *buf, int len)
+{
+	for (; len > 0; len--, buf++)
+	{
+		if (*buf & 0x80)
+			*buf = '?';
+	}
+}
+
+
 // Current format status.
 typedef enum
 {
@@ -207,6 +225,7 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 			}
 			
 			// Return the ROM name.
+			REPLACE_HIGH_CHRS(rom_name, sizeof(rom_name)-1);
 			return string(rom_name);
 		}
 		
@@ -253,8 +272,10 @@ static inline string irc_format_N(int system_id, uint32_t modifier)
 			char serial_number[15];
 			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, sn_addr, (uint8_t*)serial_number, 14) != MDP_ERR_OK)
 				return "unknown";
-			
 			serial_number[sizeof(serial_number)-1] = 0;
+			
+			// Return the ROM serial number.
+			REPLACE_HIGH_CHRS(serial_number, sizeof(serial_number)-1);
 			return string(serial_number);
 		}
 		
@@ -397,8 +418,10 @@ static inline string irc_format_D(int system_id, uint32_t modifier)
 			char build_date[9];
 			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, date_addr, (uint8_t*)build_date, 8) != MDP_ERR_OK)
 				return "unknown";
-			
 			build_date[sizeof(build_date)-1] = 0;
+			
+			// Return the ROM build date.
+			REPLACE_HIGH_CHRS(build_date, sizeof(build_date)-1);
 			return string(build_date);
 		}
 		
