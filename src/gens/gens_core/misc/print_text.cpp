@@ -137,7 +137,7 @@ static const uint32_t Small_Police[128-32][7] =
 // Palettes.
 #define MAKE_COLOR15(r, g, b) ((uint16_t)(((r) << 10) | ((g) << 5) | (b)))
 #define MAKE_COLOR16(r, g, b) ((uint16_t)(((r) << 11) | ((g) << 6) | (b)))
-#define MAKE_COLOR32(r, g, b) ((uint32_t)(((r) << 16) | ((g) << 6) | (b)))
+#define MAKE_COLOR32(r, g, b) ((uint32_t)(((r) << 16) | ((g) << 8) | (b)))
 
 #define MAKE_PAL15(r, g, b) \
 	{MAKE_COLOR15(r*16, g*16, b*16), MAKE_COLOR15(r*17, g*17, b*17), \
@@ -169,7 +169,7 @@ static const uint32_t Small_Police[128-32][7] =
 	 MAKE_COLOR32(r*224, g*224, b*224), MAKE_COLOR32(r*232, g*232, b*232), \
 	 MAKE_COLOR32(r*240, g*240, b*240), MAKE_COLOR32(r*248, g*248, b*248)}
 
-static const uint16_t Palette_15[4][16] =
+static const uint16_t Text_Palette_15[4][16] =
 {
 	MAKE_PAL15(1, 1, 1),	// White
 	MAKE_PAL15(0, 0, 1),	// Blue
@@ -177,12 +177,20 @@ static const uint16_t Palette_15[4][16] =
 	MAKE_PAL15(1, 0, 0),	// Red
 };
 
-static const uint16_t Palette_16[4][16] =
+static const uint16_t Text_Palette_16[4][16] =
 {
 	MAKE_PAL16(1, 1, 1),	// White
 	MAKE_PAL16(0, 0, 1),	// Blue
 	MAKE_PAL16(0, 1, 0),	// Green
 	MAKE_PAL16(1, 0, 0),	// Red
+};
+
+static const uint32_t Text_Palette_32[4][16] =
+{
+	MAKE_PAL32(1, 1, 1),	// White
+	MAKE_PAL32(0, 0, 1),	// Blue
+	MAKE_PAL32(0, 1, 0),	// Green
+	MAKE_PAL32(1, 0, 0),	// Red
 };
 
 
@@ -212,7 +220,45 @@ static inline void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, in
 
 
 /**
- * Print_Text(): Print text directly to MD_Screen.
+ * T_Print_Text(): Print text directly to MD_Screen[] / MD_Screen32[].
+ */
+template<typename pixel, pixel *screen>
+static inline void T_Print_Text(const char *str, int row_length, const pixel *palette,
+				int Pos_X, int Pos_Y, int Style)
+{
+	// Get the screen pointer.
+	pixel *screen_ptr = &screen[8 + (Pos_Y * 336) + Pos_X];
+	
+	// TODO: 2x text rendering and transparency rendering.
+	if (Style & (SIZE_X2 | TRANS))
+		return;
+	
+	// Process the string.
+	int chr = *str++;
+	do
+	{
+		chr = (chr & 0x7F) - 0x20;
+		if (chr < 0)
+			chr = 0;
+		
+		// Draw the letter.
+		T_Aff_Line_Letter<pixel, 0>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 1>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 2>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 3>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 4>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 5>(palette, screen_ptr, chr);
+		T_Aff_Line_Letter<pixel, 6>(palette, screen_ptr, chr);
+		
+		// Next character.
+		screen_ptr += 4;
+		row_length -= 4;
+	} while (row_length > 0 && (chr = *str++));
+}
+
+
+/**
+ * Print_Text(): Print text directly to MD_Screen[] / MD_Screen32[].
  * @param str Text to print.
  * @param Size Size of text.
  * @param Pos_X X position.
@@ -221,12 +267,6 @@ static inline void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, in
  */
 void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 {
-	if (bppMD == 32)
-	{
-		// 32-bit color isn't supported yet.
-		return;
-	}
-	
 	// Make sure we have a string.
 	// NOTE: Don't check !str - if that happens, we should crash here.
 	if (*str == 0x00)
@@ -240,9 +280,6 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		return;
 	}
 	
-	// Get the screen pointer.
-	uint16_t *screen_ptr = &MD_Screen[8 + (Pos_Y * 336) + Pos_X];
-	
 	// Row length.
 	int row_length = 320;	// Assume 320px if emulation isn't running.
 	if (Style & 0x01)
@@ -251,35 +288,26 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		row_length = VDP_Reg.H_Pix;
 	}
 	
-	// TODO: 2x text rendering and transparency rendering.
-	if (Style & (SIZE_X2 | TRANS))
-		return;
+	// Get the palette number.
+	const unsigned int palette_num = (Style >> 1) & 0x03;
 	
-	// Get the palette.
-	const uint16_t *palette;
+	// Render the text.
 	if (bppMD == 15)
-		palette = &Palette_15[(Style >> 1) & 3][0];
-	else
-		palette = &Palette_16[(Style >> 1) & 3][0];
-	
-	// Process the string.
-	int chr;
-	while ((chr = *str++))
 	{
-		chr = (chr & 0x7F) - 0x20;
-		if (chr < 0)
-			chr = 0;
-		
-		// Draw the letter.
-		T_Aff_Line_Letter<uint16_t, 0>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 1>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 2>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 3>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 4>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 5>(palette, screen_ptr, chr);
-		T_Aff_Line_Letter<uint16_t, 6>(palette, screen_ptr, chr);
-		
-		// Next character.
-		screen_ptr += 4;
+		T_Print_Text<uint16_t, MD_Screen>(str, row_length,
+							&Text_Palette_15[palette_num][0],
+							Pos_X, Pos_Y, Style);
+	}
+	else if (bppMD == 16)
+	{
+		T_Print_Text<uint16_t, MD_Screen>(str, row_length,
+							&Text_Palette_16[palette_num][0],
+							Pos_X, Pos_Y, Style);
+	}
+	else //if (bppMD == 32)
+	{
+		T_Print_Text<uint32_t, MD_Screen32>(str, row_length,
+							&Text_Palette_32[palette_num][0],
+							Pos_X, Pos_Y, Style);
 	}
 }
