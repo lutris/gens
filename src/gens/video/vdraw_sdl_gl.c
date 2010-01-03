@@ -384,10 +384,15 @@ static int vdraw_sdl_gl_flip(void)
 	// OpenGL framebuffer pitch.
 	const int pitch = rowLength * bytespp;
 	
-	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(filterBuffer))[0]);
+	// Start of the OpenGL texture buffer.
+	unsigned char *start = filterBuffer;
+	
+	// Position in the texture to start rendering from.
+	// This is modified if STRETCH_V is enabled.
+	unsigned char *glStart = start;
 	
 	// Set up the render information.
+	// TODO: If STRETCH_V is set, only render the visible area.
 	vdraw_rInfo.destScreen = (void*)start;
 	vdraw_rInfo.width = 320 - vdraw_border_h;
 	vdraw_rInfo.height = 240;
@@ -409,11 +414,23 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// Calculate the texture size.
 	const int totalHeight = ((rowLength * 3) / 4);
-	const int texHeight = (240 * vdraw_scale);
 	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
-	// Draw the message and/or FPS counter.
-	start += pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	int texHeight = 240 * vdraw_scale;
+	if (VDP_Num_Vis_Lines < 240)
+	{
+		// Check for vertical stretch.
+		const uint8_t stretch_flags = vdraw_get_stretch();
+		unsigned int start_offset = pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+		start += start_offset;	// Text starting position.
+		
+		if (stretch_flags & STRETCH_V)
+		{
+			// Vertical stretch is enabled.
+			texHeight = VDP_Num_Vis_Lines * vdraw_scale;
+			glStart += start_offset;
+		}
+	}
 	
 	if (vdraw_msg_visible)
 	{
@@ -451,7 +468,7 @@ static int vdraw_sdl_gl_flip(void)
 			texWidth,		// width
 			texHeight,		// height
 			m_pixelFormat, m_pixelType,
-			filterBuffer);
+			glStart);
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
