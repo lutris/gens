@@ -152,8 +152,8 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
 	// - Maximum sprite dots per line: 256/320
 	// - Maximum sprites per line: 16/20
-	int max_cells = H_Cell;
-	int max_sprites = (H_Cell / 2);
+	int max_cells = VDP_Reg.H_Cell;
+	int max_sprites = max_cells / 2;
 	
 	bool overflow = false;
 	
@@ -194,7 +194,7 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		sprite_on_line = true;
 		
 		// Check if the sprite is onscreen.
-		if (Sprite_Struct[spr_num].Pos_X < H_Pix &&
+		if (Sprite_Struct[spr_num].Pos_X < VDP_Reg.H_Pix &&
 		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
 		{
 			// Sprite is onscreen.
@@ -264,7 +264,7 @@ unsigned int Update_Mask_Sprite_Limit(void)
 template<bool plane>
 static inline uint16_t T_Get_X_Offset(void)
 {
-	const unsigned int H_Scroll_Offset = (VDP_Current_Line & H_Scroll_Mask) * 2;
+	const unsigned int H_Scroll_Offset = (VDP_Current_Line & VDP_Reg.H_Scroll_Mask) * 2;
 	
 	if (plane)
 	{
@@ -345,7 +345,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 7);
 		
 		// Get the V Cell offset and prevent it from overflowing.
-		VScroll_Offset = (VScroll_Offset >> 3) & V_Scroll_CMask;
+		VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
 	}
 	else
 	{
@@ -358,7 +358,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 0x0F);
 		
 		// Get the V Cell offset and prevent it from overflowing.
-		VScroll_Offset = (VScroll_Offset >> 4) & V_Scroll_CMask;
+		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
 	}
 #endif
 	
@@ -407,7 +407,7 @@ static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// H_Scroll_CMul is the shift value required for the proper vertical offset.
-	unsigned int offset = (y << H_Scroll_CMul) + x;
+	unsigned int offset = (y << VDP_Reg.H_Scroll_CMul) + x;
 	
 	// Return the pattern information.
 	return (plane ? VDP_Reg.ScrA_Addr[offset] : VDP_Reg.ScrB_Addr[offset]);
@@ -1022,9 +1022,9 @@ static inline void T_Render_Line_ScrollB(void)
 	// - Invert the cell position.
 	// - Right-shift by 3 for the cell number.
 	// - AND with the horizontal scrolling cell mask to prevent overflow.
-	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & H_Scroll_CMask);
+	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & VDP_Reg.H_Scroll_CMask);
 	
-	VDP_Data_Misc.X = H_Cell;			// Number of cells to draw.
+	VDP_Data_Misc.X = VDP_Reg.H_Cell;		// Number of cells to draw.
 	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;	// Current cell for VScroll.
 	
 	// Drawing will start at LineBuf.u16[offset_fine].
@@ -1059,7 +1059,7 @@ static inline void T_Render_Line_ScrollB(void)
 		Y_offset_cell /= 2;
 	Y_offset_cell += VDP_Current_Line;
 	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
-	Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
+	Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
 #endif
 	
 	goto Start_Loop;
@@ -1107,7 +1107,7 @@ Start_Loop:
 		
 		// Go to the next H cell.
 		VDP_Data_Misc.Cell++;
-		X_offset_cell = (X_offset_cell + 1) & H_Scroll_CMask;
+		X_offset_cell = (X_offset_cell + 1) & VDP_Reg.H_Scroll_CMask;
 		
 		// Go to the next pattern.
 		disp_pixnum += 8;
@@ -1215,9 +1215,9 @@ void VDP_Render_Line_m5(void)
 		// Clear the border area.
 		// TODO: Only clear this if the option changes or V/H mode changes.
 		if (bppMD == 32)
-			memset(&MD_Screen32[LineStart], 0x00, H_Pix*sizeof(uint32_t));
+			memset(&MD_Screen32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
 		else
-			memset(&MD_Screen[LineStart], 0x00, H_Pix*sizeof(uint16_t));
+			memset(&MD_Screen[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
 		return;
 	}
 	
@@ -1279,7 +1279,7 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Render the image.
-	const unsigned int num_px = (160 - H_Pix_Begin) * 2;
+	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	if (bppMD == 32)
 	{
 		T_Render_LineBuf<uint32_t, MD_Palette32>

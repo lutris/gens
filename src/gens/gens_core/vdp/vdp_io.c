@@ -37,25 +37,6 @@ VDP_Ctrl_t VDP_Ctrl;
 VDP_VRam_t VRam;
 VDP_CRam_t CRam;
 
-// VDP convenience values: Horizontal.
-// NOTE: These must be signed for VDP arithmetic to work properly!
-int H_Cell;
-int H_Win_Mul;
-int H_Pix;
-int H_Pix_Begin;
-
-// VDP convenience values: Scroll.
-unsigned int V_Scroll_MMask;
-unsigned int H_Scroll_Mask;
-
-unsigned int H_Scroll_CMul;
-unsigned int H_Scroll_CMask;
-unsigned int V_Scroll_CMask;
-
-// TODO: Eliminate these.
-int Win_X_Pos;
-int Win_Y_Pos;
-
 // Miscellaneous. (TODO: Determine if these should be signed or unsigned.)
 int VDP_Status;
 int VDP_Int;
@@ -348,10 +329,10 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			// Check the Vertical Scroll mode. (Bit 3)
 			// 0: Full scrolling. (Mask == 0)
 			// 1: 2CELL scrolling. (Mask == 0x7E)
-			V_Scroll_MMask = ((val & 4) ? 0x7E : 0);
+			VDP_Reg.V_Scroll_MMask = ((val & 4) ? 0x7E : 0);
 			
 			// Horizontal Scroll mode
-			H_Scroll_Mask = H_Scroll_Mask_Table[val & 3];
+			VDP_Reg.H_Scroll_Mask = H_Scroll_Mask_Table[val & 3];
 			
 			break;
 		}
@@ -367,15 +348,15 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			if (val & 0x81)		// TODO: Original asm tests 0x81. Should this be done for other H40 tests?
 			{
 				// H40 mode.
-				H_Cell = 40;
-				H_Win_Mul = 6;
-				H_Pix = 320;
-				H_Pix_Begin = 0;
+				VDP_Reg.H_Cell = 40;
+				VDP_Reg.H_Win_Mul = 6;
+				VDP_Reg.H_Pix = 320;
+				VDP_Reg.H_Pix_Begin = 0;
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
 				if ((VDP_Reg.Win_H_Pos & 0x1F) > 40)
-					Win_X_Pos = 40;
+					VDP_Reg.Win_X_Pos = 40;
 				
 				// Update the Window base address.
 				tmp = (VDP_Reg.Pat_Win_Adr & 0x3C) << 10;
@@ -388,15 +369,15 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			else
 			{
 				// H32 mode.
-				H_Cell = 32;
-				H_Win_Mul = 5;
-				H_Pix = 256;
-				H_Pix_Begin = 32;
+				VDP_Reg.H_Cell = 32;
+				VDP_Reg.H_Win_Mul = 5;
+				VDP_Reg.H_Pix = 256;
+				VDP_Reg.H_Pix_Begin = 32;
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
 				if ((VDP_Reg.Win_H_Pos & 0x1F) > 32)
-					Win_X_Pos = 32;
+					VDP_Reg.Win_X_Pos = 32;
 				
 				// Update the Window base address.
 				tmp = (VDP_Reg.Pat_Win_Adr & 0x3E) << 10;
@@ -424,53 +405,53 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			{
 				case 0:		// V32_H32
 				case 8:		// VXX_H32
-					H_Scroll_CMul = 5;
-					H_Scroll_CMask = 31;
-					V_Scroll_CMask = 31;
+					VDP_Reg.H_Scroll_CMul = 5;
+					VDP_Reg.H_Scroll_CMask = 31;
+					VDP_Reg.V_Scroll_CMask = 31;
 					break;
 				
 				case 4:		// V64_H32
-					H_Scroll_CMul = 5;
-					H_Scroll_CMask = 31;
-					V_Scroll_CMask = 64;
+					VDP_Reg.H_Scroll_CMul = 5;
+					VDP_Reg.H_Scroll_CMask = 31;
+					VDP_Reg.V_Scroll_CMask = 64;
 					break;
 				
 				case 12:	// V128_H32
-					H_Scroll_CMul = 5;
-					H_Scroll_CMask = 31;
-					V_Scroll_CMask = 127;
+					VDP_Reg.H_Scroll_CMul = 5;
+					VDP_Reg.H_Scroll_CMask = 31;
+					VDP_Reg.V_Scroll_CMask = 127;
 					break;
 				
 				case 1:		// V32_H64
 				case 9:		// VXX_H64
-					H_Scroll_CMul = 6;
-					H_Scroll_CMask = 63;
-					V_Scroll_CMask = 31;
+					VDP_Reg.H_Scroll_CMul = 6;
+					VDP_Reg.H_Scroll_CMask = 63;
+					VDP_Reg.V_Scroll_CMask = 31;
 					break;
 				
 				case 5:		// V64_H64
 				case 13:	// V128_H64
-					H_Scroll_CMul = 6;
-					H_Scroll_CMask = 63;
-					V_Scroll_CMask = 63;
+					VDP_Reg.H_Scroll_CMul = 6;
+					VDP_Reg.H_Scroll_CMask = 63;
+					VDP_Reg.V_Scroll_CMask = 63;
 					break;
 				
 				case 2:		// V32_HXX
 				case 6:		// V64_HXX
 				case 10:	// VXX_HXX
 				case 14:	// V128_HXX
-					H_Scroll_CMul = 6;
-					H_Scroll_CMask = 63;
-					V_Scroll_CMask = 0;
+					VDP_Reg.H_Scroll_CMul = 6;
+					VDP_Reg.H_Scroll_CMask = 63;
+					VDP_Reg.V_Scroll_CMask = 0;
 					break;
 				
 				case 3:		// V32_H128
 				case 7:		// V64_H128
 				case 11:	// VXX_H128
 				case 15:	// V128_H128
-					H_Scroll_CMul = 7;
-					H_Scroll_CMask = 127;
-					V_Scroll_CMask = 31;
+					VDP_Reg.H_Scroll_CMul = 7;
+					VDP_Reg.H_Scroll_CMask = 127;
+					VDP_Reg.V_Scroll_CMask = 31;
 					break;
 			}
 			
@@ -479,14 +460,14 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		
 		case 17:
 			// Window H position.
-			Win_X_Pos = (val & 0x1F);
-			if (Win_X_Pos > H_Cell)
-				Win_X_Pos = H_Cell;
+			VDP_Reg.Win_X_Pos = (val & 0x1F);
+			if (VDP_Reg.Win_X_Pos > VDP_Reg.H_Cell)
+				VDP_Reg.Win_X_Pos = VDP_Reg.H_Cell;
 			break;
 			
 		case 18:
 			// Window V position.
-			Win_Y_Pos = (val & 0x1F);
+			VDP_Reg.Win_Y_Pos = (val & 0x1F);
 			break;
 		
 		case 19:

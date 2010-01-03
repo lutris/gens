@@ -103,6 +103,25 @@ typedef struct
 	uint16_t *Win_Addr;
 	uint16_t *Spr_Addr;
 	uint16_t *H_Scroll_Addr;
+	
+	// VDP convenience values: Horizontal.
+	// NOTE: These must be signed for VDP arithmetic to work properly!
+	int H_Cell;
+	int H_Win_Mul;
+	int H_Pix;
+	int H_Pix_Begin;
+	
+	// VDP convenience values: Scroll.
+	unsigned int V_Scroll_MMask;
+	unsigned int H_Scroll_Mask;
+	
+	unsigned int H_Scroll_CMul;
+	unsigned int H_Scroll_CMask;
+	unsigned int V_Scroll_CMask;
+	
+	// TODO: Eliminate these.
+	int Win_X_Pos;
+	int Win_Y_Pos;
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 
@@ -173,25 +192,6 @@ extern VDP_Flags_t VDP_Flags;
 // Set this to 1 to enable zero-length DMA requests.
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
-
-// VDP convenience values: Horizontal.
-// NOTE: These must be signed for VDP arithmetic to work properly!
-extern int H_Cell;
-extern int H_Win_Mul;
-extern int H_Pix;
-extern int H_Pix_Begin;
-
-// VDP convenience values: Scroll.
-extern unsigned int V_Scroll_MMask;
-extern unsigned int H_Scroll_Mask;
-
-extern unsigned int H_Scroll_CMul;
-extern unsigned int H_Scroll_CMask;
-extern unsigned int V_Scroll_CMask;
-
-// TODO: Eliminate these.
-extern int Win_X_Pos;
-extern int Win_Y_Pos;
 
 void     VDP_Reset(void);
 uint8_t  VDP_Read_H_Counter(void);

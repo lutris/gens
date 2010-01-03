@@ -61,6 +61,25 @@ struc VDP_Reg_t
 	.Win_Addr:		resd 1
 	.Spr_Addr:		resd 1
 	.H_Scroll_Addr:		resd 1
+	
+	; VDP convenience values: Horizontal.
+	; NOTE: These must be signed for VDP arithmetic to work properly!
+	.H_Cell:		resd 1
+	.H_Win_Mul:		resd 1
+	.H_Pix:			resd 1
+	.H_Pix_Begin:		resd 1
+	
+	; VDP convenience values: Scroll.
+	.V_Scroll_MMask:	resd 1
+	.H_Scroll_Mask:		resd 1
+	
+	.H_Scroll_CMul:		resd 1
+	.H_Scroll_CMask:	resd 1
+	.V_Scroll_CMask:	resd 1
+	
+	; TODO: Eliminate these.
+	.Win_X_Pos:		resd 1
+	.Win_Y_Pos:		resd 1
 endstruc
 
 struc VDP_Ctrl_t

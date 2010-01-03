@@ -103,20 +103,6 @@ section .bss align=64
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	
-	extern SYM(H_Cell)
-	extern SYM(H_Win_Mul)
-	extern SYM(H_Pix)
-	extern SYM(H_Pix_Begin)
-	
-	extern SYM(H_Scroll_Mask)
-	extern SYM(H_Scroll_CMul)
-	extern SYM(H_Scroll_CMask)
-	extern SYM(V_Scroll_CMask)
-	extern SYM(V_Scroll_MMask)
-	
-	extern SYM(Win_X_Pos)
-	extern SYM(Win_Y_Pos)
-	
 	extern SYM(VDP_Status)
 	extern SYM(VDP_Current_Line)
 	
@@ -229,7 +215,7 @@ section .text align=64
 	mov	eax, [SYM(VDP_Current_Line)]
 	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_Addr]	; ebx points to the H-Scroll data
 	mov	edi, eax
-	and	eax, [SYM(H_Scroll_Mask)]
+	and	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_Mask]
 	
 %if %1 > 0
 	mov	esi, [ebx + eax * 4]		; X Cell offset
@@ -272,7 +258,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(VDP_Reg) + VDP_Reg_t.V_Scroll_CMask]	; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 %%End
@@ -293,7 +279,7 @@ section .text align=64
 
 %macro GET_PATTERN_INFO 1
 	
-	mov	cl, [SYM(H_Scroll_CMul)]
+	mov	cl, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_CMul]
 	mov	eax, edi			; eax = V Cell Offset
 	mov	edx, esi			; edx = H Cell Offset
 	
@@ -498,10 +484,10 @@ section .text align=64
 	
 	xor	edi, edi
 %if %1 > 0
-	mov	ecx, [SYM(H_Cell)]
+	mov	ecx, [SYM(VDP_Reg) + VDP_Reg_t.H_Cell]
 %endif
 	xor	ax, ax				; used for masking
-	mov	ebx, [SYM(H_Pix)]
+	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix]
 	xor	esi, esi
 	mov	edx, [SYM(VDP_Current_Line)]
 	jmp	short %%Loop_1
@@ -1102,9 +1088,9 @@ section .text align=64
 	shr	esi, 3				; esi = current cell
 	add	ebp, eax			; ebp updated for clipping
 	mov	ebx, esi
-	and	esi, [SYM(H_Scroll_CMask)]		; prevent H Cell Offset from overflowing
+	and	esi, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_CMask]	; prevent H Cell Offset from overflowing
 	and	ebx, byte 1
-	mov	eax, [SYM(H_Cell)]
+	mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Cell]
 	sub	ebx, byte 2			; start with cell -2 or -1 (for V Scroll)
 	mov	[Data_Misc.X], eax		; number of cells to post
 	mov	[Data_Misc.Cell], ebx		; Current cell for the V Scroll
@@ -1120,7 +1106,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(VDP_Reg) + VDP_Reg_t.V_Scroll_CMask]	; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop
@@ -1185,7 +1171,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
+		and	esi, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_CMask]	; prevent H Offset from overflowing
 		dec	byte [Data_Misc.X]		; decrement number of cells to treat
 		jns	near %%Loop
 		
@@ -1208,15 +1194,15 @@ section .text align=64
 	mov	eax, [SYM(VDP_Current_Line)]
 	movzx	ecx, byte [SYM(VDP_Reg) + VDP_Reg_t.Win_V_Pos]
 	shr	eax, 3
-	mov	ebx, [SYM(H_Cell)]
+	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.H_Cell]
 	shr	cl, 7				; cl = 1 si window at bottom
-	cmp	eax, [SYM(Win_Y_Pos)]
+	cmp	eax, [SYM(VDP_Reg) + VDP_Reg_t.Win_Y_Pos]
 	setae	ch				; ch = 1 si current line >= pos Y window
 	xor	cl, ch				; cl = 0 si line window sinon line Scroll A
 	jz	near %%Full_Win
 	
 	test	byte [SYM(VDP_Reg) + VDP_Reg_t.Win_H_Pos], 0x80
-	mov	edx, [SYM(Win_X_Pos)]
+	mov	edx, [SYM(VDP_Reg) + VDP_Reg_t.Win_X_Pos]
 	jz	short %%Win_Left
 	
 %%Win_Right
@@ -1259,7 +1245,7 @@ section .text align=64
 	and	ecx, byte 1
 	lea	eax, [eax + ebx * 8]		; clipping + window clip
 	sub	ecx, byte 2			; on démarre au cell -2 ou -1 (pour le V Scroll)
-	and	esi, [SYM(H_Scroll_CMask)]		; on empeche H Cell Offset de deborder
+	and	esi, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_CMask]	; on empeche H Cell Offset de deborder
 	add	ebp, eax			; ebp mis à jour pour clipping + window clip
 	add	ebx, ecx			; ebx = Cell courant pour le V Scroll
 	
@@ -1271,7 +1257,7 @@ section .text align=64
 	jmp	short %%First_VScroll_OK
 	
 %%Not_First_Cell
-	and	ebx, [SYM(V_Scroll_MMask)]
+	and	ebx, [SYM(VDP_Reg) + VDP_Reg_t.V_Scroll_MMask]
 	mov	eax, [SYM(VSRam) + ebx * 2]
 	
 %%First_VScroll_OK
@@ -1284,7 +1270,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [SYM(V_Scroll_CMask)]		; prevent V Cell Offset from overflowing
+	and	edi, [SYM(VDP_Reg) + VDP_Reg_t.V_Scroll_CMask]	; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop_SCA
@@ -1347,7 +1333,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [SYM(H_Scroll_CMask)]		; prevent H Offset from overflowing
+		and	esi, [SYM(VDP_Reg) + VDP_Reg_t.H_Scroll_CMask]	; prevent H Offset from overflowing
 		dec	byte [Data_Misc.Length_A]	; decrement number of cells to treat for Scroll A
 		jns	near %%Loop_SCA
 
@@ -1424,7 +1410,7 @@ section .text align=64
 	
 %%Window_Initialised
 	mov	edx, [SYM(VDP_Current_Line)]
-	mov	cl, [SYM(H_Win_Mul)]
+	mov	cl, [SYM(VDP_Reg) + VDP_Reg_t.H_Win_Mul]
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
 	shr	edx, 3					; edx = Line / 8
@@ -1615,7 +1601,7 @@ section .text align=64
 			add	esi, edi			; one goes on next the pattern (mem)
 			
 	%%Spr_Test_X_Max
-			cmp	ebp, [SYM(H_Pix)]
+			cmp	ebp, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix]
 			jge	%%Spr_Test_X_Max_Loop
 		
 		; Check if sprites should always be on top.
@@ -1656,7 +1642,7 @@ section .text align=64
 		
 	%%No_H_Flip
 		mov	ebx, [SYM(Sprite_Struct) + edi + 16]
-		mov	ecx, [SYM(H_Pix)]
+		mov	ecx, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix]
 		mov	ebp, [SYM(Sprite_Struct) + edi + 0]		; position the pointer ebp
 		cmp	ebx, ecx				; test for the maximum edge of the sprite
 		mov	edi, [Data_Misc.Next_Cell]
@@ -1883,7 +1869,7 @@ section .text align=64
 	
 	.Render32: ; 32-bit color
 		mov	ecx, 160
-		mov	eax, [SYM(H_Pix_Begin)]
+		mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix_Begin]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
@@ -1917,7 +1903,7 @@ section .text align=64
 	
 	.Render16: ; 15-bit/16-bit color
 		mov	ecx, 160
-		mov	eax, [SYM(H_Pix_Begin)]
+		mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix_Begin]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
@@ -2044,7 +2030,7 @@ section .text align=64
 	align 16
 	
 	.VDP_OK:
-		mov	eax, [SYM(H_Pix_Begin)]
+		mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix_Begin]
 		mov	edi, [esp]
 		add	esp, byte 4
 		mov	esi, [SYM(_32X_VDP) + vx.State]
