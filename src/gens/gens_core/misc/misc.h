@@ -13,6 +13,7 @@ extern "C" {
 #define TRANS    0x08
 #define SIZE_X2  0x10
 
+void Print_Text_asm(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
 void CDD_Export_Status(void);

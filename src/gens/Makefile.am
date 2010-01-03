@@ -98,9 +98,10 @@ gens_SOURCES = \
 		gens_core/mem/mem_sh2.asm \
 		gens_core/mem/mem_z80.c \
 		gens_core/misc/misc.asm \
-		gens_core/gfx/fastblur.cpp \
 		gens_core/misc/cpuflags.c \
+		gens_core/misc/print_text.cpp \
 		$(gens_x86_asm_src) \
+		gens_core/gfx/fastblur.cpp \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
@@ -222,9 +223,10 @@ noinst_HEADERS = \
 		gens_core/mem/mem_sh2.h \
 		gens_core/mem/mem_z80.h \
 		gens_core/misc/misc.h \
-		gens_core/gfx/fastblur.hpp \
 		gens_core/misc/cpuflags.h \
+		gens_core/misc/print_text.hpp \
 		$(gens_x86_asm_h) \
+		gens_core/gfx/fastblur.hpp \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
 		gens_core/io/io_teamplayer.h \
