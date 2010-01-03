@@ -829,7 +829,7 @@ static void Refresh_VDP_Pattern(void)
 
 
 template<typename pixel>
-static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned int numPalettes)
+static inline void T_Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned int numPalettes)
 {
 	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
 	pixel *pLine = &screen[(336 * (VBorder + 10)) + 180];
@@ -857,7 +857,7 @@ static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, uns
 }
 
 template<typename pixel>
-static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned int paletteMask, pixel outlineColor)
+static inline void T_Refresh_VDP_Palette_Outline(pixel *screen, unsigned int paletteMask, pixel outlineColor)
 {
 	// Outline the selected palette. Ported from Gens Rerecording.
 	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
@@ -882,15 +882,15 @@ static void Refresh_VDP_Palette(void)
 	
 	if (bppMD == 32)
 	{
-		// 32-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 4);
-		Refresh_VDP_Palette_Outline((uint32_t*)MD_Screen32, 0x03, (uint32_t)0xFFFFFF);
+		// 32-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen32, MD_Palette32, 4);
+		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen32, 0x03, 0xFFFFFF);
 	}
 	else
 	{
-		// 15/16-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 4);
-		Refresh_VDP_Palette_Outline((uint16_t*)MD_Screen, 0x03, (uint16_t)0xFFFF);
+		// 15/16-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen, MD_Palette, 4);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x03, 0xFFFF);
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, TEXT_WHITE);
@@ -1061,15 +1061,15 @@ static void Refresh_Word_RAM_Pattern(void)
 	
 	if (bppMD == 32)
 	{
-		// 32-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 16);
-		Refresh_VDP_Palette_Outline((uint32_t*)MD_Screen32, 0x0F, (uint32_t)0xFFFFFF);
+		// 32-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen32, MD_Palette32, 16);
+		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen32, 0x0F, 0xFFFFFF);
 	}
 	else
 	{
-		// 15/16-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 16);
-		Refresh_VDP_Palette_Outline((uint16_t*)MD_Screen, 0x0F, (uint16_t)0xFFFF);
+		// 15/16-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen, MD_Palette, 16);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x0F, 0xFFFF);
 	}
 }
 
