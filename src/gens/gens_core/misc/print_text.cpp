@@ -233,6 +233,13 @@ void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		return;
 	
 	// Determine the starting position.
+	Pos_Y += (240 - VDP_Num_Vis_Lines) / 2;		// Compensate for the screen border.
+	if (Pos_Y + 7 >= VDP_Num_Vis_Lines)
+	{
+		// Offscreen. Don't draw anything.
+		return;
+	}
+	
 	uint16_t *screen_ptr = &MD_Screen[8 + (Pos_Y * 336) + Pos_X];
 	
 	// Row length.
