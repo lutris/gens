@@ -60,9 +60,6 @@ static int	vdraw_sdl_flip(void);
 static void	vdraw_sdl_update_renderer(void);
 static int	vdraw_sdl_reinit_gens_window(void);
 
-// Used internally. (Not used in vdraw_backend_t.)
-static void	vdraw_sdl_draw_border(void);
-
 // Miscellaneous.
 #define VDRAW_SDL_FLAGS (SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL)
 static SDL_Surface *vdraw_sdl_screen;
@@ -136,10 +133,6 @@ static int vdraw_sdl_init(void)
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(vdraw_get_fullscreen() ? SDL_DISABLE : SDL_ENABLE);
 	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
-	
 	// SDL initialized successfully.
 	return 0;
 }
@@ -165,10 +158,6 @@ static void vdraw_sdl_clear_screen(void)
 	memset(vdraw_sdl_screen->pixels, 0x00,
 	       vdraw_sdl_screen->pitch * vdraw_sdl_screen->h);
 	SDL_UnlockSurface(vdraw_sdl_screen);
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
 
@@ -180,25 +169,21 @@ static int vdraw_sdl_flip(void)
 {
 	SDL_LockSurface(vdraw_sdl_screen);
 	
-	// Draw the border.
-	vdraw_sdl_draw_border();
-	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
 	const int pitch = vdraw_sdl_screen->pitch;
-	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	
-	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+	const int startPos = HBorder * vdraw_scale;		// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(vdraw_sdl_screen->pixels))[startPos]);
 	
 	// Set up the render information.
+	// TODO: Horizontal border using VDP.
 	vdraw_rInfo.destScreen = (void*)start;
 	vdraw_rInfo.width = 320 - vdraw_border_h;
-	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
 	if (vdraw_needs_conversion)
@@ -216,6 +201,7 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
+	vdraw_rInfo.height -= ((240 - VDP_Num_Vis_Lines) / 2);
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
@@ -239,116 +225,6 @@ static int vdraw_sdl_flip(void)
 	
 	// TODO: Return appropriate error code.
 	return 0;
-}
-
-
-/**
- * vdraw_sdl_draw_border(): Draw the border color.
- * Called from vdraw_sdl_flip().
- */
-static void vdraw_sdl_draw_border(void)
-{
-	// TODO: Consolidate this function by using a macro.
-	
-	SDL_Rect border;
-	
-	if (!Video.borderColorEmulation)
-	{
-		// Border color emulation is disabled.
-		// Don't do anything if the border color is currently black.
-		if (vdraw_border_color_16 == 0 && vdraw_border_color_32 == 0)
-			return;
-	}
-	
-	unsigned short bc16 = MD_Palette[0];
-	unsigned int bc32 = MD_Palette32[0];
-	
-	if (!Video.borderColorEmulation || (Game == NULL) || IS_DEBUGGING())
-	{
-		// Either no game is loaded or the debugger is enabled.
-		// Make sure the border color is black.
-		bc16 = 0;
-		bc32 = 0;
-	}
-	
-	if ((bppOut == 15 || bppOut == 16) && (vdraw_border_color_16 != bc16))
-	{
-		vdraw_border_color_16 = bc16;
-		
-		// Check if the border color needs to be converted.
-		if (bppMD == 15 && bppOut == 16)
-		{
-			// MD palette is 15-bit; output is 16-bit.
-			// MD:  0RRRRRGG GGGBBBBB
-			// Out: RRRRRGGG GGGBBBBB
-			bc16 = ((bc16 & 0x7C00) << 1) | ((bc16 & 0x03E0) << 1) | (bc16 & 0x1F);
-		}
-		else if (bppMD == 16 && bppOut == 15)
-		{
-			// MD palette is 16-bit; output is 15-bit.
-			// MD:  RRRRRGGG GGGBBBBB
-			// Out: 0RRRRRGG GGGBBBBB
-			bc16 = ((bc16 & 0xF800) >> 1) | ((bc16 & 0x07C0) >> 1) | (bc16 & 0x1F);
-		}
-		
-		if (VDP_Num_Vis_Lines < 240)
-		{
-			// Top/Bottom borders.
-			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-			border.y = vdraw_sdl_screen->h - border.h;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-		}
-		if (vdraw_border_h > 0)
-		{
-			// Left/Right borders.
-			if (border.h != 0)
-			{
-				border.y = 0;
-				border.h = 240 - border.h;
-			}
-			
-			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-			border.x = vdraw_sdl_screen->w - border.w;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc16);
-		}
-	}
-	else if ((bppOut == 32) && (vdraw_border_color_32 != bc32))
-	{
-		vdraw_border_color_32 = bc32;
-		
-		if (VDP_Num_Vis_Lines < 240)
-		{
-			// Top/Bottom borders.
-			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-			border.y = vdraw_sdl_screen->h - border.h;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-		}
-		if (vdraw_border_h > 0)
-		{
-			// Left/Right borders.
-			if (border.h != 0)
-			{
-				border.y = 0;
-				border.h = 240 - border.h;
-			}
-			
-			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * vdraw_scale;
-			border.y = 0;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-			border.x = vdraw_sdl_screen->w - border.w;
-			SDL_FillRect(vdraw_sdl_screen, &border, bc32);
-		}
-	}
 }
 
 
