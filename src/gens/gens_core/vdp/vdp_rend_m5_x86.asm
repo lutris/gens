@@ -173,11 +173,6 @@ section .text align=64
 	extern SYM(Get_Pattern_Data)
 	extern SYM(Get_Pattern_Data_Interlaced)
 	
-	extern SYM(PutPixel_Sprite)
-	extern SYM(PutPixel_Sprite_Prio)
-	extern SYM(PutPixel_Sprite_HS)
-	extern SYM(PutPixel_Sprite_Prio_HS)
-	
 	extern SYM(PutLine_P0_ScrollA)
 	extern SYM(PutLine_P0_ScrollA_HS)
 	extern SYM(PutLine_P0_ScrollB)
@@ -208,57 +203,6 @@ section .text align=64
 	extern SYM(PutLine_Sprite_Flip_Low)
 	extern SYM(PutLine_Sprite_Flip_Low_HS)
 	
-;****************************************
-
-; macro PUTPIXEL_SPRITE
-; param :
-; %1 = pixel number
-; %2 = mask to isolate the good pixel
-; %3 = Shift
-; %4 = Priority
-; %5 = Highlight/Shadow Enable
-; takes :
-; - ebx = Pattern Data
-; - edx = Palette number * 16
-
-%macro PUTPIXEL_SPRITE 5
-
-	push	edx	; palette (not modified, so we can restore it later)
-	push	ebx	; pattern
-	push	%3	; shift
-	push	%2	; mask
-	push	%1	; pattern pixel number
-	push	ebp	; display pixel number
-	
-%if %4 > 0
-	; High Priority
-	%if %5 > 0
-		; S/H
-		call SYM(PutPixel_Sprite_Prio_HS)
-	%else
-		; No S/H
-		call SYM(PutPixel_Sprite_Prio)
-	%endif
-%else
-	; Regular Priority
-	%if %5 > 0
-		; S/H
-		call SYM(PutPixel_Sprite_HS)
-	%else
-		; No S/H
-		call SYM(PutPixel_Sprite)
-	%endif
-%endif
-	
-	add	esp, byte 5*4
-	pop	edx
-	
-	; Save the return value.
-	or	ch, al
-
-%endmacro
-
-
 ;****************************************
 
 ; macro PUTLINE_P0

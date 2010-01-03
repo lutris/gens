@@ -621,51 +621,6 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
 }
 
 
-/**
- * C wrapper functions for T_PutPixel_Sprite().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	uint8_t PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette);
-	uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
-					uint32_t mask, int shift,
-					uint32_t pattern, unsigned int palette);
-	uint8_t PutPixel_Sprite_HS(int disp_pixnum, int pat_pixnum,
-					uint32_t mask, int shift,
-					uint32_t pattern, unsigned int palette);
-	uint8_t PutPixel_Sprite_Prio_HS(int disp_pixnum, int pat_pixnum,
-					uint32_t mask, int shift,
-					uint32_t pattern, unsigned int palette);
-}
-
-uint8_t PutPixel_Sprite(int disp_pixnum, int pat_pixnum,
-			uint32_t mask, int shift,
-			uint32_t pattern, unsigned int palette)
-{
-	return T_PutPixel_Sprite<false, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-uint8_t PutPixel_Sprite_Prio(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette)
-{
-	return T_PutPixel_Sprite<true, false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-uint8_t PutPixel_Sprite_HS(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette)
-{
-	return T_PutPixel_Sprite<false, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-uint8_t PutPixel_Sprite_Prio_HS(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette)
-{
-	return T_PutPixel_Sprite<true, true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-
-
 #define LINEBUF_HIGH_D	0x80808080
 #define LINEBUF_SHAD_D	0x40404040
 #define LINEBUF_PRIO_D	0x01000100
