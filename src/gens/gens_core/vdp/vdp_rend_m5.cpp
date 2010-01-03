@@ -33,8 +33,14 @@
 
 // Line buffer for current line.
 // TODO: Mark as static once VDP_Render_Line_m5_asm is ported to C.
+// TODO: Endianness conversions.
 typedef union
 {
+	struct
+	{
+		uint8_t pixel;
+		uint8_t layer;
+	} px[336];
 	uint8_t  u8[336<<1];
 	uint16_t u16[336];
 	uint32_t u32[336>>1];
@@ -480,10 +486,8 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
 		return;
 	
 	// Check the layer bits of the current pixel.
-	const unsigned int LineBuf_pixnum = ((disp_pixnum + pat_pixnum) * 2);
-	
-	// TODO: Endianness conversions.
-	uint8_t layer_bits = LineBuf.u8[LineBuf_pixnum + 1];
+	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum);
+	uint8_t layer_bits = LineBuf.px[LineBuf_pixnum].layer;
 	if (plane && (layer_bits & LINEBUF_PRIO_B))
 	{
 		// Scroll A; however, pixel has priority set.
@@ -501,7 +505,7 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
 		pat8 |= LINEBUF_SHAD_B;
 	
 	// Write the new pixel to the line buffer.
-	LineBuf.u8[LineBuf_pixnum] = pat8;
+	LineBuf.px[LineBuf_pixnum].pixel = pat8;
 }
 
 
@@ -562,10 +566,10 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
 		return 0;
 	
 	// Get the pixel number in the linebuffer.
-	const unsigned int LineBuf_pixnum = ((disp_pixnum + pat_pixnum + 8) * 2);
+	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum + 8);
 	
 	// TODO: Endianness conversions.
-	uint8_t layer_bits = LineBuf.u8[LineBuf_pixnum + 1];
+	uint8_t layer_bits = LineBuf.px[LineBuf_pixnum].layer;
 	
 	if (layer_bits & (LINEBUF_PRIO_B + LINEBUF_SPR_B - priority))
 	{
@@ -573,7 +577,7 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
 		if (!priority)
 		{
 			// Set the sprite bit in the linebuffer.
-			LineBuf.u8[LineBuf_pixnum + 1] |= LINEBUF_SPR_B;
+			LineBuf.px[LineBuf_pixnum].layer |= LINEBUF_SPR_B;
 		}
 		
 		// Return the original linebuffer priority data.
@@ -589,13 +593,13 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
 		if (px == 0x3E)
 		{
 			// Palette 3, color 14: Highlight. (Sprite pixel doesn't show up.)
-			LineBuf.u16[LineBuf_pixnum>>1] |= LINEBUF_HIGH_W;
+			LineBuf.u16[LineBuf_pixnum] |= LINEBUF_HIGH_W;
 			return 0;
 		}
 		else if (px == 0x3F)
 		{
 			// Palette 3, color 15: Shadow. (Sprite pixel doesn't show up.)
-			LineBuf.u16[LineBuf_pixnum>>1] |= LINEBUF_SHAD_W;
+			LineBuf.u16[LineBuf_pixnum] |= LINEBUF_SHAD_W;
 			return 0;
 		}
 		
@@ -613,7 +617,7 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
 	px |= LINEBUF_SPR_W;
 	
 	// Save the pixel in the linebuffer.
-	LineBuf.u16[LineBuf_pixnum>>1] = px;
+	LineBuf.u16[LineBuf_pixnum] = px;
 	
 	return 0;
 }
