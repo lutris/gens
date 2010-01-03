@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
+void Print_Text(const char *str, int Pos_X, int Pos_Y, int Style);
 
 // Text style defines.
 #define TEXT_EMU_MODE	0x01

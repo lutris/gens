@@ -259,12 +259,11 @@ static inline void T_Print_Text(const char *str, int row_length, const pixel *pa
 /**
  * Print_Text(): Print text directly to MD_Screen[] / MD_Screen32[].
  * @param str Text to print.
- * @param Size Size of text.
  * @param Pos_X X position.
  * @param Pos_Y Y position.
  * @param Style Text style.
  */
-void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style)
+void Print_Text(const char *str, int Pos_X, int Pos_Y, int Style)
 {
 	// Make sure we have a string.
 	// NOTE: Don't check !str - if that happens, we should crash here.
