@@ -198,6 +198,16 @@ section .text align=64
 	extern SYM(PutLine_P1_Flip_ScrollB)
 	extern SYM(PutLine_P1_Flip_ScrollB_HS)
 	
+	extern SYM(PutLine_Sprite_High)
+	extern SYM(PutLine_Sprite_High_HS)
+	extern SYM(PutLine_Sprite_Low)
+	extern SYM(PutLine_Sprite_Low_HS)
+	
+	extern SYM(PutLine_Sprite_Flip_High)
+	extern SYM(PutLine_Sprite_Flip_High_HS)
+	extern SYM(PutLine_Sprite_Flip_Low)
+	extern SYM(PutLine_Sprite_Flip_Low_HS)
+	
 ;****************************************
 
 ; macro PUTPIXEL_SPRITE
@@ -431,33 +441,32 @@ section .text align=64
 
 %macro PUTLINE_SPRITE 2
 	
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	ebp	; display pixel number
+	
 %if %1 > 0
-	; If Sprite High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_HIGH
-	jz	near %%Full_Trans
+	; High Priority
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_Sprite_High_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_Sprite_High)
+	%endif
 %else
-	; If Sprite Low is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_LOW
-	jz	near %%Full_Trans
+	; Low Priority
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_Sprite_Low_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_Sprite_Low)
+	%endif
 %endif
 	
-	xor	ecx, ecx
-	add	ebp, [esp]
-	
-	PUTPIXEL_SPRITE 0, 0x0000f000, 12, %1, %2
-	PUTPIXEL_SPRITE 1, 0x00000f00,  8, %1, %2
-	PUTPIXEL_SPRITE 2, 0x000000f0,  4, %1, %2
-	PUTPIXEL_SPRITE 3, 0x0000000f,  0, %1, %2
-	PUTPIXEL_SPRITE 4, 0xf0000000, 28, %1, %2
-	PUTPIXEL_SPRITE 5, 0x0f000000, 24, %1, %2
-	PUTPIXEL_SPRITE 6, 0x00f00000, 20, %1, %2
-	PUTPIXEL_SPRITE 7, 0x000f0000, 16, %1, %2
-	
-	and	ch, 0x20
-	sub	ebp, [esp]
-	or	byte [SYM(VDP_Status)], ch
-	
-%%Full_Trans
+	add	esp, byte 2*4
+	pop	edx
 
 %endmacro
 
@@ -474,33 +483,32 @@ section .text align=64
 
 %macro PUTLINE_SPRITE_FLIP 2
 	
+	push	edx	; palette (not modified, so we can restore it later)
+	push	ebx	; pattern
+	push	ebp	; display pixel number
+	
 %if %1 > 0
-	; If Sprite High is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_HIGH
-	jz	near %%Full_Trans
+	; High Priority
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_Sprite_Flip_High_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_Sprite_Flip_High)
+	%endif
 %else
-	; If Sprite Low is disabled, don't do anything.
-	test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_LOW
-	jz	near %%Full_Trans
+	; Low Priority
+	%if %2 > 0
+		; S/H
+		call SYM(PutLine_Sprite_Flip_Low_HS)
+	%else
+		; No S/H
+		call SYM(PutLine_Sprite_Flip_Low)
+	%endif
 %endif
 	
-	xor	ecx, ecx
-	add	ebp, [esp]
-	
-	PUTPIXEL_SPRITE 0, 0x000f0000, 16, %1, %2
-	PUTPIXEL_SPRITE 1, 0x00f00000, 20, %1, %2
-	PUTPIXEL_SPRITE 2, 0x0f000000, 24, %1, %2
-	PUTPIXEL_SPRITE 3, 0xf0000000, 28, %1, %2
-	PUTPIXEL_SPRITE 4, 0x0000000f,  0, %1, %2
-	PUTPIXEL_SPRITE 5, 0x000000f0,  4, %1, %2
-	PUTPIXEL_SPRITE 6, 0x00000f00,  8, %1, %2
-	PUTPIXEL_SPRITE 7, 0x0000f000, 12, %1, %2
-	
-	and	ch, 0x20
-	sub	ebp, [esp]
-	or	byte [SYM(VDP_Status)], ch
-	
-%%Full_Trans
+	add	esp, byte 2*4
+	pop	edx
 
 %endmacro
 

@@ -913,6 +913,105 @@ void PutLine_P1_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
 
 
 /**
+ * T_PutLine_Sprite(): Put a line in the sprite layer.
+ * @param priority	[in] Sprite priority. (false == low, true == high)
+ * @param h_s		[in] Highlight/Shadow enable.
+ * @param flip		[in] True to flip the line horizontally.
+ * @param disp_pixnum	[in] Display pixel nmber.
+ * @param pattern	[in] Pattern data.
+ * @param palette	[in] Palette number * 16.
+ */
+template<bool priority, bool h_s, bool flip>
+static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palette)
+{
+	// Check if the sprite layer is disabled.
+	if (!(VDP_Layers & (priority ? VDP_LAYER_SPRITE_HIGH : VDP_LAYER_SPRITE_LOW)))
+	{
+		// Sprite layer is disabled.
+		return;
+	}
+	
+	// Put the sprite pixels.
+	uint8_t status = 0;
+	if (!flip)
+	{
+		// No flip.
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 0, 0x0000F000, 12, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 1, 0x00000F00,  8, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 2, 0x000000F0,  4, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 3, 0x0000000F,  0, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 4, 0xF0000000, 28, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 5, 0x0F000000, 24, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 6, 0x00F00000, 20, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 7, 0x000F0000, 16, pattern, palette);
+	}
+	else
+	{
+		// Horizontal flip.
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 0, 0x000F0000, 16, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 1, 0x00F00000, 20, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 2, 0x0F000000, 24, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 3, 0xF0000000, 28, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 4, 0x0000000F,  0, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 5, 0x000000F0,  4, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 6, 0x00000F00,  8, pattern, palette);
+		status |= T_PutPixel_Sprite<priority, h_s>(disp_pixnum, 7, 0x0000F000, 12, pattern, palette);
+	}
+	
+	// Check for sprite collision.
+	VDP_Status |= (status & 0x20);
+}
+
+/**
+ * C wrapper functions for T_PutLine_Sprite().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void PutLine_Sprite_High(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_High_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Low(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Low_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Flip_High(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Flip_High_HS(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Flip_Low(int disp_pixnum, uint32_t pattern, int palette);
+	void PutLine_Sprite_Flip_Low_HS(int disp_pixnum, uint32_t pattern, int palette);
+}
+
+void PutLine_Sprite_High(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<true, false, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_High_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<true, true, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Low(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<false, false, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Low_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<false, true, false>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Flip_High(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<true, false, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Flip_High_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<true, true, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Flip_Low(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<false, false, true>(disp_pixnum, pattern, palette);
+}
+void PutLine_Sprite_Flip_Low_HS(int disp_pixnum, uint32_t pattern, int palette)
+{
+	T_PutLine_Sprite<false, true, true>(disp_pixnum, pattern, palette);
+}
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.
