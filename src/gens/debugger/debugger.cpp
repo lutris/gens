@@ -57,16 +57,6 @@ DEBUG_MODE debug_mode = DEBUG_NONE;
 int debug_show_vdp = 0;
 
 
-// Macro used to print a constant string.
-// Print_Text() doesn't directly support string constants, and since it's
-// written in assembly language, it's too cumbersome to fix.
-#define Print_Text_Constant(text, size, x, y, color)		\
-{								\
-	strcpy(Dbg_Out_Str, (text));				\
-	Print_Text(Dbg_Out_Str, (size), (x), (y), (color));	\
-}
-
-
 /**
  * Debug_Event(): Key pressed while debugging.
  * @param key Keycode.
@@ -430,7 +420,7 @@ unsigned int Next_Long(void)
 static void Refresh_M68k_Inst(void)
 {
 	Current_PC = main68k_context.pc;
-	Print_Text_Constant("** MAIN 68000 DEBUG **", 22, 24, 1, TEXT_GREEN);
+	Print_Text("** MAIN 68000 DEBUG **", 22, 24, 1, TEXT_GREEN);
 	
 	for (unsigned int i = 1; i < 14; i++)
 	{
@@ -447,7 +437,7 @@ static void Refresh_M68k_Inst(void)
 static void Refresh_S68k_Inst(void)
 {
 	Current_PC = sub68k_context.pc;
-	Print_Text_Constant("** SUB 68000 DEBUG **", 22, 24, 1, TEXT_GREEN);
+	Print_Text("** SUB 68000 DEBUG **", 22, 24, 1, TEXT_GREEN);
 	
 	for (unsigned int i = 1; i < 14; i++)
 	{
@@ -464,7 +454,7 @@ static void Refresh_S68k_Inst(void)
 static void Refresh_Z80_Inst(void)
 {
 	unsigned int PC = mdZ80_get_PC(&M_Z80);
-	Print_Text_Constant("***** Z80 DEBUG *****", 22, 24, 1, TEXT_GREEN);
+	Print_Text("***** Z80 DEBUG *****", 22, 24, 1, TEXT_GREEN);
 	
 	for (unsigned int i = 1; i < 14; i++)
 	{
@@ -510,7 +500,7 @@ static void Refresh_SH2_Inst(int num)
 static void Refresh_M68k_Mem(void)
 {
 	unsigned int Adr = adr_mem >> 1;
-	Print_Text_Constant("** MAIN 68000 MEM **", 20, 24, 130, TEXT_GREEN);
+	Print_Text("** MAIN 68000 MEM **", 20, 24, 130, TEXT_GREEN);
 	
 	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -534,7 +524,7 @@ static void Refresh_M68k_Mem(void)
 static void Refresh_S68k_Mem(void)
 {
 	unsigned int Adr = adr_mem >> 1;
-	Print_Text_Constant("** SUB 68000 MEM **", 19, 24, 130, TEXT_GREEN);
+	Print_Text("** SUB 68000 MEM **", 19, 24, 130, TEXT_GREEN);
 	
 	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -556,7 +546,7 @@ static void Refresh_S68k_Mem(void)
   */
 static void Refresh_Z80_Mem(void)
 {
-	Print_Text_Constant("***** Z80 MEM *****", 19, 24, 130, TEXT_GREEN);
+	Print_Text("***** Z80 MEM *****", 19, 24, 130, TEXT_GREEN);
 	
 	for (unsigned int k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
 	{
@@ -577,7 +567,7 @@ static void Refresh_SH2_Mem(void)
 {
 	unsigned int i, j, k, Adr;
 	Adr = adr_mem >> 1;
-	Print_Text_Constant("** SH2 CPU MEM **", 19, 24, 130, TEXT_GREEN);
+	Print_Text("** SH2 CPU MEM **", 19, 24, 130, TEXT_GREEN);
 	
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -600,7 +590,7 @@ static void Refresh_SH2_Mem(void)
  */
 static void Refresh_M68k_State(void)
 {
-	Print_Text_Constant("** MAIN 68000 STATUS **", 23, 196, 130, TEXT_GREEN);
+	Print_Text("** MAIN 68000 STATUS **", 23, 196, 130, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "A0=%.8X A1=%.8X A2=%.8X X=%d\n",
 			main68k_context.areg[0], main68k_context.areg[1],
@@ -643,7 +633,7 @@ static void Refresh_M68k_State(void)
  */
 static void Refresh_S68k_State(void)
 {
-	Print_Text_Constant("** SUB 68000 STATUS **", 22, 196, 130, TEXT_GREEN);
+	Print_Text("** SUB 68000 STATUS **", 22, 196, 130, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "A0=%.8X A1=%.8X A2=%.8X X=%d\n", sub68k_context.areg[0],
 			sub68k_context.areg[1], sub68k_context.areg[2],
@@ -680,7 +670,7 @@ static void Refresh_S68k_State(void)
  */
 static void Refresh_Z80_State(void)
 {
-	Print_Text_Constant("***** Z80 STATUS *****", 22, 196, 130, TEXT_GREEN);
+	Print_Text("***** Z80 STATUS *****", 22, 196, 130, TEXT_GREEN);
 	
 	unsigned int AF = mdZ80_get_AF(&M_Z80);
 	
@@ -766,7 +756,7 @@ static void Refresh_SH2_State(int num)
  */
 static void Refresh_VDP_State(void)
 {
-	Print_Text_Constant("**** VDP STATUS ****", 20, 200, 1, TEXT_GREEN);
+	Print_Text("**** VDP STATUS ****", 20, 200, 1, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "Setting register: 1=%.2X 2=%.2X 3=%.2X 4=%.2X",
 			VDP_Reg.Set1, VDP_Reg.Set2, VDP_Reg.Set3, VDP_Reg.Set4);
@@ -816,7 +806,7 @@ static void Refresh_VDP_State(void)
  */
 static void Refresh_VDP_Pattern(void)
 {
-	Print_Text_Constant("******** VDP PATTERN ********", 29, 28, 0, TEXT_GREEN);
+	Print_Text("******** VDP PATTERN ********", 29, 28, 0, TEXT_GREEN);
 	
 	for (unsigned int i = 0; i < 20; i++)
 	{
@@ -888,7 +878,7 @@ static inline void T_Refresh_VDP_Palette_Outline(pixel *screen, unsigned int pal
  */
 static void Refresh_VDP_Palette(void)
 {
-	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, TEXT_RED);
+	Print_Text("******** VDP PALETTE ********", 29, 180, 0, TEXT_RED);
 	
 	if (bppMD == 32)
 	{
@@ -903,7 +893,7 @@ static void Refresh_VDP_Palette(void)
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x03, 0xFFFF);
 	}
 	
-	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, TEXT_WHITE);
+	Print_Text("******** VDP CONTROL ********", 29, 180, 60, TEXT_WHITE);
 	
 	sprintf(Dbg_Out_Str, "Status : %.4X", VDP_Read_Status());
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 70, TEXT_WHITE);
@@ -918,8 +908,8 @@ static void Refresh_VDP_Palette(void)
 	sprintf(Dbg_Out_Str, "DMA : %.2X", VDP_Ctrl.DMA);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 110, TEXT_WHITE);
 	
-	Print_Text_Constant("Sprite List:", strlen(Dbg_Out_Str), 176, 126, TEXT_WHITE);
-	Print_Text_Constant("   X    Y W H  Addr HF VF Pal Pri", strlen(Dbg_Out_Str), 176, 134, TEXT_WHITE);
+	Print_Text("Sprite List:", strlen(Dbg_Out_Str), 176, 126, TEXT_WHITE);
+	Print_Text("   X    Y W H  Addr HF VF Pal Pri", strlen(Dbg_Out_Str), 176, 134, TEXT_WHITE);
 	for (unsigned int i = 0; i < 10; i++)
 	{
 		sprintf(Dbg_Out_Str, "%4d %4d %d %d $%04X  %d  %d  %d   %d",
@@ -940,7 +930,7 @@ static void Refresh_VDP_Palette(void)
  */
 static void Refresh_SegaCD_State(void)
 {
-	Print_Text_Constant("** SEGACD STATUS **", 20, 200, 1, TEXT_GREEN);
+	Print_Text("** SEGACD STATUS **", 20, 200, 1, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "GE00=%.4X GE02=%.4X CD00=%.4X CD02=%.4X",
 			M68K_RW (0xA12000), M68K_RW (0xA12002), S68K_RW (0xFF8000), S68K_RW (0xFF8002));
@@ -991,7 +981,7 @@ static void Refresh_SegaCD_State(void)
  */
 static void Refresh_32X_State(void)
 {
-	Print_Text_Constant("** 32X STATUS **", 20, 200, 1, TEXT_GREEN);
+	Print_Text("** 32X STATUS **", 20, 200, 1, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "M000=%.4X S000=%.4X M004=%.4X M006=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4000), SH2_Read_Word (&S_SH2, 0x4000),
@@ -1033,7 +1023,7 @@ static void Refresh_32X_State(void)
  */
 static void Refresh_CDC_State(void)
 {
-	Print_Text_Constant("** CDC STATUS **", 16, 200, 1, TEXT_GREEN);
+	Print_Text("** CDC STATUS **", 16, 200, 1, TEXT_GREEN);
 	
 	sprintf(Dbg_Out_Str, "COMIN=%.2X IFSTAT=%.2X DBC=%.4X", CDC.COMIN, CDC.IFSTAT, CDC.DBC.N);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 14, TEXT_WHITE);
@@ -1053,7 +1043,7 @@ static void Refresh_Word_RAM_Pattern(void)
 {
 	// Improved Word RAM pattern display function ported from Gens Rerecording.
 	
-	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, TEXT_RED);
+	Print_Text("******** VDP PALETTE ********", 29, 180, 0, TEXT_RED);
 	
 	if (bppMD == 32)
 	{
@@ -1068,7 +1058,7 @@ static void Refresh_Word_RAM_Pattern(void)
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x0F, 0xFFFF);
 	}
 	
-	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, TEXT_GREEN);
+	Print_Text("****** WORD RAM PATTERN ******", 29, 28, 0, TEXT_GREEN);
 	
 	for (unsigned int i = 0; i < 24; i++)
 	{
