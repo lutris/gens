@@ -1247,10 +1247,11 @@ void VDP_Render_Line_m5(void)
 	
 	// Render the image.
 	unsigned int LineStart;
+	
 	if (BorderArea > 0 && VDP_Current_Line >= TopBorder)
 	{
 		// Top border area.
-		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line] + 8);
+		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line - 1] + 8);
 	}
 	else
 	{
