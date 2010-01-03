@@ -70,7 +70,7 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	zoom_x = (1.0f / zoom_x);
 	zoom_y = 1;
 	
-	const int w = VDP_Reg.H_Pix;
+	const int w = vdp_getHPix();
 	const int w_div2 = (w / 2);
 	const int h = VDP_Num_Vis_Lines;
 	const int h_div2 = (h / 2);

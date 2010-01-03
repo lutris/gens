@@ -392,11 +392,12 @@ static void vdraw_gdi_stretch_adjust(void)
 	// Adjust the stretch parameters.
 	vdraw_gdi_stretch_flags = vdraw_get_stretch();
 	
-	if ((vdraw_gdi_stretch_flags & STRETCH_H) && VDP_Reg.H_Pix < 320)
+	if ((vdraw_gdi_stretch_flags & STRETCH_H) && vdp_getHPix() < 320)
 	{
 		// Horizontal stretch.
-		vdraw_gdi_stretch_srcX = VDP_Reg.H_Pix_Begin * vdraw_scale;
-		vdraw_gdi_stretch_srcW = VDP_Reg.H_Pix * vdraw_scale;
+		// TODO: Add vdp_getHPixBegin().
+		vdraw_gdi_stretch_srcX = (vdraw_border_h / 2) * vdraw_scale;
+		vdraw_gdi_stretch_srcW = vdp_getHPix() * vdraw_scale;
 	}
 	else
 	{

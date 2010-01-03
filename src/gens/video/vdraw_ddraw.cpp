@@ -94,7 +94,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
-	const int msg_width = VDP_Reg.H_Pix * vdraw_scale;
+	const int msg_width = vdp_getHPix() * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -622,7 +622,9 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 	}
 	
 	// TODO: Use VDP_Reg.H_Pix and VDP_Reg.H_Pix_Begin.
-	if (vdp_isH40())
+	// TODO: Don't just check for 320. (simulates the old vdp_isH40())
+	// Instead, use H_Pix for the actual calculations.
+	if (vdp_getHPix() == 320)
 	{
 		Dep = 0;
 		
@@ -720,7 +722,10 @@ int vdraw_ddraw_flip(void)
 		
 		Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - Floor them to the smaller value for correct ratio display
 		
-		if (vdp_isH40())
+		// TODO: Use VDP_Reg.H_Pix and VDP_Reg.H_Pix_Begin.
+		// TODO: Don't just check for 320. (simulates the old vdp_isH40())
+		// Instead, use H_Pix for the actual calculations.
+		if (vdp_getHPix() == 320)
 		{
 			if (Flag_Clr_Scr != 40)
 			{
@@ -980,7 +985,7 @@ int vdraw_ddraw_flip(void)
 		GetClientRect(gens_window, &RectDest);
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 		
-		int Clr_Cmp_Val = vdp_isH40() ? 40 : 32;
+		int Clr_Cmp_Val = vdp_getHPix() / 8;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
 		{
 			// MD resolution change. Clear the screen.

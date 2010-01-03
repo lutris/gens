@@ -213,25 +213,31 @@ void VDP_Update_IRQ_Line(void);
 /** Inline VDP functions. **/
 
 /**
- * vdp_isH40(): Determine if the current horiontal resolution is H40.
- * @return Zero if H32 (256); non-zero if H40 (320).
+ * vdp_getHPix(): Get the current horizontal resolution.
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.H_Pix directly.
+ * @return Horizontal resolution, in pixels.
  */
-static inline int vdp_isH40(void)
+static inline int vdp_getHPix(void)
 {
 	// Default when no game is loaded is 1. (320x224)
-	int rval = 0;
-	if ((VDP_Reg.Set4 & 0x1) || !Game)
-		rval = 1;
 #ifdef GENS_DEBUGGER
-	if (debug_mode != DEBUG_NONE)
-		rval = 1;
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 320;
+#else
+	if (!Game)
+		return 320;
 #endif
+	
 #if 0
 	if (!FrameCount)
 		rval = 1;
 #endif
-	return rval;
+	
+	// Game is running. Return VDP_Reg.H_Pix.
+	return VDP_Reg.H_Pix;
 }
+
 
 /**
  * vdp_isH40(): Determine if the current horiontal resolution is H40.

@@ -482,9 +482,9 @@ int ImageUtil::ScreenShot(void)
 	// Variables used:
 	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
 	// MD_Screen: MD screen buffer.
-	// VDP_Reg.H_Pix: Number of pixels horizontally.
+	// vdp_getHPix(): Number of pixels horizontally.
 	// TODO: Use macros in video/v_inline.h
-	const int w = VDP_Reg.H_Pix;
+	const int w = vdp_getHPix();
 	const int h = VDP_Num_Vis_Lines;
 	const int start = (((240 - VDP_Num_Vis_Lines) / 2) * 336) + 8;
 	
