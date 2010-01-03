@@ -173,9 +173,6 @@ section .text align=64
 	extern SYM(Get_Pattern_Data)
 	extern SYM(Get_Pattern_Data_Interlaced)
 	
-	extern SYM(PutPixel_P1)
-	extern SYM(PutPixel_P1_HS)
-	
 	extern SYM(PutPixel_Sprite)
 	extern SYM(PutPixel_Sprite_Prio)
 	extern SYM(PutPixel_Sprite_HS)
@@ -201,41 +198,6 @@ section .text align=64
 	extern SYM(PutLine_P1_Flip_ScrollB)
 	extern SYM(PutLine_P1_Flip_ScrollB_HS)
 	
-;****************************************
-; background layer graphics background graphics layer 1
-; macro PUTPIXEL_P1
-; param :
-; %1 = pixel number
-; %2 = mask to isolate the good pixel
-; %3 = Shift
-; %4 = Shadow/Highlight enable
-; takes :
-; - ebx = Pattern Data
-; - edx = Palette number * 64
-
-%macro PUTPIXEL_P1 4
-	
-	push	edx	; palette (not modified, so we can restore it later)
-	push	ebx	; pattern
-	push	%3	; shift
-	push	%2	; mask
-	push	%1	; pattern pixel number
-	push	ebp	; display pixel number
-
-%if %4 > 0
-	; S/H
-	call SYM(PutPixel_P1_HS)
-%else
-	; No S/H
-	call SYM(PutPixel_P1)
-%endif
-	
-	add	esp, byte 5*4
-	pop	edx
-
-%endmacro
-
-
 ;****************************************
 
 ; macro PUTPIXEL_SPRITE

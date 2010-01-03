@@ -542,33 +542,6 @@ static inline void T_PutPixel_P1(int disp_pixnum, int pat_pixnum,
 
 
 /**
- * C wrapper functions for T_PutPixel_P1().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void PutPixel_P1(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette);
-	void PutPixel_P1_HS(int disp_pixnum, int pat_pixnum,
-				uint32_t mask, int shift,
-				uint32_t pattern, unsigned int palette);
-}
-
-void PutPixel_P1(int disp_pixnum, int pat_pixnum,
-			uint32_t mask, int shift,
-			uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P1<false>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-void PutPixel_P1_HS(int disp_pixnum, int pat_pixnum,
-			uint32_t mask, int shift,
-			uint32_t pattern, unsigned int palette)
-{
-	T_PutPixel_P1<true>(disp_pixnum, pat_pixnum, mask, shift, pattern, palette);
-}
-
-
-/**
  * T_PutPixel_Sprite(): Put a pixel in the sprite layer.
  * @param priority	[in] Sprite priority.
  * @param h_s		[in] Highlight/Shadow enable.
