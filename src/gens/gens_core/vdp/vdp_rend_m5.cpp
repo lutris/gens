@@ -1178,10 +1178,21 @@ static inline void T_Render_LineBuf(unsigned int num_px, uint8_t *src, pixel *de
  */
 void VDP_Render_Line_m5(void)
 {
-	// Check if the VDP is active.
-	if (!(VDP_Reg.Set2 & 0x40))
+	const unsigned int BorderArea = (240 - VDP_Num_Vis_Lines) / 2;
+	const unsigned int TopBorder = (VDP_Num_Lines - BorderArea);
+	
+	if (VDP_Current_Line > (VDP_Num_Vis_Lines + BorderArea) &&
+	    VDP_Current_Line < TopBorder)
 	{
-		// VDP isn't active. Clear the line buffer.
+		// Not in any part of the screen.
+		return;
+	}
+	
+	// Check if the VDP is active.
+	if (!(VDP_Reg.Set2 & 0x40) || VDP_Current_Line >= VDP_Num_Vis_Lines)
+	{
+		// VDP isn't active, or this is the border region.
+		// Clear the line buffer.
 		if (VDP_Reg.Set4 & 0x08)
 		{
 			// Highlight/Shadow is enabled. Clear with 0x40.
@@ -1235,9 +1246,19 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Render the image.
-	const unsigned int num_px = (160 - H_Pix_Begin) * 2;
-	const unsigned int LineStart = (TAB336[VDP_Current_Line] + 8);
+	unsigned int LineStart;
+	if (BorderArea > 0 && VDP_Current_Line >= TopBorder)
+	{
+		// Top border area.
+		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line] + 8);
+	}
+	else
+	{
+		// Regular visible area.
+		LineStart = (TAB336[VDP_Current_Line + BorderArea] + 8);
+	}
 	
+	const unsigned int num_px = (160 - H_Pix_Begin) * 2;
 	if (bppMD == 32)
 	{
 		T_Render_LineBuf<uint32_t, MD_Palette32>

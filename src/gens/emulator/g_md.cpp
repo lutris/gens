@@ -404,12 +404,12 @@ int Do_VDP_Only(void)
 	VDP_SET_VISIBLE_LINES();
 	
 	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
+	     VDP_Current_Line < VDP_Num_Lines;
 	     VDP_Current_Line++)
 	{
 		VDP_Render_Line_m5();
 	}
-
+	
 	return 0;
 }
 
@@ -559,6 +559,12 @@ static inline int T_gens_do_MD_frame(void)
 		VDP_Status |= 0x0004;	// HBlank = 1
 		main68k_exec(Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
+		
+		if (VDP)
+		{
+			// VDP needs to be updated.
+			VDP_Render_Line_m5();
+		}
 		
 		main68k_exec(Cycles_M68K);
 		Z80_EXEC(0);
