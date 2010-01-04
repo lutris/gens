@@ -332,16 +332,20 @@ void Debug_Event(int key, int mod)
 			    debug_mode == DEBUG_GENESIS_VDP)
 			{
 				if (pattern_adr < 0xDA00)
-					pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
-				if (pattern_adr >= 0xDA00) // Make sure it doesn't go out of bounds.
-					pattern_adr = 0xDA00 - 0x200;
+				{
+					pattern_adr += 0x200;
+					if (pattern_adr >= 0xDA00) // Make sure it doesn't go out of bounds.
+						pattern_adr = 0xDA00 - 0x200;
+				}
 			}
 			else if (debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
-				if (cd_pattern_adr < 0x3D000)
-					cd_pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
-				if (pattern_adr >= 0x3D000) // Make sure it doesn't go out of bounds.
-					pattern_adr = 0x3D000 - 0x800;
+				if (cd_pattern_adr < 0x3D800)
+				{
+					cd_pattern_adr += 0x800;
+					if (cd_pattern_adr >= (0x3D800 - 0x800)) // Make sure it doesn't go out of bounds.
+						cd_pattern_adr = 0x3D800 - 0x800;
+				}
 			}
 			
 			break;
@@ -353,16 +357,20 @@ void Debug_Event(int key, int mod)
 			    debug_mode == DEBUG_GENESIS_VDP)
 			{
 				if (pattern_adr > 0)
-					pattern_adr = (pattern_adr - 0x200) & 0xFFFF;
-				if (pattern_adr < 0) // Make sure it doesn't go out of bounds.
-					pattern_adr = 0;
+				{
+					pattern_adr -= 0x200;
+					if (pattern_adr < 0) // Make sure it doesn't go out of bounds.
+						pattern_adr = 0;
+				}
 			}
 			else if (debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
 				if (cd_pattern_adr > 0)
-					cd_pattern_adr = cd_pattern_adr - 0x800;
-				if (cd_pattern_adr < 0)	// Make sure it doesn't go out of bounds.
-					cd_pattern_adr = 0;
+				{
+					cd_pattern_adr -= 0x800;
+					if (cd_pattern_adr < 0)	// Make sure it doesn't go out of bounds.
+						cd_pattern_adr = 0;
+				}
 			}
 			
 			break;
