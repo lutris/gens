@@ -1100,13 +1100,14 @@ static void Refresh_Word_RAM_Pattern(void)
 	
 	Print_Text("****** WORD RAM PATTERN ******", 28, 0, TEXT_GREEN);
 	
-	for (unsigned int i = 0; i < 24; i++)
+	// Word RAM patterns can be either 16x16 or 32x32.
+	int WRAM_Inc = (Rot_Comp.Stamp_Size & 2) ? 4 : 2;
+	for (unsigned int i = 0; i < 24; i += WRAM_Inc)
 	{
 		PrintF_Text(2, (i << 3) + 11, TEXT_WHITE,
 				"%04X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
 	}
 	
-	// Word RAM patterns can be either 16x16 or 32x32.
 	if (Rot_Comp.Stamp_Size & 2)
 		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
 	else
