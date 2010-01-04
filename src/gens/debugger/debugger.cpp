@@ -827,13 +827,19 @@ static void Refresh_VDP_Pattern(void)
 {
 	Print_Text("******** VDP PATTERN ********", 28, 0, TEXT_GREEN);
 	
-	for (unsigned int i = 0; i < 24; i++)
+	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
+	int VRam_Inc = (VDP_Reg.Set4 & 0x04) ? 2 : 1;
+	for (unsigned int i = 0; i < 24; i += VRam_Inc)
 	{
 		PrintF_Text(2, (i << 3) + 11, TEXT_WHITE,
 				"%04X", (pattern_adr & 0xFFFF) + 0x200 * i);
 	}
 	
-	Cell_8x8_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
+	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
+	if (VDP_Reg.Set4 & 0x04)
+		Cell_8x16_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
+	else
+		Cell_8x8_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
 }
 
 
