@@ -47,8 +47,28 @@
 
 
 static int Current_32X_FB = 0;
-static int adr_mem = 0, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal = 0;
+static int adr_mem = 0, pattern_pal = 0;
 static int Current_PC;
+
+// MD VDP pattern address.
+#define MD_VDP_PATTERN_MAX		0xD000
+#define MD_VDP_PATTERN_NORMAL_INC	0x200
+#define MD_VDP_PATTERN_NORMAL_MASK	0x1FF
+#define MD_VDP_PATTERN_INTERLACED_INC	0x400
+#define MD_VDP_PATTERN_INTERLACED_MASK	0x3FF
+static int pattern_adr = 0;
+static int pattern_inc;
+static int pattern_mask;
+
+// SegaCD Word RAM pattern address.
+#define SEGACD_WRAM_PATTERN_MAX		0x3D000
+#define SEGACD_WRAM_PATTERN_16x16_INC	0x400
+#define SEGACD_WRAM_PATTERN_16x16_MASK	0x3FF
+#define SEGACD_WRAM_PATTERN_32x32_INC	0x800
+#define SEGACD_WRAM_PATTERN_32x32_MASK	0x7FF
+static int cd_pattern_adr = 0;
+static int cd_pattern_inc;
+static int cd_pattern_mask;
 
 static char Dbg_Out_Str[GENS_PATH_MAX];
 
@@ -331,20 +351,20 @@ void Debug_Event(int key, int mod)
 			    debug_mode == DEBUG_Z80 ||
 			    debug_mode == DEBUG_GENESIS_VDP)
 			{
-				if (pattern_adr < 0xDA00)
+				if (pattern_adr < MD_VDP_PATTERN_MAX)
 				{
-					pattern_adr += 0x200;
-					if (pattern_adr >= 0xDA00) // Make sure it doesn't go out of bounds.
-						pattern_adr = 0xDA00 - 0x200;
+					pattern_adr += pattern_inc;
+					if (pattern_adr >= MD_VDP_PATTERN_MAX) // Make sure it doesn't go out of bounds.
+						pattern_adr = MD_VDP_PATTERN_MAX;
 				}
 			}
 			else if (debug_mode == DEBUG_WORD_RAM_PATTERN)
 			{
-				if (cd_pattern_adr < 0x3D800)
+				if (cd_pattern_adr < SEGACD_WRAM_PATTERN_MAX)
 				{
-					cd_pattern_adr += 0x800;
-					if (cd_pattern_adr >= (0x3D800 - 0x800)) // Make sure it doesn't go out of bounds.
-						cd_pattern_adr = 0x3D800 - 0x800;
+					cd_pattern_adr += cd_pattern_inc;
+					if (cd_pattern_adr >= (SEGACD_WRAM_PATTERN_MAX)) // Make sure it doesn't go out of bounds.
+						cd_pattern_adr = SEGACD_WRAM_PATTERN_MAX;
 				}
 			}
 			
@@ -358,7 +378,7 @@ void Debug_Event(int key, int mod)
 			{
 				if (pattern_adr > 0)
 				{
-					pattern_adr -= 0x200;
+					pattern_adr -= pattern_inc;
 					if (pattern_adr < 0) // Make sure it doesn't go out of bounds.
 						pattern_adr = 0;
 				}
@@ -367,7 +387,7 @@ void Debug_Event(int key, int mod)
 			{
 				if (cd_pattern_adr > 0)
 				{
-					cd_pattern_adr -= 0x800;
+					cd_pattern_adr -= cd_pattern_inc;
 					if (cd_pattern_adr < 0)	// Make sure it doesn't go out of bounds.
 						cd_pattern_adr = 0;
 				}
@@ -827,19 +847,41 @@ static void Refresh_VDP_Pattern(void)
 {
 	Print_Text("******** VDP PATTERN ********", 28, 0, TEXT_GREEN);
 	
+	// VDP cells can be either 8x8 (Normal) or 8x16 (Interlaced).
 	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
-	int VRam_Inc = (VDP_Reg.Set4 & 0x04) ? 2 : 1;
+	int VRam_Inc;
+	if (VDP_Reg.Set4 & 0x04)
+	{
+		// Interlaced mode. (8x16 cells)
+		VRam_Inc = 2;
+		pattern_inc  = MD_VDP_PATTERN_INTERLACED_INC;
+		pattern_mask = MD_VDP_PATTERN_INTERLACED_MASK;
+	}
+	else
+	{
+		// Normal mode. (8x8 cells)
+		VRam_Inc = 1;
+		pattern_inc  = MD_VDP_PATTERN_NORMAL_INC;
+		pattern_mask = MD_VDP_PATTERN_NORMAL_MASK;
+	}
+	
+	// Make sure the pattern address is on a cell boundary.
+	pattern_adr &= (~pattern_mask & 0xFFFF);
+	if (pattern_adr > MD_VDP_PATTERN_MAX)
+		pattern_adr = MD_VDP_PATTERN_MAX;
+	
+	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 	for (unsigned int i = 0; i < 24; i += VRam_Inc)
 	{
 		PrintF_Text(2, (i << 3) + 11, TEXT_WHITE,
-				"%04X", (pattern_adr & 0xFFFF) + 0x200 * i);
+				"%04X", (pattern_adr + (0x200 * i)));
 	}
 	
 	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 	if (VDP_Reg.Set4 & 0x04)
-		Cell_8x16_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
+		Cell_8x16_Dump(&VRam.u8[pattern_adr], pattern_pal);
 	else
-		Cell_8x8_Dump(&VRam.u8[pattern_adr & 0xFFFF], pattern_pal);
+		Cell_8x8_Dump(&VRam.u8[pattern_adr], pattern_pal);
 }
 
 
@@ -1107,17 +1149,37 @@ static void Refresh_Word_RAM_Pattern(void)
 	Print_Text("****** WORD RAM PATTERN ******", 28, 0, TEXT_GREEN);
 	
 	// Word RAM patterns can be either 16x16 or 32x32.
-	int WRam_Inc = (Rot_Comp.Stamp_Size & 2) ? 4 : 2;
+	int WRam_Inc;
+	if (Rot_Comp.Stamp_Size & 2)
+	{
+		// 32x32.
+		WRam_Inc = 4;
+		cd_pattern_inc  = SEGACD_WRAM_PATTERN_32x32_INC;
+		cd_pattern_mask = SEGACD_WRAM_PATTERN_32x32_MASK;
+	}
+	else
+	{
+		// 16x16.
+		WRam_Inc = 2;
+		cd_pattern_inc  = SEGACD_WRAM_PATTERN_16x16_INC;
+		cd_pattern_mask = SEGACD_WRAM_PATTERN_16x16_MASK;
+	}
+	
+	// Make sure the pattern address is on a cell boundary.
+	cd_pattern_adr &= (~cd_pattern_mask & 0x3FFFF);
+	if (cd_pattern_adr > SEGACD_WRAM_PATTERN_MAX)
+		cd_pattern_adr = SEGACD_WRAM_PATTERN_MAX;
+	
 	for (unsigned int i = 0; i < 24; i += WRam_Inc)
 	{
 		PrintF_Text(2, (i << 3) + 11, TEXT_WHITE,
-				"%04X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
+				"%04X", (cd_pattern_adr + (0x200 * i)));
 	}
 	
 	if (Rot_Comp.Stamp_Size & 2)
-		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
+		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr], pattern_pal);
 	else
-		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
+		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr], pattern_pal);
 }
 
 
