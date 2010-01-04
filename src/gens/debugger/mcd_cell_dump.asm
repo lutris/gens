@@ -169,7 +169,7 @@ SYM(Cell_16x16_Dump):
 	
 	xor	eax, eax				; eax = 0
 	mov	ebp, [esp + 32]				; ebp = palette_number
-	mov	edx, 10					; edx = Number of rows of the pattern to be copied
+	mov	edx, 12					; edx = Number of rows of the pattern to be copied
 	mov	esi, [esp + 28]				; esi = Address
 	shl	ebp, 5					; ebp = palette_number * 32
 	
