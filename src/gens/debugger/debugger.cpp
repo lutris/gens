@@ -827,7 +827,7 @@ static void Refresh_VDP_Pattern(void)
 {
 	Print_Text("******** VDP PATTERN ********", 28, 0, TEXT_GREEN);
 	
-	for (unsigned int i = 0; i < 20; i++)
+	for (unsigned int i = 0; i < 24; i++)
 	{
 		PrintF_Text(2, (i << 3) + 11, TEXT_WHITE,
 				"%04X", (pattern_adr & 0xFFFF) + 0x200 * i);

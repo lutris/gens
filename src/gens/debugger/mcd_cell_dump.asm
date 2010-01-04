@@ -65,7 +65,7 @@ SYM(Cell_8x8_Dump):
 	
 	xor	eax, eax				; eax = 0
 	mov	ebp, [esp + 32]				; ebp = palette number
-	mov	edx, 20					; edx = Number of rows of the pattern to be copied
+	mov	edx, 24					; edx = Number of rows of the pattern to be copied
 	mov	esi, [esp + 28]				; esi = Address
 	
 	; Check if 32-bit color is in use.
