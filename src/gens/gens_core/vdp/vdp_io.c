@@ -687,10 +687,10 @@ unsigned int VDP_Update_DMA(void)
 	
 	// Get the timing value.
 	const unsigned int timing = DMA_Timing_Table[DMA_Timing_Offset];
-	VDP_Reg.DMAT_Length -= timing;
-	if (VDP_Reg.DMAT_Length < 0)
+	if (VDP_Reg.DMAT_Length > timing)
 	{
 		// DMA is not finished.
+		VDP_Reg.DMAT_Length -= timing;
 		if (VDP_Reg.DMAT_Type & 2)
 		{
 			// DMA to CRam or VSRam.
