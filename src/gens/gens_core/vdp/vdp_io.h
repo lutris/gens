@@ -103,6 +103,25 @@ typedef struct
 			uint8_t DMA_Src_Adr_M;	// DMA Source Address Mid.
 			uint8_t DMA_Src_Adr_H;	// DMA Source Address High.
 		} m5;
+		struct
+		{
+			/**
+			 * Mode 4 (SMS) registers.
+			 * NOTE: Mode 4 is currently not implemented.
+			 * This is here for future use.
+			 */
+			uint8_t Set1;		// Mode Set 1.
+			uint8_t Set2;		// Mode Set 2.
+			uint8_t NameTbl_Addr;	// Name table base address.
+			uint8_t ColorTbl_Addr;	// Color table base address.
+			uint8_t	Pat_BG_Addr;	// Background Pattern Generator base address.
+			uint8_t Spr_Att_Addr;	// Sprite Attribute Table base address.
+			uint8_t Spr_Pat_addr;	// Sprite Pattern Generator base address.
+			uint8_t BG_Color;	// Background color.
+			uint8_t H_Scroll;	// Horizontal scroll.
+			uint8_t V_Scroll;	// Vertical scroll.
+			uint8_t H_Int;		// H Interrupt.
+		} m4;
 	};
 	
 	// These two variables are internal to Gens.
