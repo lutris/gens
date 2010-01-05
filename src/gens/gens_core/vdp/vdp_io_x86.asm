@@ -101,6 +101,7 @@ section .text align=64
 	
 	; Functions found in vdp_io.c
 	extern SYM(VDP_Set_Reg)
+	extern SYM(VDP_Update_DMA)
 
 ; ******************************************
 
@@ -233,66 +234,6 @@ section .text align=64
 	; Generic error handler.
 	error:
 		xor	ax, ax
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
-	; unsigned int Update_DMA(void)
-	global SYM(Update_DMA)
-	SYM(Update_DMA):
-		
-		push	ebx
-		push	ecx
-		push	edx
-		
-		movzx	ebx, byte [SYM(VDP_Reg) + VDP_Reg_t.Set_4]	; 32 / 40 Cell ?
-		mov	edx, [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type]
-		mov	eax, [SYM(VDP_Current_Line)]
-		mov	ecx, [SYM(VDP_Num_Vis_Lines)]
-		and	ebx, byte 1
-		and	edx, byte 3
-		cmp	eax, ecx
-		lea	ebx, [ebx * 4 + edx]
-		jae	short .Blanking
-		test	byte [SYM(VDP_Reg) + VDP_Reg_t.Set_2], 0x40	; VDP Enable ?
-		jz	short .Blanking
-		
-		add	ebx, byte 8
-		
-	.Blanking:
-		movzx	ecx, byte [SYM(DMA_Timing_Table) + ebx]
-		mov	eax, [SYM(CPL_M68K)]
-		sub	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], ecx
-		ja	short .DMA_Not_Finished
-		
-			shl	eax, 16
-			mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length]
-			xor	edx, edx
-			add	ebx, ecx
-			mov	[SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], edx
-			div	ecx
-			and	word [SYM(VDP_Status)], 0xFFFD
-			mul	ebx
-			shr	eax, 16
-			test	byte [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 2
-			jnz	short .DMA_68k_CRam_VSRam
-		
-		pop	edx
-		pop	ecx
-		pop	ebx
-		ret
-
-	.DMA_Not_Finished:
-		test	byte [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 2
-		jz	short .DMA_68k_VRam
-
-	.DMA_68k_CRam_VSRam:
-		xor	eax, eax
-			
-	.DMA_68k_VRam:
-		pop	edx
 		pop	ecx
 		pop	ebx
 		ret
@@ -781,7 +722,7 @@ section .text align=64
 		and	esi, 0x7FFFFF
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], eax
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMA_Address], esi
-		call	SYM(Update_DMA)
+		call	SYM(VDP_Update_DMA)
 		call	SYM(main68k_releaseCycles)
 		pop	esi
 		pop	edi

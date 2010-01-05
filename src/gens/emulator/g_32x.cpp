@@ -401,7 +401,7 @@ static inline int T_gens_do_32X_frame(void)
 		Cycles_Z80 += CPL_Z80;
 		PWM_Cycles += CPL_PWM;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		_32X_VDP.State |= 0x6000;
@@ -475,7 +475,7 @@ static inline int T_gens_do_32X_frame(void)
 	Cycles_Z80 += CPL_Z80;
 	PWM_Cycles += CPL_PWM;
 	if (VDP_Reg.DMAT_Length)
-		main68k_addCycles(Update_DMA());
+		main68k_addCycles(VDP_Update_DMA());
 	
 	if (--HInt_Counter < 0)
 	{
@@ -570,7 +570,7 @@ static inline int T_gens_do_32X_frame(void)
 		Cycles_Z80 += CPL_Z80;
 		PWM_Cycles += CPL_PWM;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		_32X_VDP.State |= 0x6000;

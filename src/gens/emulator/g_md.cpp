@@ -483,7 +483,7 @@ static inline int T_gens_do_MD_frame(void)
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		main68k_exec (Cycles_M68K - 404);
@@ -516,7 +516,7 @@ static inline int T_gens_do_MD_frame(void)
 	Cycles_M68K += CPL_M68K;
 	Cycles_Z80 += CPL_Z80;
 	if (VDP_Reg.DMAT_Length)
-		main68k_addCycles(Update_DMA());
+		main68k_addCycles(VDP_Update_DMA());
 	
 	if (--HInt_Counter < 0)
 	{
@@ -561,7 +561,7 @@ static inline int T_gens_do_MD_frame(void)
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		main68k_exec(Cycles_M68K - 404);

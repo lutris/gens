@@ -660,3 +660,72 @@ uint16_t VDP_Read_Data(void)
 	
 	return data;
 }
+
+
+/**
+ * VDP_Update_DMA(): Update the DMA state.
+ * @return Number of cycles used.
+ */
+unsigned int VDP_Update_DMA(void)
+{
+	// DMA timing offset depends on horizontal resolution and DMA type.
+	// H40 == additional 4 cycles.
+	// TODO: Use both RS0/RS1, not just RS1.
+	unsigned int DMA_Timing_Offset = ((VDP_Reg.m5.Set4 & 1) * 4);
+	DMA_Timing_Offset |= (VDP_Reg.DMAT_Type & 3);
+	
+	// If we're not in VBlank and the VDP is enabled, add 8 cycles.
+	if (VDP_Current_Line < VDP_Num_Vis_Lines &&
+	    (VDP_Reg.m5.Set2 & 0x40))
+	{
+		// Not in VBlank, and VDP is enabled.
+		DMA_Timing_Offset += 8;
+	}
+	
+	// Cycles elapsed is based on M68K cycles per line.
+	unsigned int cycles = CPL_M68K;
+	
+	// Get the timing value.
+	const unsigned int timing = DMA_Timing_Table[DMA_Timing_Offset];
+	VDP_Reg.DMAT_Length -= timing;
+	if (VDP_Reg.DMAT_Length < 0)
+	{
+		// DMA is not finished.
+		if (VDP_Reg.DMAT_Type & 2)
+		{
+			// DMA to CRam or VSRam.
+			// Return 0.
+			return 0;
+		}
+		
+		// DMA to VRam.
+		// Return the total number of cycles.
+		return cycles;
+	}
+	
+	// DMA is finished. Do some processing.
+	unsigned int len_tmp = (VDP_Reg.DMAT_Length + timing);
+	VDP_Reg.DMAT_Length = 0;
+	
+	// Calculate the new cycles value.
+	// (NOTE: I have no idea how this formula was created.)
+	//cycles = (((cycles << 16) / timing) * len_tmp) >> 16;
+	cycles <<= 16;
+	cycles /= timing;
+	cycles *= len_tmp;
+	cycles >>= 16;
+	
+	// Clear the DMA Busy flag.
+	VDP_Status &= ~0x0002;
+	
+	if (VDP_Reg.DMAT_Type & 2)
+	{
+		// DMA to CRam or VSRam.
+		// Return 0.
+		return 0;
+	}
+	
+	// DMA to VRam.
+	// Return the total number of cycles.
+	return cycles;
+}

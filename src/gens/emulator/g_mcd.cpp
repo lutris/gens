@@ -456,7 +456,7 @@ static inline int T_gens_do_MCD_frame(void)
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		
@@ -545,7 +545,7 @@ static inline int T_gens_do_MCD_frame(void)
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
 	if (VDP_Reg.DMAT_Length)
-		main68k_addCycles (Update_DMA());
+		main68k_addCycles(VDP_Update_DMA());
 	
 	if (--HInt_Counter < 0)
 	{
@@ -630,7 +630,7 @@ static inline int T_gens_do_MCD_frame(void)
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 		
