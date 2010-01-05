@@ -72,7 +72,7 @@ typedef struct
 			 * M4 == Mode 4/5 toggle; set for Mode 5, clear for Mode 4.
 			 * VSCR == V Scroll mode. (0 == full; 1 == 2-cell)
 			 * HSCR/LSCR == H Scroll mode. (00 == full; 01 == invalid; 10 == 1-cell; 11 == 1-line)
-			 * RS1/RS0 == H cell mode. (11 == H40; 00 == H32; others == invalid)
+			 * RS0/RS1 == H cell mode. (11 == H40; 00 == H32; others == invalid)
 			 * LSM1/LSM0 == Interlace mode. (00 == normal; 01 == interlace mode 1; 10 == invalid; 11 == interlace mode 2)
 			 * S/TE == Highlight/Shadow enable. (1 == on; 0 == off)
 			 * VSZ1/VSZ2 == Vertical scroll size. (00 == 32 cells; 01 == 64 cells; 10 == invalid; 11 == 128 cells)
