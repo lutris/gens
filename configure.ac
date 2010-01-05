@@ -684,22 +684,6 @@ AC_LANG(C)
 # Miscellaneous
 ###
 
-# Windows-specific CFLAGS and LDFLAGS.
-if test x$os = xwin32; then
-	# Check if the Windows console should be enabled.
-	if test x$enable_win32_console = xyes; then
-		# Enable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,console"
-	else
-		# Disable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,windows"
-	fi
-	
-	# Windows NT target version and MSIE target version.
-	# (Seriously, MSIE target version?)
-	cflags_platform="${cflags_platform} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
-fi
-
 # gcc CFLAGS check function.
 # References:
 # - http://www.nabble.com/Compiler-characteristics-td25316247.html
@@ -808,6 +792,31 @@ GSFT_LDFLAGS_GCC_OPTION([-O1], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--sort-common], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
+
+# Windows-specific CFLAGS and LDFLAGS.
+if test x$os = xwin32; then
+	# Check if the Windows console should be enabled.
+	if test x$enable_win32_console = xyes; then
+		# Enable the Windows console.
+		ldflags_platform="${ldflags_platform} -Wl,-subsystem,console"
+	else
+		# Disable the Windows console.
+		ldflags_platform="${ldflags_platform} -Wl,-subsystem,windows"
+	fi
+	
+	# Windows NT target version and MSIE target version.
+	# (Seriously, MSIE target version?)
+	cflags_platform="${cflags_platform} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
+	
+	# Disable stdcall fixups.
+	# stdcall fixups usually happen if an stdcall function is called using cdecl,
+	# which will end up crashing the program.
+	GSFT_LDFLAGS_GCC_OPTION([--disable-stdcall-fixup], ldflags_platform)
+	
+	# PE flags. These require GNU ld-2.20 or later.
+	GSFT_LDFLAGS_GCC_OPTION([--dynamicbase], ldflags_platform)	# Allow WinNT 6.0+ to relocate the image base using ASLR.
+	GSFT_LDFLAGS_GCC_OPTION([--nxcompat], ldflags_platform)		# Mark the images as NX-compatible. (XP SP2+)
+fi
 
 AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug}"
 AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug} ${cxxflags_visibility}"
