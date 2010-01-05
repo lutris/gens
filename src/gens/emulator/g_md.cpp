@@ -463,7 +463,7 @@ static inline int T_gens_do_MD_frame(void)
 	// Set the VRam flag to force a VRam update.
 	VDP_Flags.VRam = 1;
 	
-	VDP_Status &= 0xFFF7;		// Clear V Blank
+	VDP_Status &= ~0x0008;		// Clear V Blank
 	if (VDP_Reg.m5.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
 	
@@ -490,9 +490,9 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
-		VDP_Status |= 0x0004;	// HBlank = 1
+		VDP_Status |=  0x0004;	// HBlank = 1
 		main68k_exec(Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
+		VDP_Status &= ~0x0004;	// HBlank = 0
 		
 		if (--HInt_Counter < 0)
 		{
@@ -541,8 +541,8 @@ static inline int T_gens_do_MD_frame(void)
 	Z80_EXEC(168);
 	CONGRATULATIONS_POSTCHECK;
 	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
+	VDP_Status &= ~0x0004;		// HBlank = 0
+	VDP_Status |=  0x0080;		// V Int happened
 	
 	VDP_Int |= 0x8;
 	VDP_Update_IRQ_Line();
@@ -578,9 +578,9 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
-		VDP_Status |= 0x0004;	// HBlank = 1
+		VDP_Status |=  0x0004;	// HBlank = 1
 		main68k_exec(Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
+		VDP_Status &= ~0x0004;	// HBlank = 0
 		
 		if (VDP)
 		{
