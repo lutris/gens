@@ -792,33 +792,34 @@ static void Refresh_VDP_State(void)
 	
 	PrintF_Text(162, 14, TEXT_WHITE,
 			"Setting register: 1=%02X 2=%02X 3=%02X 4=%02X",
-			VDP_Reg.Set1, VDP_Reg.Set2,
-			VDP_Reg.Set3, VDP_Reg.Set4);
+			VDP_Reg.m5.Set1, VDP_Reg.m5.Set2,
+			VDP_Reg.m5.Set3, VDP_Reg.m5.Set4);
 	PrintF_Text(162, 22, TEXT_WHITE,
 			"Pattern Adr: ScrA=%02X ScrB=%02X Win=%02X",
-			VDP_Reg.Pat_ScrA_Adr, VDP_Reg.Pat_ScrB_Adr, VDP_Reg.Pat_Win_Adr);
+			VDP_Reg.m5.Pat_ScrA_Adr, VDP_Reg.m5.Pat_ScrB_Adr,
+			VDP_Reg.m5.Pat_Win_Adr);
 	PrintF_Text(162, 30, TEXT_WHITE,
 			"Sprite Attribute Adr: Low=%02X High=%02X",
-			VDP_Reg.Spr_Att_Adr, VDP_Reg.Reg6);
+			VDP_Reg.m5.Spr_Att_Adr, VDP_Reg.m5.Reg6);
 	PrintF_Text(162, 38, TEXT_WHITE,
 			"H Scroll Adr: Low=%02X High=%02X",
-			VDP_Reg.H_Scr_Adr, VDP_Reg.Reg14);
+			VDP_Reg.m5.H_Scr_Adr, VDP_Reg.m5.Reg14);
 	PrintF_Text(162, 46, TEXT_WHITE,
 			"H Interrupt=%02X    Auto Inc=%02X",
-			VDP_Reg.H_Int, VDP_Reg.Auto_Inc);
+			VDP_Reg.m5.H_Int, VDP_Reg.m5.Auto_Inc);
 	PrintF_Text(162, 54, TEXT_WHITE,
 			"BG Color: Low=%02X Med=%02X High=%02X",
-			VDP_Reg.BG_Color, VDP_Reg.Reg8, VDP_Reg.Reg9);
+			VDP_Reg.m5.BG_Color, VDP_Reg.m5.Reg8, VDP_Reg.m5.Reg9);
 	PrintF_Text(162, 62, TEXT_WHITE,
 			"Scroll Size=%02X    Window Pos: H=%02X V=%02X",
-			VDP_Reg.Scr_Size, VDP_Reg.Win_H_Pos, VDP_Reg.Win_V_Pos);
+			VDP_Reg.m5.Scr_Size, VDP_Reg.m5.Win_H_Pos, VDP_Reg.m5.Win_V_Pos);
 	PrintF_Text(162, 70, TEXT_WHITE,
 			"DMA Length: Low=%.2X High=%.2X",
-			VDP_Reg.DMA_Length_L, VDP_Reg.DMA_Length_H);
+			VDP_Reg.m5.DMA_Length_L, VDP_Reg.m5.DMA_Length_H);
 	PrintF_Text(162, 78, TEXT_WHITE,
 			"DMA Source Adr: Low=%.2X Med=%.2X High=%.2X",
-			VDP_Reg.DMA_Src_Adr_L, VDP_Reg.DMA_Src_Adr_M,
-			VDP_Reg.DMA_Src_Adr_H);
+			VDP_Reg.m5.DMA_Src_Adr_L, VDP_Reg.m5.DMA_Src_Adr_M,
+			VDP_Reg.m5.DMA_Src_Adr_H);
 	
 	int tmp = VDP_Read_Status();
 	
@@ -850,7 +851,7 @@ static void Refresh_VDP_Pattern(void)
 	// VDP cells can be either 8x8 (Normal) or 8x16 (Interlaced).
 	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 	int VRam_Inc;
-	if (VDP_Reg.Set4 & 0x04)
+	if (VDP_Reg.m5.Set4 & 0x04)
 	{
 		// Interlaced mode. (8x16 cells)
 		VRam_Inc = 2;
@@ -878,7 +879,7 @@ static void Refresh_VDP_Pattern(void)
 	}
 	
 	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
-	if (VDP_Reg.Set4 & 0x04)
+	if (VDP_Reg.m5.Set4 & 0x04)
 		Cell_8x16_Dump(&VRam.u8[pattern_adr], pattern_pal);
 	else
 		Cell_8x8_Dump(&VRam.u8[pattern_adr], pattern_pal);
@@ -892,7 +893,7 @@ static inline void T_Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, u
 	if (VDP_Flags.CRam)
 	{
 		// Palettes need to be updated.
-		if (VDP_Reg.Set4 & 0x10)
+		if (VDP_Reg.m5.Set4 & 0x10)
 			VDP_Update_Palette_HS();
 		else
 			VDP_Update_Palette();

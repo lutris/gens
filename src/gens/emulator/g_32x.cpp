@@ -366,11 +366,11 @@ static inline int T_gens_do_32X_frame(void)
 	VDP_Flags.VRam = 1;
 	
 	VDP_Status &= 0xFFF7;		// Clear V Blank
-	if (VDP_Reg.Set4 & 0x2)
+	if (VDP_Reg.m5.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
 	_32X_VDP.State &= ~0x8000;
 	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step d'interruption H
+	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step d'interruption H
 	HInt_Counter_32X = _32X_HIC;
 	
 	p_i = 84;
@@ -415,7 +415,7 @@ static inline int T_gens_do_32X_frame(void)
 		
 		if (--HInt_Counter < 0)
 		{
-			HInt_Counter = VDP_Reg.H_Int;
+			HInt_Counter = VDP_Reg.m5.H_Int;
 			VDP_Int |= 0x4;
 			VDP_Update_IRQ_Line();
 		}

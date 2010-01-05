@@ -52,7 +52,7 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	// Color mask. Depends on VDP register 0, bit 2 (Palette Select).
 	// If set, allows full MD palette.
 	// If clear, only allows the LSB of each color component.
-	const uint16_t color_mask = (VDP_Reg.Set1 & 0x04) ? 0x0EEE : 0x0222;
+	const uint16_t color_mask = (VDP_Reg.m5.Set1 & 0x04) ? 0x0EEE : 0x0222;
 	
 	// Update all 64 colors.
 	for (int i = 62; i >= 0; i -= 2)
@@ -93,7 +93,7 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	}
 	
 	// Update the background color.
-	unsigned int BG_Color = (VDP_Reg.BG_Color & 0x3F);
+	unsigned int BG_Color = (VDP_Reg.m5.BG_Color & 0x3F);
 	MD_palette[0] = MD_palette[BG_Color];
 	
 	if (hs)

@@ -73,7 +73,7 @@ static inline void T_Make_Sprite_Struct(void)
 	
 	// H40 allows 80 sprites; H32 allows 64 sprites.
 	// TODO: Test 0x81 instead of 0x01?
-	const unsigned int max_spr = (VDP_Reg.Set4 & 0x01) ? 80 : 64;
+	const unsigned int max_spr = (VDP_Reg.m5.Set4 & 0x01) ? 80 : 64;
 	
 	do
 	{
@@ -1222,11 +1222,11 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Check if the VDP is active.
-	if (!(VDP_Reg.Set2 & 0x40) || in_border)
+	if (!(VDP_Reg.m5.Set2 & 0x40) || in_border)
 	{
 		// VDP isn't active, or this is the border region.
 		// Clear the line buffer.
-		if (VDP_Reg.Set4 & 0x08)
+		if (VDP_Reg.m5.Set4 & 0x08)
 		{
 			// Highlight/Shadow is enabled. Clear with 0x40.
 			memset(LineBuf.u8, 0x40, sizeof(LineBuf.u8));
@@ -1242,7 +1242,7 @@ void VDP_Render_Line_m5(void)
 		// VDP is active.
 		
 		// Check if sprite structures need to be updated.
-		if (VDP_Reg.Set4 & 0x04)
+		if (VDP_Reg.m5.Set4 & 0x04)
 		{
 			// Interlaced.
 			// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
@@ -1272,7 +1272,7 @@ void VDP_Render_Line_m5(void)
 	if (VDP_Flags.CRam)
 	{
 		// Update the palette.
-		if (VDP_Reg.Set4 & 0x08)
+		if (VDP_Reg.m5.Set4 & 0x08)
 			VDP_Update_Palette_HS();
 		else
 			VDP_Update_Palette();

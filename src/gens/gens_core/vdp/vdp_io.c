@@ -205,12 +205,12 @@ void VDP_Reset(void)
 
 uint8_t VDP_Int_Ack(void)
 {
-	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
+	if ((VDP_Reg.m5.Set2 & 0x20) && (VDP_Int & 0x08))
 	{
 		// VBlank interrupt acknowledge.
 		VDP_Int &= ~0x08;
 		
-		uint8_t rval_mask = VDP_Reg.Set1;
+		uint8_t rval_mask = VDP_Reg.m5.Set1;
 		rval_mask &= 0x10;
 		rval_mask >>= 2;
 		
@@ -226,13 +226,13 @@ uint8_t VDP_Int_Ack(void)
 void VDP_Update_IRQ_Line(void)
 {
 	// TODO: HBlank interrupt should take priority over VBlank interrupt.
-	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
+	if ((VDP_Reg.m5.Set2 & 0x20) && (VDP_Int & 0x08))
 	{
 		// VBlank interrupt.
 		main68k_interrupt(6, -1);
 		return;
 	}
-	else if ((VDP_Reg.Set1 & 0x10) && (VDP_Int & 0x04))
+	else if ((VDP_Reg.m5.Set1 & 0x10) && (VDP_Int & 0x04))
 	{
 		// HBlank interrupt.
 		main68k_interrupt(4, -1);
@@ -286,7 +286,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		
 		case 3:
 			// Window base address.
-			if (VDP_Reg.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
+			if (VDP_Reg.m5.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
 				tmp = (val & 0x3C) << 10;	// H40.
 			else
 				tmp = (val & 0x3E) << 10;	// H32.
@@ -302,7 +302,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		
 		case 5:
 			// Sprite Attribute Table base address.
-			if (VDP_Reg.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
+			if (VDP_Reg.m5.Set4 & 0x01)	// Check for H40 mode. (TODO: Test 0x81 instead?)
 				tmp = (val & 0x7E) << 9;
 			else
 				tmp = (val & 0x7F) << 9;
@@ -355,15 +355,15 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
-				if ((VDP_Reg.Win_H_Pos & 0x1F) > 40)
+				if ((VDP_Reg.m5.Win_H_Pos & 0x1F) > 40)
 					VDP_Reg.Win_X_Pos = 40;
 				
 				// Update the Window base address.
-				tmp = (VDP_Reg.Pat_Win_Adr & 0x3C) << 10;
+				tmp = (VDP_Reg.m5.Pat_Win_Adr & 0x3C) << 10;
 				VDP_Reg.Win_Addr = &VRam.u16[tmp>>1];
 				
 				// Update the Sprite Attribute Table base address.
-				tmp = (VDP_Reg.Spr_Att_Adr & 0x7E) << 9;
+				tmp = (VDP_Reg.m5.Spr_Att_Adr & 0x7E) << 9;
 				VDP_Reg.Spr_Addr = &VRam.u16[tmp>>1];
 			}
 			else
@@ -376,15 +376,15 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
-				if ((VDP_Reg.Win_H_Pos & 0x1F) > 32)
+				if ((VDP_Reg.m5.Win_H_Pos & 0x1F) > 32)
 					VDP_Reg.Win_X_Pos = 32;
 				
 				// Update the Window base address.
-				tmp = (VDP_Reg.Pat_Win_Adr & 0x3E) << 10;
+				tmp = (VDP_Reg.m5.Pat_Win_Adr & 0x3E) << 10;
 				VDP_Reg.Win_Addr = &VRam.u16[tmp>>1];
 				
 				// Update the Sprite Attribute Table base address.
-				tmp = (VDP_Reg.Spr_Att_Adr & 0x7F) << 9;
+				tmp = (VDP_Reg.m5.Spr_Att_Adr & 0x7F) << 9;
 				VDP_Reg.Spr_Addr = &VRam.u16[tmp>>1];
 			}
 			
@@ -512,7 +512,8 @@ uint8_t VDP_Read_H_Counter(void)
 	// H_Counter_Table[][0] == H32.
 	// H_Counter_Table[][1] == H40.
 	
-	if (VDP_Reg.Set4 & 0x81)
+	// TODO: We're checking both RS0 and RS1 here. Others only check one.
+	if (VDP_Reg.m5.Set4 & 0x81)
 		return H_Counter_Table[odo_68K][1];
 	else
 		return H_Counter_Table[odo_68K][0];
@@ -532,7 +533,7 @@ uint8_t VDP_Read_V_Counter(void)
 	unsigned int H_Counter;
 	uint8_t bl, bh;		// TODO: Figure out what this actually means.
 	
-	if (VDP_Reg.Set4 & 0x81)
+	if (VDP_Reg.m5.Set4 & 0x81)
 	{
 		// H40
 		H_Counter = H_Counter_Table[odo_68K][0];
@@ -575,7 +576,7 @@ uint8_t VDP_Read_V_Counter(void)
 	
 	// Check for interlaced mode.
 	// NOTE: Bit 1 is LSM0. Should check both LSM1 and LSM0!
-	if (VDP_Reg.Set4 & 2)
+	if (VDP_Reg.m5.Set4 & 2)
 	{
 		// Interlaced mode is enabled.
 		uint8_t vc_tmp = (V_Counter & 0xFF);
@@ -609,7 +610,7 @@ uint16_t VDP_Read_Status(void)
 	}
 	
 	// If the Display is disabled, OR the result with 0x0008.
-	if (VDP_Reg.Set2 & 0x40)
+	if (VDP_Reg.m5.Set2 & 0x40)
 		return VDP_Status;
 	else
 		return (VDP_Status | 0x0008);
@@ -636,19 +637,19 @@ uint16_t VDP_Read_Data(void)
 		case 5:
 			// VRam Read.
 			data = VRam.u16[(VDP_Ctrl.Address & 0xFFFE) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 			break;
 		
 		case 6:
 			// CRam Read.
 			data = CRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 			break;
 		
 		case 7:
 			// VSRam Read.
 			data = VSRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.Auto_Inc;
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 			break;
 		
 		default:

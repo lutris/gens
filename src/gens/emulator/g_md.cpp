@@ -464,10 +464,10 @@ static inline int T_gens_do_MD_frame(void)
 	VDP_Flags.VRam = 1;
 	
 	VDP_Status &= 0xFFF7;		// Clear V Blank
-	if (VDP_Reg.Set4 & 0x2)
+	if (VDP_Reg.m5.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
 	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step H interrupt
+	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step H interrupt
 	
 	for (VDP_Current_Line = 0;
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
@@ -491,7 +491,7 @@ static inline int T_gens_do_MD_frame(void)
 		
 		if (--HInt_Counter < 0)
 		{
-			HInt_Counter = VDP_Reg.H_Int;
+			HInt_Counter = VDP_Reg.m5.H_Int;
 			VDP_Int |= 0x4;
 			VDP_Update_IRQ_Line();
 		}
