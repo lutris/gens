@@ -282,7 +282,7 @@ section .text align=64
 	extern SYM(VDP_Read_Status)
 	extern SYM(VDP_Read_V_Counter) 
 	extern SYM(VDP_Read_H_Counter)
-	extern SYM(Write_Byte_VDP_Data)
+	extern SYM(VDP_Write_Data_Byte)
 	extern SYM(Write_Word_VDP_Data)
 	extern SYM(Write_VDP_Ctrl)
 	
@@ -1411,7 +1411,7 @@ section .text align=64
 		ja	short .no_data_port
 		
 		push	eax
-		call	SYM(Write_Byte_VDP_Data)
+		call	SYM(VDP_Write_Data_Byte)
 		pop	eax
 		pop	ecx
 		pop	ebx

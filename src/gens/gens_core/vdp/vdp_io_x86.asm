@@ -240,19 +240,6 @@ section .text align=64
 	
 	align 16
 	
-	; void Write_Byte_VDP_Data(uint8_t Data)
-	global SYM(Write_Byte_VDP_Data)
-	SYM(Write_Byte_VDP_Data):
-		
-		test	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA], 0x4
-		mov	al, [esp + 4]
-		mov	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.Flag], 0	; on en a finit avec Address Set
-		mov	ah, al
-		jnz	near DMA_Fill
-		jmp	short Write_VDP_Data
-	
-	align 16
-	
 	;void Write_Word_VDP_Data(uint16_t Data)
 	global SYM(Write_Word_VDP_Data)
 	SYM(Write_Word_VDP_Data):

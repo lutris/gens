@@ -729,3 +729,21 @@ unsigned int VDP_Update_DMA(void)
 	// Return the total number of cycles.
 	return cycles;
 }
+
+
+/**
+ * VDP_Write_Data_Byte(): Write data to the VDP. (8-bit)
+ * @param data 8-bit data.
+ */
+void VDP_Write_Data_Byte(uint8_t data)
+{
+	// Note that in Mode 5, the VDP requires 16-bit data.
+	// 8-bit writes will result in the data byte being mirrored
+	// for both high-byte and low-byte.
+	//
+	// The following two instructions are equivalent.
+	// move.b   #$58, ($C00000)
+	// move.w #$5858, ($C00000)
+	
+	Write_Word_VDP_Data(data | (data << 8));
+}
