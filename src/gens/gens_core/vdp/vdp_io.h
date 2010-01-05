@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -199,11 +199,14 @@ typedef union
 } VDP_CRam_t;
 extern VDP_CRam_t CRam;
 
+// TODO:
+// - Eliminate VSRam_Over[].
+// - Shrink VSRam[] to 80 bytes (40 words).
 extern uint32_t VSRam_Over[8];
 extern union
 {
-	uint8_t  u8[128<<1];
-	uint16_t u16[128];
+	uint8_t  u8[128<<1];	// Only 80 bytes on the actual system!
+	uint16_t u16[128];	// Only 40 words on the actual system!
 } VSRam;
 
 extern uint8_t  H_Counter_Table[512][2];
