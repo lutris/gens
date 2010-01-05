@@ -469,6 +469,11 @@ static inline int T_gens_do_MD_frame(void)
 	
 	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step H interrupt
 	
+	/**
+	 * Visible Area.
+	 * V28: Lines 0-223.
+	 * V30: Lines 0-239.
+	 */
 	for (VDP_Current_Line = 0;
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
 	     VDP_Current_Line++)
@@ -486,7 +491,7 @@ static inline int T_gens_do_MD_frame(void)
 			main68k_addCycles(VDP_Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec (Cycles_M68K - 404);
+		main68k_exec(Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
 		if (--HInt_Counter < 0)
@@ -505,6 +510,12 @@ static inline int T_gens_do_MD_frame(void)
 		main68k_exec(Cycles_M68K);
 		Z80_EXEC(0);
 	}
+	
+	/**
+	 * Vertical Blank start.
+	 * V28: Line 224.
+	 * V30: Line 240.
+	 */
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
@@ -540,14 +551,18 @@ static inline int T_gens_do_MD_frame(void)
 	main68k_exec(Cycles_M68K);
 	Z80_EXEC(0);
 	
-	// TODO: Why was VDP_Current_Line incremented below?
 	if (VDP)
 	{
 		// VDP needs to be updated.
 		VDP_Render_Line_m5();
 	}
 	
-	for (VDP_Current_Line++;	// TODO: Why was this incremented here?
+	/**
+	 * Remainder of Vertical Blank.
+	 * V28: Lines 225-max
+	 * V30: Lines 241-max
+	 */
+	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
 	     VDP_Current_Line++)
 	{
