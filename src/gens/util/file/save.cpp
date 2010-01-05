@@ -407,7 +407,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	// Copy the CRam, VSRam, and Z80 RAM.
 	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
 	memcpy(&CRam.u8, &md_save.cram, sizeof(CRam));
-	memcpy(&VSRam.u8, &md_save.vsram, sizeof(VSRam));
+	memcpy(&VSRam.u8, &md_save.vsram, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
 	memcpy(&Ram_Z80, &md_save.z80_ram, sizeof(Ram_Z80));
 	
 	// 68000 RAM.
@@ -1014,7 +1014,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// CRam and VSRam.
 	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
 	memcpy(&md_save.cram, CRam.u8, sizeof(md_save.cram));
-	memcpy(&md_save.vsram, VSRam.u8, sizeof(md_save.vsram));
+	memcpy(&md_save.vsram, VSRam.u8, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
 	
 	// YM2612 registers.
 	YM2612_Save(&md_save.ym2612[0]);
