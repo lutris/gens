@@ -31,7 +31,6 @@ WR_Mode		equ 1
 section .data align=64
 	
 	extern SYM(CD_Table)
-	extern SYM(DMA_Timing_Table)
 	
 	extern SYM(Genesis_Started)
 	extern SYM(SegaCD_Started)

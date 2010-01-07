@@ -85,27 +85,18 @@ const uint32_t CD_Table[64] =
 };
 
 
-const uint8_t DMA_Timing_Table[] =
+/**
+ * DMA_Timing_Table[][]: Maximum number of DMA transfers per line.
+ */
+static const uint8_t DMA_Timing_Table[4][4] =
 {
-	/*
-	83,  167, 166,  83,
-	102, 205, 204, 102,
-	8,    16,  15,   8,
-	9,    18,  17,   9
-	*/
-	
-	/*
-	92,  167, 166,  83,
-	118, 205, 204, 102,
-	9,    16,  15,   8,
-	10,   18,  17,   9
-	*/
-	
-	83,  167, 166,  83,
-	102, 205, 204, 102,
-	8,    16,  15,   8,
-	9,    18,  17,   9
+	/* Format: H32 active, H32 blanking, H40 active, H40 blanking */
+	{8,    83,   9, 102},	/* 68K to VRam (1 word == 2 bytes) */
+	{16,  167,  18, 205},	/* 68K to CRam or VSRam */
+	{15,  166,  17, 204},	/* VRam Fill */
+	{8,    83,   9, 102},	/* VRam Copy */
 };
+
 
 // System status.
 int Genesis_Started = 0;
@@ -670,25 +661,34 @@ uint16_t VDP_Read_Data(void)
  */
 unsigned int VDP_Update_DMA(void)
 {
-	// DMA timing offset depends on horizontal resolution and DMA type.
-	// H40 == additional 4 cycles.
-	// TODO: Use both RS0/RS1, not just RS1.
-	unsigned int DMA_Timing_Offset = ((VDP_Reg.m5.Set4 & 1) * 4);
-	DMA_Timing_Offset |= (VDP_Reg.DMAT_Type & 3);
+	// DMA transfer rate depends on the following:
+	// - Horizontal resolution. (H32/H40)
+	// - DMA type.
+	// - Are we in VBlank or active drawing?
 	
-	// If we're not in VBlank and the VDP is enabled, add 8 cycles.
-	if (VDP_Current_Line < VDP_Num_Vis_Lines &&
-	    (VDP_Reg.m5.Set2 & 0x40))
+	// DMA_Timing_Table offset:
+	// [DMAT1 DMAT0][HRES VBLANK]
+	// * DMAT1/DMAT0 == DMA type.
+	// * HRES == horizontal resolution.
+	// * VBLANK == vertical blanking.
+	
+	// Horizontal resolution.
+	// TODO: Use both RS0/RS1, not just RS1.
+	unsigned int offset = ((VDP_Reg.m5.Set4 & 1) * 2);
+	
+	// Check if we're in VBlank or the VDP is disabled.
+	if (VDP_Current_Line >= VDP_Num_Vis_Lines ||
+	    (!(VDP_Reg.m5.Set2 & 0x40)))
 	{
-		// Not in VBlank, and VDP is enabled.
-		DMA_Timing_Offset += 8;
+		// In VBlank, or VDP is disabled.
+		offset |= 1;
 	}
 	
 	// Cycles elapsed is based on M68K cycles per line.
 	unsigned int cycles = CPL_M68K;
 	
-	// Get the timing value.
-	const unsigned int timing = DMA_Timing_Table[DMA_Timing_Offset];
+	// Get the DMA transfer rate.
+	const uint8_t timing = DMA_Timing_Table[VDP_Reg.DMAT_Type & 3][offset];
 	if (VDP_Reg.DMAT_Length > timing)
 	{
 		// DMA is not finished.

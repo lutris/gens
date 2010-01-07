@@ -42,7 +42,6 @@ extern "C" {
 
 // Constant data.
 extern const uint32_t CD_Table[64];
-extern const uint8_t  DMA_Timing_Table[16];
 
 // System status.
 extern int Genesis_Started;
