@@ -987,7 +987,7 @@ static void Refresh_VDP_Palette(void)
 		PrintF_Text(176, 142 + (i * 8), TEXT_WHITE,
 				"%4d %4d %d %d $%04X  %d  %d  %d   %d",
 				Sprite_Struct[i].Pos_X, Sprite_Struct[i].Pos_Y,
-				Sprite_Struct[i].Size_X, Sprite_Struct[i].Size_Y,
+				Sprite_Struct[i].Size_X-1, Sprite_Struct[i].Size_Y,
 				(Sprite_Struct[i].Num_Tile & 0x7FF) << 5,
 				(Sprite_Struct[i].Num_Tile & 0x0400 ? 1 : 0),
 				(Sprite_Struct[i].Num_Tile & 0x0800 ? 1 : 0),
