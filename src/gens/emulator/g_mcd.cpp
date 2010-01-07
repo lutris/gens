@@ -403,13 +403,12 @@ static void SegaCD_Display_LED(void)
 template<bool VDP, bool perfect_sync>
 static inline int T_gens_do_MCD_frame(void)
 {
-	// TODO: Update for VDP_Lines.
-#if 0
+	// TODO: Update for VDP border changes.
 	int *buf[2], i, j;
 	int HInt_Counter;
 	
-	// Set the number of visible lines.
-	VDP_SET_VISIBLE_LINES();
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
 
 	CPL_S68K = 795;
 	
@@ -435,17 +434,18 @@ static inline int T_gens_do_MCD_frame(void)
 	
 	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step H interrupt
 	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
+	/** Main execution loop. **/
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
+		buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
+		buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
 		if (PCM_Enable)
-			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
+			PCM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+		YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+		PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
 		Update_CDC_TRansfert();
 		
 		if (perfect_sync)
@@ -462,218 +462,169 @@ static inline int T_gens_do_MCD_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
-		VDP_Status |= 0x0004;	// HBlank = 1
+		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
+				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
 		
-		if (!perfect_sync)
+		// TODO: Combine chunks of code here.
+		if (inVisibleArea)
 		{
-			// Perfect Sync is disabled.
-			main68k_exec(Cycles_M68K - 404);
-		}
-		else
-		{
-			// Perfect sync is enabled.
-			// Use instruction by instruction execution.
-			while (i < (Cycles_M68K - 404))
+			VDP_Status |= 0x0004;	// HBlank = 1
+			
+			if (!perfect_sync)
 			{
-				main68k_exec(i);
-				i += 24;
-				
-				if (j < (Cycles_S68K - 658))
+				// Perfect Sync is disabled.
+				main68k_exec(Cycles_M68K - 404);
+			}
+			else
+			{
+				// Perfect sync is enabled.
+				// Use instruction by instruction execution.
+				while (i < (Cycles_M68K - 404))
 				{
-					sub68k_exec(j);
-					j += 39;
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < (Cycles_S68K - 658))
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
+				}
+				
+				main68k_exec(Cycles_M68K - 404);
+				sub68k_exec(Cycles_S68K - 658);
+			}
+			
+			VDP_Status &= ~0x0004;	// HBlank = 0
+			
+			if (--HInt_Counter < 0)
+			{
+				HInt_Counter = VDP_Reg.m5.H_Int;
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+			}
+			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				Render_Line();
+			}
+			
+			if (perfect_sync)
+			{
+				// Perfect sync is enabled.
+				// Use instruction by instruction execution.
+				while (i < Cycles_M68K)
+				{
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < Cycles_S68K)
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
+				}
+			}
+		}
+		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
+		{
+			// VBlank line!
+			if (--HInt_Counter < 0)
+			{
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+			}
+			
+			VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
+			
+			if (perfect_sync)
+			{
+				// Perfect sync is enabled.
+				// Use instruction by instruction execution.
+				while (i < (Cycles_M68K - 360))
+				{
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < (Cycles_S68K - 586))
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
 				}
 			}
 			
-			main68k_exec(Cycles_M68K - 404);
-			sub68k_exec(Cycles_S68K - 658);
-		}
-		
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		if (--HInt_Counter < 0)
-		{
-			HInt_Counter = VDP_Reg.m5.H_Int;
-			VDP_Int |= 0x4;
+			main68k_exec(Cycles_M68K - 360);
+			sub68k_exec(Cycles_S68K - 586);
+			Z80_EXEC(168);
+			
+			VDP_Status &= ~0x0004;		// HBlank = 0
+			VDP_Status |=  0x0080;		// V Int happened
+			VDP_Int |= 0x8;
 			VDP_Update_IRQ_Line();
-		}
-		
-		if (VDP)
-		{
-			// VDP needs to be updated.
-			Render_Line();
-		}
-		
-		if (perfect_sync)
-		{
-			// Perfect sync is enabled.
-			// Use instruction by instruction execution.
-			while (i < Cycles_M68K)
+			mdZ80_interrupt(&M_Z80, 0xFF);
+			
+			if (perfect_sync)
 			{
-				main68k_exec(i);
-				i += 24;
-				
-				if (j < Cycles_S68K)
+				// Perfect sync is enabled.
+				// Use instruction by instruction execution.
+				while (i < Cycles_M68K)
 				{
-					sub68k_exec(j);
-					j += 39;
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < Cycles_S68K)
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
 				}
 			}
-		}
-		
-		main68k_exec(Cycles_M68K);
-		sub68k_exec(Cycles_S68K);
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer();
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	if (PCM_Enable)
-		PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	Update_CDC_TRansfert();
-	
-	if (perfect_sync)
-	{
-		i = Cycles_M68K + 24;
-		j = Cycles_S68K + 39;
-	}
-	
-	Fix_Controllers();
-	Cycles_M68K += CPL_M68K;
-	Cycles_Z80 += CPL_Z80;
-	if (S68K_State == 1)
-		Cycles_S68K += CPL_S68K;
-	if (VDP_Reg.DMAT_Length)
-		main68k_addCycles(VDP_Update_DMA());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		VDP_Update_IRQ_Line();
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	
-	if (perfect_sync)
-	{
-		// Perfect sync is enabled.
-		// Use instruction by instruction execution.
-		while (i < (Cycles_M68K - 360))
-		{
-			main68k_exec(i);
-			i += 24;
-			
-			if (j < (Cycles_S68K - 586))
-			{
-				sub68k_exec(j);
-				j += 39;
-			}
-		}
-	}
-	
-	main68k_exec(Cycles_M68K - 360);
-	sub68k_exec(Cycles_S68K - 586);
-	Z80_EXEC(168);
-	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
-	VDP_Int |= 0x8;
-	VDP_Update_IRQ_Line();
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	if (perfect_sync)
-	{
-		// Perfect sync is enabled.
-		// Use instruction by instruction execution.
-		while (i < Cycles_M68K)
-		{
-			main68k_exec(i);
-			i += 24;
-			
-			if (j < Cycles_S68K)
-			{
-				sub68k_exec(j);
-				j += 39;
-			}
-		}
-	}
-	
-	main68k_exec(Cycles_M68K);
-	sub68k_exec(Cycles_S68K);
-	Z80_EXEC(0);
-	
-	Update_SegaCD_Timer();
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert();
-		
-		if (perfect_sync)
-		{
-			i = Cycles_M68K + 24;
-			j = Cycles_S68K + 39;
-		}
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(VDP_Update_DMA());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		
-		if (!perfect_sync)
-		{
-			// Perfect sync is disabled.
-			main68k_exec(Cycles_M68K - 404);
-			VDP_Status &= 0xFFFB;	// HBlank = 0
 		}
 		else
 		{
-			// Perfect sync is enabled.
-			// Use instruction by instruction execution.
-			while (i < (Cycles_M68K - 404))
+			// Not visible area.
+			// TODO: We're processing HBlank here, but we don't for MD...
+			VDP_Status |= 0x0004;	// HBlank = 1
+			
+			if (!perfect_sync)
 			{
-				main68k_exec(i);
-				i += 24;
-				
-				if (j < (Cycles_S68K - 658))
-				{
-					sub68k_exec(j);
-					j += 39;
-				}
+				// Perfect sync is disabled.
+				main68k_exec(Cycles_M68K - 404);
+				VDP_Status &= ~0x0004;	// HBlank = 0
 			}
-			
-			main68k_exec(Cycles_M68K - 404);
-			sub68k_exec(Cycles_S68K - 658);
-			
-			VDP_Status &= 0xFFFB;	// HBlank = 0
-			
-			while (i < Cycles_M68K)
+			else
 			{
-				main68k_exec(i);
-				i += 24;
-				
-				if (j < Cycles_S68K)
+				// Perfect sync is enabled.
+				// Use instruction by instruction execution.
+				while (i < (Cycles_M68K - 404))
 				{
-					sub68k_exec(j);
-					j += 39;
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < (Cycles_S68K - 658))
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
+				}
+				
+				main68k_exec(Cycles_M68K - 404);
+				sub68k_exec(Cycles_S68K - 658);
+				
+				VDP_Status &= ~0x0004;	// HBlank = 0
+				
+				while (i < Cycles_M68K)
+				{
+					main68k_exec(i);
+					i += 24;
+					
+					if (j < Cycles_S68K)
+					{
+						sub68k_exec(j);
+						j += 39;
+					}
 				}
 			}
 		}
@@ -703,18 +654,18 @@ static inline int T_gens_do_MCD_frame(void)
 		SegaCD_Display_LED();
 	
 	// Raise the MDP_EVENT_POST_FRAME event.
+	// TODO: Adjust post_frame.md_screen offset for VDP border stuff.
 	mdp_event_post_frame_t post_frame;
 	if (bppMD == 32)
 		post_frame.md_screen = &MD_Screen32[8];
 	else
 		post_frame.md_screen = &MD_Screen[8];
 	post_frame.width = vdp_getHPix();
-	post_frame.height = VDP_Num_Vis_Lines;
+	post_frame.height = VDP_Lines.Visible.Total;
 	post_frame.pitch = 336;
 	post_frame.bpp = bppMD;
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
-#endif
 	
 	return 1;
 }
