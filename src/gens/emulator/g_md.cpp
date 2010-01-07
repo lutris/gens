@@ -407,6 +407,9 @@ int Do_VDP_Only(void)
 	// Initialize VDP_Lines.Display.
 	VDP_Set_Visible_Lines();
 	
+	// Don't increment the NTSC V30 screen rolling offset here,
+	// since the emulator is most likely paused.
+	
 	for (VDP_Lines.Display.Current = 0;
 	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
 	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
@@ -451,6 +454,18 @@ static inline int T_gens_do_MD_frame(void)
 	
 	// Initialize VDP_Lines.Display.
 	VDP_Set_Visible_Lines();
+	
+	bool VBlank_OK = true;
+	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08))
+	{
+		// NTSC V30 mode. Simulate screen rolling.
+		VDP_Lines.NTSC_V30.VBlank = !VDP_Lines.NTSC_V30.VBlank;
+		VDP_Lines.NTSC_V30.Offset += 11;	// TODO: Figure out a good offset increment.
+		VDP_Lines.NTSC_V30.Offset %= 240;	// Prevent overflow.
+		
+		// If VDP_Lines.NTSC_V30.VBlank, we can't do a VBlank.
+		VBlank_OK = !VDP_Lines.NTSC_V30.VBlank;
+	}
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;
@@ -518,16 +533,22 @@ static inline int T_gens_do_MD_frame(void)
 	
 			CONGRATULATIONS_PRECHECK;
 			VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
+			if (!VBlank_OK)
+				VDP_Status &= ~0x0008;
+			
 			main68k_exec(Cycles_M68K - 360);
 			Z80_EXEC(168);
 			CONGRATULATIONS_POSTCHECK;
 	
 			VDP_Status &= ~0x0004;		// HBlank = 0
-			VDP_Status |=  0x0080;		// V Int happened
-	
-			VDP_Int |= 0x8;
-			VDP_Update_IRQ_Line();
-			mdZ80_interrupt(&M_Z80, 0xFF);
+			if (VBlank_OK)
+			{
+				VDP_Status |=  0x0080;		// V Int happened
+				
+				VDP_Int |= 0x8;
+				VDP_Update_IRQ_Line();
+				mdZ80_interrupt(&M_Z80, 0xFF);
+			}
 		}
 		
 		if (VDP)

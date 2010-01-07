@@ -1200,7 +1200,17 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Determine the starting line in MD_Screen.
-	const unsigned int LineStart = TAB336[VDP_Lines.Visible.Current + VDP_Lines.Visible.Border_Size] + 8;
+	int LineStart = VDP_Lines.Visible.Current;
+	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08))
+	{
+		// NTSC V30 mode. Simulate screen rolling.
+		LineStart -= VDP_Lines.NTSC_V30.Offset;
+		
+		// Prevent underflow.
+		if (LineStart < 0)
+			LineStart += 240;
+	}
+	LineStart = TAB336[LineStart + VDP_Lines.Visible.Border_Size] + 8;
 	
 	if (in_border && !Video.borderColorEmulation)
 	{

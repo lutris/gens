@@ -227,11 +227,17 @@ typedef struct _VDP_Lines_t
 	/** Visible lines using VDP line numbering. **/
 	struct
 	{
-		int Total;	// Total number of visible lines. (192, 224, 240)
-		int Current;	// Current visible line. (May be negative for top border.)
+		int Total;		// Total number of visible lines. (192, 224, 240)
+		int Current;		// Current visible line. (May be negative for top border.)
 		int Border_Size;	// Size of the border. (192 lines == 24; 224 lines == 8)
-		int NTSC_V30_Roll;	// Current NTSC V30 roll offset.
 	} Visible;
+	
+	/** NTSC V30 handling. **/
+	struct
+	{
+		int Offset;		// Current NTSC V30 roll offset.
+		int VBlank;		// VBlank divider.
+	} NTSC_V30;
 } VDP_Lines_t;
 extern VDP_Lines_t VDP_Lines;
 

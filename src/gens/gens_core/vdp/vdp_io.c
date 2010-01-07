@@ -267,6 +267,14 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		case 1:
 			// Mode Set 2.
 			VDP_Update_IRQ_Line();
+			
+			if (!(VDP_Reg.m5.Set2 & 0x08))
+			{
+				// V28 mode. Reset the NTSC V30 roll values.
+				VDP_Lines.NTSC_V30.Offset = 0;
+				VDP_Lines.NTSC_V30.VBlank = 0;
+			}
+			
 			break;
 		
 		case 2:
