@@ -551,12 +551,12 @@ static inline int T_gens_do_MD_frame(void)
 		gym_dump_update(0, 0, 0);
 	
 	// Raise the MDP_EVENT_POST_FRAME event.
-	// TODO: Adjust post_frame.md_screen offset for VDP border stuff.
 	mdp_event_post_frame_t post_frame;
+	const unsigned int screen_offset = (TAB336[VDP_Lines.Visible.Border_Size] + 8);
 	if (bppMD == 32)
-		post_frame.md_screen = &MD_Screen32[8];
+		post_frame.md_screen = &MD_Screen32[screen_offset];
 	else
-		post_frame.md_screen = &MD_Screen[8];
+		post_frame.md_screen = &MD_Screen[screen_offset];
 	post_frame.width = vdp_getHPix();
 	post_frame.height = VDP_Lines.Visible.Total;
 	post_frame.pitch = 336;
