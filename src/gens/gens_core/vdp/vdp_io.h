@@ -242,10 +242,10 @@ uint16_t VDP_Read_Data(void);
 
 unsigned int VDP_Update_DMA(void);
 
-void VDP_Write_Data_Byte(uint8_t  Data);
+void VDP_Write_Data_Byte(uint8_t  data);
+void VDP_Write_Data_Word(uint16_t data);
 
 /* Functions that need to be ported to C. */
-void Write_Word_VDP_Data(uint16_t Data);
 void Write_VDP_Ctrl(uint16_t Data);
 void VDP_Set_Reg(int reg_num, uint8_t val);
 

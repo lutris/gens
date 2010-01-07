@@ -561,7 +561,7 @@ void FASTCALL Z80_WriteW_PSG(uint32_t address, uint16_t data)
 	}
 	
 	// VDP register.
-	Write_Word_VDP_Data(data);
+	VDP_Write_Data_Word(data);
 }
 
 

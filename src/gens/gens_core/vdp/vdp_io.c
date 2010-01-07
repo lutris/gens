@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -627,11 +627,13 @@ uint16_t VDP_Read_Data(void)
 	// I can't find any MD games that read data from the VDP.
 	//printf("%s() called. Ctrl.Access == %d\n", __func__, Ctrl.Access);
 	
-	// Reset the Control flag.
+	// Clear the VDP control flag.
+	// (It's set when the address is set.)
 	VDP_Ctrl.Flag = 0;
 	
 	uint16_t data;
 	
+	// Check the access mode.
 	switch (VDP_Ctrl.Access)
 	{
 		case 5:
@@ -745,5 +747,142 @@ void VDP_Write_Data_Byte(uint8_t data)
 	// move.b   #$58, ($C00000)
 	// move.w #$5858, ($C00000)
 	
-	Write_Word_VDP_Data(data | (data << 8));
+	VDP_Write_Data_Word(data | (data << 8));
+}
+
+
+/**
+ * DMA_Fill(): Perform a DMA Fill operation. (Called from VDP_Write_Data_Word().)
+ * @param data 16-bit data.
+ */
+static void DMA_Fill(uint16_t data)
+{
+	// Set the VRam flag.
+	VDP_Flags.VRam = 1;
+	
+	// Get the values. (length is in bytes)
+	// NOTE: DMA Fill uses *bytes* for length, not words!
+	uint16_t address = (VDP_Ctrl.Address & 0xFFFF);
+	unsigned int length = (VDP_Reg.DMA_Length & 0xFFFF);
+	if (length == 0)
+	{
+		// DMA length is 0. Set it to 65,536 words.
+		// TODO: This was actually not working in the asm,
+		// since I was testing for zero after an or/mov, expecting
+		// the mov to set flags. mov doesn't set flags!
+		// So I'm not sure if this is right or not.
+		length = 65536;
+	}
+	
+	// Set the DMA Busy flag.
+	VDP_Status |= 0x0002;
+	
+	// TODO: Although we decrement DMAT_Length correctly based on
+	// DMA cycles per line, we fill everything immediately instead
+	// of filling at the correct rate.
+	// Perhaps this should be combined with DMA_LOOP.
+	VDP_Reg.DMA_Length = 0;	// Clear the DMA length.
+	VDP_Ctrl.DMA = 0;	// Clear the DMA mode.
+	
+	// Set DMA type and length.
+	VDP_Reg.DMAT_Type = 0x02;	// DMA Fill.
+	VDP_Reg.DMAT_Length = length;
+	
+	// TODO: I don't think this algorithm is correct.
+	// It matches the original asm, but does not match the Genesis Software Manual
+	// for either even VRam addresses or odd VRam addresses.
+	
+	// Write the low byte first.
+	// TODO: Endianness conversions.
+	VRam.u8[address ^ 1] = (data & 0xFF);
+	
+	// Fill the data.
+	const uint8_t fill_hi = (data >> 8) & 0xFF;
+	do
+	{
+		VRam.u8[address] = fill_hi;
+		address += VDP_Reg.m5.Auto_Inc;
+	} while (--length != 0);
+	
+	// Save the new address.
+	VDP_Ctrl.Address = (address & 0xFFFF);
+}
+
+/**
+ * VDP_Write_Data_Word(): Write data to the VDP. (16-bit)
+ * @param data 16-bit data.
+ */
+void VDP_Write_Data_Word(uint16_t data)
+{
+	// Clear the VDP control flag.
+	// (It's set when the address is set.)
+	VDP_Ctrl.Flag = 0;
+	
+	if (VDP_Ctrl.DMA & 0x04)
+	{
+		// DMA Fill operation is in progress.
+		DMA_Fill(data);
+		return;
+	}
+	
+	// Check the access mode.
+	uint32_t address = VDP_Ctrl.Address;
+	switch (VDP_Ctrl.Access)
+	{
+		case 9:
+			// VRam Write.
+			VDP_Flags.VRam = 1;
+			address &= 0xFFFF;	// VRam is 64 KB. (32 Kwords)
+			if (address & 0x0001)
+			{
+				// Odd address.
+				// VRam writes are only allowed at even addresses.
+				// The VDP simply masks the low bit of the address
+				// and swaps the high and low bytes before writing.
+				address &= ~0x0001;
+				data = (data << 8 | data >> 8);
+			}
+			
+			// Write the word to VRam.
+			VRam.u16[address>>1] = data;
+			
+			// Increment the address register.
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
+			break;
+		
+		case 10:
+			// CRam Write.
+			// TODO: According to the Genesis Software Manual, writing at
+			// odd addresses results in "interesting side effects".
+			// Those side effects aren't listed, so we're just going to
+			// mask the LSB for now.
+			VDP_Flags.CRam = 1;
+			address &= 0x7E;	// CRam is 128 bytes. (64 words)
+			
+			// Write the word to CRam.
+			CRam.u16[address>>1] = data;
+			
+			// Increment the address register.
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
+			break;
+		
+		case 11:
+			// VSRam Write.
+			// TODO: The Genesis Software Manual doesn't mention what happens
+			// with regards to odd address writes for VSRam.
+			// TODO: VSRam is 80 bytes, but we're allowing a maximum of 128 bytes here...
+			VDP_Flags.CRam = 1;
+			address &= 0x7E;	// VSRam is 80 bytes. (40 words)
+			
+			// Write the word to VSRam.
+			VSRam.u16[address>>1] = data;
+			
+			// Increment the address register.
+			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
+			break;
+		
+		default:
+			// Invalid write specification.
+			break;
+	}
 }
