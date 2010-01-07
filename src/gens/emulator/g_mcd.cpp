@@ -338,18 +338,23 @@ void Reset_SegaCD(void)
  * @param color LED color.
  * @param startCol Left-most column of the LED.
  */
-template<typename Pixel>
-static inline void T_Draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short startCol)
+template<typename pixel>
+static inline void T_Draw_SegaCD_LED(pixel* screen, pixel color, unsigned short start_column)
 {
-	screen[(336*220) + 12 + startCol] = color;
-	screen[(336*220) + 13 + startCol] = color;
-	screen[(336*220) + 14 + startCol] = color;
-	screen[(336*220) + 15 + startCol] = color;
+	// Get the line offsets.
+	const unsigned int bottom_line = (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size);
+	pixel *line1 = &screen[(TAB336[bottom_line - 4] + 8) + 4 + start_column];
+	pixel *line2 = &screen[(TAB336[bottom_line - 2] + 8) + 4 + start_column];
 	
-	screen[(336*222) + 12 + startCol] = color;
-	screen[(336*222) + 13 + startCol] = color;
-	screen[(336*222) + 14 + startCol] = color;
-	screen[(336*222) + 15 + startCol] = color;
+	*line1		= color;
+	*(line1 + 1)	= color;
+	*(line1 + 2)	= color;
+	*(line1 + 3)	= color;
+	
+	*line2		= color;
+	*(line2 + 1)	= color;
+	*(line2 + 2)	= color;
+	*(line2 + 3)	= color;
 }
 
 
