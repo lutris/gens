@@ -176,7 +176,9 @@ int Init_SegaCD(const char* iso_name)
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(1);
 	
-	VDP_Num_Vis_Lines = 224;
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
+	
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// TODO: Why are these two bytes set to 0xFF?
@@ -401,6 +403,8 @@ static void SegaCD_Display_LED(void)
 template<bool VDP, bool perfect_sync>
 static inline int T_gens_do_MCD_frame(void)
 {
+	// TODO: Update for VDP_Lines.
+#if 0
 	int *buf[2], i, j;
 	int HInt_Counter;
 	
@@ -710,6 +714,7 @@ static inline int T_gens_do_MCD_frame(void)
 	post_frame.bpp = bppMD;
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
+#endif
 	
 	return 1;
 }

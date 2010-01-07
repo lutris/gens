@@ -75,12 +75,10 @@ section .bss align=64
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	extern SYM(VDP_Ctrl)
+	extern SYM(VDP_Lines)
 	
 	extern SYM(VDP_Status)
 	extern SYM(VDP_Int)
-	extern SYM(VDP_Current_Line)
-	extern SYM(VDP_Num_Lines)
-	extern SYM(VDP_Num_Vis_Lines)
 	
 	; Flags.
 	extern SYM(VDP_Flags)

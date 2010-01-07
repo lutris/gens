@@ -24,8 +24,15 @@
  */
 void Post_Line_32X(void)
 {
+	if (VDP_Lines.Visible.Current < 0 ||
+	    VDP_Lines.Visible.Current >= VDP_Lines.Visible.Total)
+	{
+		// Not in visible area.
+		return;
+	}
+	
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
-	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Current_Line];
+	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
 	
 	unsigned int pixel;
 	unsigned char pixC; 
@@ -42,7 +49,8 @@ void Post_Line_32X(void)
 		case 8:
 		case 12:
 			//POST_LINE_32X_M00;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < TAB336[VDP_Lines.Visible.Current] + 336; pixel++)
 			{
 				MD_Screen32[pixel] = MD_Palette32[MD_Screen[pixel] & 0xFF];
 				MD_Screen[pixel] = MD_Palette[MD_Screen[pixel] & 0xFF];
@@ -53,8 +61,8 @@ void Post_Line_32X(void)
 		case 1:
 			//POST_LINE_32X_M01;
 			VRam_Ind *= 2;
-			for (pixel = TAB336[VDP_Current_Line] + 8;
-			     pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < (TAB336[VDP_Lines.Visible.Current] + 336); pixel++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -75,7 +83,8 @@ void Post_Line_32X(void)
 		case 2:
 		case 10:
 			//POST_LINE_32X_M10;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < TAB336[VDP_Lines.Visible.Current] + 336; pixel++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
@@ -96,8 +105,8 @@ void Post_Line_32X(void)
 		case 11:
 		case 15:
 			//POST_LINE_32X_M11;
-			curPixel = TAB336[VDP_Current_Line] + 8;
-			pixMax = TAB336[VDP_Current_Line] + 336;
+			curPixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			pixMax = TAB336[VDP_Lines.Visible.Current] + 336;
 			while (curPixel < pixMax)
 			{
 				pixC = _32X_VDP_Ram.u16[VRam_Ind] & 0xFF;
@@ -115,7 +124,8 @@ void Post_Line_32X(void)
 		case 5:
 			//POST_LINE_32X_M01_P;
 			VRam_Ind *= 2;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < (TAB336[VDP_Lines.Visible.Current] + 336); pixel++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -135,7 +145,8 @@ void Post_Line_32X(void)
 		case 6:
 		case 14:
 			//POST_LINE_32X_M10_P;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < TAB336[VDP_Lines.Visible.Current] + 336; pixel++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				if (!(pixS & 0x8000) && (MD_Screen[pixel] & 0x0F))
@@ -154,7 +165,8 @@ void Post_Line_32X(void)
 		case 9:
 			//POST_LINE_32X_SM01;
 			VRam_Ind *= 2;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < (TAB336[VDP_Lines.Visible.Current] + 336); pixel++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -174,7 +186,8 @@ void Post_Line_32X(void)
 		case 13:
 			//POST_LINE_32X_SM01_P;
 			VRam_Ind *= 2;
-			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < (TAB336[VDP_Current_Line] + 336); pixel++)
+			for (pixel = TAB336[VDP_Lines.Visible.Current] + 8;
+			     pixel < (TAB336[VDP_Lines.Visible.Current] + 336); pixel++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];

@@ -108,7 +108,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	// (pddsd->lPitch / bytespp) does match pddsd->dwWidth in windowed mode, though.
 	
 	unsigned char *start = (unsigned char*)pddsd->lpSurface;
-	start += pddsd->lPitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	start += pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
 	if (vdraw_scale == 1)
 	{
 		// DirectDraw's 1x rendering uses MD_Screen / MD_Screen32 directly.
@@ -126,7 +126,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		// Message is visible.
 		draw_text(start, pddsd->lPitch / bytespp,
 			  msg_width, 
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
@@ -134,7 +134,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		// FPS is enabled.
 		draw_text(start, pddsd->lPitch / bytespp,
 			  msg_width,
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
@@ -613,12 +613,11 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 	
 	const uint8_t stretch = vdraw_get_stretch();
 	
-	if (VDP_Num_Vis_Lines < 240 && (stretch & STRETCH_V))
+	if (VDP_Lines.Visible.Total < 240 && (stretch & STRETCH_V))
 	{
 		// Less than 240 lines, vertical stretch enabled.
-		int diff = (240 - VDP_Num_Vis_Lines) / 2;
-		RectSrc.top = diff * vdraw_scale;
-		RectSrc.bottom = (VDP_Num_Vis_Lines + diff) * vdraw_scale;
+		RectSrc.top = VDP_Lines.Visible.Border_Size * vdraw_scale;
+		RectSrc.bottom = (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size) * vdraw_scale;
 	}
 	else
 	{
@@ -747,7 +746,7 @@ int vdraw_ddraw_flip(void)
 			RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Modif - Stretch the picture and move the right edge the same amount
 			
 			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
-			RectDest.bottom = RectDest.top + (VDP_Num_Vis_Lines * vdraw_scale);
+			RectDest.bottom = RectDest.top + (VDP_Lines.Visible.Total * vdraw_scale);
 		}
 		else
 		{
@@ -774,7 +773,7 @@ int vdraw_ddraw_flip(void)
 				RectDest.left = (FS_X - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - Centering the screen left-right
 				RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-modif - again
 				RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
-				RectDest.bottom = RectDest.top + (VDP_Num_Vis_Lines * vdraw_scale);
+				RectDest.bottom = RectDest.top + (VDP_Lines.Visible.Total * vdraw_scale);
 			}
 		}
 		
@@ -793,12 +792,12 @@ int vdraw_ddraw_flip(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+				int VBorder = VDP_Lines.Visible.Border_Size << m_shift;	// Top border height, in pixels.
 				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
 				int startPos = (ddsd.lPitch * VBorder) + HBorder;
 				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
-				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Lines.Visible.Total, 32 + (Dep * 2));
 				
 				lpDDS_Blit->Unlock(NULL);
 				
@@ -810,9 +809,9 @@ int vdraw_ddraw_flip(void)
 			else
 			{
 				RectSrc.top = 0;
-				RectSrc.bottom = VDP_Num_Vis_Lines;
+				RectSrc.bottom = VDP_Lines.Visible.Total;
 				
-				if ((VDP_Num_Vis_Lines == 224) && !stretch)
+				if ((VDP_Lines.Visible.Total == 224) && !stretch)
 				{
 					RectDest.top = (int) ((FS_Y - (224 * Ratio_Y))/2); //Upth-Modif - centering top-bottom
 					RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - with the method I already described for left-right
@@ -883,12 +882,12 @@ int vdraw_ddraw_flip(void)
 				// If Stretch is enabled, stretch the image.
 				
 				RectSrc.top = 0;
-				RectSrc.bottom = VDP_Num_Vis_Lines;
+				RectSrc.bottom = VDP_Lines.Visible.Total;
 				
 				if (!(stretch & STRETCH_V))
 				{
-					RectDest.top = (int)((FS_Y - VDP_Num_Vis_Lines) / 2); //Upth-Add - But we still
-					RectDest.bottom = RectDest.top + VDP_Num_Vis_Lines;   //Upth-Add - center the screen
+					RectDest.top = (int)((FS_Y - VDP_Lines.Visible.Total) / 2); //Upth-Add - But we still
+					RectDest.bottom = RectDest.top + VDP_Lines.Visible.Total;   //Upth-Add - center the screen
 				}
 				else
 				{
@@ -987,7 +986,7 @@ int vdraw_ddraw_flip(void)
 	}
 	else
 	{
-		// Windowed mode
+		// Windowed mode.
 		GetClientRect(gens_window, &RectDest);
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 		

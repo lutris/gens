@@ -200,14 +200,14 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	start += vdraw_sdl_screen->pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	start += (vdraw_sdl_screen->pitch * VDP_Lines.Visible.Border_Size * vdraw_scale);
 	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, vdraw_sdl_screen->w,
 			  vdraw_rInfo.width * vdraw_scale,
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
@@ -215,7 +215,7 @@ static int vdraw_sdl_flip(void)
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,
 			  vdraw_rInfo.width * vdraw_scale,
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	

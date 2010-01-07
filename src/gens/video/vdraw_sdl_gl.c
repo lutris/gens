@@ -417,17 +417,17 @@ static int vdraw_sdl_gl_flip(void)
 	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
 	int texHeight = 240 * vdraw_scale;
-	if (VDP_Num_Vis_Lines < 240)
+	if (VDP_Lines.Visible.Total < 240)
 	{
 		// Check for vertical stretch.
 		const uint8_t stretch_flags = vdraw_get_stretch();
-		unsigned int start_offset = pitch * (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+		const unsigned int start_offset = (pitch * VDP_Lines.Visible.Border_Size * vdraw_scale);
 		start += start_offset;	// Text starting position.
 		
 		if (stretch_flags & STRETCH_V)
 		{
 			// Vertical stretch is enabled.
-			texHeight = VDP_Num_Vis_Lines * vdraw_scale;
+			texHeight = VDP_Lines.Visible.Total * vdraw_scale;
 			glStart += start_offset;
 		}
 	}
@@ -437,7 +437,7 @@ static int vdraw_sdl_gl_flip(void)
 		// Message is visible.
 		draw_text(start, rowLength,
 			  texWidth,
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
@@ -445,7 +445,7 @@ static int vdraw_sdl_gl_flip(void)
 		// FPS is enabled.
 		draw_text(start, rowLength,
 			  texWidth,
-			  VDP_Num_Vis_Lines * vdraw_scale,
+			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	

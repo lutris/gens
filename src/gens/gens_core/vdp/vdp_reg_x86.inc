@@ -91,3 +91,13 @@ struc VDP_Ctrl_t
 	.DMA_Mode:	resd 1
 	.DMA:		resd 1
 endstruc
+
+struc VDP_Lines_t
+	.Display_Total:		resd 1
+	.Display_Current:	resd 1
+	
+	.Visible_Total:		resd 1
+	.Visible_Current:	resd 1
+	.Border_Size:		resd 1
+	.NTSC_V30_Roll:		resd 1
+endstruc

@@ -231,14 +231,14 @@ void Debug_Event(int key, int mod)
 		
 		case GENS_KEY_l:
 			// Go up one VDP line.
-			if (VDP_Current_Line > 0)
-				VDP_Current_Line--;
+			if (VDP_Lines.Display.Current > 0)
+				VDP_Lines.Display.Current--;
 			break;
 		
 		case GENS_KEY_m:
 			// Go down one VDP line.
-			if (VDP_Current_Line < 319)
-				VDP_Current_Line++;
+			if (VDP_Lines.Display.Current < (VDP_Lines.Display.Total - 1))
+				VDP_Lines.Display.Current++;
 			break;
 		
 		case GENS_KEY_x:
@@ -834,7 +834,7 @@ static void Refresh_VDP_State(void)
 			(tmp >> 3) & 1, (tmp >> 2) & 1);
 	PrintF_Text(162, 110, TEXT_WHITE,
 			"DMA Busy %d  PAL Mode %d Line Num %d",
-			(tmp >> 1) & 1, tmp & 1, VDP_Current_Line);
+			(tmp >> 1) & 1, tmp & 1, VDP_Lines.Display.Current);
 	PrintF_Text(162, 118, TEXT_WHITE,
 			"VDP Int =%02X DMA_Length=%04X",
 			VDP_Int, VDP_Reg.DMAT_Length);
@@ -899,8 +899,8 @@ static inline void T_Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, u
 			VDP_Update_Palette();
 	}
 	
-	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
-	pixel *pLine = &screen[(336 * (VBorder + 10)) + 180];
+	const unsigned int line_number = (VDP_Lines.Visible.Border_Size + 10);
+	pixel *pLine = &screen[(336 * line_number) + 180];
 	
 	// Palette number.
 	int pal_num = -1;
@@ -928,8 +928,8 @@ template<typename pixel>
 static inline void T_Refresh_VDP_Palette_Outline(pixel *screen, unsigned int paletteMask, pixel outlineColor)
 {
 	// Outline the selected palette. Ported from Gens Rerecording.
-	unsigned int VBorder = (240 - VDP_Num_Vis_Lines) / 2;
-	pixel *line1 = &screen[(336 * (VBorder + 9 + ((pattern_pal & paletteMask) * 8))) + 180];
+	const unsigned int line_number = (VDP_Lines.Visible.Border_Size + 9);
+	pixel *line1 = &screen[(336 * (line_number + ((pattern_pal & paletteMask) * 8))) + 180];
 	pixel *line2 = line1 + (336 * 9);
 	
 	for (unsigned int i = 16 * 8; i != 0; i -= 2, line1 += 2, line2 += 2)

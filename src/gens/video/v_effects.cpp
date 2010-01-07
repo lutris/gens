@@ -72,10 +72,10 @@ static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	
 	const int w = vdp_getHPix();
 	const int w_div2 = (w / 2);
-	const int h = VDP_Num_Vis_Lines;
+	const int h = vdp_getVPix();
 	const int h_div2 = (h / 2);
 	
-	for (j = h; j != 0; j--)
+	for (j = h + VDP_Lines.Visible.Border_Size; j != VDP_Lines.Visible.Border_Size; j--)
 	{
 		for (i = w; i != 0; i--)
 		{

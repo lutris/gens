@@ -642,31 +642,31 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player2, 2);
 		
 		// Miscellaneous.
-		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v6.dmat_length);
-		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v6.dmat_type);
-		VDP_Reg.DMAT_Tmp	= le32_to_cpu(md_save_v6.dmat_tmp);
-		VDP_Current_Line	= le32_to_cpu(md_save_v6.vdp_current_line);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
-		Bank_M68K		= le32_to_cpu(md_save_v6.bank_m68k);
-		S68K_State		= le32_to_cpu(md_save_v6.s68k_state);
-		Z80_State		= le32_to_cpu(md_save_v6.z80_state);
-		Last_BUS_REQ_Cnt	= le32_to_cpu(md_save_v6.last_bus_req_cnt);
-		Last_BUS_REQ_St		= le32_to_cpu(md_save_v6.last_bus_req_st);
-		Fake_Fetch		= le32_to_cpu(md_save_v6.fake_fetch);
-		Game_Mode		= le32_to_cpu(md_save_v6.game_mode);
-		CPU_Mode		= le32_to_cpu(md_save_v6.cpu_mode);
-		CPL_M68K		= le32_to_cpu(md_save_v6.cpl_m68k);
-		CPL_S68K		= le32_to_cpu(md_save_v6.cpl_s68k);
-		CPL_Z80			= le32_to_cpu(md_save_v6.cpl_z80);
-		Cycles_S68K		= le32_to_cpu(md_save_v6.cycles_s68k);
-		Cycles_M68K		= le32_to_cpu(md_save_v6.cycles_m68k);
-		Cycles_Z80		= le32_to_cpu(md_save_v6.cycles_z80);
-		VDP_Status		= le32_to_cpu(md_save_v6.vdp_status);
-		VDP_Int			= le32_to_cpu(md_save_v6.vdp_int);
-		VDP_Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
-		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
-		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
+		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
+		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
+		VDP_Reg.DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
+		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v6.vdp_current_line);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
+		Bank_M68K			= le32_to_cpu(md_save_v6.bank_m68k);
+		S68K_State			= le32_to_cpu(md_save_v6.s68k_state);
+		Z80_State			= le32_to_cpu(md_save_v6.z80_state);
+		Last_BUS_REQ_Cnt		= le32_to_cpu(md_save_v6.last_bus_req_cnt);
+		Last_BUS_REQ_St			= le32_to_cpu(md_save_v6.last_bus_req_st);
+		Fake_Fetch			= le32_to_cpu(md_save_v6.fake_fetch);
+		Game_Mode			= le32_to_cpu(md_save_v6.game_mode);
+		CPU_Mode			= le32_to_cpu(md_save_v6.cpu_mode);
+		CPL_M68K			= le32_to_cpu(md_save_v6.cpl_m68k);
+		CPL_S68K			= le32_to_cpu(md_save_v6.cpl_s68k);
+		CPL_Z80				= le32_to_cpu(md_save_v6.cpl_z80);
+		Cycles_S68K			= le32_to_cpu(md_save_v6.cycles_s68k);
+		Cycles_M68K			= le32_to_cpu(md_save_v6.cycles_m68k);
+		Cycles_Z80			= le32_to_cpu(md_save_v6.cycles_z80);
+		VDP_Status			= le32_to_cpu(md_save_v6.vdp_status);
+		VDP_Int				= le32_to_cpu(md_save_v6.vdp_int);
+		VDP_Ctrl.Write			= le32_to_cpu(md_save_v6.vdp_ctrl_write);
+		VDP_Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
+		VDP_Ctrl.DMA			= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
 		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
@@ -818,13 +818,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
 		
 		// Miscellaneous. (apparently necessary)
-		VDP_Status		= le32_to_cpu(md_save_v7.vdp_status);
-		VDP_Int			= le32_to_cpu(md_save_v7.vdp_int);
-		VDP_Current_Line	= le32_to_cpu(md_save_v7.vdp_current_line);
-		VDP_Num_Lines		= le32_to_cpu(md_save_v7.vdp_num_lines);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
-		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v7.dmat_length);
-		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v7.dmat_type);
+		VDP_Status			= le32_to_cpu(md_save_v7.vdp_status);
+		VDP_Int				= le32_to_cpu(md_save_v7.vdp_int);
+		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v7.vdp_current_line);
+		VDP_Lines.Display.Total		= le32_to_cpu(md_save_v7.vdp_num_lines);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
+		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
+		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
 		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
@@ -1186,9 +1186,9 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// Miscellaneous.
 	md_save_v7.vdp_status		= cpu_to_le32(VDP_Status);
 	md_save_v7.vdp_int		= cpu_to_le32(VDP_Int);
-	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Current_Line);
-	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Num_Lines);
-	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Num_Vis_Lines);
+	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Lines.Display.Current);
+	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Lines.Display.Total);
+	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Lines.Visible.Total);
 	md_save_v7.dmat_length		= cpu_to_le32(VDP_Reg.DMAT_Length);
 	md_save_v7.dmat_type		= cpu_to_le32(VDP_Reg.DMAT_Type);
 	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]

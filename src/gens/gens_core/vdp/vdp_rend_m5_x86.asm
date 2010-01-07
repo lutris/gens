@@ -84,9 +84,9 @@ section .bss align=64
 	
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
+	extern SYM(VDP_Lines)
 	
 	extern SYM(VDP_Status)
-	extern SYM(VDP_Current_Line)
 	
 	; Flags.
 	extern SYM(VDP_Flags)
@@ -514,7 +514,7 @@ section .text align=64
 
 %macro RENDER_LINE_SCROLL_A_WIN 3
 	
-	mov	eax, [SYM(VDP_Current_Line)]
+	mov	eax, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
 	movzx	ecx, byte [SYM(VDP_Reg) + VDP_Reg_t.Win_V_Pos]
 	shr	eax, 3
 	mov	ebx, [SYM(VDP_Reg) + VDP_Reg_t.H_Cell]
@@ -573,7 +573,7 @@ section .text align=64
 	add	ebp, eax			; ebp mis à jour pour clipping + window clip
 	add	ebx, ecx			; ebx = Cell courant pour le V Scroll
 	
-	mov	edi, [SYM(VDP_Current_Line)]				; edi = line number
+	mov	edi, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]	; edi = line number
 	mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Cell], ebx	; Cell courant pour le V Scroll
 	jns	short %%Not_First_Cell
 	
@@ -775,7 +775,7 @@ section .text align=64
 	mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Length_W]		; edi = # of cells to render
 	
 %%Window_Initialised
-	mov	edx, [SYM(VDP_Current_Line)]
+	mov	edx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
 	mov	cl, [SYM(VDP_Reg) + VDP_Reg_t.H_Win_Mul]
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
@@ -890,7 +890,7 @@ section .text align=64
 	align 16
 	
 %%Sprite_Loop
-		mov	edx, [SYM(VDP_Current_Line)]
+		mov	edx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
 		mov	edi, [SYM(Sprite_Visible) + edi]
 		mov	eax, [SYM(Sprite_Struct) + edi + 24]		; eax = CellInfo of the sprite
 		sub	edx, [SYM(Sprite_Struct) + edi + 4]			; edx = Line - Y Pos (Y Offset)
@@ -1127,7 +1127,7 @@ section .text align=64
 		
 		pushad
 		
-		;mov	ebx, [SYM(VDP_Current_Line)]
+		;mov	ebx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
 		;xor	eax, eax
 		;mov	edi, [SYM(TAB336) + ebx * 4]
 		xor	edi, edi	; Rendering to linebuffer, so the line number is always 0.

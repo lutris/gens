@@ -170,8 +170,8 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	for (; spr_num < TotalSprites; spr_num++)
 	{
 		// Check if the sprite is on the current line.
-		if (Sprite_Struct[spr_num].Pos_Y > VDP_Current_Line ||
-		    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Current_Line)
+		if (Sprite_Struct[spr_num].Pos_Y > VDP_Lines.Visible.Current ||
+		    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Lines.Visible.Current)
 		{
 			// Sprite is not on the current line.
 			continue;
@@ -217,8 +217,8 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		for (; spr_num < TotalSprites; spr_num++)
 		{
 			// Check if the sprite is on the current line.
-			if (Sprite_Struct[spr_num].Pos_Y > VDP_Current_Line ||
-			    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Current_Line)
+			if (Sprite_Struct[spr_num].Pos_Y > VDP_Lines.Visible.Current ||
+			    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Lines.Visible.Current)
 			{
 				// Sprite is not on the current line.
 				continue;
@@ -264,7 +264,7 @@ unsigned int Update_Mask_Sprite_Limit(void)
 template<bool plane>
 static inline uint16_t T_Get_X_Offset(void)
 {
-	const unsigned int H_Scroll_Offset = (VDP_Current_Line & VDP_Reg.H_Scroll_Mask) * 2;
+	const unsigned int H_Scroll_Offset = (VDP_Lines.Visible.Current & VDP_Reg.H_Scroll_Mask) * 2;
 	
 	if (plane)
 	{
@@ -331,7 +331,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 	if (interlaced)
 		VScroll_Offset /= 2;
 	
-	VScroll_Offset += VDP_Current_Line;
+	VScroll_Offset += VDP_Lines.Visible.Current;
 	VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
 	
 	// Get the V Cell offset and prevent it from overflowing.
@@ -340,7 +340,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 	if (!interlaced)
 	{
 		// Normal mode.
-		VScroll_Offset += VDP_Current_Line;
+		VScroll_Offset += VDP_Lines.Visible.Current;
 		VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
 		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 7);
 		
@@ -350,7 +350,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 	else
 	{
 		// Interlaced mode.
-		VScroll_Offset += (VDP_Current_Line * 2);
+		VScroll_Offset += (VDP_Lines.Visible.Current * 2);
 		if (VDP_Status & 0x0010)
 			VScroll_Offset++;
 		
@@ -1037,7 +1037,7 @@ static inline void T_Render_Line_ScrollB(void)
 	if (!interlaced)
 	{
 		// Normal mode.
-		Y_offset_cell += VDP_Current_Line;
+		Y_offset_cell += VDP_Lines.Visible.Current;
 		VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
 		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 7);
 		Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
@@ -1045,7 +1045,7 @@ static inline void T_Render_Line_ScrollB(void)
 	else
 	{
 		// Interlaced mode.
-		Y_offset_cell += (VDP_Current_Line * 2);
+		Y_offset_cell += (VDP_Lines.Visible.Current * 2);
 		if (VDP_Status & 0x0010)
 			Y_offset_cell++;
 		
@@ -1057,7 +1057,7 @@ static inline void T_Render_Line_ScrollB(void)
 	// Flickering Interlaced mode disabled.
 	if (interlaced)
 		Y_offset_cell /= 2;
-	Y_offset_cell += VDP_Current_Line;
+	Y_offset_cell += VDP_Lines.Visible.Current;
 	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
 	Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
 #endif
@@ -1178,36 +1178,29 @@ static inline void T_Render_LineBuf(unsigned int num_px, uint8_t *src, pixel *de
  */
 void VDP_Render_Line_m5(void)
 {
-	const int BorderArea = (240 - VDP_Num_Vis_Lines) / 2;
-	const int TopBorder = (VDP_Num_Lines - BorderArea);
-	
 	// Determine what part of the screen we're in.
 	bool in_border = false;
-	if (VDP_Current_Line >= (VDP_Num_Vis_Lines + BorderArea) &&
-	    VDP_Current_Line < TopBorder)
+	if (VDP_Lines.Visible.Current >= -VDP_Lines.Visible.Border_Size &&
+	    VDP_Lines.Visible.Current < 0)
 	{
-		// Not in any part of the screen.
-		return;
-	}
-	else if (VDP_Current_Line >= VDP_Num_Vis_Lines)
-	{
-		// In border area.
+		// Top border.
 		in_border = true;
+	}
+	else if (VDP_Lines.Visible.Current >= VDP_Lines.Visible.Total &&
+		 VDP_Lines.Visible.Current < (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size))
+	{
+		// Bottom border.
+		in_border = true;
+	}
+	else if (VDP_Lines.Visible.Current < -VDP_Lines.Visible.Border_Size ||
+		 VDP_Lines.Visible.Current >= (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size))
+	{
+		// Off screen.
+		return;
 	}
 	
 	// Determine the starting line in MD_Screen.
-	unsigned int LineStart;
-	
-	if (BorderArea > 0 && VDP_Current_Line >= TopBorder)
-	{
-		// Top border area.
-		LineStart = (TAB336[VDP_Num_Lines - VDP_Current_Line - 1] + 8);
-	}
-	else
-	{
-		// Regular visible area.
-		LineStart = (TAB336[VDP_Current_Line + BorderArea] + 8);
-	}
+	const unsigned int LineStart = TAB336[VDP_Lines.Visible.Current + VDP_Lines.Visible.Border_Size] + 8;
 	
 	if (in_border && !Video.borderColorEmulation)
 	{

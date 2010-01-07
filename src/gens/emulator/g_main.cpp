@@ -175,12 +175,15 @@ int Init_Settings(void)
 	bppOut = 32;
 	
 	// Old code from InitParameters().
-	VDP_Num_Vis_Lines = 224;
+	
+	// Initialize VDP_Lines.
+	VDP_Set_Visible_Lines();
+	
 #if 0	// TODO: Replace with MDP "exclusive mode" later.
 	Net_Play = 0;
 #endif
-	Sprite_Over = 1;
 	
+	Sprite_Over = 1;
 	GYM_Dumping = 0;
 	
 	Game = NULL;

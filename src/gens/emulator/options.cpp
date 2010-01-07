@@ -274,7 +274,7 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Num_Lines = 312;
+		VDP_Lines.Display.Total = 312;	// TODO: Change to 313!
 		VDP_Status |= 0x0001;
 		_32X_VDP.Mode &= ~0x8000;
 		
@@ -290,8 +290,8 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Num_Lines = 262;
-		VDP_Status &= 0xFFFE;
+		VDP_Lines.Display.Total = 262;
+		VDP_Status &= ~0x0001;
 		_32X_VDP.Mode |= 0x8000;
 		
 		CD_Access_Timer = 2096;

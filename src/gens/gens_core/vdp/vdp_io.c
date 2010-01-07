@@ -40,9 +40,9 @@ VDP_CRam_t CRam;
 // Miscellaneous. (TODO: Determine if these should be signed or unsigned.)
 int VDP_Status;
 int VDP_Int;
-int VDP_Current_Line;
-int VDP_Num_Lines;
-int VDP_Num_Vis_Lines;
+
+// VDP line counters.
+VDP_Lines_t VDP_Lines;
 
 // Flags.
 VDP_Flags_t VDP_Flags;
@@ -541,7 +541,7 @@ uint8_t VDP_Read_V_Counter(void)
 	bl = ((H_Counter >= bl) ? 1 : 0);
 	bl &= bh;
 	
-	unsigned int V_Counter = VDP_Current_Line;
+	unsigned int V_Counter = VDP_Lines.Display.Current;
 	V_Counter += (bl ? 1 : 0);
 	
 	// V_Counter_Overflow depends on PAL/NTSC status.
@@ -677,7 +677,8 @@ unsigned int VDP_Update_DMA(void)
 	unsigned int offset = ((VDP_Reg.m5.Set4 & 1) * 2);
 	
 	// Check if we're in VBlank or the VDP is disabled.
-	if (VDP_Current_Line >= VDP_Num_Vis_Lines ||
+	if (VDP_Lines.Visible.Current < 0 ||
+	    VDP_Lines.Visible.Current >= VDP_Lines.Visible.Current ||
 	    (!(VDP_Reg.m5.Set2 & 0x40)))
 	{
 		// In VBlank, or VDP is disabled.

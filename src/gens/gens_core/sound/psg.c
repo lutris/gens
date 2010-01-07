@@ -105,8 +105,10 @@ psg_chip_t PSG;
 /* GYM dumping. */
 #include "util/sound/gym.hpp"
 
+// Needed for VDP line number.
+#include "gens_core/vdp/vdp_io.h"
+
 #include "audio/audio.h"
-extern int VDP_Current_Line;
 
 int PSG_Enable;
 int PSG_Len = 0;
@@ -448,8 +450,8 @@ void PSG_Special_Update(void)
 	PSG_Update(PSG_Buf, PSG_Len);
 	
 	// NOTE: Seg_L and Seg_R are arrays. This is pointer arithmetic.
-	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
-	PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
+	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
+	PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
 	PSG_Len = 0;
 }
 

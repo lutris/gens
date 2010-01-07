@@ -210,11 +210,30 @@ extern union
 
 extern uint8_t  H_Counter_Table[512][2];
 
-extern int VDP_Current_Line;
-extern int VDP_Num_Lines;
-extern int VDP_Num_Vis_Lines;
 extern int VDP_Int;
 extern int VDP_Status;
+
+// VDP line counters.
+// NOTE: Gens/GS currently uses 312 lines for PAL. It should use 313!
+typedef struct _VDP_Lines_t
+{
+	/** Total lines using NTSC/PAL line numbering. **/
+	struct
+	{
+		unsigned int Total;	// Total number of lines on the display. (262, 313)
+		unsigned int Current;	// Current display line.
+	} Display;
+	
+	/** Visible lines using VDP line numbering. **/
+	struct
+	{
+		int Total;	// Total number of visible lines. (192, 224, 240)
+		int Current;	// Current visible line. (May be negative for top border.)
+		int Border_Size;	// Size of the border. (192 lines == 24; 224 lines == 8)
+		int NTSC_V30_Roll;	// Current NTSC V30 roll offset.
+	} Visible;
+} VDP_Lines_t;
+extern VDP_Lines_t VDP_Lines;
 
 // Flags.
 typedef union
@@ -303,7 +322,7 @@ static inline int vdp_getVPix(void)
 	rval = 1;
 #endif
 	
-	return VDP_Num_Vis_Lines;
+	return VDP_Lines.Visible.Total;
 }
 
 #ifdef __cplusplus
@@ -315,15 +334,37 @@ static inline int vdp_getVPix(void)
 /**
  * VDP_SET_VISIBLE_LINES(): Sets the number of visible lines, depending on CPU mode and VDP setting.
  * Possible options:
- * - Normal: 224 lines. (V28)
- * - If PAL and Set2.M2 (bit 3) is set, 240 lines. (V30)
+ * - Mode 4 (SMS): 192 lines. (TODO)
+ * - Mode 5, V28: 224 lines.
+ * - Mode 5, V30: 240 lines. (NTSC V30 results in a rolling picture.)
  */
-#define VDP_SET_VISIBLE_LINES()				\
-do {							\
-	if ((CPU_Mode == 1) && (VDP_Reg.m5.Set2 & 0x8))	\
-		VDP_Num_Vis_Lines = 240;		\
-	else						\
-		VDP_Num_Vis_Lines = 224;		\
-} while (0)
+static inline void VDP_Set_Visible_Lines(void)
+{
+	// CPU_Mode: 0 == NTSC; 1 == PAL
+	// TODO: Remove the "+1" for PAL once Gens/GS uses 313 lines instead of 312.
+	if (VDP_Reg.m5.Set2 & 0x08)
+	{
+		// V30.
+		VDP_Lines.Visible.Total = 240;
+		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -43+1 : 0);
+		VDP_Lines.Visible.Border_Size = 0;
+	}
+	else
+	{
+		// V28.
+		VDP_Lines.Visible.Total = 224;
+		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -51+1 : -24);
+		VDP_Lines.Visible.Border_Size = 8;
+	}
+	
+	// TODO: V24 (192 lines)
+#if 0
+	{
+		VDP_Lines.Visible.Total = 192;
+		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -67+1 : -40);
+		VDP_Lines.Visible.Border_Size = 24;
+	}
+#endif
+}
 
 #endif /* GENS_VDP_IO_H */

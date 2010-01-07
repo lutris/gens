@@ -172,7 +172,9 @@ int Init_32X(ROM_t* MD_ROM)
 			break;
 	}
 	
-	VDP_Num_Vis_Lines = 224;
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
+	
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// Two copies of the ROM are needed, one for the 68000 and one for the SH2s.
@@ -316,16 +318,17 @@ void Reset_32X(void)
 int Do_32X_VDP_Only(void)
 {
 	// Set the number of visible lines.
-	VDP_SET_VISIBLE_LINES();
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
 	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
 		Render_Line_32X();
 		Post_Line_32X();
 	}
-
+	
 	return 0;
 }
 
@@ -337,6 +340,8 @@ int Do_32X_VDP_Only(void)
 template<bool VDP>
 static inline int T_gens_do_32X_frame(void)
 {
+	// TODO: Update for VDP_Lines.
+#if 0
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
@@ -633,7 +638,8 @@ static inline int T_gens_do_32X_frame(void)
 	post_frame.bpp = bppMD;
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
-	
+#endif
+		
 	return 1;
 }
 
