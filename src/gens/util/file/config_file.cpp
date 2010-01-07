@@ -260,6 +260,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
+	cfg.writeBool("Graphics", "NTSC V30 Rolling", Video.ntscV30rolling);
 	
 #ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
@@ -545,6 +546,7 @@ int Config::load(const string& filename, void* gameActive)
 	vdraw_set_fullscreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
+	Video.ntscV30rolling = cfg.getBool("Graphics", "NTSC V30 Rolling", true);
 	
 	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "Double");

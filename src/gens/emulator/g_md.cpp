@@ -460,10 +460,20 @@ static inline int T_gens_do_MD_frame(void)
 	{
 		// NTSC V30 mode. Simulate screen rolling.
 		VDP_Lines.NTSC_V30.VBlank = !VDP_Lines.NTSC_V30.VBlank;
-		VDP_Lines.NTSC_V30.Offset += 11;	// TODO: Figure out a good offset increment.
-		VDP_Lines.NTSC_V30.Offset %= 240;	// Prevent overflow.
+		if (Video.ntscV30rolling)
+		{
+			VDP_Lines.NTSC_V30.Offset += 11;	// TODO: Figure out a good offset increment.
+			VDP_Lines.NTSC_V30.Offset %= 240;	// Prevent overflow.
+		}
+		else
+		{
+			// Rolling is disabled.
+			VDP_Lines.NTSC_V30.Offset = 0;
+		}
 		
-		// If VDP_Lines.NTSC_V30.VBlank, we can't do a VBlank.
+		// If VDP_Lines.NTSC_V30.VBlank is set, we can't do a VBlank.
+		// This effectively divides VBlank into 30 Hz.
+		// See http://gendev.spritesmind.net/forum/viewtopic.php?p=8128#8128 for more information.
 		VBlank_OK = !VDP_Lines.NTSC_V30.VBlank;
 	}
 	

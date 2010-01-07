@@ -108,6 +108,7 @@ typedef struct _Gens_VideoSettings_t
 	int VSync_W;
 	int borderColorEmulation;
 	int pauseTint;
+	int ntscV30rolling;
 #ifdef GENS_OPENGL
 	struct
 	{

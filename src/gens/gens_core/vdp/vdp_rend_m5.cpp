@@ -1201,7 +1201,7 @@ void VDP_Render_Line_m5(void)
 	
 	// Determine the starting line in MD_Screen.
 	int LineStart = VDP_Lines.Visible.Current;
-	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08))
+	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08) && Video.ntscV30rolling)
 	{
 		// NTSC V30 mode. Simulate screen rolling.
 		LineStart -= VDP_Lines.NTSC_V30.Offset;
