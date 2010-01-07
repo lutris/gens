@@ -1746,6 +1746,11 @@ section .text align=64
 	global SYM(Render_Line)
 	SYM(Render_Line):
 		
+		cmp	dword [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current], 240
+		jb	.In_Range	; Use unsigned arithmetic here so negative numbers are treated as huge.
+		ret
+		
+	.In_Range:
 		pushad
 		
 		mov	ebx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
@@ -1957,6 +1962,11 @@ section .text align=64
 	global SYM(Render_Line_32X)
 	SYM(Render_Line_32X):
 		
+		cmp	dword [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current], 240
+		jb	.In_Range	; Use unsigned arithmetic here so negative numbers are treated as huge.
+		ret
+		
+	.In_Range:
 		pushad
 		
 		mov	ebx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
