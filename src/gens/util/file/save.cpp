@@ -876,11 +876,14 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 			VDP_Reg.reg[i] = (uint8_t)le32_to_cpu(md_save_v7.vdp_reg[i]);
 		}
 		
-		// VDP control.
-		for (unsigned int i = 0; i < 7; i++)
-		{
-			VDP_Ctrl.ureg[i] = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
-		}
+		// VDP control data.
+		VDP_Ctrl.Flag		= le32_to_cpu(md_save_v7.vdp_ctrl.Flag);
+		VDP_Ctrl.Data		= le32_to_cpu(md_save_v7.vdp_ctrl.Data);
+		VDP_Ctrl.Write		= le32_to_cpu(md_save_v7.vdp_ctrl.Write);
+		VDP_Ctrl.Access		= le32_to_cpu(md_save_v7.vdp_ctrl.Access);
+		VDP_Ctrl.Address	= le32_to_cpu(md_save_v7.vdp_ctrl.Address);
+		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v7.vdp_ctrl.DMA_Mode);
+		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v7.vdp_ctrl.DMA);
 		
 		// Extra Starscream MC68000 information.
 		Context_68K.cycles_needed		= le32_to_cpu(md_save_v7.starscream_extra.cycles_needed);
@@ -1239,11 +1242,14 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 		md_save_v7.vdp_reg[i] = (uint8_t)cpu_to_le32(VDP_Reg.reg[i]);
 	}
 	
-	// VDP control.
-	for (unsigned int i = 0; i < 7; i++)
-	{
-		md_save_v7.vdp_ctrl[i] = cpu_to_le32(VDP_Ctrl.ureg[i]);
-	}
+	// VDP control data.
+	md_save_v7.vdp_ctrl.Flag	= cpu_to_le32(VDP_Ctrl.Flag);
+	md_save_v7.vdp_ctrl.Data	= cpu_to_le32(VDP_Ctrl.Data);
+	md_save_v7.vdp_ctrl.Write	= cpu_to_le32(VDP_Ctrl.Write);
+	md_save_v7.vdp_ctrl.Access	= cpu_to_le32(VDP_Ctrl.Access);
+	md_save_v7.vdp_ctrl.Address	= cpu_to_le32(VDP_Ctrl.Address);
+	md_save_v7.vdp_ctrl.DMA_Mode	= cpu_to_le32(VDP_Ctrl.DMA_Mode);
+	md_save_v7.vdp_ctrl.DMA		= cpu_to_le32(VDP_Ctrl.DMA);
 	
 	// Extra Starscream MC68000 information.
 	md_save_v7.starscream_extra.cycles_needed	= cpu_to_le32(Context_68K.cycles_needed);

@@ -165,20 +165,15 @@ extern VDP_Reg_t VDP_Reg;
 /**
  * VDP_Ctrl_t: VDP Control struct.
  */
-typedef union
+typedef struct _VDP_Ctrl_t
 {
-	int reg[7];
-	uint32_t ureg[7];
-	struct
-	{
-		unsigned int Flag;
-		unsigned int Data;
-		unsigned int Write;
-		unsigned int Access;
-		unsigned int Address;
-		unsigned int DMA_Mode;
-		unsigned int DMA;
-	};
+	unsigned int Flag;
+	unsigned int Data;
+	unsigned int Write;
+	unsigned int Access;
+	unsigned int Address;
+	unsigned int DMA_Mode;
+	unsigned int DMA;
 } VDP_Ctrl_t;
 extern VDP_Ctrl_t VDP_Ctrl;
 
