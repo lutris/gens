@@ -237,117 +237,15 @@ section .text align=64
 	
 	align 16
 	
-	;void Write_VDP_Ctrl(uint16_t Data)
-	global SYM(Write_VDP_Ctrl)
-	SYM(Write_VDP_Ctrl):
-		
-;		push	ebx
-;		mov	eax, [esp + 8]
-;		
-;		mov	ebx, eax
-;		and	eax, 0xC000			; on isole pour tester le mode
-;		cmp	eax, 0x8000			; on est en mode set register
-;		je	short .Set_Register
-;
-;		test	dword [SYM(Ctrl.Flag)], 1		; est-on à la 1ère ecriture ??
-;		mov	eax, ebx
-;		jz	short .First_Word		; si oui on y va !
-;		jmp	.Second_Word			; sinon
-;	
-;	align 16
-;	
-;	.Set_Register
-;		mov	eax, ebx
-;		shr	ebx, 8				; ebx = numero du registre 
-;		mov	byte [SYM(Ctrl.Access)], 5
-;		and	eax, 0xFF			; on isole la valeur du registre
-;		and	ebx, 0x1F			; on isole le numero du registre
-;		mov	word [SYM(Ctrl.Address)], 0
-;		jmp	[Table_Set_Reg + ebx * 4]	; on affecte en fonction
-		
-		mov	eax, [esp + 4]
-		test	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.Flag], 1	; est-on à la 2eme ecriture ??
+	;void VDP_Do_DMA_asm(unsigned int access)
+	global SYM(VDP_Do_DMA_asm)
+	SYM(VDP_Do_DMA_asm):
 		push	ebx
-		jnz	near .Second_Word		; sinon
-
-		mov	ebx, eax
-		and	eax, 0xC000			; on isole pour tester le mode
-		cmp	eax, 0x8000			; on est en mode set register
-		jne	short .First_Word
-
-		mov	eax, ebx
-		mov	bl, bh				; bl = numero du registre 
-		mov	dword [SYM(VDP_Ctrl) + VDP_Ctrl_t.Access], 5
-		and	eax, 0xFF			; on isole la valeur du registre
-		mov	dword [SYM(VDP_Ctrl) + VDP_Ctrl_t.Address], 0
-		and	ebx, 0x1F			; on isole le numero du registre 
-		
-		; Set the register.
-		push	eax				; Register value.
-		push	ebx				; Register number.
-		call	SYM(VDP_Set_Reg)
-		add	esp, byte 8
-		
-		pop	ebx
-		ret
-	
-	align 16
-	
-	.First_Word:	; 1st Write
 		push	ecx
 		push	edx
-		mov	ax, [SYM(VDP_Ctrl) + VDP_Ctrl_t.Data + 2]	; ax = 2nd word (AS)
-		mov	ecx, ebx					; cx = bx = 1st word (AS)
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Data], bx		; et on sauvegarde les premiers 16 bits (AS)
-		mov	edx, eax					; dx = ax = 2nd word (AS)
-		mov	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.Flag], 1	; la prochaine ecriture sera Second
-		shl	eax, 14				; on isole l'adresse
-		and	ebx, 0x3FFF			; on isole l'adresse
-		and	ecx, 0xC000			; on isole les bits de CD
-		or	ebx, eax			; ebx = Address IO VRAM
-		and	edx, 0xF0			; on isole les bits de CD
-		shr	ecx, 12				; "		"
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Address], bx	; Ctrl.Address = Address de depart pour le port VDP Data
-		or	edx, ecx					; edx = CD
-		mov	eax, [SYM(CD_Table) + edx]			; eax = Location & Read/Write
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Access], al		; on stocke l'accés
+		mov	eax, [esp + 16]
+		mov	al, ah	; DMA access mode is the high byte in the source word.
 		
-		pop	edx
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
-	.Second_Word:
-		push	ecx
-		push	edx
-		mov	cx, [SYM(VDP_Ctrl) + VDP_Ctrl_t.Data]		; cx = 1st word (AS)
-		mov	edx, eax					; dx = ax = 2nd word (AS)
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Data + 2], ax	; on stocke le controle complet
-		mov	ebx, ecx			; bx = 1st word (AS)
-		shl	eax, 14				; on isole l'adresse
-		and	ebx, 0x3FFF			; on isole l'adresse
-		and	ecx, 0xC000			; on isole les bits de CD
-		or	ebx, eax			; ebx = Address IO VRAM
-		and	edx, 0xF0			; on isole les bits de CD
-		shr	ecx, 12				;		"		"
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Address], bx	; Ctrl.Address = Address de depart pour le port VDP Data
-		or	edx, ecx					; edx = CD
-		mov	eax, [SYM(CD_Table) + edx]			; eax = Location & Read/Write
-		mov	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.Flag], 0	; on en a finit avec Address Set
-		test	ah, ah						; on teste si il y a transfert DMA
-		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Access], al		; on stocke l'accés
-		mov	al, ah
-		jnz	short .DO_DMA			; si oui on y va
-		
-		pop	edx
-		pop	ecx
-		pop	ebx
-		ret
-	
-	align 16
-	
 	.DO_DMA:
 		push	edi
 		push	esi

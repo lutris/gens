@@ -284,7 +284,7 @@ section .text align=64
 	extern SYM(VDP_Read_H_Counter)
 	extern SYM(VDP_Write_Data_Byte)
 	extern SYM(VDP_Write_Data_Word)
-	extern SYM(Write_VDP_Ctrl)
+	extern SYM(VDP_Write_Ctrl)
 	
 	extern SYM(main68k_readOdometer)
 	extern SYM(mdZ80_reset)
@@ -1709,7 +1709,7 @@ section .text align=64
 		ja	short .bad
 		
 		push	eax
-		call	SYM(Write_VDP_Ctrl)
+		call	SYM(VDP_Write_Ctrl)
 		pop	eax
 		pop	ecx
 		pop	ebx

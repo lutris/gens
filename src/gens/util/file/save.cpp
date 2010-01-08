@@ -477,8 +477,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// Load VDP control settings.
 		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
-		Write_VDP_Ctrl(lastCtrlData >> 16);
-		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
+		VDP_Write_Ctrl(lastCtrlData >> 16);
+		VDP_Write_Ctrl(lastCtrlData & 0xFFFF);
 		
 		VDP_Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
 		VDP_Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
@@ -878,7 +878,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// VDP control data.
 		VDP_Ctrl.Flag		= le32_to_cpu(md_save_v7.vdp_ctrl.Flag);
-		VDP_Ctrl.Data		= le32_to_cpu(md_save_v7.vdp_ctrl.Data);
+		VDP_Ctrl.Data.d		= le32_to_cpu(md_save_v7.vdp_ctrl.Data);
 		VDP_Ctrl.Write		= le32_to_cpu(md_save_v7.vdp_ctrl.Write);
 		VDP_Ctrl.Access		= le32_to_cpu(md_save_v7.vdp_ctrl.Access);
 		VDP_Ctrl.Address	= le32_to_cpu(md_save_v7.vdp_ctrl.Address);
@@ -989,7 +989,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	}
 	
 	// VDP control data.
-	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data);
+	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data.d);
 	
 	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(VDP_Ctrl.Flag);
 	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((VDP_Ctrl.DMA >> 2) & 1);
@@ -1244,7 +1244,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	// VDP control data.
 	md_save_v7.vdp_ctrl.Flag	= cpu_to_le32(VDP_Ctrl.Flag);
-	md_save_v7.vdp_ctrl.Data	= cpu_to_le32(VDP_Ctrl.Data);
+	md_save_v7.vdp_ctrl.Data	= cpu_to_le32(VDP_Ctrl.Data.d);
 	md_save_v7.vdp_ctrl.Write	= cpu_to_le32(VDP_Ctrl.Write);
 	md_save_v7.vdp_ctrl.Access	= cpu_to_le32(VDP_Ctrl.Access);
 	md_save_v7.vdp_ctrl.Address	= cpu_to_le32(VDP_Ctrl.Address);

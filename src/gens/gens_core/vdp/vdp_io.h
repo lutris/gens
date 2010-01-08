@@ -167,8 +167,12 @@ extern VDP_Reg_t VDP_Reg;
  */
 typedef struct _VDP_Ctrl_t
 {
-	unsigned int Flag;
-	unsigned int Data;
+	unsigned int Flag;	// Data latch.
+	union
+	{
+		uint16_t w[2];	// Control words.
+		uint32_t d;	// Control DWORD. (TODO: Endianness conversion.)
+	} Data;
 	unsigned int Write;
 	unsigned int Access;
 	unsigned int Address;
@@ -253,7 +257,11 @@ extern VDP_Flags_t VDP_Flags;
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
 
-void     VDP_Reset(void);
+void    VDP_Reset(void);
+uint8_t VDP_Int_Ack(void);
+void    VDP_Update_IRQ_Line(void);
+void    VDP_Set_Reg(int reg_num, uint8_t val);
+
 uint8_t  VDP_Read_H_Counter(void);
 uint8_t  VDP_Read_V_Counter(void);
 uint16_t VDP_Read_Status(void);
@@ -263,13 +271,7 @@ unsigned int VDP_Update_DMA(void);
 
 void VDP_Write_Data_Byte(uint8_t  data);
 void VDP_Write_Data_Word(uint16_t data);
-
-/* Functions that need to be ported to C. */
-void Write_VDP_Ctrl(uint16_t Data);
-void VDP_Set_Reg(int reg_num, uint8_t val);
-
-uint8_t VDP_Int_Ack(void);
-void VDP_Update_IRQ_Line(void);
+void VDP_Write_Ctrl(uint16_t data);
 
 
 /** Inline VDP functions. **/

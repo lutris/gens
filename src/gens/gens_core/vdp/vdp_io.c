@@ -164,7 +164,7 @@ void VDP_Reset(void)
 	
 	// VDP Control struct.
 	VDP_Ctrl.Flag = 0;
-	VDP_Ctrl.Data = 0;
+	VDP_Ctrl.Data.d = 0;
 	VDP_Ctrl.Write = 0;
 	VDP_Ctrl.Access = 0;
 	VDP_Ctrl.Address = 0;
@@ -823,8 +823,7 @@ static void DMA_Fill(uint16_t data)
  */
 void VDP_Write_Data_Word(uint16_t data)
 {
-	// Clear the VDP control flag.
-	// (It's set when the address is set.)
+	// Clear the VDP data latch.
 	VDP_Ctrl.Flag = 0;
 	
 	if (VDP_Ctrl.DMA & 0x04)
@@ -894,4 +893,70 @@ void VDP_Write_Data_Word(uint16_t data)
 			// Invalid write specification.
 			break;
 	}
+}
+
+
+void VDP_Do_DMA_asm(unsigned int access);
+/**
+ * VDP_Write_Ctrl(): Write a control word to the VDP.
+ * @param data Control word.
+ */
+void VDP_Write_Ctrl(uint16_t data)
+{
+	// TODO: Check endianness with regards to the control words. (Wordswapping!)
+	
+	// Check if this is the first or second control word.
+	if (!VDP_Ctrl.Flag)
+	{
+		// First control word.
+		// Check if this is an actual control word or a register write.
+		if ((data & 0xC000) == 0x8000)
+		{
+			// Register write.
+			VDP_Ctrl.Access = 5;	// TODO: What does this mean?
+			VDP_Ctrl.Address = 0;	// Reset the address counter.
+			
+			const int reg = (data >> 8) & 0x1F;
+			VDP_Set_Reg(reg, (data & 0xFF));
+			return;
+		}
+		
+		// Control word.
+		VDP_Ctrl.Data.w[0] = data;
+		VDP_Ctrl.Flag = 1;		// Latch the first control word.
+		
+		// Determine the VDP address.
+		VDP_Ctrl.Address = (data & 0x3FFF);
+		VDP_Ctrl.Address |= ((VDP_Ctrl.Data.w[1] & 0x3) << 14);
+		
+		// Determine the destination.
+		unsigned int CD_Offset = ((data >> 14) & 0x3);
+		CD_Offset |= ((VDP_Ctrl.Data.w[1] & 0xF0) >> 2);
+		VDP_Ctrl.Access = (CD_Table[CD_Offset] & 0xFF);
+		return;
+	}
+	
+	// Second control word.
+	VDP_Ctrl.Data.w[1] = data;
+	VDP_Ctrl.Flag = 0;		// Clear the latch.
+	
+	// Determine the VDP address.
+	VDP_Ctrl.Address = (VDP_Ctrl.Data.w[0] & 0x3FFF);
+	VDP_Ctrl.Address |= ((data & 3) << 14);
+	
+	// Determine the destination.
+	unsigned int CD_Offset = ((VDP_Ctrl.Data.w[0] >> 14) & 0x3);
+	CD_Offset |= ((data & 0xF0) >> 2);
+	unsigned int CD = CD_Table[CD_Offset];
+	VDP_Ctrl.Access = (CD & 0xFF);
+	
+	if (!(CD & 0xFF00))
+	{
+		// No DMA is needed.
+		return;
+	}
+	
+	// Perform a DMA operation.
+	VDP_Do_DMA_asm(CD);
+	return;
 }
