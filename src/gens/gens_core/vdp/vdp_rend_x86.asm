@@ -80,7 +80,7 @@ section .rodata align=64
 	SYM(TAB320):
 	%assign i 0
 	%rep 240
-		dd (i * 336)
+		dd (i * 320)
 	%assign i i+1
 	%endrep
 	
