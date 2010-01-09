@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) Select CD-ROM Drive Window.                                *
+ * Gens: (Win32) Select CD-ROM Drive Window.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -59,9 +59,9 @@ HWND selcd_window = NULL;
 // Window class.
 static WNDCLASS selcd_wndclass;
 
-// Window size.
-#define SELCD_WINDOW_WIDTH  320
-#define SELCD_WINDOW_HEIGHT 72
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define SELCD_WINDOW_WIDTH  200
+#define SELCD_WINDOW_HEIGHT 44
 
 // Window procedure.
 static LRESULT CALLBACK selcd_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -112,11 +112,11 @@ void selcd_window_show(void)
 	selcd_window = pCreateWindowU("selcd_window", "Select CD-ROM Drive",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT,
+					DLU_X(SELCD_WINDOW_WIDTH), DLU_Y(SELCD_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(selcd_window, SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(selcd_window, DLU_X(SELCD_WINDOW_WIDTH), DLU_Y(SELCD_WINDOW_HEIGHT));
 	
 	// Center the window on the parent window.
 	gsft_win32_center_on_window(selcd_window, gens_window);
@@ -133,32 +133,41 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 {
 	HWND lblDeviceName = pCreateWindowU(WC_STATIC, "CD-ROM Drive:",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8, 8+3, 96, 16,
+						DLU_X(5), DLU_Y(5+1),
+						DLU_X(50), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(lblDeviceName, fntMain, true);
 	
 	// CD-ROM Drive dropdown box
 	cboDeviceName = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					16+96-8, 8, SELCD_WINDOW_WIDTH-8-96-16+8, 23*5,
+					DLU_X(5+50+5), DLU_Y(5),
+					DLU_X(SELCD_WINDOW_WIDTH-5-5-50-5), DLU_Y(14*5),
 					hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
 	SetWindowFontU(cboDeviceName, fntMain, true);
 	
 	// Buttons
-	const unsigned short btnTop = SELCD_WINDOW_HEIGHT-8-24;
+	int btnLeft = DLU_X(SELCD_WINDOW_WIDTH-5-50-5-50-5-50);
+	int btnInc = DLU_X(5+50);
+	const int btnTop = DLU_Y(SELCD_WINDOW_HEIGHT-5-14);
 	
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				SELCD_WINDOW_WIDTH-8-75-8-75-8-75, btnTop, 75, 23,
+				btnLeft, btnTop,
+				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, true);
 	
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					SELCD_WINDOW_WIDTH-8-75-8-75, btnTop, 75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, true);
 	
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					SELCD_WINDOW_WIDTH-8-75, btnTop, 75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, true);
 	
