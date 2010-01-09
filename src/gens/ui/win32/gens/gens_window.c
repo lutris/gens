@@ -69,7 +69,7 @@ void gens_window_init_hWnd(void)
 		gens_wndclass.cbWndExtra = 0;
 		gens_wndclass.hInstance = ghInstance;
 		gens_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		gens_wndclass.hCursor = NULL;
+		gens_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		gens_wndclass.hbrBackground = gens_bgcolor;
 		gens_wndclass.lpszMenuName = NULL;
 		gens_wndclass.lpszClassName = "Gens";
