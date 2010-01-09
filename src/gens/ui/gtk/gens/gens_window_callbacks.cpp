@@ -196,7 +196,7 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 
 
 /**
- * gens_window_focus_in(): Gens window has lost focus.
+ * gens_window_focus_out(): Gens window has lost focus.
  * @param widget GTK+ widget.
  * @param event GDK event.
  * @param user_data User data.
@@ -221,6 +221,18 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	input_sdl_reset_modifiers();
 	
 	return false;
+}
+
+
+/**
+ * gens_menu_deactivate(): Gens menu has been deactivated.
+ * @param menushell GtkMenuShell.
+ * @param user_data User data.
+ */
+void gens_menu_deactivate(GtkMenuShell *menushell, gpointer user_data)
+{
+	// Reset the SDL key modifier state.
+	input_sdl_reset_modifiers();
 }
 
 

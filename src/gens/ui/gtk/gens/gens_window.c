@@ -202,6 +202,12 @@ void gens_window_create_menubar(void)
 		gens_menu_bar = gtk_menu_new();
 	}
 	
+	// Connect the menu "deactivate" signal.
+	// For whatever reason, GtkMenuShell has a "deactivate" signal,
+	// but not an "activate" signal.
+	g_signal_connect((gpointer)gens_menu_bar, "deactivate",
+			 G_CALLBACK(gens_menu_deactivate), NULL);
+	
 	// Accelerator Group.
 	static GtkAccelGroup *gens_menu_accel_group = NULL;
 	if (gens_menu_accel_group != NULL)
