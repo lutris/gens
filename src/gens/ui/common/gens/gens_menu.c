@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -130,7 +130,7 @@ static const GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Bits per pixel",		&gmiGraphics_bpp[0],	0, 0, 0},
 #endif /* GENS_OS_UNIX */
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
-	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Adjust...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
+	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Ad&just...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
 	{IDM_GRAPHICS_RENDER,		GMF_ITEM_SUBMENU,	"&Render",			NULL,	0, 0, IDIM_RENDER},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_SPRITELIMIT,	GMF_ITEM_CHECK,		"Sprite Limit",			NULL,	0, 0, 0},
