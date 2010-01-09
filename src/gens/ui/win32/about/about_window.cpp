@@ -294,7 +294,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	// Create the OK button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					DLU_X(ABOUT_WINDOW_WIDTH-5-50), DLU_Y(ABOUT_WINDOW_HEIGHT-5-15),
+					DLU_X(ABOUT_WINDOW_WIDTH-5-50), DLU_Y(ABOUT_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, true);

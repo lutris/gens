@@ -204,7 +204,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					btnLeft, ccode_window_height-DLU_Y(5+15),
+					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, TRUE);
@@ -213,7 +213,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, ccode_window_height-DLU_Y(5+15),
+					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, TRUE);
@@ -222,7 +222,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, ccode_window_height-DLU_Y(5+15),
+					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, TRUE);
