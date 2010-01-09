@@ -37,6 +37,17 @@ extern HFONT fntMono;
 void WINAPI fonts_init(void);
 void WINAPI fonts_end(void);
 
+/** Dialog units. **/
+extern int dlu_x;
+extern int dlu_y;
+
+void WINAPI dlu_init(HWND hWnd);
+
+// 4 == horizontal dialog template units.
+// 8 == vertical dialog template units.
+#define DLU_X(dlu) ((dlu_x * (dlu)) / 4)
+#define DLU_Y(dlu) ((dlu_y * (dlu)) / 8)
+
 #ifdef __cplusplus
 }
 #endif

@@ -35,6 +35,10 @@ HFONT fntMain;
 HFONT fntTitle;
 HFONT fntMono;
 
+// Dialog base units.
+int dlu_x = 4;
+int dlu_y = 4;
+
 
 /**
  * fonts_init(): Initialize the Win32 fonts.
@@ -75,4 +79,35 @@ void WINAPI fonts_end(void)
 	
 	DeleteFont(fntTitle);
 	fntTitle = NULL;
+}
+
+
+/**
+ * dlu_init(): Initialize dialog unit calculation.
+ * @param hWnd Window.
+ */
+void WINAPI dlu_init(HWND hWnd)
+{
+	HDC hDC = GetDC(hWnd);
+	HFONT hFontOld = SelectFont(hDC, fntMain);
+	
+	TEXTMETRICA tm;
+	BOOL bRet = GetTextMetricsA(hDC, &tm);
+	if (!bRet)
+	{
+		SelectFont(hDC, hFontOld);
+		return;
+	}
+	
+	SIZE size;
+	static const char str[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	bRet = GetTextExtentPoint32A(hDC, str, sizeof(str)-1, &size);
+	if (!bRet)
+	{
+		SelectFont(hDC, hFontOld);
+		return;
+	}
+	
+	dlu_x = (((size.cx / 26) + 1) / 2);
+	dlu_y = tm.tmHeight;
 }
