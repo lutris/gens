@@ -65,7 +65,7 @@ BOOL cc_window_is_configuring = FALSE;
 // Window class.
 static WNDCLASS	cc_wndclass;
 
-// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted with DLU_X() / DLU_Y().)
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
 #define CC_WINDOW_WIDTH  397
 #define CC_WINDOW_HEIGHT 274
 
