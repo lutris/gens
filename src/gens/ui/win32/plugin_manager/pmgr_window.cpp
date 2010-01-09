@@ -149,7 +149,7 @@ void pmgr_window_show(void)
 		pmgr_wndclass.cbWndExtra = 0;
 		pmgr_wndclass.hInstance = ghInstance;
 		pmgr_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		pmgr_wndclass.hCursor = NULL;
+		pmgr_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		pmgr_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		pmgr_wndclass.lpszMenuName = NULL;
 		pmgr_wndclass.lpszClassName = "pmgr_window";

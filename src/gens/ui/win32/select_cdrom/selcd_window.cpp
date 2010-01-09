@@ -100,7 +100,7 @@ void selcd_window_show(void)
 		selcd_wndclass.cbWndExtra = 0;
 		selcd_wndclass.hInstance = ghInstance;
 		selcd_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		selcd_wndclass.hCursor = NULL;
+		selcd_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		selcd_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		selcd_wndclass.lpszMenuName = NULL;
 		selcd_wndclass.lpszClassName = "selcd_window";

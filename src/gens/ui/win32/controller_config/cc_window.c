@@ -180,7 +180,7 @@ void cc_window_show(void)
 		cc_wndclass.cbWndExtra = 0;
 		cc_wndclass.hInstance = ghInstance;
 		cc_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		cc_wndclass.hCursor = NULL;
+		cc_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		cc_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		cc_wndclass.lpszMenuName = NULL;
 		cc_wndclass.lpszClassName = "cc_window";

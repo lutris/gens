@@ -130,7 +130,7 @@ void dir_window_show(void)
 		dir_wndclass.cbWndExtra = 0;
 		dir_wndclass.hInstance = ghInstance;
 		dir_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		dir_wndclass.hCursor = NULL;
+		dir_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		dir_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		dir_wndclass.lpszMenuName = NULL;
 		dir_wndclass.lpszClassName = "dir_window";

@@ -154,7 +154,7 @@ void genopt_window_show(void)
 		genopt_wndclass.cbWndExtra = 0;
 		genopt_wndclass.hInstance = ghInstance;
 		genopt_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		genopt_wndclass.hCursor = NULL;
+		genopt_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		genopt_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		genopt_wndclass.lpszMenuName = NULL;
 		genopt_wndclass.lpszClassName = "genopt_window";

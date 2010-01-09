@@ -152,7 +152,7 @@ void about_window_show(void)
 		about_wndclass.cbWndExtra = 0;
 		about_wndclass.hInstance = ghInstance;
 		about_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		about_wndclass.hCursor = NULL;
+		about_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
 		about_wndclass.lpszClassName = "about_window";
