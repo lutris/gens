@@ -125,7 +125,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.cbWndExtra = 0;
 		sgens_wndclass.hInstance = sgens_hInstance;
 		sgens_wndclass.hIcon = LoadIconA(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
-		sgens_wndclass.hCursor = NULL;
+		sgens_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		sgens_wndclass.lpszMenuName = NULL;
 		sgens_wndclass.lpszClassName = "mdp_misc_sgens_window";

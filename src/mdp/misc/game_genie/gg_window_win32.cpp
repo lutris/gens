@@ -137,7 +137,7 @@ void gg_window_show(void *parent)
 		gg_window_wndclass.cbWndExtra = 0;
 		gg_window_wndclass.hInstance = gg_hInstance;
 		gg_window_wndclass.hIcon = LoadIconA(gg_hInstance, MAKEINTRESOURCE(IDI_GAME_GENIE));
-		gg_window_wndclass.hCursor = NULL;
+		gg_window_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		gg_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		gg_window_wndclass.lpszMenuName = NULL;
 		gg_window_wndclass.lpszClassName = "gg_window_wndclass";

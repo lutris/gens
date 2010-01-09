@@ -119,7 +119,7 @@ void ntsc_window_show(void *parent)
 		ntsc_window_wndclass.cbWndExtra = 0;
 		ntsc_window_wndclass.hInstance = ntsc_hInstance;
 		ntsc_window_wndclass.hIcon = NULL; //LoadIconA(ntsc_hInstance, MAKEINTRESOURCE(IDI_NTSC));
-		ntsc_window_wndclass.hCursor = NULL;
+		ntsc_window_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
 		ntsc_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ntsc_window_wndclass.lpszMenuName = NULL;
 		ntsc_window_wndclass.lpszClassName = "ntsc_window_wndclass";
