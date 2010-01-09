@@ -228,25 +228,30 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
+	int btnLeft = DLU_X(CC_WINDOW_WIDTH-5-50-5-50-5-50);
+	const int btnInc = DLU_X(5+50);
+	
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				DLU_X(CC_WINDOW_WIDTH-5-50-5-50-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+				btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DLU_X(CC_WINDOW_WIDTH-5-50-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+					btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DLU_X(CC_WINDOW_WIDTH-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+					btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, TRUE);
