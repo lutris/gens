@@ -119,7 +119,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 	HMENU mnuCallback;
 	bool state;
 	
-	switch(message)
+	switch (message)
 	{
 		case WM_CLOSE:
 			on_gens_window_close();
