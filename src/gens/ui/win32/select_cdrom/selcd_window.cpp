@@ -196,9 +196,9 @@ static void WINAPI selcd_window_init(void)
 	{
 		// No CD-ROM drives detected.
 		ComboBox_AddStringU(cboDeviceName, "No CD-ROM drives detected.");
+		ComboBox_SetCurSelU(cboDeviceName, 0);
 		Button_Enable(btnOK, false);
 		Button_Enable(btnApply, false);
-		
 		return;
 	}
 	
