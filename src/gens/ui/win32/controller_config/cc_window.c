@@ -65,21 +65,20 @@ BOOL cc_window_is_configuring = FALSE;
 // Window class.
 static WNDCLASS	cc_wndclass;
 
-// Window size.
-#define CC_WINDOW_WIDTH  600
-#define CC_WINDOW_HEIGHT 466
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted with DLU_X() / DLU_Y().)
+#define CC_WINDOW_WIDTH  397
+#define CC_WINDOW_HEIGHT 274
 
-#define CC_FRAME_PORT_WIDTH  236
-#define CC_FRAME_PORT_HEIGHT 140
+#define CC_FRAME_PORT_WIDTH  154
+#define CC_FRAME_PORT_HEIGHT 84
 
 #define CC_FRAME_INPUT_DEVICES_WIDTH  CC_FRAME_PORT_WIDTH
-#define CC_FRAME_INPUT_DEVICES_HEIGHT 96
+#define CC_FRAME_INPUT_DEVICES_HEIGHT (CC_WINDOW_HEIGHT-(CC_FRAME_PORT_HEIGHT*2)-5-5-5-5-14-5)
 
-#define CC_FRAME_CONFIGURE_WIDTH  340
-#define CC_FRAME_CONFIGURE_HEIGHT 354
-
+#define CC_FRAME_CONFIGURE_WIDTH  228
+#define CC_FRAME_CONFIGURE_HEIGHT 208
 #define CC_FRAME_OPTIONS_WIDTH  CC_FRAME_CONFIGURE_WIDTH
-#define CC_FRAME_OPTIONS_HEIGHT 56
+#define CC_FRAME_OPTIONS_HEIGHT 32
 
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
@@ -192,11 +191,11 @@ void cc_window_show(void)
 	cc_window = pCreateWindowU("cc_window", "Controller Configuration",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT,
+					DLU_X(CC_WINDOW_WIDTH), DLU_Y(CC_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(cc_window, CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(cc_window, DLU_X(CC_WINDOW_WIDTH), DLU_Y(CC_WINDOW_HEIGHT));
 	
 	// Center the window on the parent window.
 	gsft_win32_center_on_window(cc_window, gens_window);
@@ -231,24 +230,24 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
-				75, 23,
+				DLU_X(CC_WINDOW_WIDTH-5-50-5-50-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
-					75, 23,
+					DLU_X(CC_WINDOW_WIDTH-5-50-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
-					75, 23,
+					DLU_X(CC_WINDOW_WIDTH-5-50), DLU_Y(CC_WINDOW_HEIGHT-5-14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, TRUE);
 	
@@ -277,13 +276,14 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 	char tmp[32];
 	
 	// Top of the frame.
-	const int fraPort_top = 8 + ((port-1)*(CC_FRAME_PORT_HEIGHT + 8));
+	const int fraPort_top = DLU_Y(5 + ((port-1)*(CC_FRAME_PORT_HEIGHT + 5)));
 	
 	// Create the frame.
 	szprintf(tmp, sizeof(tmp), "Port %d", port);
 	HWND fraPort = pCreateWindowU(WC_BUTTON, tmp,
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
+					DLU_X(5), fraPort_top,
+					DLU_X(CC_FRAME_PORT_WIDTH), DLU_Y(CC_FRAME_PORT_HEIGHT),
 					container, NULL, ghInstance, NULL);
 	SetWindowFontU(fraPort, fntMain, TRUE);
 	
@@ -296,15 +296,17 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 	
 	chkTeamplayer[port-1] = pCreateWindowU(WC_BUTTON, tp_label,
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
+						DLU_X(5+5), fraPort_top+DLU_Y(10),
+						DLU_X(CC_FRAME_PORT_WIDTH-10), DLU_Y(10),
 						container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
 						ghInstance, NULL);
 	SetWindowFontU(chkTeamplayer[port-1], fntMain, TRUE);
 	
 	// Player inputs.
 	unsigned int i, player;
-	
-	for (i = 0; i < 4; i++)
+	int rowTop = fraPort_top + DLU_Y(10+10+2);
+	const int rowInc = DLU_Y(14);
+	for (i = 0; i < 4; i++, rowTop += rowInc)
 	{
 		szprintf(tmp, sizeof(tmp),
 				"Player %d%c",
@@ -324,14 +326,16 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 		// Player label.
 		lblPlayer[player] = pCreateWindowU(WC_STATIC, tmp,
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
-							8+8, fraPort_top+16+16+4+(i*24)+2, 48, 16,
+							DLU_X(5+5), rowTop+DLU_Y(1),
+							DLU_X(32), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
 		SetWindowFontU(lblPlayer[player], fntMain, TRUE);
 		
 		// Pad type dropdown.
 		cboPadType[player] = pCreateWindowU(WC_COMBOBOX, tmp,
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
-							8+8+48+8, fraPort_top+16+16+4+(i*24), 80, 23*2,
+							DLU_X(5+5+32+5), rowTop,
+							DLU_X(50), DLU_Y(14*2),
 							container, (HMENU)(IDC_CC_CBOPADTYPE + player),
 							ghInstance, NULL);
 		SetWindowFontU(cboPadType[player], fntMain, TRUE);
@@ -343,7 +347,8 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 		// "Configure" button.
 		optConfigure[player] = pCreateWindowU(WC_BUTTON, "Configure",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
-							8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
+							DLU_X(5+5+32+5+50+5), rowTop,
+							DLU_X(50), DLU_Y(14),
 							container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
 							ghInstance, NULL);
 		SetWindowFontU(optConfigure[player], fntMain, TRUE);
@@ -357,21 +362,21 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
  */
 static void WINAPI cc_window_create_input_devices_frame(HWND container)
 {
-	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
+	const int fraInputDevices_top = DLU_Y((CC_FRAME_PORT_HEIGHT*2)+5+5+5);
 	
 	// "Input Devices" frame.
 	HWND fraInputDevices = pCreateWindowU(WC_BUTTON, "Detected Input Devices",
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-						8, fraInputDevices_top,
-						CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
+						DLU_X(5), fraInputDevices_top,
+						DLU_X(CC_FRAME_INPUT_DEVICES_WIDTH), DLU_Y(CC_FRAME_INPUT_DEVICES_HEIGHT),
 						container, NULL, ghInstance, NULL);
 	SetWindowFontU(fraInputDevices, fntMain, TRUE);
 	
 	// Create a listbox for the list of input devices.
 	lstInputDevices = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
-						8+8, fraInputDevices_top+16,
-						CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
+						DLU_X(5+5), fraInputDevices_top+DLU_Y(10),
+						DLU_X(CC_FRAME_INPUT_DEVICES_WIDTH-10), DLU_Y(CC_FRAME_INPUT_DEVICES_HEIGHT-10-5),
 						container, NULL, ghInstance, NULL);
 	SetWindowFontU(lstInputDevices, fntMain, TRUE);
 }
@@ -401,45 +406,48 @@ static void WINAPI cc_window_populate_input_devices(HWND lstBox)
  */
 static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 {
+	// NOTE: This frame may be too tall with some fonts due to DLU rounding.
+	
 	// Top and left sides of the frame.
-	static const int fraConfigure_top = 8;
-	static const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
+	const int fraConfigure_top = DLU_Y(5);
+	const int fraConfigure_left = DLU_X(5+CC_FRAME_PORT_WIDTH+5);
 	
 	// "Configure Controller" frame.
 	fraConfigure = pCreateWindowU(WC_BUTTON, NULL,
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					fraConfigure_left, fraConfigure_top,
-					CC_FRAME_CONFIGURE_WIDTH, CC_FRAME_CONFIGURE_HEIGHT,
+					DLU_X(CC_FRAME_CONFIGURE_WIDTH), DLU_Y(CC_FRAME_CONFIGURE_HEIGHT),
 					container, NULL, ghInstance, NULL);
 	SetWindowFontU(fraConfigure, fntMain, TRUE);
 	
 	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
 	char tmp[16];
-	for (button = 0; button < 12; button++)
+	int rowTop = fraConfigure_top + DLU_Y(10);
+	const int rowInc = DLU_Y(14);
+	for (button = 0; button < 12; button++, rowTop += rowInc)
 	{
 		// Button label.
 		szprintf(tmp, sizeof(tmp), "%s:", input_key_names[button]);
 		lblButton[button] = pCreateWindowU(WC_STATIC, tmp,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
-							fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
-							36, 16,
+							fraConfigure_left+DLU_X(5), rowTop+DLU_Y(1),
+							DLU_X(22), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
 		SetWindowFontU(lblButton[button], fntMain, TRUE);
 		
 		// Current configuration label.
 		lblCurConfig[button] = pCreateWindowU(WC_STATIC, NULL,
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
-							fraConfigure_left+8+36+8, fraConfigure_top+16+(button*24)+2,
-							CC_FRAME_CONFIGURE_WIDTH-8-36-8-75-8-8, 16,
+							fraConfigure_left+DLU_X(5+22+5), rowTop+DLU_Y(1),
+							DLU_X(CC_FRAME_CONFIGURE_WIDTH-5-22-5-50-5-5), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
 		
 		// "Change" button.
 		btnChange[button] = pCreateWindowU(WC_BUTTON, "Change",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-							fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-75,
-							fraConfigure_top+16+(button*24),
-							75, 23,
+							fraConfigure_left+DLU_X(CC_FRAME_CONFIGURE_WIDTH-5-50), rowTop,
+							DLU_X(50), DLU_Y(14),
 							container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
 		SetWindowFontU(btnChange[button], fntMain, TRUE);
 	}
@@ -447,24 +455,24 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 	// Separator between the table and the miscellaneous buttons.
 	pCreateWindowU(WC_STATIC, NULL,
 			WS_CHILD | WS_VISIBLE | SS_ETCHEDHORZ,
-			fraConfigure_left+8, fraConfigure_top+16+12*24+8,
-			CC_FRAME_CONFIGURE_WIDTH-16, 2,
+			fraConfigure_left+DLU_X(5), rowTop+DLU_Y(5),
+			DLU_X(CC_FRAME_CONFIGURE_WIDTH-10), 2,
 			container, NULL, ghInstance, NULL);
 	
 	// "Change All Buttons" button.
 	btnChangeAll = pCreateWindowU(WC_BUTTON, "Change All Buttons",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					fraConfigure_left+8, fraConfigure_top+16+12*24+8+2+8,
-					127, 23,
+					fraConfigure_left+DLU_X(5), rowTop+DLU_Y(5+5)+2,
+					DLU_X(85), DLU_Y(14),
 					container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
 	SetWindowFontU(btnChangeAll, fntMain, TRUE);
 	
 	// "Clear All Buttons" button.
 	btnClearAll = pCreateWindowU(WC_BUTTON, "Clear All Buttons",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-128,
-					fraConfigure_top+16+12*24+8+2+8,
-					127, 23,
+					fraConfigure_left+DLU_X(CC_FRAME_CONFIGURE_WIDTH-5-85),
+					rowTop+DLU_Y(5+5)+2,
+					DLU_X(85), DLU_Y(14),
 					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
 	SetWindowFontU(btnClearAll, fntMain, TRUE);
 }
@@ -477,22 +485,22 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 static void WINAPI cc_window_create_options_frame(HWND container)
 {
 	// Top and left sides of the frame.
-	static const int fraOptions_top = 8+CC_FRAME_CONFIGURE_HEIGHT+8;
-	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
+	const int fraOptions_top = DLU_Y(5+CC_FRAME_CONFIGURE_HEIGHT+5);
+	const int fraOptions_left = DLU_X(5+CC_FRAME_PORT_WIDTH+5);
 	
 	// "Configure Controller" frame.
 	HWND fraOptions = pCreateWindowU(WC_BUTTON, "Options",
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 						fraOptions_left, fraOptions_top,
-						CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
+						DLU_X(CC_FRAME_OPTIONS_WIDTH), DLU_Y(CC_FRAME_OPTIONS_HEIGHT),
 						container, NULL, ghInstance, NULL);
 	SetWindowFontU(fraOptions, fntMain, TRUE);
 	
 	// "Restrict Input" checkbox.
 	chkRestrictInput = pCreateWindowU(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX | BS_MULTILINE,
-						fraOptions_left+8, fraOptions_top+16,
-						CC_FRAME_OPTIONS_WIDTH-16, 32,
+						fraOptions_left+DLU_X(5), fraOptions_top+DLU_Y(10),
+						DLU_X(CC_FRAME_OPTIONS_WIDTH-10), DLU_Y(20),
 						container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
 	SetWindowFontU(chkRestrictInput, fntMain, TRUE);
 }
