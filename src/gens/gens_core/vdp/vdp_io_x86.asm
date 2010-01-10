@@ -237,7 +237,7 @@ section .text align=64
 	
 	align 16
 	
-	;void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address,
+	;void VDP_Do_DMA_asm(DMA_Dest_t dest_component, unsigned int src_address, unsigned int dest_address,
 	;		     int length, unsigned int auto_inc, int src_component)
 	global SYM(VDP_Do_DMA_asm)
 	SYM(VDP_Do_DMA_asm):
@@ -247,20 +247,15 @@ section .text align=64
 		push	edi
 		push	esi
 		
-		mov	eax, [esp + 24]	; access: DMA access mode from CD_Table[].
+		mov	eax, [esp + 24]	; dest_component: Destination component.
 		mov	esi, [esp + 28]	; src_address: DMA source address.
 		mov	edi, [esp + 32]	; dest_address: Destination address.
 		mov	ecx, [esp + 36]	; length: DMA length.
 		mov	edx, [esp + 40]	; auto_inc: VDP auto-increment.
 		mov	ebx, [esp + 44]	; src_component: DMA source component.
 	
-	.DMA_Src_OK:
-		test	eax, 0x2				; Dest = CRAM or VSRAM
-		lea	ebx, [ebx * 4 + eax]
-		jz	short .DMA_Dest_OK
-		and	edi, byte 0x7F
-	
 	.DMA_Dest_OK:
+		lea	ebx, [ebx * 4 + eax]
 		or	word [SYM(VDP_Status)], 0x0002
 		xor	eax, eax
 		jmp	[.Table_DMA + ebx * 4]			; on effectue le transfert DMA adéquat

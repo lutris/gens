@@ -899,6 +899,13 @@ void VDP_Write_Data_Word(uint16_t data)
 
 typedef enum
 {
+	DMA_DEST_VRAM	= 1,
+	DMA_DEST_CRAM	= 2,
+	DMA_DEST_VSRAM	= 3,
+} DMA_Dest_t;
+
+typedef enum
+{
 	DMA_SRC_ROM			= 0,
 	DMA_SRC_M68K_RAM		= 1,
 	DMA_SRC_PRG_RAM			= 2,
@@ -910,7 +917,7 @@ typedef enum
 } DMA_Src_t;
 
 
-void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address,
+void VDP_Do_DMA_asm(DMA_Dest_t dest_component, unsigned int src_address, unsigned int dest_address,
 		    int length, unsigned int auto_inc, int src_component);
 void VDP_Do_DMA_COPY_asm(unsigned int src_address, unsigned int dest_address, int length, unsigned int auto_inc);
 /**
@@ -994,7 +1001,7 @@ void VDP_Write_Ctrl(uint16_t data)
 	}
 	
 	// Determine the DMA destination.
-	CD &= 0x03;	// 0 == invalid; 1 == VRam; 2 == CRam; 3 == VSRam
+	DMA_Dest_t dest_component = (DMA_Dest_t)(CD & 0x03);	// 0 == invalid; 1 == VRam; 2 == CRam; 3 == VSRam
 	
 	// Get the DMA addresses and length.
 	unsigned int src_address = VDP_Reg.DMA_Address;			// Src Address / 2
@@ -1081,6 +1088,20 @@ void VDP_Write_Ctrl(uint16_t data)
 	src_component = (DMA_Src_t)(WRam_Mode + 2);
 	
 DMA_Src_OK:
-	VDP_Do_DMA_asm(CD, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
+	
+	// Check for CRam or VSRam destination overflow.
+	if (dest_component == DMA_DEST_CRAM ||
+	    dest_component == DMA_DEST_VSRAM)
+	{
+		if (dest_address >= 0x80)
+		{
+			// Overflow!
+			// TODO: Should we check for this earlier?
+			VDP_Ctrl.DMA = 0;
+			return;
+		}
+	}
+
+	VDP_Do_DMA_asm(dest_component, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
 	return;
 }
