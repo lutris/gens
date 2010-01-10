@@ -1003,11 +1003,23 @@ void VDP_Write_Ctrl(uint16_t data)
 	// Determine the DMA destination.
 	DMA_Dest_t dest_component = (DMA_Dest_t)(CD & 0x03);	// 0 == invalid; 1 == VRam; 2 == CRam; 3 == VSRam
 	
-	// Get the DMA addresses and length.
+	// Get the DMA addresses.
 	unsigned int src_address = VDP_Reg.DMA_Address;			// Src Address / 2
 	unsigned int dest_address = (VDP_Ctrl.Address & 0xFFFF);	// Dest Address
-	int length = (VDP_Reg.DMA_Length & 0xFFFF);
 	
+	// Check for CRam or VSRam destination overflow.
+	if (dest_component == DMA_DEST_CRAM ||
+	    dest_component == DMA_DEST_VSRAM)
+	{
+		if (dest_address >= 0x80)
+		{
+			// CRam/VSRam overflow! Don't do anything.
+			VDP_Ctrl.DMA = 0;
+			return;
+		}
+	}
+	
+	int length = (VDP_Reg.DMA_Length & 0xFFFF);
 	if (length == 0)
 	{
 		// DMA length is zero.
@@ -1089,19 +1101,6 @@ void VDP_Write_Ctrl(uint16_t data)
 	
 DMA_Src_OK:
 	
-	// Check for CRam or VSRam destination overflow.
-	if (dest_component == DMA_DEST_CRAM ||
-	    dest_component == DMA_DEST_VSRAM)
-	{
-		if (dest_address >= 0x80)
-		{
-			// Overflow!
-			// TODO: Should we check for this earlier?
-			VDP_Ctrl.DMA = 0;
-			return;
-		}
-	}
-
 	VDP_Do_DMA_asm(dest_component, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
 	return;
 }
