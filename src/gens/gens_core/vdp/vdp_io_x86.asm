@@ -237,7 +237,8 @@ section .text align=64
 	
 	align 16
 	
-	;void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address, int length)
+	;void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address,
+	;		     int length, unsigned int auto_inc, int src_component)
 	global SYM(VDP_Do_DMA_asm)
 	SYM(VDP_Do_DMA_asm):
 		push	ebx
@@ -245,39 +246,13 @@ section .text align=64
 		push	edx
 		push	edi
 		push	esi
+		
 		mov	eax, [esp + 24]	; access: DMA access mode from CD_Table[].
-		mov	esi, [esp + 28]	; src_address: DMA source address / 2.
+		mov	esi, [esp + 28]	; src_address: DMA source address.
 		mov	edi, [esp + 32]	; dest_address: Destination address.
 		mov	ecx, [esp + 36]	; length: DMA length.
-	
-	.MEM_To_V_RAM:
-		movzx	edx, byte [SYM(VDP_Reg) + VDP_Reg_t.Auto_Inc]	; edx = Auto Inc
-		add	esi, esi				; esi = DMA Source Address
-		test	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA_Mode], 0x80
-		jnz	near .NO_DMA
-		xor	ebx, ebx
-		cmp	esi, [SYM(Rom_Size)]
-		jb	short .DMA_Src_OK			; Src = ROM (ebx = 0)
-		mov	ebx, 1
-		test	byte [SYM(SegaCD_Started)], 0xFF
-		jz	short .DMA_Src_OK			; Src = Normal RAM (ebx = 1)
-		
-		cmp	esi, 0x00240000
-		jae	short .DMA_Src_OK			; Src = Normal RAM (ebx = 1)
-		cmp	esi, 0x00040000
-		mov	ebx, 2
-		jb	short .DMA_Src_OK			; Src = PRG RAM (ebx = 2)
-		
-		mov	bh, [SYM(Ram_Word_State)]
-		mov	bl, 3					; Src = WORD RAM ; 3 = WORD RAM 2M
-		and	bh, 3					; 4 = BAD
-		add	bl, bh					; 5 = WORD RAM 1M Bank 0
-		xor	bh, bh					; 6 = WORD RAM 1M Bank 1
-		cmp	bl, 5
-		jb	short .DMA_Src_OK
-		cmp	esi, 0x00220000
-		jb	short .DMA_Src_OK			; 7 = CELL ARRANGED Bank 0
-		add	bl, 2					; 8 = CELL ARRANGED Bank 1
+		mov	edx, [esp + 40]	; auto_inc: VDP auto-increment.
+		mov	ebx, [esp + 44]	; src_component: DMA source component.
 	
 	.DMA_Src_OK:
 		test	eax, 0x2				; Dest = CRAM or VSRAM

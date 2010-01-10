@@ -25,6 +25,7 @@
 
 // Starscream 68000 core.
 #include "gens_core/cpu/68k/star_68k.h"
+#include "gens_core/mem/mem_s68k.h"	/* For Ram_Word_State. */
 
 // C includes.
 #include <string.h>
@@ -896,7 +897,21 @@ void VDP_Write_Data_Word(uint16_t data)
 }
 
 
-void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address, int length);
+typedef enum
+{
+	DMA_SRC_ROM			= 0,
+	DMA_SRC_M68K_RAM		= 1,
+	DMA_SRC_PRG_RAM			= 2,
+	DMA_SRC_WORD_RAM_2M		= 3,
+	DMA_SRC_WORD_RAM_1M_0		= 5,
+	DMA_SRC_WORD_RAM_1M_1		= 6,
+	DMA_SRC_WORD_RAM_CELL_1M_0	= 7,
+	DMA_SRC_WORD_RAM_CELL_1M_1	= 8,
+} DMA_Src_t;
+
+
+void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address,
+		    int length, unsigned int auto_inc, int src_component);
 void VDP_Do_DMA_COPY_asm(unsigned int src_address, unsigned int dest_address, int length, unsigned int auto_inc);
 /**
  * VDP_Write_Ctrl(): Write a control word to the VDP.
@@ -960,7 +975,7 @@ void VDP_Write_Ctrl(uint16_t data)
 	/** Perform a DMA operation. **/
 	
 	// Check if DMA is enabled.
-	if (!VDP_Reg.m5.Set2 & 0x10)
+	if (!(VDP_Reg.m5.Set2 & 0x10))
 	{
 		// DMA is disabled.
 		VDP_Ctrl.DMA = 0;
@@ -1014,6 +1029,58 @@ void VDP_Write_Ctrl(uint16_t data)
 		return;
 	}
 	
-	VDP_Do_DMA_asm(CD, src_address, dest_address, length);
+	if (VDP_Ctrl.DMA_Mode & 0x80)
+	{
+		// TODO: What does this mean?
+		VDP_Ctrl.DMA = 0;
+		return;
+	}
+	
+	// Multiply the source address by two to get the real source address.
+	src_address *= 2;
+	
+	// Determine the source component.
+	DMA_Src_t src_component;
+	if (src_address < Rom_Size)
+	{
+		// Main ROM.
+		src_component = DMA_SRC_ROM;
+		goto DMA_Src_OK;
+	}
+	if (!SegaCD_Started)
+	{
+		// SegaCD is not started. Assume M68K RAM.
+		// TODO: This includes invalid addresses!
+		src_component = DMA_SRC_M68K_RAM;
+		goto DMA_Src_OK;
+	}
+	
+	// SegaCD is started.
+	if (src_address >= 0x240000)
+	{
+		// Assume M68K RAM.
+		// TODO: This includes invalid addresses!
+		src_component = DMA_SRC_M68K_RAM;
+		goto DMA_Src_OK;
+	}
+	else if (src_address < 0x40000)
+	{
+		// Program RAM.
+		src_component = DMA_SRC_PRG_RAM;
+		goto DMA_Src_OK;
+	}
+	
+	// Word RAM. Check the Word RAM state to determine the mode.
+	// TODO: Determine how this works.
+	int WRam_Mode = (Ram_Word_State & 0x03) + 3;
+	if (WRam_Mode < 5 || src_address < 0x220000)
+	{
+		src_component = (DMA_Src_t)WRam_Mode;
+		goto DMA_Src_OK;
+	}
+	src_component = (DMA_Src_t)(WRam_Mode + 2);
+	
+DMA_Src_OK:
+	VDP_Do_DMA_asm(CD, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
 	return;
 }
