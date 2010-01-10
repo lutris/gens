@@ -896,7 +896,7 @@ void VDP_Write_Data_Word(uint16_t data)
 }
 
 
-void VDP_Do_DMA_asm(unsigned int access);
+void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address, int length);
 /**
  * VDP_Write_Ctrl(): Write a control word to the VDP.
  * @param data Control word.
@@ -956,7 +956,7 @@ void VDP_Write_Ctrl(uint16_t data)
 		return;
 	}
 	
-	// Perform a DMA operation.
+	/** Perform a DMA operation. **/
 	
 	// Check if DMA is enabled.
 	if (!VDP_Reg.m5.Set2 & 0x10)
@@ -977,6 +977,32 @@ void VDP_Write_Ctrl(uint16_t data)
 		return;
 	}
 	
-	VDP_Do_DMA_asm(CD);
+	// Determine the DMA destination.
+	CD &= 0x03;	// 0 == invalid; 1 == VRam; 2 == CRam; 3 == VSRam
+	
+	// Get the DMA addresses and length.
+	unsigned int src_address = VDP_Reg.DMA_Address;	// Src Address / 2
+	unsigned int dest_address = VDP_Ctrl.Address;	// Dest Address
+	int length = (VDP_Reg.DMA_Length & 0xFFFF);
+	
+	if (length == 0)
+	{
+		// DMA length is zero.
+		if (Zero_Length_DMA)
+		{
+			// Zero-Length DMA transfers are enabled.
+			// Ignore this request.
+			VDP_Ctrl.DMA = 0;
+			return;
+		}
+		
+		// Zero-Length DMA trnasfers are disabled.
+		// The MD VDP decrements the DMA length counter before checking if it has
+		// reached zero. So, doing a zero-length DMA request will actually do a
+		// DMA request for 65,536 words.
+		length = 0x10000;
+	}
+	
+	VDP_Do_DMA_asm(CD, src_address, dest_address, length);
 	return;
 }

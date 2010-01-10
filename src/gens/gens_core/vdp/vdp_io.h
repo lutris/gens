@@ -125,7 +125,7 @@ typedef struct
 	
 	// These two variables are internal to Gens.
 	// They don't map to any actual VDP registers.
-	unsigned int DMA_Length;
+	int DMA_Length;
 	unsigned int DMA_Address;
 	
 	// DMAT variables.

@@ -237,7 +237,7 @@ section .text align=64
 	
 	align 16
 	
-	;void VDP_Do_DMA_asm(unsigned int access)
+	;void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address, int length)
 	global SYM(VDP_Do_DMA_asm)
 	SYM(VDP_Do_DMA_asm):
 		push	ebx
@@ -245,33 +245,10 @@ section .text align=64
 		push	edx
 		push	edi
 		push	esi
-		mov	eax, [esp + 24]		; DMA access mode from CD_Table[].
-	
-	.No_Fill:
-		mov 	ecx, [SYM(VDP_Reg) + VDP_Reg_t.DMA_Length]	; ecx = DMA Length
-		mov	esi, [SYM(VDP_Reg) + VDP_Reg_t.DMA_Address]	; esi = DMA Source Address / 2
-		and	eax, byte 3					; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
-		and	ecx, 0xFFFF
-		mov	edi, [SYM(VDP_Ctrl) + VDP_Ctrl_t.Address]	; edi = Address Dest
-		
-		; If the DMA length is 0, set it to 65,536 words.
-		jnz	short .non_zero_DMA
-		
-		; If Zero_Length_DMA is enabled, don't do any DMA request.
-		test	byte [SYM(Zero_Length_DMA)], 1
-		jnz	near .NO_DMA
-		
-		; Zero_Length_DMA is disabled.
-		; The MD VDP decrements the DMA length counter before checking if it has
-		; reached zero. So, doing a zero-length DMA request will actually do a
-		; DMA request for 65,536 words.
-		;
-		; NOTE: This only appears to be correct for MEM-to-VRAM, not MEM-to-CRAM or
-		; MEM-to-VSRAM. Zero-length CRAM and VSRAM transfers are ignored for now.
-		
-		cmp	eax, 1		; VRAM
-		jne	near .NO_DMA
-		mov	ecx, 0x10000
+		mov	eax, [esp + 24]	; access: DMA access mode from CD_Table[].
+		mov	esi, [esp + 28]	; src_address: DMA source address / 2.
+		mov	edi, [esp + 32]	; dest_address: Destination address.
+		mov	ecx, [esp + 36]	; length: DMA length;
 		
 	.non_zero_DMA:
 		and	edi, 0xFFFF						; edi = Address Dest
