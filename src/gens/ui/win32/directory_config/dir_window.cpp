@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -69,12 +69,10 @@ HWND dir_window = NULL;
 // Window class.
 static WNDCLASS dir_wndclass;
 
-// Window size.
-#define DIR_WINDOW_WIDTH  360
-#define DIR_WINDOW_HEIGHT_DEFAULT ((DIR_WINDOW_ENTRIES_COUNT*24)+16+16+16+24)
-#define DIR_FRAME_HEIGHT(entries) (((entries)*24)+16+8)
-
-static int	dir_window_height;
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define DIR_WINDOW_WIDTH  225
+#define DIR_WINDOW_HEIGHT_DEFAULT ((DIR_WINDOW_ENTRIES_COUNT*15)+10+10+10+15)
+#define DIR_FRAME_HEIGHT(entries) (((entries)*15)+10+5)
 
 // Widgets.
 static HWND	btnOK, btnCancel, btnApply;
@@ -142,8 +140,17 @@ void dir_window_show(void)
 	dir_window = pCreateWindowU("dir_window", "Configure Directories",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT_DEFAULT,
+					DLU_X(DIR_WINDOW_WIDTH), DLU_Y(DIR_WINDOW_HEIGHT_DEFAULT),
 					gens_window, NULL, ghInstance, NULL);
+	
+	// Set the actual window size.
+	// NOTE: This is done in dir_window_create_child_windows to compensate for plugin directories.
+	//Win32_setActualWindowSize(dir_window, DLU_X(DIR_WINDOW_WIDTH), DLU_Y(DIR_WINDOW_HEIGHT);
+	
+	// Center the window on the parent window.
+	// NOTE: This is done in dir_window_create_child_windows to compensate for plugin directories.
+	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
+	//Win32_centerOnGensWindow(dir_window);
 	
 	UpdateWindow(dir_window);
 	ShowWindow(dir_window, SW_SHOW);
@@ -159,9 +166,9 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 	// Create the internal directory entry frame.
 	HWND fraInternalDirs = pCreateWindowU(WC_BUTTON, "Gens/GS Directories",
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-						8, 8,
-						DIR_WINDOW_WIDTH-16,
-						DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT),
+						DLU_X(5), DLU_Y(5),
+						DLU_X(DIR_WINDOW_WIDTH-10),
+						DLU_Y(DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)),
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(fraInternalDirs, fntMain, true);
 	
@@ -170,19 +177,17 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 	vectDirs.reserve(DIR_WINDOW_ENTRIES_COUNT + PluginMgr::lstDirectories.size());
 	
 	// Create all internal directory entry widgets.
-	int curTop = 8+20-24;
+	int curTop = 5+13;
 	dir_widget_t dir_widget;
 	dir_widget.is_plugin = false;
-	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++, curTop += 15)
 	{
-		curTop += 24;
-		
 		dir_widget.id = dir;
 		dir_widget.title = string(dir_window_entries[dir].title);
 		
 		dir_widget.txt = dir_window_create_dir_widgets(
 					dir_window_entries[dir].title,
-					hWnd, curTop, vectDirs.size());
+					hWnd, DLU_Y(curTop), vectDirs.size());
 		vectDirs.push_back(dir_widget);
 	}
 	
@@ -190,70 +195,73 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 	if (!PluginMgr::lstDirectories.empty())
 	{
 		// Create the plugin directory entry frame.
+		curTop = 5+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+5;
 		HWND fraPluginDirs = pCreateWindowU(WC_BUTTON, "Plugin Directories",
 							WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-							8, 8+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+8,
-							DIR_WINDOW_WIDTH-16,
-							DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()),
+							DLU_X(5), DLU_Y(curTop),
+							DLU_X(DIR_WINDOW_WIDTH-10),
+							DLU_Y(DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size())),
 							hWnd, NULL, ghInstance, NULL);
 		SetWindowFontU(fraPluginDirs, fntMain, true);
 		
 		// Create all plugin directory entry widgets.
 		int dir = 0x10;
-		curTop += 8+16+8;
+		curTop += 10+3;
 		dir_widget.is_plugin = true;
 		
 		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
-		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
+		     iter != PluginMgr::lstDirectories.end(); iter++, dir++, curTop += 15)
 		{
-			curTop += 24;
-			
 			dir_widget.id = (*iter).id;
 			dir_widget.title = (*iter).name;
 			
 			dir_widget.txt = dir_window_create_dir_widgets(
 						(*iter).name.c_str(),
-						hWnd, curTop, vectDirs.size());			
+						hWnd, DLU_Y(curTop), vectDirs.size());			
 			vectDirs.push_back(dir_widget);
 		}
 	}
 	
-	// Calculate the window height.
-	dir_window_height = 8 + DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT) + 8 + 24 + 8;
+	// Calculate the window height. (in pixels)
+	int dir_window_height = DLU_Y(5+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+5+15+5);
 	if (!PluginMgr::lstDirectories.empty())
 	{
-		dir_window_height += DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()) + 8;
+		dir_window_height += DLU_Y(DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size())+5);
 	}
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(hWnd, DIR_WINDOW_WIDTH, dir_window_height);
+	gsft_win32_set_actual_window_size(hWnd, DLU_X(DIR_WINDOW_WIDTH), dir_window_height);
 	
 	// Center the window on the parent window.
 	gsft_win32_center_on_window(hWnd, gens_window);
 	
 	// Create the dialog buttons.
+	int btnLeft = DLU_X(DIR_WINDOW_WIDTH-5-50-5-50-5-50);
+	const int btnInc = DLU_X(5+50);
 	
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
-				75, 23,
+				btnLeft, dir_window_height-DLU_Y(5+14),
+				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, true);
 	
 	// Cancel button.
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DIR_WINDOW_WIDTH-8-75-8-75, dir_window_height-8-24,
-					75, 23,
+					btnLeft, dir_window_height-DLU_Y(5+14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, true);
 	
 	// Apply button.
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DIR_WINDOW_WIDTH-8-75, dir_window_height-8-24,
-					75, 23,
+					btnLeft, dir_window_height-DLU_Y(5+14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, true);
 	
@@ -265,20 +273,29 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 }
 
 
+/**
+ * dir_window_create_dir_widgets(): Create directory widgets.
+ * @param title Directory title.
+ * @param container Container.
+ * @param y Vertical coordinate. (in pixels)
+ * @param id Directory ID.
+ * @return hWnd of the directory textbox.
+ */
 static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND container, int y, int id)
 {
 	// Create the label for the directory.
 	HWND lblTitle = pCreateWindowU(WC_STATIC, title,
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8+8, y, 72, 16,
+					DLU_X(5+5), y,
+					DLU_X(45), DLU_Y(10),
 					container, NULL, ghInstance, NULL);
 	SetWindowFontU(lblTitle, fntMain, true);
 	
 	// Create the textbox for the directory.
 	HWND txtDirectory = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
-						8+8+72+8, y,
-						DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
+						DLU_X(5+5+45+5), y,
+						DLU_X(DIR_WINDOW_WIDTH-(5+45+10+45+5+10)), DLU_Y(12),
 						container, (HMENU)(IDC_DIR_DIRECTORY), ghInstance, NULL);
 	SetWindowFontU(txtDirectory, fntMain, true);
 	
@@ -286,8 +303,8 @@ static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND contain
 	// TODO: Use an icon?
 	HWND btnChange = pCreateWindowU(WC_BUTTON, "Change...",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					DIR_WINDOW_WIDTH-8-72-8, y,
-					72, 20,
+					DLU_X(DIR_WINDOW_WIDTH-5-45-5), y,
+					DLU_X(45), DLU_Y(12),
 					container, (HMENU)(IDC_DIR_BTNCHANGE + id), ghInstance, NULL);
 	SetWindowFontU(btnChange, fntMain, true);
 	
