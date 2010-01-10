@@ -411,6 +411,8 @@ section .text align=64
 		and	esi, 0x7FFFFF
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], eax
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMA_Address], esi
+		call	SYM(VDP_Update_DMA)
+		call	SYM(main68k_releaseCycles)
 		pop	esi
 		pop	edi
 		pop	edx
