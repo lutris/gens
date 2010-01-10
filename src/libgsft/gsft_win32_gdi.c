@@ -111,4 +111,7 @@ void WINAPI gsft_win32_gdi_end(void)
 		DeleteFont(w32_fntTitle);
 		w32_fntTitle = NULL;
 	}
+	
+	// NULL out the monospaced font.
+	w32_fntMonospaced = NULL;
 }
