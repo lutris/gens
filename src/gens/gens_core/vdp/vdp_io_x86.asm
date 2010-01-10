@@ -243,29 +243,9 @@ section .text align=64
 		push	ebx
 		push	ecx
 		push	edx
-		mov	eax, [esp + 16]
-		mov	al, ah	; DMA access mode is the high byte in the source word.
-		
-	.DO_DMA:
 		push	edi
 		push	esi
-		
-		test	byte [SYM(VDP_Reg) + VDP_Reg_t.Set_2], 0x10	; DMA enable ?
-		jz	near .NO_DMA
-		test	al, 0x4						; DMA FILL ?
-		jz	short .No_Fill
-			
-			cmp	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA_Mode], 0x80
-			jne	short .No_Fill
-			mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA], al	; on stocke le type de DMA
-			pop	esi
-			pop	edi
-			pop	edx
-			pop	ecx
-			pop	ebx
-			ret
-	
-	align 16
+		mov	eax, [esp + 24]		; DMA access mode from CD_Table[].
 	
 	.No_Fill:
 		mov 	ecx, [SYM(VDP_Reg) + VDP_Reg_t.DMA_Length]	; ecx = DMA Length

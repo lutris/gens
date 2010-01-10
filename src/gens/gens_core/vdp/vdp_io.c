@@ -957,6 +957,26 @@ void VDP_Write_Ctrl(uint16_t data)
 	}
 	
 	// Perform a DMA operation.
+	
+	// Check if DMA is enabled.
+	if (!VDP_Reg.m5.Set2 & 0x10)
+	{
+		// DMA is disabled.
+		VDP_Ctrl.DMA = 0;
+		return;
+	}
+	
+	// DMA access mode is the high byte in the CD_Table[] word.
+	CD >>= 8;
+	
+	// Check for DMA FILL.
+	if ((CD & 0x04) && (VDP_Ctrl.DMA_Mode == 0x80))
+	{
+		// DMA FILL.
+		VDP_Ctrl.DMA = (CD & 0xFF);
+		return;
+	}
+	
 	VDP_Do_DMA_asm(CD);
 	return;
 }
