@@ -897,6 +897,7 @@ void VDP_Write_Data_Word(uint16_t data)
 
 
 void VDP_Do_DMA_asm(unsigned int access, unsigned int src_address, unsigned int dest_address, int length);
+void VDP_Do_DMA_COPY_asm(unsigned int src_address, unsigned int dest_address, int length, unsigned int auto_inc);
 /**
  * VDP_Write_Ctrl(): Write a control word to the VDP.
  * @param data Control word.
@@ -981,8 +982,8 @@ void VDP_Write_Ctrl(uint16_t data)
 	CD &= 0x03;	// 0 == invalid; 1 == VRam; 2 == CRam; 3 == VSRam
 	
 	// Get the DMA addresses and length.
-	unsigned int src_address = VDP_Reg.DMA_Address;	// Src Address / 2
-	unsigned int dest_address = VDP_Ctrl.Address;	// Dest Address
+	unsigned int src_address = VDP_Reg.DMA_Address;			// Src Address / 2
+	unsigned int dest_address = (VDP_Ctrl.Address & 0xFFFF);	// Dest Address
 	int length = (VDP_Reg.DMA_Length & 0xFFFF);
 	
 	if (length == 0)
@@ -1001,6 +1002,16 @@ void VDP_Write_Ctrl(uint16_t data)
 		// reached zero. So, doing a zero-length DMA request will actually do a
 		// DMA request for 65,536 words.
 		length = 0x10000;
+	}
+	
+	// Check for DMA COPY.
+	if (VDP_Ctrl.DMA_Mode == 0xC0)
+	{
+		// DMA COPY.
+		// TODO: Port DMA COPY to C++.
+		src_address &= 0xFFFF;
+		VDP_Do_DMA_COPY_asm(src_address, dest_address, length, VDP_Reg.m5.Auto_Inc);
+		return;
 	}
 	
 	VDP_Do_DMA_asm(CD, src_address, dest_address, length);

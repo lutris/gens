@@ -248,15 +248,10 @@ section .text align=64
 		mov	eax, [esp + 24]	; access: DMA access mode from CD_Table[].
 		mov	esi, [esp + 28]	; src_address: DMA source address / 2.
 		mov	edi, [esp + 32]	; dest_address: Destination address.
-		mov	ecx, [esp + 36]	; length: DMA length;
-		
-	.non_zero_DMA:
-		and	edi, 0xFFFF						; edi = Address Dest
-		cmp	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA_Mode], 0xC0	; DMA Copy ?
-		movzx	edx, byte [SYM(VDP_Reg) + VDP_Reg_t.Auto_Inc]	; edx = Auto Inc
-		je	near .V_RAM_Copy
+		mov	ecx, [esp + 36]	; length: DMA length.
 	
 	.MEM_To_V_RAM:
+		movzx	edx, byte [SYM(VDP_Reg) + VDP_Reg_t.Auto_Inc]	; edx = Auto Inc
 		add	esi, esi				; esi = DMA Source Address
 		test	byte [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA_Mode], 0x80
 		jnz	near .NO_DMA
@@ -469,9 +464,31 @@ section .text align=64
 	
 	align 16
 	
-	.V_RAM_Copy:
+	.NO_DMA:
+		mov	dword [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA], 0
+		pop	esi
+		pop	edi
+		pop	edx
+		pop	ecx
+		pop	ebx
+		ret
+	
+	align 16
+	
+	;void VDP_Do_DMA_asm(unsigned int src_address, unsigned int dest_address, int length, unsigned int auto_inc)
+	global SYM(VDP_Do_DMA_COPY_asm)
+	SYM(VDP_Do_DMA_COPY_asm):
+		push	ecx
+		push	esi
+		push	edi
+		push	edx
+		
+		mov	esi, [esp + 20]	; src_address: DMA source address / 2.
+		mov	edi, [esp + 24]	; dest_address: Destination address.
+		mov	ecx, [esp + 28]	; length: DMA length.
+		mov	edx, [esp + 32]	; auto_inc: VDP auto-increment.
+		
 		or	word [SYM(VDP_Status)], 0x0002
-		and	esi, 0xFFFF
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMA_Length], 0
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], ecx
 		mov	dword [SYM(VDP_Reg) + VDP_Reg_t.DMAT_Type], 0x3
@@ -490,20 +507,19 @@ section .text align=64
 		
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMA_Address], esi
 		mov	[SYM(VDP_Ctrl) + VDP_Ctrl_t.Address], di	; on stocke la nouvelle Data_Address
-		pop	esi
-		pop	edi
+		
 		pop	edx
+		pop	edi
+		pop	esi
 		pop	ecx
-		pop	ebx
 		ret
 	
 	align 16
 	
 	.NO_DMA:
 		mov	dword [SYM(VDP_Ctrl) + VDP_Ctrl_t.DMA], 0
-		pop	esi
-		pop	edi
 		pop	edx
+		pop	edi
+		pop	esi
 		pop	ecx
-		pop	ebx
 		ret
