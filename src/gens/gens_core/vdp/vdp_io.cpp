@@ -939,16 +939,13 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 	printf("T_DMA_Loop<%d, %d>: src_address == 0x%06X, dest_address == 0x%04X, length == %d\n",
 		src_component, dest_component, src_address, dest_address, length);
 	
-	// RAM to * only for now.
-	if (src_component != DMA_SRC_M68K_RAM)
-	{
-		// Unsupported.
-		return;
-	}
-	
 	// Mask the source address, depending on type.
 	switch (src_component)
 	{
+		case DMA_SRC_ROM:
+			src_address &= 0x3FFFFE;
+			break;
+		
 		case DMA_SRC_M68K_RAM:
 			src_address &= 0xFFFE;
 			break;
@@ -987,19 +984,28 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 	do
 	{
 		// Get the word.
-		uint16_t w = Ram_68k.u16[src_address >> 1];
+		uint16_t w;
+		switch (src_component)
+		{
+			case DMA_SRC_ROM:
+				w = Rom_Data.u16[src_address >> 1];
+				break;
+			
+			case DMA_SRC_M68K_RAM:
+				w = Ram_68k.u16[src_address >> 1];
+				break;
+			
+			default:	// to make gcc shut up
+				break;
+		}
 		
+		// Increment the source address.
+		// TODO: The 128 KB wrapping causes garbage on TmEE's mmf.bin (correct),
+		// but the garbage doesn't match Kega Fusion.
 		if (src_component == DMA_SRC_M68K_RAM)
 			src_address = ((src_address + 2) & 0xFFFF);
 		else
 			src_address = (((src_address + 2) & 0x1FFFF) | src_base_address);
-		
-		// Check for swapped VRam write.
-		if (dest_component == DMA_DEST_VRAM)
-		{
-			if (dest_address & 1)
-				w = (w << 8 | w >> 8);
-		}
 		
 		// Write the word.
 		switch (dest_component)
@@ -1240,6 +1246,18 @@ DMA_Src_OK:
 	
 	switch (DMA_TYPE(src_component, dest_component))
 	{
+		case DMA_TYPE(DMA_SRC_ROM, DMA_DEST_VRAM):
+			T_DMA_Loop<DMA_SRC_ROM, DMA_DEST_VRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_ROM, DMA_DEST_CRAM):
+			T_DMA_Loop<DMA_SRC_ROM, DMA_DEST_CRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_ROM, DMA_DEST_VSRAM):
+			T_DMA_Loop<DMA_SRC_ROM, DMA_DEST_VSRAM>(src_address, dest_address, length);
+			break;
+		
 		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VRAM):
 			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VRAM>(src_address, dest_address, length);
 			break;
