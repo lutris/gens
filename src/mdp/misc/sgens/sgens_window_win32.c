@@ -387,7 +387,7 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 
