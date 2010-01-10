@@ -1012,6 +1012,10 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 				w = Ram_68k.u16[src_address >> 1];
 				break;
 			
+			case DMA_SRC_PRG_RAM:
+				w = ((uint16_t*)Ram_Prg)[src_address >> 1];
+				break;
+			
 			case DMA_SRC_WORD_RAM_2M:
 				w = ((uint16_t*)Ram_Word_2M)[src_address >> 1];
 				break;
@@ -1289,6 +1293,21 @@ DMA_Src_OK:
 		
 		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VSRAM):
 			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VSRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_PRG_RAM, DMA_DEST_VRAM):
+			// TODO: This is untested!
+			T_DMA_Loop<DMA_SRC_PRG_RAM, DMA_DEST_VRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_PRG_RAM, DMA_DEST_CRAM):
+			// TODO: This is untested!
+			T_DMA_Loop<DMA_SRC_PRG_RAM, DMA_DEST_CRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_PRG_RAM, DMA_DEST_VSRAM):
+			// TODO: This is untested!
+			T_DMA_Loop<DMA_SRC_PRG_RAM, DMA_DEST_VSRAM>(src_address, dest_address, length);
 			break;
 		
 		case DMA_TYPE(DMA_SRC_WORD_RAM_2M, DMA_DEST_VRAM):
