@@ -257,12 +257,12 @@ static void sgens_window_create_level_info_frame(HWND container)
 		SetWindowFontU(lblLevelInfo_Desc[i], w32_fntMessage, TRUE);
 		
 		// Information label.
-		// TODO: Monospace font.
 		lblLevelInfo[i] = pCreateWindowU(WC_STATIC, level_info[i].initial,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
 							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
 							widget_info_width, WIDGET_ROW_HEIGHT,
 							fraLevelInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblLevelInfo[i], w32_fntMonospaced, TRUE);
 	}
 }
 
@@ -317,12 +317,12 @@ static void sgens_window_create_player_info_frame(HWND container)
 		SetWindowFontU(lblPlayerInfo_Desc[i], w32_fntMessage, TRUE);
 		
 		// Information label.
-		// TODO: Monospace font.
 		lblPlayerInfo[i] = pCreateWindowU(WC_STATIC, player_info[i].initial,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
 							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
 							widget_info_width, WIDGET_ROW_HEIGHT,
 							fraPlayerInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblPlayerInfo[i], w32_fntMonospaced, TRUE);
 	}
 }
 
