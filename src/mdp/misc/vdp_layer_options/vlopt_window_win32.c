@@ -65,9 +65,6 @@ static void vlopt_window_create_child_windows(HWND hWnd);
 static void vlopt_window_load_options(void);
 static void vlopt_window_save_options(void);
 
-// Font.
-static HFONT vlopt_hfont = NULL;
-
 // Window size.
 #define VLOPT_WINDOW_WIDTH  216
 #define VLOPT_WINDOW_HEIGHT 192
@@ -117,9 +114,6 @@ void vlopt_window_show(void *parent)
 		pRegisterClassU(&vlopt_window_wndclass);
 	}
 	
-	// Create the font.
-	vlopt_hfont = gsft_win32_gdi_get_message_font();
-	
 	// Create the window.
 	vlopt_window = pCreateWindowU("vlopt_window_wndclass", "VDP Layer Options",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
@@ -155,9 +149,8 @@ void vlopt_window_close(void)
 	vlopt_window = NULL;
 	DestroyWindow(tmp);
 	
-	// Delete the font.
-	DeleteFont(vlopt_hfont);
-	vlopt_hfont = NULL;
+	// Shut down libgsft_win32_gdi.
+	gsft_win32_gdi_end();
 	
 	// Shut down the Win32 Unicode Translation Layer.
 	w32u_end();
@@ -241,11 +234,14 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	if (vlopt_window_child_windows_created)
 		return;
 	
+	// Initialize libgsft_win32_gdi.
+	gsft_win32_gdi_init(hWnd);
+	
 	HWND grpBox = pCreateWindowU(WC_BUTTON, "VDP Layer Options",
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-8-16-24,
 					hWnd, NULL, vlopt_hInstance, NULL);
-	SetWindowFontU(grpBox, vlopt_hfont, TRUE);
+	SetWindowFontU(grpBox, w32_fntMessage, TRUE);
 	
 	// Counter variable.
 	unsigned int i;
@@ -260,14 +256,14 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 						8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*i), 16,
 						VLOPT_GRID_COLX, VLOPT_GRID_ROW,
 						grpBox, NULL, vlopt_hInstance, NULL);
-		SetWindowFontU(lblColHeader, vlopt_hfont, TRUE);
+		SetWindowFontU(lblColHeader, w32_fntMessage, TRUE);
 		
 		lblRowHeader = pCreateWindowU(WC_STATIC, vlopt_options[i * 3].layer,
 						WS_CHILD | WS_VISIBLE | SS_RIGHT,
 						8, 16+(VLOPT_GRID_ROW*(i+1)),
 						VLOPT_GRID_COL1, VLOPT_GRID_ROW,
 						grpBox, NULL, vlopt_hInstance, NULL);
-		SetWindowFontU(lblRowHeader, vlopt_hfont, TRUE);
+		SetWindowFontU(lblRowHeader, w32_fntMessage, TRUE);
 	}
 	
 	// Create the VDP Layer Options checkboxes.
@@ -281,7 +277,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 				8+16+(VLOPT_GRID_ROW*row),
 				VLOPT_CHECKBOX_SIZE, VLOPT_CHECKBOX_SIZE,
 				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
-		SetWindowFontU(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
+		SetWindowFontU(vlopt_window_checkboxes[i], w32_fntMessage, TRUE);
 		
 		// Next cell.
 		col++;
@@ -301,7 +297,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 				8+8+8, 8+16+(VLOPT_GRID_ROW*(i-5)),
 				VLOPT_WINDOW_WIDTH-16-16-16, VLOPT_GRID_ROW,
 				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
-		SetWindowFontU(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
+		SetWindowFontU(vlopt_window_checkboxes[i], w32_fntMessage, TRUE);
 	}
 	
 	// Load the options.
@@ -315,14 +311,14 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					posBtnLeft, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
 					hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hInstance, NULL);
-	SetWindowFontU(btnReset, vlopt_hfont, TRUE);
+	SetWindowFontU(btnReset, w32_fntMessage, TRUE);
 	
 	// Create the "Close" button.
 	HWND btnClose = pCreateWindowU(WC_BUTTON, "&Close",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					posBtnLeft+75+8, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
 					hWnd, (HMENU)IDCLOSE, vlopt_hInstance, NULL);
-	SetWindowFontU(btnClose, vlopt_hfont, TRUE);
+	SetWindowFontU(btnClose, w32_fntMessage, TRUE);
 	
 	// Child windows created.
 	vlopt_window_child_windows_created = TRUE;
