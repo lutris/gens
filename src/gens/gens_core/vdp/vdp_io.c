@@ -1101,6 +1101,9 @@ void VDP_Write_Ctrl(uint16_t data)
 	
 DMA_Src_OK:
 	
+	// Set the DMA BUSY bit.
+	VDP_Status |= 0x0002;
+	
 	VDP_Do_DMA_asm(dest_component, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
 	return;
 }

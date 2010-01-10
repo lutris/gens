@@ -256,7 +256,6 @@ section .text align=64
 	
 	.DMA_Dest_OK:
 		lea	ebx, [ebx * 4 + eax]
-		or	word [SYM(VDP_Status)], 0x0002
 		xor	eax, eax
 		jmp	[.Table_DMA + ebx * 4]			; on effectue le transfert DMA adéquat
 	
@@ -412,8 +411,6 @@ section .text align=64
 		and	esi, 0x7FFFFF
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMAT_Length], eax
 		mov	[SYM(VDP_Reg) + VDP_Reg_t.DMA_Address], esi
-		call	SYM(VDP_Update_DMA)
-		call	SYM(main68k_releaseCycles)
 		pop	esi
 		pop	edi
 		pop	edx
