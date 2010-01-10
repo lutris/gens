@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -57,11 +57,11 @@ HWND bmf_window = NULL;
 // Window class.
 static WNDCLASS bmf_wndclass;
 
-// Window size.
-#define BMF_WINDOW_WIDTH  392
-#define BMF_WINDOW_HEIGHT 360
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define BMF_WINDOW_WIDTH  245
+#define BMF_WINDOW_HEIGHT 225
 
-#define BMF_FRAME_WIDTH (BMF_WINDOW_WIDTH-16)
+#define BMF_FRAME_WIDTH (BMF_WINDOW_WIDTH-10)
 
 // Widgets.
 static HWND	txtFile[12];
@@ -116,11 +116,11 @@ void bmf_window_show(void)
 	bmf_window = pCreateWindowU("bmf_window", "BIOS/Misc Files",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
+					DLU_X(BMF_WINDOW_WIDTH), DLU_Y(BMF_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(bmf_window, BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(bmf_window, DLU_X(BMF_WINDOW_WIDTH), DLU_Y(BMF_WINDOW_HEIGHT));
 	
 	// Center the window on the parent window.
 	gsft_win32_center_on_window(bmf_window, gens_window);
@@ -140,7 +140,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 	HWND grpBox;
 	
 	// Positioning.
-	const int grpBox_Left = 8;
+	const int grpBox_Left = DLU_X(5);
 	int grpBox_Top = 0, grpBox_Height = 0, grpBox_Entry = 0;
 	int entryTop;
 	
@@ -149,46 +149,48 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 		if (!bmf_entries[file].entry)
 		{
 			// No entry buffer. This is a new frame.
-			grpBox_Top += grpBox_Height + 8;
-			grpBox_Height = 24;
+			grpBox_Top += grpBox_Height + DLU_Y(5);
+			grpBox_Height = DLU_Y(15);
 			grpBox_Entry = 0;
 			
 			grpBox = pCreateWindowU(WC_BUTTON, bmf_entries[file].title,
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 						grpBox_Left, grpBox_Top,
-						BMF_FRAME_WIDTH, grpBox_Height,
+						DLU_X(BMF_FRAME_WIDTH), grpBox_Height,
 						hWnd, NULL, ghInstance, NULL);
 			SetWindowFontU(grpBox, fntMain, true);
 		}
 		else
 		{
 			// File entry.
-			grpBox_Height += 24;
-			entryTop = 20 + (grpBox_Entry * 24);
-			SetWindowPos(grpBox, NULL, 0, 0, BMF_FRAME_WIDTH, grpBox_Height, SWP_NOMOVE | SWP_NOZORDER);
+			grpBox_Height += DLU_Y(15);
+			entryTop = DLU_Y(12) + (grpBox_Entry * DLU_Y(15));
+			SetWindowPos(grpBox, NULL, 0, 0,
+					DLU_X(BMF_FRAME_WIDTH), grpBox_Height,
+					SWP_NOMOVE | SWP_NOZORDER);
 			
 			// Create the label for the file.
 			HWND lblFile = pCreateWindowU(WC_STATIC, bmf_entries[file].title,
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
-							grpBox_Left + 8, grpBox_Top + entryTop,
-							64, 16,
+							grpBox_Left + DLU_X(5), grpBox_Top + entryTop + DLU_Y(1),
+							DLU_X(45), DLU_Y(10),
 							hWnd, NULL, ghInstance, NULL);
 			SetWindowFontU(lblFile, fntMain, true);
 			
 			// Create the textbox for the file.
 			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 								WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-								grpBox_Left+8+56+8, grpBox_Top+entryTop,
-								BMF_FRAME_WIDTH-(8+64+8+72+8), 20,
+								grpBox_Left+DLU_X(5+35+5), grpBox_Top+entryTop,
+								DLU_X(BMF_FRAME_WIDTH-(5+45+5+45+5)), DLU_Y(12),
 								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
 			SetWindowFontU(txtFile[file], fntMain, true);
 			Edit_LimitTextU(txtFile[file], GENS_PATH_MAX-1);
 			
 			// Create the "Change..." button for the file.
-			HWND btnChange = pCreateWindowU(WC_BUTTON, TEXT("Change..."),
+			HWND btnChange = pCreateWindowU(WC_BUTTON, "Change...",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-							grpBox_Left+BMF_FRAME_WIDTH-(8+72), grpBox_Top + entryTop,
-							72, 20,
+							grpBox_Left+DLU_X(BMF_FRAME_WIDTH-(5+45)), grpBox_Top + entryTop,
+							DLU_X(45), DLU_Y(12),
 							hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 			SetWindowFontU(btnChange, fntMain, true);
 			
@@ -199,27 +201,33 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 	
 	// Create the dialog buttons.
 	
+	const int btnTop = DLU_Y(BMF_WINDOW_HEIGHT-5-14);
+	int btnLeft = DLU_X(BMF_WINDOW_WIDTH-5-50-5-50-5-50);
+	const int btnInc = DLU_X(5+50);
+	
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
-				75, 23,
+				btnLeft, btnTop,
+				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFontU(btnOK, fntMain, true);
 	
 	// Cancel button.
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
-					75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFontU(btnCancel, fntMain, true);
 	
 	// Apply button.
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
-					75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFontU(btnApply, fntMain, true);
 	
