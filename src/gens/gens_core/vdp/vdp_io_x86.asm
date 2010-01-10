@@ -423,6 +423,9 @@ section .text align=64
 	align 16
 	
 	.Nothing_To_Do:
+		; This never sems to happen...
+		xor	ecx, ecx
+		div	ecx
 		and	word [SYM(VDP_Status)], 0xFFFD
 		pop	esi
 		pop	edi

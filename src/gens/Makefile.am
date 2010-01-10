@@ -106,7 +106,7 @@ gens_SOURCES = \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
 		gens_core/vdp/vdp_io_x86.asm \
-		gens_core/vdp/vdp_io.c \
+		gens_core/vdp/vdp_io.cpp \
 		gens_core/vdp/vdp_rend_x86.asm \
 		gens_core/vdp/vdp_rend.cpp \
 		gens_core/vdp/vdp_rend_m5.cpp \

@@ -916,10 +916,102 @@ typedef enum
 	DMA_SRC_WORD_RAM_CELL_1M_1	= 8,
 } DMA_Src_t;
 
+#define DMA_TYPE(src, dest) (((int)(src) << 2) | ((int)(dest)))
 
+
+#include <stdio.h>
+/**
+ * T_DMA_Loop(): DMA copy loop.
+ * @param src_component Source component.
+ * @param dest_component Destination component.
+ * @param src_address Source address.
+ * @param length Length.
+ */
+template<DMA_Src_t src_component, DMA_Dest_t dest_component>
+static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_address, int length)
+{
+	printf("T_DMA_Loop<%d, %d>: src_address == 0x%06X, dest_address == 0x%04X, length == %d\n",
+		src_component, dest_component, src_address, dest_address, length);
+	
+	// RAM to VRam only for now.
+	if (src_component != DMA_SRC_M68K_RAM ||
+	    dest_component != DMA_DEST_VRAM)
+	{
+		// Unsupported.
+		return;
+	}
+	
+	// Mask the source address, depending on type.
+	switch (src_component)
+	{
+		case DMA_SRC_M68K_RAM:
+			src_address &= 0xFFFE;
+			break;
+	}
+	
+	// Determine if any flags should be set.
+	switch (dest_component)
+	{
+		case DMA_DEST_VRAM:
+			VDP_Flags.VRam = 1;
+			VDP_Reg.DMAT_Type = 0;
+			break;
+		
+		case DMA_DEST_CRAM:
+			VDP_Flags.CRam = 1;
+			// NO BREAK HERE
+		
+		case DMA_DEST_VSRAM:
+			VDP_Reg.DMAT_Type = 1;
+			break;
+	}
+	
+	VDP_Ctrl.DMA = 0;
+	
+	// src_base_address is used to ensure 128 KB wrapping.
+	unsigned int src_base_address;
+	if (src_component != DMA_SRC_M68K_RAM)
+		src_base_address = (src_address & 0xFE0000);
+	
+	do
+	{
+		// Get the word.
+		uint16_t w = Ram_68k.u16[src_address >> 1];
+		
+		if (src_component == DMA_SRC_M68K_RAM)
+			src_address = ((src_address + 2) & 0xFFFF);
+		else
+			src_address = (((src_address + 2) & 0x1FFFF) | src_base_address);
+		
+		// Check for swapped VRam write.
+		if (dest_component == DMA_DEST_VRAM)
+		{
+			if (dest_address & 1)
+				w = (w << 8 | w >> 8);
+		}
+		
+		// Write the word.
+		VRam.u16[dest_address >> 1] = w;
+		dest_address = ((dest_address + 2) & 0xFFFF);
+	} while (--length != 0);
+	
+	// Save the resulting data.
+	// NOTE: The new DMA_Address is the wrapped version.
+	// The old asm code saved the unwrapped version.
+	// Ergo, it simply added length to DMA_Address.
+	VDP_Ctrl.Address = dest_address;
+	VDP_Reg.DMA_Address = (src_address >> 1) & 0x7FFFFF;
+	VDP_Update_DMA();
+	main68k_releaseCycles();
+}
+
+
+extern "C" {
 void VDP_Do_DMA_asm(DMA_Dest_t dest_component, unsigned int src_address, unsigned int dest_address,
 		    int length, unsigned int auto_inc, int src_component);
 void VDP_Do_DMA_COPY_asm(unsigned int src_address, unsigned int dest_address, int length, unsigned int auto_inc);
+}
+
 /**
  * VDP_Write_Ctrl(): Write a control word to the VDP.
  * @param data Control word.
@@ -1060,6 +1152,7 @@ void VDP_Write_Ctrl(uint16_t data)
 	
 	// Determine the source component.
 	DMA_Src_t src_component;
+	int WRam_Mode;
 	if (src_address < Rom_Size)
 	{
 		// Main ROM.
@@ -1091,7 +1184,7 @@ void VDP_Write_Ctrl(uint16_t data)
 	
 	// Word RAM. Check the Word RAM state to determine the mode.
 	// TODO: Determine how this works.
-	int WRam_Mode = (Ram_Word_State & 0x03) + 3;
+	WRam_Mode = (Ram_Word_State & 0x03) + 3;
 	if (WRam_Mode < 5 || src_address < 0x220000)
 	{
 		src_component = (DMA_Src_t)WRam_Mode;
@@ -1104,6 +1197,16 @@ DMA_Src_OK:
 	// Set the DMA BUSY bit.
 	VDP_Status |= 0x0002;
 	
-	VDP_Do_DMA_asm(dest_component, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
+	switch (DMA_TYPE(src_component, dest_component))
+	{
+		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VRAM):
+			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VRAM>(src_address, dest_address, length);
+			break;
+		
+		default:
+			VDP_Do_DMA_asm(dest_component, src_address, dest_address, length, VDP_Reg.m5.Auto_Inc, src_component);
+			break;
+	}
+	
 	return;
 }
