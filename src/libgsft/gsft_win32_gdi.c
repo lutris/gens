@@ -34,8 +34,8 @@ HFONT w32_fntMonospaced = NULL;		// Monospaced font.
  * Dialog unit conversion.
  * DO NOT modify these externally!
  */
-int dlu_x = 4;
-int dlu_y = 4;
+int w32_dlu_x = 4;
+int w32_dlu_y = 4;
 
 
 /**
@@ -92,8 +92,8 @@ void WINAPI gsft_win32_gdi_init(HWND hWnd)
 		return;
 	}
 	
-	dlu_x = (((size.cx / 26) + 1) / 2);
-	dlu_y = tm.tmHeight;
+	w32_dlu_x = (((size.cx / 26) + 1) / 2);
+	w32_dlu_y = tm.tmHeight;
 }
 
 
