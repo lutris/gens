@@ -150,11 +150,11 @@ void ccode_window_show(void)
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.
+	// NOTE: This is done in ccode_window_create_child_windows() to compensate for listbox variations.
 	//Win32_setActualWindowSize(ccode_window, DLU_X(CCODE_WINDOW_WIDTH), DLU_Y(CCODE_WINDOW_DEF_HEIGHT);
 	
 	// Center the window on the parent window.
-	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.
+	// NOTE: This is done in ccode_window_create_child_windows() to compensate for listbox variations.
 	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
 	//Win32_centerOnGensWindow(ccode_window);
 	
