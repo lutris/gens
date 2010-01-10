@@ -950,6 +950,23 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 			src_address &= 0xFFFE;
 			break;
 		
+		case DMA_SRC_PRG_RAM:
+			src_address = ((src_address & 0x1FFFE) + Bank_M68K);
+			break;
+		
+		case DMA_SRC_WORD_RAM_2M:
+			src_address -= 2;	// TODO: What is this for?
+			src_address &= 0x3FFFE;
+			break;
+		
+		case DMA_SRC_WORD_RAM_1M_0:
+		case DMA_SRC_WORD_RAM_1M_1:
+		case DMA_SRC_WORD_RAM_CELL_1M_0:
+		case DMA_SRC_WORD_RAM_CELL_1M_1:
+			src_address -= 2;	// TODO: What is this for?
+			src_address &= 0x1FFFE;
+			break;
+		
 		default:	// to make gcc shut up
 			break;
 	}
@@ -993,6 +1010,10 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 			
 			case DMA_SRC_M68K_RAM:
 				w = Ram_68k.u16[src_address >> 1];
+				break;
+			
+			case DMA_SRC_WORD_RAM_2M:
+				w = ((uint16_t*)Ram_Word_2M)[src_address >> 1];
 				break;
 			
 			default:	// to make gcc shut up
@@ -1268,6 +1289,18 @@ DMA_Src_OK:
 		
 		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VSRAM):
 			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VSRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_WORD_RAM_2M, DMA_DEST_VRAM):
+			T_DMA_Loop<DMA_SRC_WORD_RAM_2M, DMA_DEST_VRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_WORD_RAM_2M, DMA_DEST_CRAM):
+			T_DMA_Loop<DMA_SRC_WORD_RAM_2M, DMA_DEST_CRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_WORD_RAM_2M, DMA_DEST_VSRAM):
+			T_DMA_Loop<DMA_SRC_WORD_RAM_2M, DMA_DEST_VSRAM>(src_address, dest_address, length);
 			break;
 		
 		default:
