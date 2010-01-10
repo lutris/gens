@@ -453,6 +453,9 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 					VDP_Reg.H_Scroll_CMask = 127;
 					VDP_Reg.V_Scroll_CMask = 31;
 					break;
+				
+				default:	// to make gcc shut up
+					break;
 			}
 			
 			break;
@@ -494,6 +497,9 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			// DMA Address High.
 			VDP_Reg.DMA_Address = (VDP_Reg.DMA_Address & 0xFF00FFFF) | ((val & 0x7F) << 16);
 			VDP_Ctrl.DMA_Mode = (val & 0xC0);
+			break;
+		
+		default:	// to make gcc shut up
 			break;
 	}
 }
@@ -933,9 +939,8 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 	printf("T_DMA_Loop<%d, %d>: src_address == 0x%06X, dest_address == 0x%04X, length == %d\n",
 		src_component, dest_component, src_address, dest_address, length);
 	
-	// RAM to VRam only for now.
-	if (src_component != DMA_SRC_M68K_RAM ||
-	    dest_component != DMA_DEST_VRAM)
+	// RAM to * only for now.
+	if (src_component != DMA_SRC_M68K_RAM)
 	{
 		// Unsupported.
 		return;
@@ -946,6 +951,9 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 	{
 		case DMA_SRC_M68K_RAM:
 			src_address &= 0xFFFE;
+			break;
+		
+		default:	// to make gcc shut up
 			break;
 	}
 	
@@ -963,6 +971,9 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		
 		case DMA_DEST_VSRAM:
 			VDP_Reg.DMAT_Type = 1;
+			break;
+		
+		default:	// to make gcc shut up
 			break;
 	}
 	
@@ -991,8 +1002,38 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		}
 		
 		// Write the word.
-		VRam.u16[dest_address >> 1] = w;
+		switch (dest_component)
+		{
+			case DMA_DEST_VRAM:
+				if (dest_address & 1)
+					w = (w << 8 | w >> 8);
+				VRam.u16[dest_address >> 1] = w;
+				break;
+			
+			case DMA_DEST_CRAM:
+				CRam.u16[dest_address >> 1] = w;
+				break;
+			
+			case DMA_DEST_VSRAM:
+				VSRam.u16[dest_address >> 1] = w;
+				break;
+			
+			default:	// to make gcc shut up
+				break;
+		}
+		
 		dest_address = ((dest_address + 2) & 0xFFFF);
+		
+		// Check for CRam or VSRam destination overflow.
+		if (dest_component == DMA_DEST_CRAM ||
+		    dest_component == DMA_DEST_VSRAM)
+		{
+			if (dest_address >= 0x80)
+			{
+				// CRam/VSRam overflow!
+				break;
+			}
+		}
 	} while (--length != 0);
 	
 	// Save the resulting data.
@@ -1201,6 +1242,14 @@ DMA_Src_OK:
 	{
 		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VRAM):
 			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_CRAM):
+			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_CRAM>(src_address, dest_address, length);
+			break;
+		
+		case DMA_TYPE(DMA_SRC_M68K_RAM, DMA_DEST_VSRAM):
+			T_DMA_Loop<DMA_SRC_M68K_RAM, DMA_DEST_VSRAM>(src_address, dest_address, length);
 			break;
 		
 		default:
