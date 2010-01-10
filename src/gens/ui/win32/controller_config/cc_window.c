@@ -36,11 +36,12 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
+#include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Gens input variables.
@@ -53,9 +54,6 @@
 
 // TODO: Move DirectInput-specific code to input_dinput.cpp.
 #include <dinput.h>
-
-// Unused Parameter macro.
-#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -103,9 +101,6 @@ static input_keymap_t cc_key_config[8];
 // Current player number and button being configured.
 static int	cc_cur_player;
 static int	cc_cur_player_button;
-
-// Monospace font for the current key configuration.
-static HFONT	cc_fntMonospace = NULL;
 
 // Widgets.
 static HWND	chkTeamplayer[2];
@@ -236,7 +231,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 				btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, TRUE);
 	
 	// Cancel button.
 	btnLeft += btnInc;
@@ -245,7 +240,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 					btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, w32_fntMessage, TRUE);
 	
 	// Apply button.
 	btnLeft += btnInc;
@@ -254,7 +249,7 @@ static void WINAPI cc_window_create_child_windows(HWND hWnd)
 					btnLeft, DLU_Y(CC_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, w32_fntMessage, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -290,7 +285,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 					DLU_X(5), fraPort_top,
 					DLU_X(CC_FRAME_PORT_WIDTH), DLU_Y(CC_FRAME_PORT_HEIGHT),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraPort, fntMain, TRUE);
+	SetWindowFontU(fraPort, w32_fntMessage, TRUE);
 	
 	// Checkbox for enabling teamplayer.
 	const char *tp_label;
@@ -305,7 +300,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 						DLU_X(CC_FRAME_PORT_WIDTH-10), DLU_Y(10),
 						container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
 						ghInstance, NULL);
-	SetWindowFontU(chkTeamplayer[port-1], fntMain, TRUE);
+	SetWindowFontU(chkTeamplayer[port-1], w32_fntMessage, TRUE);
 	
 	// Player inputs.
 	unsigned int i, player;
@@ -334,7 +329,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							DLU_X(5+5), rowTop+DLU_Y(1),
 							DLU_X(32), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-		SetWindowFontU(lblPlayer[player], fntMain, TRUE);
+		SetWindowFontU(lblPlayer[player], w32_fntMessage, TRUE);
 		
 		// Pad type dropdown.
 		cboPadType[player] = pCreateWindowU(WC_COMBOBOX, tmp,
@@ -343,7 +338,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							DLU_X(50), DLU_Y(14*2),
 							container, (HMENU)(IDC_CC_CBOPADTYPE + player),
 							ghInstance, NULL);
-		SetWindowFontU(cboPadType[player], fntMain, TRUE);
+		SetWindowFontU(cboPadType[player], w32_fntMessage, TRUE);
 		
 		// Pad type dropdown entries.
 		ComboBox_AddStringU(cboPadType[player], "3 buttons");
@@ -356,7 +351,7 @@ static void WINAPI cc_window_create_controller_port_frame(HWND container, int po
 							DLU_X(50), DLU_Y(14),
 							container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
 							ghInstance, NULL);
-		SetWindowFontU(optConfigure[player], fntMain, TRUE);
+		SetWindowFontU(optConfigure[player], w32_fntMessage, TRUE);
 	}
 }
 
@@ -375,7 +370,7 @@ static void WINAPI cc_window_create_input_devices_frame(HWND container)
 						DLU_X(5), fraInputDevices_top,
 						DLU_X(CC_FRAME_INPUT_DEVICES_WIDTH), DLU_Y(CC_FRAME_INPUT_DEVICES_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraInputDevices, fntMain, TRUE);
+	SetWindowFontU(fraInputDevices, w32_fntMessage, TRUE);
 	
 	// Create a listbox for the list of input devices.
 	lstInputDevices = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
@@ -383,7 +378,7 @@ static void WINAPI cc_window_create_input_devices_frame(HWND container)
 						DLU_X(5+5), fraInputDevices_top+DLU_Y(10),
 						DLU_X(CC_FRAME_INPUT_DEVICES_WIDTH-10), DLU_Y(CC_FRAME_INPUT_DEVICES_HEIGHT-10-5),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lstInputDevices, fntMain, TRUE);
+	SetWindowFontU(lstInputDevices, w32_fntMessage, TRUE);
 }
 
 
@@ -423,7 +418,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					fraConfigure_left, fraConfigure_top,
 					DLU_X(CC_FRAME_CONFIGURE_WIDTH), DLU_Y(CC_FRAME_CONFIGURE_HEIGHT),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraConfigure, fntMain, TRUE);
+	SetWindowFontU(fraConfigure, w32_fntMessage, TRUE);
 	
 	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
@@ -439,7 +434,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 							fraConfigure_left+DLU_X(5), rowTop+DLU_Y(1),
 							DLU_X(22), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-		SetWindowFontU(lblButton[button], fntMain, TRUE);
+		SetWindowFontU(lblButton[button], w32_fntMessage, TRUE);
 		
 		// Current configuration label.
 		lblCurConfig[button] = pCreateWindowU(WC_STATIC, NULL,
@@ -454,7 +449,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 							fraConfigure_left+DLU_X(CC_FRAME_CONFIGURE_WIDTH-5-50), rowTop,
 							DLU_X(50), DLU_Y(14),
 							container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
-		SetWindowFontU(btnChange[button], fntMain, TRUE);
+		SetWindowFontU(btnChange[button], w32_fntMessage, TRUE);
 	}
 	
 	// Separator between the table and the miscellaneous buttons.
@@ -470,7 +465,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					fraConfigure_left+DLU_X(5), rowTop+DLU_Y(5+5)+2,
 					DLU_X(85), DLU_Y(14),
 					container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
-	SetWindowFontU(btnChangeAll, fntMain, TRUE);
+	SetWindowFontU(btnChangeAll, w32_fntMessage, TRUE);
 	
 	// "Clear All Buttons" button.
 	btnClearAll = pCreateWindowU(WC_BUTTON, "Clear All Buttons",
@@ -479,7 +474,7 @@ static void WINAPI cc_window_create_configure_controller_frame(HWND container)
 					rowTop+DLU_Y(5+5)+2,
 					DLU_X(85), DLU_Y(14),
 					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
-	SetWindowFontU(btnClearAll, fntMain, TRUE);
+	SetWindowFontU(btnClearAll, w32_fntMessage, TRUE);
 }
 
 
@@ -499,7 +494,7 @@ static void WINAPI cc_window_create_options_frame(HWND container)
 						fraOptions_left, fraOptions_top,
 						DLU_X(CC_FRAME_OPTIONS_WIDTH), DLU_Y(CC_FRAME_OPTIONS_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraOptions, fntMain, TRUE);
+	SetWindowFontU(fraOptions, w32_fntMessage, TRUE);
 	
 	// "Restrict Input" checkbox.
 	chkRestrictInput = pCreateWindowU(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
@@ -507,7 +502,7 @@ static void WINAPI cc_window_create_options_frame(HWND container)
 						fraOptions_left+DLU_X(5), fraOptions_top+DLU_Y(10),
 						DLU_X(CC_FRAME_OPTIONS_WIDTH-10), DLU_Y(20),
 						container, (HMENU)IDC_CC_CHKRESTRICTINPUT, ghInstance, NULL);
-	SetWindowFontU(chkRestrictInput, fntMain, TRUE);
+	SetWindowFontU(chkRestrictInput, w32_fntMessage, TRUE);
 }
 
 
@@ -525,13 +520,6 @@ void cc_window_close(void)
 	// Destroy the window.
 	DestroyWindow(cc_window);
 	cc_window = NULL;
-	
-	// Delete the monospace font.
-	if (cc_fntMonospace)
-	{
-		DeleteFont(cc_fntMonospace);
-		cc_fntMonospace = NULL;
-	}
 }
 
 
@@ -631,7 +619,7 @@ static inline void WINAPI cc_window_display_key_name(HWND label, uint16_t key)
 	Static_SetTextU(label, key_name);
 #endif
 	
-	SetWindowFontU(label, fntMono, TRUE);
+	SetWindowFontU(label, w32_fntMonospaced, TRUE);
 }
 
 
@@ -764,13 +752,6 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			
 			cc_window_is_configuring = FALSE;
 			cc_window = NULL;
-			
-			// Delete the monospace font.
-			if (cc_fntMonospace)
-			{
-				DeleteFont(cc_fntMonospace);
-				cc_fntMonospace = NULL;
-			}
 			
 			break;
 	}

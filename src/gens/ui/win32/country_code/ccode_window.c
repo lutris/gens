@@ -38,11 +38,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Window.
 HWND ccode_window = NULL;
@@ -176,7 +176,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					DLU_X(CCODE_WINDOW_FRACOUNTRY_WIDTH),
 					DLU_Y(CCODE_WINDOW_FRACOUNTRY_HEIGHT),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(fraCountry, fntMain, TRUE);
+	SetWindowFontU(fraCountry, w32_fntMessage, TRUE);
 	
 	// Create the Country Code treeview.
 	ccode_window_create_lstCountryCodes(hWnd);
@@ -207,7 +207,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, TRUE);
 	
 	// Cancel button.
 	btnLeft += btnInc;
@@ -216,7 +216,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, w32_fntMessage, TRUE);
 	
 	// Apply button.
 	btnLeft += btnInc;
@@ -225,7 +225,7 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 					btnLeft, ccode_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, w32_fntMessage, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -251,7 +251,7 @@ static void WINAPI ccode_window_create_lstCountryCodes(HWND container)
 						DLU_X(CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH),
 						DLU_Y(CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lstCountryCodes, fntMain, TRUE);
+	SetWindowFontU(lstCountryCodes, w32_fntMessage, TRUE);
 	
 	// Check what the listbox's actual height is.
 	RECT r;
@@ -288,7 +288,7 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 					DLU_Y(5+10),
 					DLU_X(CCODE_WINDOW_BTN_SIZE), DLU_Y(CCODE_WINDOW_BTN_SIZE),
 					container, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
-	SetWindowFontU(btnUp, fntMain, TRUE);
+	SetWindowFontU(btnUp, w32_fntMessage, TRUE);
 	
 	// "Down" button.
 	HWND btnDown = pCreateWindowU(WC_BUTTON, NULL,
@@ -298,7 +298,7 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 						(ccode_window_height-DLU_Y(CCODE_WINDOW_DEF_HEIGHT))-DLU_Y(CCODE_WINDOW_BTN_SIZE),
 					DLU_X(CCODE_WINDOW_BTN_SIZE), DLU_Y(CCODE_WINDOW_BTN_SIZE),
 					container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
-	SetWindowFontU(btnDown, fntMain, TRUE);
+	SetWindowFontU(btnDown, w32_fntMessage, TRUE);
 	
 	// Set the button icons.
 	if (comctl32_dll_version >= 0x05520000)

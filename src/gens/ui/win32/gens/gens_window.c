@@ -36,11 +36,11 @@
 // Win32 includes.
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_shellapi.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 
 // Window.
@@ -84,8 +84,8 @@ void gens_window_init_hWnd(void)
 					320 * 2, 240 * 2,
 					NULL, NULL, ghInstance, NULL);
 	
-	// Initialize dialog unit conversion.
-	dlu_init(gens_window);
+	// Initialize libgsft_win32_gdi. (Fonts)
+	gsft_win32_gdi_init(gens_window);
 	
 	// Accept dragged files.
 	DragAcceptFiles(gens_window, TRUE);

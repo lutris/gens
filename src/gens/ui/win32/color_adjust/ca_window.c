@@ -34,11 +34,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Gens includes.
@@ -151,7 +151,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 						DLU_X(5), DLU_Y(10),
 						DLU_X(35), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblContrast, fntMain, TRUE);
+	SetWindowFontU(lblContrast, w32_fntMessage, TRUE);
 	
 	// "Contrast" trackbar.
 	trkContrast = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
@@ -169,7 +169,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					DLU_X(5+35+CA_TRACKBAR_WIDTH+5), DLU_Y(10),
 					DLU_X(20), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblContrastVal, fntMain, TRUE);
+	SetWindowFontU(lblContrastVal, w32_fntMessage, TRUE);
 	
 	// "Brightness" label.
 	HWND lblBrightness = pCreateWindowU(WC_STATIC, "&Brightness",
@@ -177,7 +177,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 						DLU_X(5), DLU_Y(10+20),
 						DLU_X(35), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblBrightness, fntMain, TRUE);
+	SetWindowFontU(lblBrightness, w32_fntMessage, TRUE);
 	
 	// "Brightness" trackbar.
 	trkBrightness = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
@@ -195,7 +195,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 						DLU_X(5+35+CA_TRACKBAR_WIDTH+5), DLU_Y(10+20),
 						DLU_X(20), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblBrightnessVal, fntMain, TRUE);
+	SetWindowFontU(lblBrightnessVal, w32_fntMessage, TRUE);
 	
 	// Center the checkboxes.
 	int ctlLeft = DLU_X((CA_WINDOW_WIDTH-50-5-50)/2);
@@ -207,7 +207,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					ctlLeft, ctlTop,
 					DLU_X(50), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkGrayscale, fntMain, TRUE);
+	SetWindowFontU(chkGrayscale, w32_fntMessage, TRUE);
 	
 	// "Inverted" checkbox.
 	ctlLeft += DLU_X(5+50);
@@ -216,7 +216,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					ctlLeft, ctlTop,
 					DLU_X(50), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkInverted, fntMain, TRUE);
+	SetWindowFontU(chkInverted, w32_fntMessage, TRUE);
 	
 	// Center the "Color Scale Method" controls.
 	ctlLeft = DLU_X((CA_WINDOW_WIDTH-70-10-60)/2);
@@ -227,7 +227,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 							ctlLeft, DLU_Y(10+20+20+12+2),
 							DLU_X(70), DLU_Y(10),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblColorScaleMethod, fntMain, TRUE);
+	SetWindowFontU(lblColorScaleMethod, w32_fntMessage, TRUE);
 	
 	// Create the "Color Scale Method" dropdown.
 	ctlLeft += DLU_X(70+10);
@@ -236,7 +236,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 						ctlLeft, DLU_Y(10+20+20+12),
 						DLU_X(60), DLU_Y(14*3),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(cboColorScaleMethod, fntMain, TRUE);
+	SetWindowFontU(cboColorScaleMethod, w32_fntMessage, TRUE);
 	
 	// Add the items to the "Color Scale Method" dropdown.
 	ComboBox_AddStringU(cboColorScaleMethod, "Raw");
@@ -256,7 +256,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					ctlLeft, ctlTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, TRUE);
 	
 	// Cancel button.
 	ctlLeft += DLU_X(5+50);
@@ -265,7 +265,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					ctlLeft, ctlTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, w32_fntMessage, TRUE);
 	
 	// Apply button.
 	ctlLeft += DLU_X(5+50);
@@ -274,7 +274,7 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 					ctlLeft, ctlTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, w32_fntMessage, TRUE);
 	
 	// Initialize the color adjustment spinbuttons.
 	ca_window_init();

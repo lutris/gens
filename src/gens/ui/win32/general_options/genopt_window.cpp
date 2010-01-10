@@ -39,11 +39,11 @@
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_commdlg.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -208,7 +208,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					DLU_X(5), DLU_Y(5),
 					DLU_X(GENOPT_OSD_FRAME_WIDTH+10), DLU_Y((GENOPT_OSD_FRAME_HEIGHT*2)+5+5+5),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(fraOSD, fntMain, true);
+	SetWindowFontU(fraOSD, w32_fntMessage, true);
 	
 	// FPS counter frame
 	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, DLU_X(10), DLU_Y(15),
@@ -227,7 +227,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 				frameLeft, frameTop,
 				DLU_X(GENOPT_OSD_FRAME_WIDTH+10), DLU_Y(GENOPT_WINDOW_HEIGHT-5-14-10),
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, w32_fntMessage, true);
 	
 	// Auto Fix Checksum
 	frameLeft += DLU_X(5);
@@ -237,7 +237,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							frameLeft, frameTop,
 							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_AutoFixChecksum, fntMain, true);
+	SetWindowFontU(chkMisc_AutoFixChecksum, w32_fntMessage, true);
 	
 	// Auto Pause
 	frameTop += DLU_Y(12);
@@ -246,7 +246,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						frameLeft, frameTop,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_AutoPause, fntMain, true);
+	SetWindowFontU(chkMisc_AutoPause, w32_fntMessage, true);
 	
 	// Fast Blur
 	frameTop += DLU_Y(12);
@@ -255,7 +255,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						frameLeft, frameTop,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_FastBlur, fntMain, true);
+	SetWindowFontU(chkMisc_FastBlur, w32_fntMessage, true);
 	
 	// Show SegaCD LEDs
 	frameTop += DLU_Y(12);
@@ -264,7 +264,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						frameLeft, frameTop,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_SegaCDLEDs, fntMain, true);
+	SetWindowFontU(chkMisc_SegaCDLEDs, w32_fntMessage, true);
 	
 	// Border Color Emulation
 	frameTop += DLU_Y(12);
@@ -273,7 +273,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							frameLeft, frameTop,
 							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_BorderColorEmulation, fntMain, true);
+	SetWindowFontU(chkMisc_BorderColorEmulation, w32_fntMessage, true);
 	
 	// Pause Tint
 	frameTop += DLU_Y(12);
@@ -282,7 +282,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						frameLeft, frameTop,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_PauseTint, fntMain, true);
+	SetWindowFontU(chkMisc_PauseTint, w32_fntMessage, true);
 	
 	// Intro Effect label.
 	frameTop += DLU_Y(10+5);
@@ -291,7 +291,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						frameLeft, frameTop,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblIntroEffect, fntMain, true);
+	SetWindowFontU(lblIntroEffect, w32_fntMessage, true);
 	
 	// Dropdown for intro effect.
 	frameTop += DLU_Y(10);
@@ -300,7 +300,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					frameLeft, frameTop,
 					DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(14*3),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(cboIntroEffect, fntMain, true);
+	SetWindowFontU(cboIntroEffect, w32_fntMessage, true);
 	ComboBox_AddStringU(cboIntroEffect, "None");
 	ComboBox_AddStringU(cboIntroEffect, "Gens Logo Effect");
 	ComboBox_AddStringU(cboIntroEffect, "\"Crazy\" Effect");
@@ -313,7 +313,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 							frameLeft, frameTop,
 							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblIntroEffectColor, fntMain, true);
+	SetWindowFontU(lblIntroEffectColor, w32_fntMessage, true);
 	
 	// Intro effect color buttons.
 	frameLeft += ((DLU_X(GENOPT_OSD_FRAME_WIDTH) - (4*(16+8)-8)) / 2);
@@ -337,7 +337,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 				btnLeft, btnTop,
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Cancel button.
 	btnLeft += btnInc;
@@ -346,7 +346,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	// Apply button.
 	btnLeft += btnInc;
@@ -355,7 +355,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Initialize the internal data variables.
 	genopt_window_init();
@@ -375,7 +375,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
 				x, y, w, h,
 				container, NULL, ghInstance, NULL);
-	SetWindowFontU(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, w32_fntMessage, true);
 	
 	x += DLU_X(5);
 	y += DLU_Y(10);
@@ -387,7 +387,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 						x, y,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_Enable[index], fntMain, true);
+	SetWindowFontU(chkOSD_Enable[index], w32_fntMessage, true);
 	
 	// Double Sized
 	y += rowInc;
@@ -396,7 +396,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 							x, y,
 							DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_DoubleSized[index], fntMain, true);
+	SetWindowFontU(chkOSD_DoubleSized[index], w32_fntMessage, true);
 	
 	// Transparency
 	y += rowInc;
@@ -405,7 +405,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 							x, y,
 							DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_Transparency[index], fntMain, true);
+	SetWindowFontU(chkOSD_Transparency[index], w32_fntMessage, true);
 	
 	// Color label.
 	y += rowInc;
@@ -414,7 +414,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 					x, y+DLU_Y(2),
 					DLU_X(22), DLU_Y(10),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblColor, fntMain, true);
+	SetWindowFontU(lblColor, w32_fntMessage, true);
 	
 	// Color button.
 	btnColor[index] = pCreateWindowU(WC_BUTTON, "Change...",
@@ -422,7 +422,7 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 						x+DLU_X(5+22), y,
 						DLU_X(GENOPT_OSD_FRAME_WIDTH-10-22-5), DLU_Y(14),
 						container, (HMENU)(0xB000 + index), ghInstance, NULL);
-	SetWindowFontU(btnColor[index], fntMain, true);
+	SetWindowFontU(btnColor[index], w32_fntMessage, true);
 	
 	// Color button C++ wrapper.
 	btnColor_cpp[index] = new BtnColor(btnColor[index]);

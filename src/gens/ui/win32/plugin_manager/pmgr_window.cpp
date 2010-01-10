@@ -38,11 +38,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Plugin Manager
@@ -193,7 +193,7 @@ static void WINAPI pmgr_window_create_child_windows(HWND hWnd)
 					DLU_X(PMGR_WINDOW_WIDTH-5-50), DLU_Y(PMGR_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Populate the plugin lists.
 	pmgr_window_populate_plugin_lists();
@@ -216,7 +216,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container)
 					DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH),
 					DLU_Y(PMGR_FRAME_PLUGIN_LIST_HEIGHT),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(tabPluginList, fntMain, true);
+	SetWindowFontU(tabPluginList, w32_fntMessage, true);
 	
 #ifdef GENS_PNG
 	// Create the ImageList.
@@ -256,7 +256,7 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 						DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH-10),
 						DLU_Y(PMGR_FRAME_PLUGIN_LIST_HEIGHT-15-5-2),
 						container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
-	SetWindowFontU(lstPluginList[id], fntMain, true);
+	SetWindowFontU(lstPluginList[id], w32_fntMessage, true);
 	ListView_SetExtendedListViewStyleU(lstPluginList[id], LVS_EX_FULLROWSELECT);
 	
 	if (id == PMGR_INTERNAL)
@@ -311,7 +311,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH),
 						DLU_Y(PMGR_FRAME_PLUGIN_INFO_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraPluginInfo, fntMain, true);
+	SetWindowFontU(fraPluginInfo, w32_fntMessage, true);
 	
 #ifdef GENS_PNG
 	// Create the plugin icon widget.
@@ -332,7 +332,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH) - lblPluginMainInfo_Left,
 						lblPluginMainInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginMainInfo, fntMain, true);
+	SetWindowFontU(lblPluginMainInfo, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginMainInfo, true);
 	
 	// Label for secondary plugin info.
@@ -343,7 +343,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH-5-5),
 						lblPluginSecInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginSecInfo, fntMain, true);
+	SetWindowFontU(lblPluginSecInfo, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
@@ -354,7 +354,7 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 					DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH-5-5),
 					lblPluginDesc_Height,
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginDesc, fntMain, true);
+	SetWindowFontU(lblPluginDesc, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginDesc, true);
 }
 

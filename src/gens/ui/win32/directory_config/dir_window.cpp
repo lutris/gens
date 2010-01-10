@@ -49,11 +49,11 @@ using std::list;
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_file.h"
 #include "libgsft/gsft_szprintf.h"
 
@@ -170,7 +170,7 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 						DLU_X(DIR_WINDOW_WIDTH-10),
 						DLU_Y(DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(fraInternalDirs, fntMain, true);
+	SetWindowFontU(fraInternalDirs, w32_fntMessage, true);
 	
 	// Initialize the directory widget vector.
 	vectDirs.clear();
@@ -202,7 +202,7 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 							DLU_X(DIR_WINDOW_WIDTH-10),
 							DLU_Y(DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size())),
 							hWnd, NULL, ghInstance, NULL);
-		SetWindowFontU(fraPluginDirs, fntMain, true);
+		SetWindowFontU(fraPluginDirs, w32_fntMessage, true);
 		
 		// Create all plugin directory entry widgets.
 		int dir = 0x10;
@@ -245,7 +245,7 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 				btnLeft, dir_window_height-DLU_Y(5+14),
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Cancel button.
 	btnLeft += btnInc;
@@ -254,7 +254,7 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 					btnLeft, dir_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	// Apply button.
 	btnLeft += btnInc;
@@ -263,7 +263,7 @@ static void WINAPI dir_window_create_child_windows(HWND hWnd)
 					btnLeft, dir_window_height-DLU_Y(5+14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);
@@ -289,7 +289,7 @@ static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND contain
 					DLU_X(5+5), y,
 					DLU_X(45), DLU_Y(10),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblTitle, fntMain, true);
+	SetWindowFontU(lblTitle, w32_fntMessage, true);
 	
 	// Create the textbox for the directory.
 	HWND txtDirectory = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
@@ -297,7 +297,7 @@ static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND contain
 						DLU_X(5+5+45+5), y,
 						DLU_X(DIR_WINDOW_WIDTH-(5+45+10+45+5+10)), DLU_Y(12),
 						container, (HMENU)(IDC_DIR_DIRECTORY), ghInstance, NULL);
-	SetWindowFontU(txtDirectory, fntMain, true);
+	SetWindowFontU(txtDirectory, w32_fntMessage, true);
 	
 	// Create the "Change" button for the directory.
 	// TODO: Use an icon?
@@ -306,7 +306,7 @@ static HWND WINAPI dir_window_create_dir_widgets(const char *title, HWND contain
 					DLU_X(DIR_WINDOW_WIDTH-5-45-5), y,
 					DLU_X(45), DLU_Y(12),
 					container, (HMENU)(IDC_DIR_BTNCHANGE + id), ghInstance, NULL);
-	SetWindowFontU(btnChange, fntMain, true);
+	SetWindowFontU(btnChange, w32_fntMessage, true);
 	
 	return txtDirectory;
 }

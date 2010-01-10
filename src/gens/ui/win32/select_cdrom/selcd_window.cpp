@@ -33,11 +33,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Gens includes.
 #include "gens/gens_window.h"
@@ -136,7 +136,7 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 						DLU_X(5), DLU_Y(5+1),
 						DLU_X(50), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblDeviceName, fntMain, true);
+	SetWindowFontU(lblDeviceName, w32_fntMessage, true);
 	
 	// CD-ROM Drive dropdown box
 	cboDeviceName = pCreateWindowU(WC_COMBOBOX, NULL,
@@ -144,7 +144,7 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 					DLU_X(5+50+5), DLU_Y(5),
 					DLU_X(SELCD_WINDOW_WIDTH-5-5-50-5), DLU_Y(14*5),
 					hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
-	SetWindowFontU(cboDeviceName, fntMain, true);
+	SetWindowFontU(cboDeviceName, w32_fntMessage, true);
 	
 	// Buttons
 	int btnLeft = DLU_X(SELCD_WINDOW_WIDTH-5-50-5-50-5-50);
@@ -155,21 +155,21 @@ static void WINAPI selcd_window_create_child_windows(HWND hWnd)
 				btnLeft, btnTop,
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);

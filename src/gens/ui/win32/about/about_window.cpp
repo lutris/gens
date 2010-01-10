@@ -47,11 +47,11 @@ using std::stringstream;
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_winnls.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // git version
 #include "macros/git.h"
@@ -230,13 +230,13 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					DLU_X(80), DLU_Y(5),
 					DLU_X(ABOUT_WINDOW_WIDTH-80), DLU_Y(20+ABOUT_WINDOW_GIT_HEIGHT),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblGensTitle, fntTitle, true);
+	SetWindowFontU(lblGensTitle, w32_fntTitle, true);
 	
 	lblGensDesc = pCreateWindowU(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
 					DLU_X(80), DLU_Y(26+ABOUT_WINDOW_GIT_HEIGHT),
 					DLU_X(ABOUT_WINDOW_WIDTH-80), DLU_Y(65),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblGensDesc, fntMain, true);
+	SetWindowFontU(lblGensDesc, w32_fntMessage, true);
 	
 	// Build the debug information string.
 	about_window_buildDebugInfoString();
@@ -246,7 +246,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 				DLU_X(5), DLU_Y(TAB_TOP),
 				DLU_X(TAB_WIDTH), DLU_Y(TAB_HEIGHT),
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(tabInfo, fntMain, true);
+	SetWindowFontU(tabInfo, w32_fntMessage, true);
 	
 	// Make sure the tab control is in front of all other windows.
 	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
@@ -277,7 +277,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					rectTab.right - rectTab.left - 8,
 					rectTab.bottom - rectTab.top - 4,
 					tabInfo, NULL, ghInstance, NULL);
-	SetWindowFontU(grpTabContents, fntMain, true);
+	SetWindowFontU(grpTabContents, w32_fntMessage, true);
 	
 	// Subclass the tab box.
 	grpTabContents_old_wndproc = (WNDPROC)pSetWindowLongPtrU(grpTabContents, GWL_WNDPROC,
@@ -289,7 +289,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					rectTab.right - rectTab.left - 24,
 					rectTab.bottom - rectTab.top - 32,
 					grpTabContents, NULL, ghInstance, NULL);
-	SetWindowFontU(lblTabContents, fntMain, true);
+	SetWindowFontU(lblTabContents, w32_fntMessage, true);
 	
 	// Create the OK button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
@@ -297,7 +297,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					DLU_X(ABOUT_WINDOW_WIDTH-5-50), DLU_Y(ABOUT_WINDOW_HEIGHT-5-14),
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);

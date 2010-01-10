@@ -43,13 +43,12 @@ using std::string;
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
-
 
 // Window.
 HWND bmf_window = NULL;
@@ -158,7 +157,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 						grpBox_Left, grpBox_Top,
 						DLU_X(BMF_FRAME_WIDTH), grpBox_Height,
 						hWnd, NULL, ghInstance, NULL);
-			SetWindowFontU(grpBox, fntMain, true);
+			SetWindowFontU(grpBox, w32_fntMessage, true);
 		}
 		else
 		{
@@ -175,7 +174,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 							grpBox_Left + DLU_X(5), grpBox_Top + entryTop + DLU_Y(1),
 							DLU_X(45), DLU_Y(10),
 							hWnd, NULL, ghInstance, NULL);
-			SetWindowFontU(lblFile, fntMain, true);
+			SetWindowFontU(lblFile, w32_fntMessage, true);
 			
 			// Create the textbox for the file.
 			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
@@ -183,7 +182,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 								grpBox_Left+DLU_X(5+35+5), grpBox_Top+entryTop,
 								DLU_X(BMF_FRAME_WIDTH-(5+45+5+45+5)), DLU_Y(12),
 								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
-			SetWindowFontU(txtFile[file], fntMain, true);
+			SetWindowFontU(txtFile[file], w32_fntMessage, true);
 			Edit_LimitTextU(txtFile[file], GENS_PATH_MAX-1);
 			
 			// Create the "Change..." button for the file.
@@ -192,7 +191,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 							grpBox_Left+DLU_X(BMF_FRAME_WIDTH-(5+45)), grpBox_Top + entryTop,
 							DLU_X(45), DLU_Y(12),
 							hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
-			SetWindowFontU(btnChange, fntMain, true);
+			SetWindowFontU(btnChange, w32_fntMessage, true);
 			
 			// Next entry.
 			grpBox_Entry++;
@@ -211,7 +210,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 				btnLeft, btnTop,
 				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Cancel button.
 	btnLeft += btnInc;
@@ -220,7 +219,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	// Apply button.
 	btnLeft += btnInc;
@@ -229,7 +228,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 					btnLeft, btnTop,
 					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);
