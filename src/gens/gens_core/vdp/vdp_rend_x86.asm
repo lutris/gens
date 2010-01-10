@@ -240,6 +240,8 @@ section .text align=64
 %macro UPDATE_Y_OFFSET 2
 	
 	mov	eax, [Data_Misc.Cell]		; Current cell for the V Scroll
+	cmp	eax, byte 0			; Check if the cell number is less than 0.
+	jl	short %%End
 	test	eax, 0xFF81			; outside the limits of the VRAM? Then don't change...
 	jnz	short %%End
 	mov	edi, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]	; edi = line number

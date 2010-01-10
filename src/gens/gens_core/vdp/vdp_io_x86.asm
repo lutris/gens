@@ -64,14 +64,6 @@ section .bss align=64
 	extern SYM(VRam);
 	extern SYM(CRam);
 	
-	global SYM(VSRam_Over)	; VSRam overflow buffer. DO NOT REMOVE!
-	SYM(VSRam_Over):
-		resd 8
-	
-	global SYM(VSRam)
-	SYM(VSRam):
-		resd 64
-	
 %include "vdp_reg_x86.inc"
 	extern SYM(VDP_Reg)
 	extern SYM(VDP_Ctrl)

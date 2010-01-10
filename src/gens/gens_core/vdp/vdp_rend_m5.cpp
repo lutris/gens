@@ -313,17 +313,21 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 		return cur;
 	}
 	
+	// If the cell number is negative, don't do anything.
+	if (VDP_Data_Misc.Cell < 0)
+		return 0;
+	
 	// Get the vertical scroll offset.
-	unsigned int VScroll_Offset = VDP_Data_Misc.Cell;
+	unsigned int VScroll_Offset;
 	if (plane)
 	{
 		// Scroll A.
-		VScroll_Offset = VSRam.u16[VScroll_Offset];
+		VScroll_Offset = VSRam.u16[VDP_Data_Misc.Cell];
 	}
 	else
 	{
 		// Scroll B.
-		VScroll_Offset = VSRam.u16[VScroll_Offset + 1];
+		VScroll_Offset = VSRam.u16[VDP_Data_Misc.Cell + 1];
 	}
 	
 #ifdef FLICKERING_INTERLACED

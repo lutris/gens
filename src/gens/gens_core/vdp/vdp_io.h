@@ -198,14 +198,16 @@ typedef union
 extern VDP_CRam_t CRam;
 
 // TODO:
-// - Eliminate VSRam_Over[].
 // - Shrink VSRam[] to 80 bytes (40 words).
-extern uint32_t VSRam_Over[8];
-extern union
+typedef struct
 {
-	uint8_t  u8[128<<1];	// Only 80 bytes on the actual system!
-	uint16_t u16[128];	// Only 40 words on the actual system!
-} VSRam;
+	union
+	{
+		uint8_t  u8[128<<1];	// Only 80 bytes on the actual system!
+		uint16_t u16[128];	// Only 40 words on the actual system!
+	};
+} VSRam_t;
+extern VSRam_t VSRam;
 
 extern uint8_t  H_Counter_Table[512][2];
 

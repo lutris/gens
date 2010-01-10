@@ -23,6 +23,9 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 
+// C includes.
+#include <stdio.h>
+
 // Starscream 68000 core.
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_s68k.h"	/* For Ram_Word_State. */
@@ -37,6 +40,7 @@ VDP_Ctrl_t VDP_Ctrl;
 // Memory variables.
 VDP_VRam_t VRam;
 VDP_CRam_t CRam;
+VSRam_t VSRam;
 
 // Miscellaneous. (TODO: Determine if these should be signed or unsigned.)
 int VDP_Status;
@@ -115,6 +119,7 @@ void VDP_Reset(void)
 	memset(&MD_Screen32, 0x00, sizeof(MD_Screen32));
 	
 	// Clear VRam, CRam, and VSRam.
+	// (This also clears the VSRam overflow area.)
 	memset(&VRam, 0x00, sizeof(VRam));
 	memset(&CRam, 0x00, sizeof(CRam));
 	memset(&VSRam, 0x00, sizeof(VSRam));
@@ -189,9 +194,6 @@ void VDP_Reset(void)
 		hc_val = ((hc * 205) / 488) - 0x1C;
 		H_Counter_Table[hc][1] = (unsigned char)hc_val;
 	}
-	
-	// Clear the VSRam overflow area.
-	memset(&VSRam_Over, 0x00, sizeof(VSRam_Over));
 }
 
 
@@ -925,7 +927,6 @@ typedef enum
 #define DMA_TYPE(src, dest) (((int)(src) << 2) | ((int)(dest)))
 
 
-#include <stdio.h>
 /**
  * T_DMA_Loop(): DMA copy loop.
  * @param src_component Source component.
