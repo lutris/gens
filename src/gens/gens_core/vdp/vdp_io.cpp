@@ -356,7 +356,6 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				VDP_Reg.H_Pix_Begin = 0;
 				
 				// Check the window horizontal position.
-				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
 				VDP_Reg.Win_X_Pos = ((VDP_Reg.m5.Win_H_Pos & 0x1F) * 2);
 				if (VDP_Reg.Win_X_Pos > 40)
 					VDP_Reg.Win_X_Pos = 40;
@@ -378,7 +377,6 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				VDP_Reg.H_Pix_Begin = 32;
 				
 				// Check the window horizontal position.
-				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
 				VDP_Reg.Win_X_Pos = ((VDP_Reg.m5.Win_H_Pos & 0x1F) * 2);
 				if (VDP_Reg.Win_X_Pos > 32)
 					VDP_Reg.Win_X_Pos = 32;
