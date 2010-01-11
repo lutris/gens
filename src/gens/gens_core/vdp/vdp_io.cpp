@@ -1093,7 +1093,7 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		}
 	} while (--length != 0);
 	
-	// Save the resulting data.
+	// Save the new addresses.
 	// NOTE: The new DMA_Address is the wrapped version.
 	// The old asm code saved the unwrapped version.
 	// Ergo, it simply added length to DMA_Address.
@@ -1232,9 +1232,27 @@ void VDP_Write_Ctrl(uint16_t data)
 	if (VDP_Ctrl.DMA_Mode == 0xC0)
 	{
 		// DMA COPY.
-		// TODO: Port DMA COPY to C++.
 		src_address &= 0xFFFF;
-		VDP_Do_DMA_COPY_asm(src_address, dest_address, length, VDP_Reg.m5.Auto_Inc);
+		VDP_Status |= 0x0002;	// Set the DMA BUSY bit.
+		VDP_Reg.DMA_Length = 0;
+		VDP_Reg.DMAT_Length = length;
+		VDP_Reg.DMAT_Type = 0x3;
+		VDP_Flags.VRam = 1;
+		
+		// TODO: Is this correct with regards to endianness?
+		do
+		{
+			VRam.u8[dest_address] = VRam.u8[src_address];
+			
+			// Increment the addresses.
+			src_address = ((src_address + 1) & 0xFFFF);
+			dest_address = ((dest_address + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
+		} while (--length != 0);
+		
+		// Save the new addresses.
+		VDP_Reg.DMA_Address = src_address;
+		VDP_Ctrl.Address = dest_address;
+		//VDP_Do_DMA_COPY_asm(src_address, dest_address, length, VDP_Reg.m5.Auto_Inc);
 		return;
 	}
 	
