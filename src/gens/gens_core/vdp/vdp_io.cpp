@@ -23,8 +23,8 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 
-// C includes.
-#include <stdio.h>
+// Message logging.
+#include "macros/log_msg.h"
 
 // Starscream 68000 core.
 #include "gens_core/cpu/68k/star_68k.h"
@@ -633,7 +633,8 @@ uint16_t VDP_Read_Data(void)
 {
 	// TODO: Test this function.
 	// I can't find any MD games that read data from the VDP.
-	//printf("%s() called. Ctrl.Access == %d\n", __func__, Ctrl.Access);
+	LOG_MSG(vdp_io, LOG_MSG_LEVEL_DEBUG2,
+		"VDP_Ctrl.Access == %d", VDP_Ctrl.Access);
 	
 	// Clear the VDP control flag.
 	// (It's set when the address is set.)
@@ -937,7 +938,8 @@ typedef enum
 template<DMA_Src_t src_component, DMA_Dest_t dest_component>
 static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_address, int length)
 {
-	printf("T_DMA_Loop<%d, %d>: src_address == 0x%06X, dest_address == 0x%04X, length == %d\n",
+	LOG_MSG(vdp_io, LOG_MSG_LEVEL_DEBUG2,
+		"<%d, %d> src_address == 0x%06X, dest_address == 0x%04X, length == %d",
 		src_component, dest_component, src_address, dest_address, length);
 	
 	// Mask the source address, depending on type.
