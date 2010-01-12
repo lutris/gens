@@ -942,6 +942,9 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		"<%d, %d> src_address == 0x%06X, dest_address == 0x%04X, length == %d",
 		src_component, dest_component, src_address, dest_address, length);
 	
+	// Save the DMA length for timing purposes.
+	VDP_Reg.DMAT_Length = length;
+	
 	// Mask the source address, depending on type.
 	switch (src_component)
 	{
@@ -1095,12 +1098,25 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		}
 	} while (--length != 0);
 	
-	// Save the new addresses.
+	// Save the new destination address.
+	VDP_Ctrl.Address = dest_address;
+	
+	// If any bytes weren't copied, subtract it from the saved length.
+	VDP_Reg.DMAT_Length -= length;
+	if (VDP_Reg.DMAT_Length <= 0)
+	{
+		// No DMA left!
+		VDP_Status &= ~0x0002;
+		return;
+	}
+	
+	// Save the new source address.
 	// NOTE: The new DMA_Address is the wrapped version.
 	// The old asm code saved the unwrapped version.
 	// Ergo, it simply added length to DMA_Address.
-	VDP_Ctrl.Address = dest_address;
 	VDP_Reg.DMA_Address = (src_address >> 1) & 0x7FFFFF;
+	
+	// Update DMA.
 	VDP_Update_DMA();
 	main68k_releaseCycles();
 }

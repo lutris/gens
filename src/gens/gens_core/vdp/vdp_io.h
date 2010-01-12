@@ -130,7 +130,7 @@ typedef struct
 	
 	// DMAT variables.
 	unsigned int DMAT_Tmp;
-	unsigned int DMAT_Length;
+	int DMAT_Length;
 	unsigned int DMAT_Type;
 	
 	// VDP address pointers.
