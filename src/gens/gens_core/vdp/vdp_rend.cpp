@@ -134,12 +134,127 @@ void VDP_Update_Palette_HS(void)
 }
 
 
+template<typename pixel>
+static inline void DrawColorBars(pixel *screen, const pixel palette[22], const pixel bg_color)
+{
+	// Go to the correct position in the screen.
+	screen += TAB336[VDP_Lines.Visible.Border_Size] + 8;
+	
+	// Get the horizontal pixel count.
+	const int HPix = vdp_getHPix();
+	
+	// Pitch difference.
+	const int pitch_diff = (336 - HPix);
+	
+	// X bar positions.
+	int barX_1[7];
+	for (int i = 1; i <= 7; i++)
+	{
+		barX_1[i-1] = ((HPix * i) / 7);
+	}
+	barX_1[6] = 999;
+	
+	int barX_2[8];
+	for (int i = 1; i <= 4; i++)
+	{
+		barX_2[i-1] = ((HPix * i * 120) / 672);
+	}
+	for (int i = 1; i <= 3; i++)
+	{
+		barX_2[i+3] = barX_2[3] + ((HPix * i * 32) / 672);
+	}
+	barX_2[7] = 999;
+	
+	// Y bar positions.
+	const int barY_1 = ((VDP_Lines.Visible.Total * 2) / 3);
+	const int barY_2 = (barY_1 + (VDP_Lines.Visible.Total / 12));
+	
+	// Current color.
+	int color;
+	
+	for (int y = 0; y < VDP_Lines.Visible.Total; y++)
+	{
+		color = 0;
+		
+		if (y < barY_1)
+		{
+			// Primary bars.
+			for (int x = 0; x < HPix; x++)
+			{
+				if (x >= barX_1[color])
+					color++;
+				
+				// Draw the color.
+				*screen++ = palette[color];
+			}
+		}
+		else if (y < barY_2)
+		{
+			// Secondary bars.
+			for (int x = 0; x < HPix; x++)
+			{
+				if (x >= barX_1[color])
+					color++;
+				
+				// Draw the color.
+				*screen++ = palette[color+7];
+			}
+		}
+		else
+		{
+			// Final bars.
+			for (int x = 0; x < HPix; x++)
+			{
+				if (x >= barX_2[color])
+					color++;
+				
+				// Draw the color.
+				*screen++ = palette[color+14];
+			}
+		}
+		
+		// Next row.
+		screen += pitch_diff;
+	}
+}
+
+
+template<typename pixel>
+static inline void DrawColorBars_Border(pixel *screen, const pixel bg_color)
+{
+	// Draw the top border.
+	for (unsigned int i = (TAB336[VDP_Lines.Visible.Border_Size]); i != 0; i -= 4, screen += 4)
+	{
+		*screen = bg_color;
+		*(screen + 1) = bg_color;
+		*(screen + 2) = bg_color;
+		*(screen + 3) = bg_color;
+	}
+	
+	// Go to the bottom border.
+	screen += (TAB336[VDP_Lines.Visible.Total]);
+	
+	// Draw the bottom border.
+	for (unsigned int i = (TAB336[VDP_Lines.Visible.Border_Size]); i != 0; i -= 4, screen += 4)
+	{
+		*screen = bg_color;
+		*(screen + 1) = bg_color;
+		*(screen + 2) = bg_color;
+		*(screen + 3) = bg_color;
+	}
+}
+
+
 /**
  * VDP_Render_Line(): Render a line.
  */
 void VDP_Render_Line(void)
 {
 	// TODO: 32X-specific function.
+	
+	static unsigned int Last_VDP_Mode = ~0;
+	static int Last_HPix = ~0;
+	static uint8_t Last_BPP = ~0;
 	
 	if (VDP_Mode & VDP_MODE_M5)
 	{
@@ -150,5 +265,93 @@ void VDP_Render_Line(void)
 	{
 		// Unsupported mode.
 		// TODO: Show color bars!
+		
+		// 15-bit Color Bar colors.
+		static const uint16_t cb15[22] =
+		{
+			// Primary Color Bars.
+			0x6318, 0x6300, 0x0318, 0x0300,	// Gray, Yellow, Cyan, Green
+			0x6018, 0x6000, 0x0018,		// Magenta, Red, Blue
+			
+			// Secondary Color Bars.
+			0x0018, 0x0C63, 0x6018, 0x0C63,	// Blue, NTSC Black, Magenta, NTSC Black
+			0x0318, 0x0C63, 0x6318,		// Cyan, NTSC Black, Gray
+			
+			// Final Color Bars.
+			0x0089, 0x7FFF, 0x180D, 0x0C63,	// -I, White, +Q, NTSC Black
+			0x0421, 0x0C63, 0x1084, 0x0C63,	// -4, NTSC Black, +4, NTSC Black
+		};
+		
+		// 16-bit Color Bar colors.
+		static const uint16_t cb16[22] =
+		{
+			// Primary Color Bars.
+			0xC618, 0xC600, 0x0618, 0x600,	// Gray, Yellow, Cyan, Green
+			0xC018, 0xC000, 0x0018,		// Magenta, Red, Blue
+			
+			// Secondary Color Bars.
+			0x0018, 0x18C3, 0xC018, 0x18C3,	// Blue, NTSC Black, Magenta, NTSC Black
+			0x0618, 0x18C3, 0xC618,		// Cyan, NTSC Black, Gray
+			
+			// Final Color Bars.
+			0x0109, 0xFFFF, 0x300D, 0x18C3,	// -I, White, +Q, NTSC Black
+			0x0841, 0x18C3, 0x2104, 0x18C3,	// -4, NTSC Black, +4, NTSC Black
+		};
+		
+		// 32-bit Color Bar colors.
+		static const uint32_t cb32[22] =
+		{
+			// Primary Color Bars.
+			0xC0C0C0, 0xC0C000, 0x00C0C0, 0x00C000,	// Gray, Yellow, Cyan, Green
+			0xC000C0, 0xC00000, 0x0000C0,		// Magenta, Red, Blue
+			
+			// Secondary Color Bars.
+			0x0000C0, 0x131313, 0xC000C0, 0x131313,	// Blue, NTSC Black, Magenta, NTSC Black
+			0x00C0C0, 0x131313, 0xC0C0C0,		// Cyan, NTSC Black, Gray
+			
+			// Final Color Bars.
+			0x00214C, 0xFFFFFF, 0x32006A, 0x131313,	// -I, White, +Q, NTSC Black
+			0x090909, 0x131313, 0x1D1D1D, 0x131313,	// -4, NTSC Black, +4, NTSC Black
+		};
+		
+		if (VDP_Mode != Last_VDP_Mode ||
+		    Last_HPix != vdp_getHPix() ||
+		    Last_BPP != bppMD)
+		{
+			// VDP mode has changed. Redraw the color bars.
+			if (bppMD == 15)
+				DrawColorBars<uint16_t>(MD_Screen, cb15, MD_Palette[0]);
+			else if (bppMD == 16)
+				DrawColorBars<uint16_t>(MD_Screen, cb16, MD_Palette[0]);
+			else //if (bppMD == 32)
+				DrawColorBars<uint32_t>(MD_Screen32, cb32, MD_Palette32[0]);
+			
+			// Force a palette update.
+			VDP_Flags.CRam = 1;
+		}
+		
+		// Check if the palette was modified.
+		if (VDP_Flags.CRam)
+		{
+			// Update the palette.
+			if (VDP_Reg.m5.Set4 & 0x08)
+				VDP_Update_Palette_HS();
+			else
+				VDP_Update_Palette();
+			
+			if (VDP_Lines.Visible.Border_Size != 0)
+			{
+				// Update the color bar borders.
+				if (bppMD != 32)
+					DrawColorBars_Border<uint16_t>(MD_Screen, MD_Palette[0]);
+				else //if (bppMD == 32)
+					DrawColorBars_Border<uint32_t>(MD_Screen32, MD_Palette32[0]);
+			}
+		}
 	}
+	
+	// Save the VDP mode.
+	Last_VDP_Mode = VDP_Mode;
+	Last_HPix = vdp_getHPix();
+	Last_BPP = bppMD;
 }
