@@ -176,13 +176,6 @@ int Init_Settings(void)
 	
 	// Old code from InitParameters().
 	
-	// Initialize VDP_Lines.
-	VDP_Set_Visible_Lines();
-	
-#if 0	// TODO: Replace with MDP "exclusive mode" later.
-	Net_Play = 0;
-#endif
-	
 	Sprite_Over = 1;
 	GYM_Dumping = 0;
 	
@@ -192,6 +185,13 @@ int Init_Settings(void)
 	_32X_Started = 0;
 	CPU_Mode = 0;
 	STOP_DEBUGGING();
+	
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
+	Net_Play = 0;
+#endif
+	
+	// Initialize VDP_Lines.
+	VDP_Set_Visible_Lines();
 	
 	// Get the default save path.
 	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));

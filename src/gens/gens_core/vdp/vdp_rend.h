@@ -62,6 +62,9 @@ extern int Sprite_Visible[256];
 
 extern int Sprite_Over;
 
+void VDP_Render_Line(void);
+
+// Old asm versions.
 void Render_Line(void);
 void Render_Line_32X(void);
 

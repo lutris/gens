@@ -23,6 +23,9 @@
 #include "vdp_rend.h"
 #include "vdp_io.h"
 
+// Video modes.
+#include "vdp_rend_m5.hpp"
+
 // bppMD
 #include "emulator/g_main.hpp"
 
@@ -128,4 +131,24 @@ void VDP_Update_Palette_HS(void)
 {
 	T_VDP_Update_Palette<true>(MD_Palette, Palette);
 	T_VDP_Update_Palette<true>(MD_Palette32, Palette32);
+}
+
+
+/**
+ * VDP_Render_Line(): Render a line.
+ */
+void VDP_Render_Line(void)
+{
+	// TODO: 32X-specific function.
+	
+	if (VDP_Mode & VDP_MODE_M5)
+	{
+		// Mode 5.
+		VDP_Render_Line_m5();
+	}
+	else
+	{
+		// Unsupported mode.
+		// TODO: Show color bars!
+	}
 }

@@ -36,6 +36,7 @@
 // VDP registers and control.
 VDP_Reg_t VDP_Reg;
 VDP_Ctrl_t VDP_Ctrl;
+unsigned int VDP_Mode;
 
 // Memory variables.
 VDP_VRam_t VRam;
@@ -239,6 +240,84 @@ void VDP_Update_IRQ_Line(void)
 
 
 /**
+ * VDP_Set_Visible_Lines(): Sets the number of visible lines, depending on CPU mode and VDP setting.
+ */
+void VDP_Set_Visible_Lines(void)
+{
+	// Arrays of values.
+	// Indexes: 0 == 192 lines; 1 == 224 lines; 2 == 240 lines.
+	static const int VisLines_Total[3] = {192, 224, 240};
+	static const int VisLines_Border_Size[3] = {24, 8, 0};
+	static const int VisLines_Current_NTSC[3] = {-40, -24, 0};
+	static const int VisLines_Current_PAL[3] = {-67+1, -51+1, -43+1};
+	
+	// Line offset.
+	int LineOffset;
+	
+	// Check the current video mode.
+	if (!Game)
+	{
+		// No game is running. Assume 224 lines.
+		LineOffset = 1;
+	}
+	else if (VDP_Mode & VDP_MODE_M5)
+	{
+		// Mode 5. Must be either 224 lines or 240 lines.
+		if (VDP_Mode & VDP_MODE_M2)
+			LineOffset = 2; // 240 lines.
+		else
+			LineOffset = 1; // 224 lines.
+	}
+	else
+	{
+		// Mode 4 or TMS9918 mode.
+		// Mode 4 may be 192 lines, 224 lines, or 240 lines.
+		// Modes 0-3 may only be 192 lines.
+		// TODO: If emulating SMS1, disable 224-line and 240-line modes.
+		switch (VDP_Mode)
+		{
+			case 0x0B:
+				// Mode 4: 224 lines.
+				LineOffset = 1;
+				break;
+			case 0x0E:
+				// Mode 4: 240 lines.
+				LineOffset = 2;
+				break;
+			default:
+				// Modes 0-4: 192 lines.
+				LineOffset = 0;
+				break;
+		}
+	}
+	
+	VDP_Lines.Visible.Total = VisLines_Total[LineOffset];
+	VDP_Lines.Visible.Border_Size = VisLines_Border_Size[LineOffset];
+	VDP_Lines.Visible.Current = ((CPU_Mode == 1)
+					? VisLines_Current_PAL[LineOffset]
+					: VisLines_Current_NTSC[LineOffset]);
+}
+
+
+/**
+ * VDP_Update_Mode(): Update VDP_Mode.
+ */
+static inline void VDP_Update_Mode(void)
+{
+	register uint8_t Set1 = VDP_Reg.m5.Set1;
+	register uint8_t Set2 = VDP_Reg.m5.Set2;
+	VDP_Mode = ((Set2 & 0x10) >> 4) |	// M1
+		   ((Set2 & 0x08) >> 2) |	// M2
+		   ((Set1 & 0x06) << 1) |	// M3, M4/PSEL
+		   ((Set2 & 0x04) << 2);	// M5
+	
+	// CRam needs to be updated.
+	// TODO: Only update if VDP_Mode is changed.
+	VDP_Flags.CRam = 1;
+}
+
+
+/**
  * VDP_Set_Reg(): Set the value of a register. (Mode 5 only!)
  * @param reg_num Register number.
  * @param val New value for the register.
@@ -261,10 +340,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			// Mode Set 1.
 			VDP_Update_IRQ_Line();
 			
-			// VDP register 0, bit 2: Palette Select
-			// If cleared, only the LSBs of each CRAM component is used.
-			// TODO: Only set this if Palette Select was changed.
-			VDP_Flags.CRam = 1;
+			// Update the VDP mode.
+			VDP_Update_Mode();
 			break;
 		
 		case 1:
@@ -278,6 +355,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				VDP_Lines.NTSC_V30.VBlank = 0;
 			}
 			
+			// Update the VDP mode.
+			VDP_Update_Mode();
 			break;
 		
 		case 2:

@@ -30,7 +30,6 @@
 
 // VDP Rendering Functions.
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/vdp_rend_m5.hpp"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -414,7 +413,7 @@ int Do_VDP_Only(void)
 	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
 	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		VDP_Render_Line_m5();
+		VDP_Render_Line();
 	}
 	
 	return 0;
@@ -564,7 +563,7 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP)
 		{
 			// VDP needs to be updated.
-			VDP_Render_Line_m5();
+			VDP_Render_Line();
 		}
 		
 		main68k_exec(Cycles_M68K);

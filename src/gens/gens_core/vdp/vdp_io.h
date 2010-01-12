@@ -64,11 +64,12 @@ typedef struct
 			 * IE0 == Enable V interrupt. (1 == on; 0 == off)
 			 * IE1 == Enable H interrupt. (1 == on; 0 == off)
 			 * IE2 == Enable external interrupt. (1 == on; 0 == off)
-			 * PSEL == Palette Select; if clear, masks high two bits of each CRam color component.
 			 * M1 == DMA Enable. (1 == on; 0 == off)
 			 * M2 == V cell mode. (1 == V30 [PAL only]; 0 == V28)
 			 * M3 == HV counter latch. (1 == stop HV counter; 0 == enable read, H, V counter)
-			 * M4 == Mode 4/5 toggle; set for Mode 5, clear for Mode 4.
+			 * M4/PSEL == Palette Select; if clear, masks high two bits of each CRam color component.
+			 *            If M5 is off, acts like M4 instead of PSEL.
+			 * M5 == Mode 4/5 toggle; set for Mode 5, clear for Mode 4.
 			 * VSCR == V Scroll mode. (0 == full; 1 == 2-cell)
 			 * HSCR/LSCR == H Scroll mode. (00 == full; 01 == invalid; 10 == 1-cell; 11 == 1-line)
 			 * RS0/RS1 == H cell mode. (11 == H40; 00 == H32; others == invalid)
@@ -78,7 +79,7 @@ typedef struct
 			 * HSZ1/HSZ2 == Vertical scroll size. (00 == 32 cells; 01 == 64 cells; 10 == invalid; 11 == 128 cells)
 			 */
 			uint8_t Set1;		// Mode Set 1.  [   0    0    0  IE1    0 PSEL   M3    0]
-			uint8_t Set2;		// Mode Set 2.  [   0 DISP  IE0   M1   M2   M4    0    0]
+			uint8_t Set2;		// Mode Set 2.  [   0 DISP  IE0   M1   M2   M5    0    0]
 			uint8_t Pat_ScrA_Adr;	// Pattern name table base address for Scroll A.
 			uint8_t Pat_Win_Adr;	// Pattern name table base address for Window.
 			uint8_t Pat_ScrB_Adr;	// Pattern name table base address for Scroll B.
@@ -181,6 +182,16 @@ typedef struct _VDP_Ctrl_t
 } VDP_Ctrl_t;
 extern VDP_Ctrl_t VDP_Ctrl;
 
+/**
+ * VDP_Mode: Current VDP mode.
+ */
+#define VDP_MODE_M1	(1 << 0)
+#define VDP_MODE_M2	(1 << 1)
+#define VDP_MODE_M3	(1 << 2)
+#define VDP_MODE_M4	(1 << 3)
+#define VDP_MODE_M5	(1 << 4)
+extern unsigned int VDP_Mode;
+
 typedef union
 {
 	uint8_t  u8[64*1024];
@@ -262,6 +273,9 @@ extern int Zero_Length_DMA;
 void    VDP_Reset(void);
 uint8_t VDP_Int_Ack(void);
 void    VDP_Update_IRQ_Line(void);
+
+void	VDP_Set_Visible_Lines(void);
+
 void    VDP_Set_Reg(int reg_num, uint8_t val);
 
 uint8_t  VDP_Read_H_Counter(void);
@@ -301,6 +315,7 @@ static inline int vdp_getHPix(void)
 #endif
 	
 	// Game is running. Return VDP_Reg.H_Pix.
+	// TODO: Force 256px for SMS or SG-1000 mode.
 	return VDP_Reg.H_Pix;
 }
 
@@ -334,42 +349,5 @@ static inline int vdp_getVPix(void)
 }
 #endif
 
-/** VDP macros. **/
-
-/**
- * VDP_SET_VISIBLE_LINES(): Sets the number of visible lines, depending on CPU mode and VDP setting.
- * Possible options:
- * - Mode 4 (SMS): 192 lines. (TODO)
- * - Mode 5, V28: 224 lines.
- * - Mode 5, V30: 240 lines. (NTSC V30 results in a rolling picture.)
- */
-static inline void VDP_Set_Visible_Lines(void)
-{
-	// CPU_Mode: 0 == NTSC; 1 == PAL
-	// TODO: Remove the "+1" for PAL once Gens/GS uses 313 lines instead of 312.
-	if (VDP_Reg.m5.Set2 & 0x08)
-	{
-		// V30.
-		VDP_Lines.Visible.Total = 240;
-		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -43+1 : 0);
-		VDP_Lines.Visible.Border_Size = 0;
-	}
-	else
-	{
-		// V28.
-		VDP_Lines.Visible.Total = 224;
-		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -51+1 : -24);
-		VDP_Lines.Visible.Border_Size = 8;
-	}
-	
-	// TODO: V24 (192 lines)
-#if 0
-	{
-		VDP_Lines.Visible.Total = 192;
-		VDP_Lines.Visible.Current = ((CPU_Mode == 1) ? -67+1 : -40);
-		VDP_Lines.Visible.Border_Size = 24;
-	}
-#endif
-}
 
 #endif /* GENS_VDP_IO_H */
