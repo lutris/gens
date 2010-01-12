@@ -1093,6 +1093,7 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 			if (dest_address >= 0x80)
 			{
 				// CRam/VSRam overflow!
+				length--;	// for this word
 				break;
 			}
 		}
