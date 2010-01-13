@@ -85,7 +85,7 @@ section .bss align=64
 	
 	global SYM(Ram_Backup_Ex)
 	SYM(Ram_Backup_Ex):
-		resb 512 * 1024
+		resb 256 * 1024
 	
 section .data align=64
 	
@@ -373,7 +373,7 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Byte_BRAM:
-		cmp	ebx, 0x6FFFFF
+		cmp	ebx, 0x67FFFF
 		xor	eax, eax
 		ja	short .bad
 		
@@ -381,8 +381,8 @@ section .text align=64
 		jz	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
+		and	ebx, 0x7FFFF
 		shr	ebx, 1
 		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
@@ -816,7 +816,7 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Word_BRAM:
-		cmp	ebx, 0x6FFFFF
+		cmp	ebx, 0x67FFFF
 		xor	eax, eax
 		ja	short .bad
 		
@@ -824,9 +824,9 @@ section .text align=64
 		jz	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
+		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
 		; (Note: A word read results in the data being read as the low byte.)
-		and	ebx, 0xFFFFF
+		and	ebx, 0x7FFFF
 		shr	ebx, 1
 		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
@@ -1193,15 +1193,15 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Byte_BRAM:
-		cmp	ebx, 0x6FFFFF
+		cmp	ebx, 0x67FFFF
 		ja	short .bad
 		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
+		and	ebx, 0x7FFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 	
@@ -1741,15 +1741,15 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Word_BRAM:
-		cmp	ebx, 0x6FFFFF
+		cmp	ebx, 0x67FFFF
 		ja	short .bad
 		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
+		and	ebx, 0x7FFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 		
