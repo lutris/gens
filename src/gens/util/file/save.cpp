@@ -2188,7 +2188,7 @@ int Savestate::SaveSRAM(void)
 void Savestate::FormatSegaCD_BackupRAM(void)
 {
 	// Format the internal backup RAM.
-	static const uint8_t BRAM_Header_Internal[0x40] =
+	static const uint8_t BRAM_Header[0x40] =
 	{
 		0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F,
 		0x5F, 0x5F, 0x5F, 0x00, 0x00, 0x00, 0x00, 0x40,
@@ -2199,11 +2199,28 @@ void Savestate::FormatSegaCD_BackupRAM(void)
 		'R', 'A', 'M', 0x5F, 'C', 'A', 'R', 'T', 'R', 'I', 'D', 'G', 'E', 0x5F, 0x5F, 0x5F
 	};
 	memset(Ram_Backup, 0x00, 0x1FC0);
-	memcpy(&Ram_Backup[0x1FC0], BRAM_Header_Internal, sizeof(BRAM_Header_Internal));
+	memcpy(&Ram_Backup[0x1FC0], BRAM_Header, sizeof(BRAM_Header));
 	
 	// SegaCD cartridge memory.
-	// TODO: Format the cartridge memory.
 	memset(Ram_Backup_Ex, 0x00, sizeof(Ram_Backup_Ex));
+	const unsigned int bram_size = ((8 << BRAM_Ex_Size) * 1024);
+	memcpy(&Ram_Backup_Ex[bram_size - 0x40], BRAM_Header, sizeof(BRAM_Header));
+	
+	// Calculate the number of free blocks.
+	const unsigned int free_blocks = ((bram_size / 64) - 3);
+	const uint8_t free_blocks_hi = ((free_blocks >> 8) & 0xFF);
+	const uint8_t free_blocks_lo = (free_blocks & 0xFF);
+	
+	// Write the number of free blocks.
+	const unsigned int free_block_pos = (bram_size - 0x30);
+	Ram_Backup_Ex[free_block_pos] = free_blocks_hi;
+	Ram_Backup_Ex[free_block_pos + 1] = free_blocks_lo;
+	Ram_Backup_Ex[free_block_pos + 2] = free_blocks_hi;
+	Ram_Backup_Ex[free_block_pos + 3] = free_blocks_lo;
+	Ram_Backup_Ex[free_block_pos + 4] = free_blocks_hi;
+	Ram_Backup_Ex[free_block_pos + 5] = free_blocks_lo;
+	Ram_Backup_Ex[free_block_pos + 6] = free_blocks_hi;
+	Ram_Backup_Ex[free_block_pos + 7] = free_blocks_lo;
 }
 
 
