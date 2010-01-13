@@ -2183,13 +2183,12 @@ int Savestate::SaveSRAM(void)
 
 
 /**
- * FormatSegaCD_BRAM(): Format the internal SegaCD BRAM.
- * @param buf Pointer to location 0x1FC0 in the internal SegaCD BRAM.
+ * FormatSegaCD_BackupRAM(): Format the SegaCD backup RAM.
  */
-void Savestate::FormatSegaCD_BRAM(unsigned char *buf)
+void Savestate::FormatSegaCD_BackupRAM(void)
 {
-	// TODO: Format cartridge BRAM.
-	static const char brmHeader[0x40] =
+	// Format the internal backup RAM.
+	static const uint8_t BRAM_Header_Internal[0x40] =
 	{
 		0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F,
 		0x5F, 0x5F, 0x5F, 0x00, 0x00, 0x00, 0x00, 0x40,
@@ -2199,19 +2198,8 @@ void Savestate::FormatSegaCD_BRAM(unsigned char *buf)
 		'S', 'E', 'G', 'A', 0x5F, 'C', 'D', 0x5F, 'R', 'O', 'M', 0x00, 0x01, 0x00, 0x00, 0x00,
 		'R', 'A', 'M', 0x5F, 'C', 'A', 'R', 'T', 'R', 'I', 'D', 'G', 'E', 0x5F, 0x5F, 0x5F
 	};
-	
-	memcpy(buf, brmHeader, sizeof(brmHeader));
-}
-
-
-/**
- * FormatSegaCD_BackupRAM(): Format the SegaCD backup RAM.
- */
-void Savestate::FormatSegaCD_BackupRAM(void)
-{
-	// SegaCD internal BRAM.
-	memset(Ram_Backup, 0x00, sizeof(Ram_Backup));
-	FormatSegaCD_BRAM(&Ram_Backup[0x1FC0]);
+	memset(Ram_Backup, 0x00, 0x1FC0);
+	memcpy(&Ram_Backup[0x1FC0], BRAM_Header_Internal, sizeof(BRAM_Header_Internal));
 	
 	// SegaCD cartridge memory.
 	// TODO: Format the cartridge memory.

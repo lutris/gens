@@ -90,8 +90,6 @@ class Savestate
 		
 		static std::string GetSRAMFilename(void);
 		
-		static void FormatSegaCD_BRAM(unsigned char *buf);
-		
 		static std::string GetBRAMFilename(void);
 	
 	private:
