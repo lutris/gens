@@ -702,10 +702,13 @@ int Config::load(const string& filename, void* gameActive)
 		BRAM_Ex_State &= 1;
 		BRAM_Ex_Size = 0;
 	}
-	else if (BRAM_Ex_Size < -1 || BRAM_Ex_Size > 3)
-		BRAM_Ex_Size = 3;
 	else
+	{
+		if (BRAM_Ex_Size < -1 || BRAM_Ex_Size > 5)
+			BRAM_Ex_Size = 3;
+		
 		BRAM_Ex_State |= 0x100;
+	}
 	
 	// Miscellaneous files.
 	cfg.getString("Options", rar_binary_key, rar_binary_default,

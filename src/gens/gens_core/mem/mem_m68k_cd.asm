@@ -85,7 +85,7 @@ section .bss align=64
 	
 	global SYM(Ram_Backup_Ex)
 	SYM(Ram_Backup_Ex):
-		resb 64 * 1024
+		resb 512 * 1024
 	
 section .data align=64
 	
@@ -359,10 +359,12 @@ section .text align=64
 	
 	M68K_Read_Byte_BRAM_L:
 		cmp	ebx, 0x400001
-		mov	al, 0
+		xor	eax, eax
 		jne	short .bad
 		
-		mov	al, [SYM(BRAM_Ex_Size)]
+		; Get the BRAM size identifier.
+		mov	eax, [SYM(BRAM_Ex_Size)]
+		and	eax, byte 7
 		
 	.bad:
 		pop	ebx
@@ -371,16 +373,18 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Byte_BRAM:
-		cmp	ebx, 0x61FFFF
-		mov	al, 0
+		cmp	ebx, 0x6FFFFF
+		xor	eax, eax
 		ja	short .bad
 		
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
-		and	ebx, 0x1FFFF
+		; BRAM is written on odd (?) addresses only.
+		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
-		mov	al, [SYM(Ram_Backup_Ex) + ebx]
+		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -390,7 +394,7 @@ section .text align=64
 	
 	M68K_Read_Byte_BRAM_W:
 		cmp	ebx, 0x7FFFFF
-		mov	al, 0
+		xor	eax, eax
 		jne	short .bad
 		
 		mov	al, [SYM(BRAM_Ex_State)]
@@ -798,10 +802,12 @@ section .text align=64
 
 	M68K_Read_Word_BRAM_L:
 		cmp	ebx, 0x400000
-		mov	ax, 0
+		xor	eax, eax
 		jne	short .bad
 		
-		mov	ax, [SYM(BRAM_Ex_Size)]
+		; Get the BRAM size identifier.
+		mov	eax, [SYM(BRAM_Ex_Size)]
+		and	eax, byte 7
 	
 	.bad:
 		pop	ebx
@@ -810,16 +816,19 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Word_BRAM:
-		cmp	ebx, 0x61FFFF
-		mov	ax, 0
+		cmp	ebx, 0x6FFFFF
+		xor	eax, eax
 		ja	short .bad
 		
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
-		and	ebx, 0x1FFFF
+		; BRAM is written on odd (?) addresses only.
+		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
+		; (Note: A word read results in the data being read as the low byte.)
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
-		mov	ax, [SYM(Ram_Backup_Ex) + ebx]
+		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -829,10 +838,9 @@ section .text align=64
 	
 	M68K_Read_Word_BRAM_W:
 		cmp	ebx, 0x7FFFFE
-		mov	ax, 0
+		xor	eax, eax
 		jne	short .bad
 		
-		xor	ah, ah
 		mov	al, [SYM(BRAM_Ex_State)]
 		
 	.bad:
@@ -1185,13 +1193,15 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Byte_BRAM:
-		cmp	ebx, 0x61FFFF
+		cmp	ebx, 0x6FFFFF
 		ja	short .bad
 		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
-		and	ebx, 0x1FFFF
+		; BRAM is written on odd (?) addresses only.
+		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 	
@@ -1731,15 +1741,17 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Word_BRAM:
-		cmp	ebx, 0x61FFFF
+		cmp	ebx, 0x6FFFFF
 		ja	short .bad
 		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
-		and	ebx, 0x1FFFE
+		; BRAM is written on odd (?) addresses only.
+		; Thus, for 512 KB, a mask 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
-		mov	[SYM(Ram_Backup_Ex) + ebx], ax
+		mov	[SYM(Ram_Backup_Ex) + ebx], al
 		
 	.bad:
 		pop	ecx

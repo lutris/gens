@@ -905,7 +905,7 @@ int Options::segaCD_SRAMSize(void)
  */
 void Options::setSegaCD_SRAMSize(const int num)
 {
-	if (num < -1 || num > 3)
+	if (num < -1 || num > 5)
 		return;
 	
 	if (num == -1)
