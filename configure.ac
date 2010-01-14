@@ -61,7 +61,7 @@ case $host in
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	i?86*cygwin*)
 		os=win32;
@@ -73,7 +73,7 @@ case $host in
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	i?86*darwin*)
 		os=macosx;
@@ -86,7 +86,7 @@ case $host in
 		nasm_debug="-g -F null";
 		yasm_debug="-g null";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	i?86*linux*)
 		os=linux;
@@ -99,7 +99,7 @@ case $host in
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	i?86*haiku*)
 		os=haiku
@@ -111,7 +111,7 @@ case $host in
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb";
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	i?86*)
 		os=unix;
@@ -123,7 +123,7 @@ case $host in
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i686"
+		cflags_optimization="-march=i586 -mtune=i686"
 		;;
 	x86_64*)
 		obj_format=elf64;
