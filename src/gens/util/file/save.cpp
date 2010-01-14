@@ -898,6 +898,10 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.save_02			= le32_to_cpu(md_save_v7.starscream_extra.save_02);
 	}
 	
+	// If the Z80 is RESET, reset the YM2612.
+	if (Z80_State & Z80_STATE_RESET)
+		YM2612_Reset();
+	
 	main68k_SetContext(&Context_68K);
 	return len;
 }
