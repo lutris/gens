@@ -80,7 +80,6 @@ extern int Cycles_Z80;
 extern int Game_Mode;
 extern int CPU_Mode;
 extern int Gen_Mode;
-extern int Gen_Version;
 
 void Init_Memory_M68K(int System_ID);
 unsigned char M68K_RB(unsigned int Adr);

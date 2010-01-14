@@ -865,7 +865,6 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Cycles_M68K		= le32_to_cpu(md_save_v7.cycles_m68k);
 		Cycles_Z80		= le32_to_cpu(md_save_v7.cycles_z80);
 		Gen_Mode		= le32_to_cpu(md_save_v7.gen_mode);
-		Gen_Version		= le32_to_cpu(md_save_v7.gen_version);
 		
 		// TODO: Is this supposed to be 16-bit bytewapped?
 		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, sizeof(H_Counter_Table));
@@ -1228,7 +1227,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.cycles_m68k		= cpu_to_le32(Cycles_M68K);
 	md_save_v7.cycles_z80		= cpu_to_le32(Cycles_Z80);
 	md_save_v7.gen_mode		= cpu_to_le32(Gen_Mode);
-	md_save_v7.gen_version		= cpu_to_le32(Gen_Version);
+	md_save_v7.gen_version		= cpu_to_le32(0x20);	// old value of Gen_Version.
 	
 	// TODO: Is this supposed to be 16-bit byteswapped?
 	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(H_Counter_Table));

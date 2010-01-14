@@ -432,12 +432,27 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
-		mov	al, [SYM(Game_Mode)]
-		add	al, al
-		or	al, [SYM(CPU_Mode)]
-		shl	al, 6
+		; Genesis version register.
+		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
+		; MODE: Region. (0 == East; 1 == West)
+		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
+		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
+		; RSV: Reserved. (TODO: I think this is used for SegaCD, but I'm not sure.)
+		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
+		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
+		
+		; Set region and video mode.
+		mov	eax, [SYM(Game_Mode)]
+		add	eax, eax
+		or	eax, [SYM(CPU_Mode)]
+		shl	eax, 6
+		
+		; Mark floppy drive as not connected.
+		or	eax, byte 0x20
+		
+		; Mask off any high bits and return.
 		pop	ebx
-		or	al, [SYM(Gen_Version)]
+		and	eax, 0xFF
 		ret
 	
 	align 8
@@ -864,12 +879,27 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
+		; Genesis version register.
+		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
+		; MODE: Region. (0 == East; 1 == West)
+		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
+		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
+		; RSV: Reserved. (TODO: I think this is used for SegaCD, but I'm not sure.)
+		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
+		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
+		
+		; Set region and video mode.
 		mov	eax, [SYM(Game_Mode)]
 		add	eax, eax
 		or	eax, [SYM(CPU_Mode)]
 		shl	eax, 6
+		
+		; Mark floppy drive as not connected.
+		or	eax, byte 0x20
+		
+		; Mask off any high bits and return.
 		pop	ebx
-		or	eax, [SYM(Gen_Version)]		; on recupere les infos hardware de la machine
+		and	eax, 0xFF
 		ret
 	
 	align 8

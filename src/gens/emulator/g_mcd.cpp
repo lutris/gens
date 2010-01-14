@@ -177,7 +177,6 @@ int Init_SegaCD(const char* iso_name)
 	Set_Clock_Freq(1);
 	
 	VDP_Num_Vis_Lines = 224;
-	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data.u8[0x72] = 0xFF;

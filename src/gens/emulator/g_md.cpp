@@ -302,7 +302,6 @@ int Init_Genesis(ROM_t* MD_ROM)
 	}
 	
 	VDP_Num_Vis_Lines = 224;
-	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// Byteswap the ROM data.
 	be16_to_cpu_array(Rom_Data.u8, Rom_Size);

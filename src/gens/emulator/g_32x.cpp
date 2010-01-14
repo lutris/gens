@@ -173,7 +173,6 @@ int Init_32X(ROM_t* MD_ROM)
 	}
 	
 	VDP_Num_Vis_Lines = 224;
-	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// Two copies of the ROM are needed, one for the 68000 and one for the SH2s.
 	// SH2 is little-endian, 68000 is big endian.
