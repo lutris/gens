@@ -229,6 +229,11 @@ uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t address)
 	// but YM2612_Read() doesn't accept any parameters...
 	GSFT_UNUSED_PARAMETER(address);
 	
+	// The YM2612's RESET line is tied to the Z80's RESET line.
+	// TODO: Determine the correct return value.
+	if (Z80_State & Z80_STATE_RESET)
+		return 0xFF;
+	
 	//return YM2612_Read(address & 0x03);
 	return YM2612_Read();
 }
@@ -332,6 +337,11 @@ uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t address)
 	// but YM2612_Read() doesn't accept any parameters...
 	GSFT_UNUSED_PARAMETER(address);
 	
+	// The YM2612's RESET line is tied to the Z80's RESET line.
+	// TODO: Determine the correct return value.
+	if (Z80_State & Z80_STATE_RESET)
+		return 0xFF;
+	
 	//return (YM2612_Read(address & 0x03) & 0xFF);
 	return (YM2612_Read() & 0xFF);
 }
@@ -431,6 +441,10 @@ void FASTCALL Z80_WriteB_Bank(uint32_t address, uint8_t data)
  */
 void FASTCALL Z80_WriteB_YM2612(uint32_t address, uint8_t data)
 {
+	// The YM2612's RESET line is tied to the Z80's RESET line.
+	if (Z80_State & Z80_STATE_RESET)
+		return;
+	
 	YM2612_Write((address & 0x03), data);
 }
 
@@ -533,8 +547,11 @@ void FASTCALL Z80_WriteW_Bank(uint32_t address, uint16_t data)
  */
 void FASTCALL Z80_WriteW_YM2612(uint32_t address, uint16_t data)
 {
-	address &= 0x03;
+	// The YM2612's RESET line is tied to the Z80's RESET line.
+	if (Z80_State & Z80_STATE_RESET)
+		return;
 	
+	address &= 0x03;
 	YM2612_Write(address, data);
 	YM2612_Write(address + 1, data);
 }
