@@ -291,6 +291,7 @@ void VDP_Set_Visible_Lines(void)
 		}
 	}
 	
+	LineOffset = 0;
 	VDP_Lines.Visible.Total = VisLines_Total[LineOffset];
 	VDP_Lines.Visible.Border_Size = VisLines_Border_Size[LineOffset];
 	VDP_Lines.Visible.Current = ((CPU_Mode == 1)
@@ -649,8 +650,13 @@ uint8_t VDP_Read_V_Counter(void)
 	bl = ((H_Counter >= bl) ? 1 : 0);
 	bl &= bh;
 	
-	unsigned int V_Counter = VDP_Lines.Display.Current;
+	int V_Counter = VDP_Lines.Visible.Current;
+	if (V_Counter < 0)
+		V_Counter += VDP_Lines.Display.Total;
 	V_Counter += (bl ? 1 : 0);
+	
+	// TODO: Some of these values are wrong.
+	// Rewrite HV handling to match Genesis Plus.
 	
 	// V_Counter_Overflow depends on PAL/NTSC status.
 	// (VDP_Status & 1) == 1 for PAL, 0 for NTSC.
