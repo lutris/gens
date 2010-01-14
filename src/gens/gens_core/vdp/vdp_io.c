@@ -270,6 +270,17 @@ void VDP_Update_IRQ_Line(void)
 
 
 /**
+ * Scroll_Size_t: Convenience enum for dealing with scroll plane sizes.
+ */
+typedef enum
+{
+	V32_H32 = 0, V32_H64,  V32_HXX,  V32_H128,
+	V64_H32,     V64_H64,  V64_HXX,  V64_H128,
+	VXX_H32,     VXX_H64,  VXX_HXX,  VXX_H128,
+	V128_H32,    V128_H64, V128_HXX, V128_H128
+} Scroll_Size_t;
+
+/**
  * VDP_Set_Reg(): Set the value of a register. (Mode 5 only!)
  * @param reg_num Register number.
  * @param val New value for the register.
@@ -426,57 +437,60 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			// Scroll Size.
 			tmp = (val & 0x3);
 			tmp |= (val & 0x30) >> 2;
-			switch (tmp)
+			switch ((Scroll_Size_t)tmp)
 			{
-				case 0:		// V32_H32
-				case 8:		// VXX_H32
+				case V32_H32:
+				case VXX_H32:
 					H_Scroll_CMul = 5;
 					H_Scroll_CMask = 31;
 					V_Scroll_CMask = 31;
 					break;
 				
-				case 4:		// V64_H32
+				case V64_H32:
 					H_Scroll_CMul = 5;
 					H_Scroll_CMask = 31;
 					V_Scroll_CMask = 63;
 					break;
 				
-				case 12:	// V128_H32
+				case V128_H32:
 					H_Scroll_CMul = 5;
 					H_Scroll_CMask = 31;
 					V_Scroll_CMask = 127;
 					break;
 				
-				case 1:		// V32_H64
-				case 9:		// VXX_H64
+				case V32_H64:
+				case VXX_H64:
 					H_Scroll_CMul = 6;
 					H_Scroll_CMask = 63;
 					V_Scroll_CMask = 31;
 					break;
 				
-				case 5:		// V64_H64
-				case 13:	// V128_H64
+				case V64_H64:
+				case V128_H64:
 					H_Scroll_CMul = 6;
 					H_Scroll_CMask = 63;
 					V_Scroll_CMask = 63;
 					break;
 				
-				case 2:		// V32_HXX
-				case 6:		// V64_HXX
-				case 10:	// VXX_HXX
-				case 14:	// V128_HXX
+				case V32_HXX:
+				case V64_HXX:
+				case VXX_HXX:
+				case V128_HXX:
 					H_Scroll_CMul = 6;
 					H_Scroll_CMask = 63;
 					V_Scroll_CMask = 0;
 					break;
 				
-				case 3:		// V32_H128
-				case 7:		// V64_H128
-				case 11:	// VXX_H128
-				case 15:	// V128_H128
+				case V32_H128:
+				case V64_H128:
+				case VXX_H128:
+				case V128_H128:
 					H_Scroll_CMul = 7;
 					H_Scroll_CMask = 127;
 					V_Scroll_CMask = 31;
+					break;
+				
+				default:	// to make gcc shut up
 					break;
 			}
 			
