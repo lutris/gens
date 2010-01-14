@@ -491,9 +491,16 @@ static inline int T_gens_do_MD_frame(void)
 	// Set the VRam flag to force a VRam update.
 	VDP_Flags.VRam = 1;
 	
-	VDP_Status &= ~0x0008;		// Clear V Blank
+	// Clear VBlank status.
+	VDP_Status &= ~0x0008;
+	
+	// Interlaced frame status.
+	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
+	// This bit is cleared on even frames and if not running in interlaced mode.
 	if (VDP_Reg.m5.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
+	else
+		VDP_Status &= ~0x0010;
 	
 	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step H interrupt
 	
