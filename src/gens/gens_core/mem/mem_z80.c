@@ -225,8 +225,8 @@ uint8_t FASTCALL Z80_ReadB_Bank(uint32_t address)
  */
 uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t address)
 {
-	// NOTE: The original asm specified an address,
-	// but YM2612_Read() doesn't accept any parameters...
+	// According to the Genesis Software Manual, all four addresses return
+	// the same value for YM2612_Read().
 	GSFT_UNUSED_PARAMETER(address);
 	
 	// The YM2612's RESET line is tied to the Z80's RESET line.
@@ -234,7 +234,6 @@ uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t address)
 	if (Z80_State & Z80_STATE_RESET)
 		return 0xFF;
 	
-	//return YM2612_Read(address & 0x03);
 	return YM2612_Read();
 }
 
@@ -333,8 +332,8 @@ uint16_t FASTCALL Z80_ReadW_Bank(uint32_t address)
  */
 uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t address)
 {
-	// NOTE: The original asm specified an address,
-	// but YM2612_Read() doesn't accept any parameters...
+	// According to the Genesis Software Manual, all four addresses return
+	// the same value for YM2612_Read().
 	GSFT_UNUSED_PARAMETER(address);
 	
 	// The YM2612's RESET line is tied to the Z80's RESET line.
@@ -342,7 +341,6 @@ uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t address)
 	if (Z80_State & Z80_STATE_RESET)
 		return 0xFF;
 	
-	//return (YM2612_Read(address & 0x03) & 0xFF);
 	return (YM2612_Read() & 0xFF);
 }
 
