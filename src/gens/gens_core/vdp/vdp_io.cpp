@@ -494,7 +494,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				case 4:		// V64_H32
 					VDP_Reg.H_Scroll_CMul = 5;
 					VDP_Reg.H_Scroll_CMask = 31;
-					VDP_Reg.V_Scroll_CMask = 64;
+					VDP_Reg.V_Scroll_CMask = 63;
 					break;
 				
 				case 12:	// V128_H32
