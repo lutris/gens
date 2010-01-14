@@ -1078,7 +1078,8 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 		
 		case DMA_DEST_CRAM:
 			VDP_Flags.CRam = 1;
-			// NO BREAK HERE
+			VDP_Reg.DMAT_Type = 1;
+			break;
 		
 		case DMA_DEST_VSRAM:
 			VDP_Reg.DMAT_Type = 1;
@@ -1131,14 +1132,14 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 			case DMA_SRC_WORD_RAM_CELL_1M_0:
 				// TODO: This is untested!
 				// Cell conversion is required.
-				w = Cell_Conv_Tab[src_address];
+				w = Cell_Conv_Tab[src_address >> 1];
 				w = ((uint16_t*)Ram_Word_1M)[w];
 				break;
 			
 			case DMA_SRC_WORD_RAM_CELL_1M_1:
 				// TODO: This is untested!
 				// Cell conversion is required.
-				w = Cell_Conv_Tab[src_address];
+				w = Cell_Conv_Tab[src_address >> 1];
 				w = ((uint16_t*)Ram_Word_1M)[w + (0x20000 >> 1)];
 				break;
 			
@@ -1175,7 +1176,7 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 				break;
 		}
 		
-		dest_address = ((dest_address + 2) & 0xFFFF);
+		dest_address = ((dest_address + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
 		
 		// Check for CRam or VSRam destination overflow.
 		if (dest_component == DMA_DEST_CRAM ||
@@ -1206,7 +1207,8 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 	// NOTE: The new DMA_Address is the wrapped version.
 	// The old asm code saved the unwrapped version.
 	// Ergo, it simply added length to DMA_Address.
-	VDP_Reg.DMA_Address = (src_address >> 1) & 0x7FFFFF;
+	VDP_Reg.DMA_Address += VDP_Reg.DMAT_Length;
+	VDP_Reg.DMA_Address &= 0x7FFFFF;
 	
 	// Update DMA.
 	VDP_Update_DMA();
