@@ -1870,27 +1870,48 @@ int YM2612_Reset(void)
 }
 
 
-int YM2612_Read(void)
+uint8_t YM2612_Read(void)
 {
-/*	static int cnt = 0;
-
+#if 0
+	static int cnt = 0;
+	
 	if (cnt++ == 50)
 	{
 		cnt = 0;
 		return YM2612.Status;
 	}
 	else return YM2612.Status | 0x80;
-*/
-	return YM2612.status;
+#endif
+	
+	/**
+	 * READ DATA is the same for all four addresses.
+	 * Format: [BUSY X X X X X OVRA OVRB]
+	 * BUSY: If 1, YM2612 is busy and cannot accept new data.
+	 * OVRA: If 1, timer A has overflowed.
+	 * OVRB: If 1, timer B has overflowed.
+	 */
+	return (uint8_t)YM2612.status;
 }
 
 
-int YM2612_Write(unsigned char adr, unsigned char data)
+/**
+ * YM2612_Write(): Write to a YM2612 register.
+ * @param adr Address.
+ * @param data Data.
+ * @return 0 on success; non-zero on error. (TODO: This isn't used by anything!)
+ */
+int YM2612_Write(unsigned int adr, uint8_t data)
 {
-	int d;
-	adr &= 0x3;
+	/**
+	 * Possible addresses:
+	 * - 0: Part 1 register number.
+	 * - 1: Part 1 data.
+	 * - 2: Part 2 register number.
+	 * - 3: Part 2 data.
+	 */
 	
-	switch (adr)
+	int d;
+	switch (adr & 0x03)
 	{
 		case 0:
 			YM2612.OPNAadr = data;
@@ -1901,7 +1922,7 @@ int YM2612_Write(unsigned char adr, unsigned char data)
 			
 			if (YM2612.OPNAadr == 0x2A)
 			{
-				YM2612.DACdata = ((int) data - 0x80) << 7;
+				YM2612.DACdata = ((int)data - 0x80) << 7;
 				return 0;
 			}
 			
@@ -1959,11 +1980,11 @@ int YM2612_Write(unsigned char adr, unsigned char data)
 				
 				if (d < 0xA0)		// SLOT
 				{
-					SLOT_SET (YM2612.OPNBadr + 0x100, data);
+					SLOT_SET(YM2612.OPNBadr + 0x100, data);
 				}
 				else			// CHANNEL
 				{
-					CHANNEL_SET (YM2612.OPNBadr + 0x100, data);
+					CHANNEL_SET(YM2612.OPNBadr + 0x100, data);
 				}
 			}
 			else

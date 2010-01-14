@@ -23,6 +23,8 @@
 #ifndef GENS_YM2612_HPP
 #define GENS_YM2612_HPP
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -139,8 +141,8 @@ extern int YM_Len;
 int YM2612_Init(int clock, int rate, int interpolation);
 int YM2612_End(void);
 int YM2612_Reset(void);
-int YM2612_Read(void);
-int YM2612_Write(unsigned char adr, unsigned char data);
+uint8_t YM2612_Read(void);
+int YM2612_Write(unsigned int adr, uint8_t data);
 void YM2612_Update(int **buf, int length);
 
 /* Gens */
