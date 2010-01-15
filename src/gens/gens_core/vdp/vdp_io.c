@@ -391,7 +391,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
-				if ((VDP_Reg.Win_H_Pos & 0x1F) > 40)
+				Win_X_Pos = ((VDP_Reg.Win_H_Pos & 0x1F) * 2);
+				if (Win_X_Pos > 40)
 					Win_X_Pos = 40;
 				
 				// Update the Window base address.
@@ -412,7 +413,8 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 				
 				// Check the window horizontal position.
 				// TODO: Eliminate Win_X_Pos. (Just use VDP_Reg.Win_H_Pos directly.)
-				if ((VDP_Reg.Win_H_Pos & 0x1F) > 32)
+				Win_X_Pos = ((VDP_Reg.Win_H_Pos & 0x1F) * 2);
+				if (Win_X_Pos > 32)
 					Win_X_Pos = 32;
 				
 				// Update the Window base address.
@@ -499,7 +501,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 		
 		case 17:
 			// Window H position.
-			Win_X_Pos = (val & 0x1F);
+			Win_X_Pos = ((val & 0x1F) * 2);
 			if (Win_X_Pos > H_Cell)
 				Win_X_Pos = H_Cell;
 			break;
