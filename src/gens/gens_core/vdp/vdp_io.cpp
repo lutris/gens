@@ -291,7 +291,6 @@ void VDP_Set_Visible_Lines(void)
 		}
 	}
 	
-	LineOffset = 0;
 	VDP_Lines.Visible.Total = VisLines_Total[LineOffset];
 	VDP_Lines.Visible.Border_Size = VisLines_Border_Size[LineOffset];
 	VDP_Lines.Visible.Current = ((CPU_Mode == 1)
@@ -791,7 +790,7 @@ unsigned int VDP_Update_DMA(void)
 	// TODO: Use both RS0/RS1, not just RS1.
 	unsigned int offset = ((VDP_Reg.m5.Set4 & 1) * 2);
 	
-	// Check if we're in VBlank or the VDP is disabled.
+	// Check if we're in VBlank or if the VDP is disabled.
 	if (VDP_Lines.Visible.Current < 0 ||
 	    VDP_Lines.Visible.Current >= VDP_Lines.Visible.Current ||
 	    (!(VDP_Reg.m5.Set2 & 0x40)))
