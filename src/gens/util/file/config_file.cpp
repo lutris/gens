@@ -697,14 +697,14 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// SegaCD BRAM cartridge size
 	BRAM_Ex_Size = cfg.getInt("Options", "RAM Cart Size", 3);
-	if (BRAM_Ex_Size == -1)
+	if (BRAM_Ex_Size < 0)
 	{
 		BRAM_Ex_State &= 1;
 		BRAM_Ex_Size = 0;
 	}
 	else
 	{
-		if (BRAM_Ex_Size < -1 || BRAM_Ex_Size > 5)
+		if (BRAM_Ex_Size > 6)
 			BRAM_Ex_Size = 3;
 		
 		BRAM_Ex_State |= 0x100;

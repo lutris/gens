@@ -85,7 +85,7 @@ section .bss align=64
 	
 	global SYM(Ram_Backup_Ex)
 	SYM(Ram_Backup_Ex):
-		resb 256 * 1024
+		resb 512 * 1024
 	
 section .data align=64
 	
@@ -120,7 +120,7 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Bad,		; 0x500000 - 0x57FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x580000 - 0x5FFFFF
 		dd	M68K_Read_Byte_BRAM,		; 0x600000 - 0x67FFFF
-		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Byte_BRAM,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
 		dd	M68K_Read_Byte_BRAM_W,		; 0x780000 - 0x7FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x800000 - 0x87FFFF
@@ -155,7 +155,7 @@ section .rodata align=64
 		dd	M68K_Read_Word_Bad,		; 0x500000 - 0x57FFFF
 		dd	M68K_Read_Word_Bad,		; 0x580000 - 0x5FFFFF
 		dd	M68K_Read_Word_BRAM,		; 0x600000 - 0x67FFFF
-		dd	M68K_Read_Word_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Word_BRAM,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x700000 - 0x77FFFF
 		dd	M68K_Read_Word_BRAM_W,		; 0x780000 - 0x7FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x800000 - 0x87FFFF
@@ -327,7 +327,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		mov	al, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -373,16 +373,13 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Byte_BRAM:
-		cmp	ebx, 0x67FFFF
-		xor	eax, eax
-		ja	short .bad
-		
+		; TODO: Restrict accessible area based on BRAM size.
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
-		and	ebx, 0x7FFFF
+		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
 		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
@@ -476,7 +473,7 @@ section .text align=64
 	align 16
 	
 	.bad:
-		mov	al, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -831,17 +828,13 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Word_BRAM:
-		cmp	ebx, 0x67FFFF
-		xor	eax, eax
-		ja	short .bad
-		
+		; TODO: Restrict accessible area based on BRAM size.
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
-		; (Note: A word read results in the data being read as the low byte.)
-		and	ebx, 0x7FFFF
+		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
 		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
 	
@@ -1223,15 +1216,13 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Byte_BRAM:
-		cmp	ebx, 0x67FFFF
-		ja	short .bad
-		
+		; TODO: Restrict accessible area based on BRAM size.
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
-		and	ebx, 0x7FFFF
+		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 	
@@ -1771,15 +1762,13 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Word_BRAM:
-		cmp	ebx, 0x67FFFF
-		ja	short .bad
-		
+		; TODO: Restrict accessible area based on BRAM size.
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
 		; BRAM is written on odd (?) addresses only.
-		; Thus, for 256 KB, a mask of 0x7FFFF (512 KB) is needed.
-		and	ebx, 0x7FFFF
+		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
+		and	ebx, 0xFFFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 		

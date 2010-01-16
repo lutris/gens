@@ -1469,7 +1469,7 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 		ImportDataAuto(&COMM, data, offset, sizeof(COMM));
 		
 		ImportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-		ImportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
+		ImportDataAuto(Ram_Backup_Ex, data, offset, 65536);	// GSXv7 only supports 64 KB.
 		
 		ImportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
 		ImportDataAuto(&Stamp_Map_Adr, data, offset, 4);
@@ -1693,7 +1693,7 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	ExportDataAuto(&COMM, data, offset, sizeof(COMM));
 	
 	ExportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-	ExportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
+	ExportDataAuto(Ram_Backup_Ex, data, offset, 65536);	// GSXv7 only supports 64 KB.
 	
 	ExportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
 	ExportDataAuto(&Stamp_Map_Adr, data, offset, 4);
@@ -2260,8 +2260,14 @@ int Savestate::LoadBRAM(void)
 	if (!BRAM_File)
 		return -2;
 	
-	fread(Ram_Backup, sizeof(Ram_Backup), 1, BRAM_File);
-	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	// Internal BRAM.
+	fread(Ram_Backup, 1, sizeof(Ram_Backup), BRAM_File);
+	
+	// Cartridge BRAM.
+	memset(Ram_Backup_Ex, 0x00, sizeof(Ram_Backup_Ex));
+	if (BRAM_Ex_State & 0x100)
+		fread(Ram_Backup_Ex, 1, (8 << BRAM_Ex_Size) * 1024, BRAM_File);
+	
 	fclose(BRAM_File);
 	
 	vdraw_text_printf(2000, "BRAM loaded from %s", filename.c_str());
@@ -2286,8 +2292,13 @@ int Savestate::SaveBRAM(void)
 	if (!BRAM_File)
 		return -2;
 	
-	fwrite(Ram_Backup, 8 * 1024, 1, BRAM_File);
-	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	// Internal BRAM.
+	fwrite(Ram_Backup, 1, sizeof(Ram_Backup), BRAM_File);
+	
+	// Cartridge BRAM.
+	if (BRAM_Ex_State & 0x100)
+		fwrite(Ram_Backup_Ex, 1, (8 << BRAM_Ex_Size) * 1024, BRAM_File);
+	
 	fclose(BRAM_File);
 	
 	vdraw_text_printf(2000, "BRAM saved in %s", filename.c_str());
