@@ -383,7 +383,7 @@ void VDP_Render_Error(void)
 		else //if (bppMD == 32)
 		{
 			T_DrawColorBars<uint32_t>(MD_Screen32, cb32);
-			T_DrawVDPErrorMessage<uint32_t, 0xFFFFF>(MD_Screen32);
+			T_DrawVDPErrorMessage<uint32_t, 0xFFFFFF>(MD_Screen32);
 		}
 		
 		// Force a palette update.
