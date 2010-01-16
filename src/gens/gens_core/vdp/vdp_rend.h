@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -76,10 +76,10 @@ void VDP_Render_Line(void);
 void Render_Line(void);
 void Render_Line_32X(void);
 
-// VDP layer control
+// VDP layer control.
 extern unsigned int VDP_Layers;
 
-// VDP layer flags
+// VDP layer flags.
 #define VDP_LAYER_SCROLLA_LOW		((uint32_t)(1 << 0))
 #define VDP_LAYER_SCROLLA_HIGH		((uint32_t)(1 << 1))
 #define VDP_LAYER_SCROLLA_SWAP		((uint32_t)(1 << 2))
