@@ -2260,11 +2260,8 @@ int Savestate::LoadBRAM(void)
 	if (!BRAM_File)
 		return -2;
 	
-	// Internal BRAM.
+	// Read BRAM.
 	fread(Ram_Backup, 1, sizeof(Ram_Backup), BRAM_File);
-	
-	// Cartridge BRAM.
-	memset(Ram_Backup_Ex, 0x00, sizeof(Ram_Backup_Ex));
 	if (BRAM_Ex_State & 0x100)
 		fread(Ram_Backup_Ex, 1, (8 << BRAM_Ex_Size) * 1024, BRAM_File);
 	
@@ -2292,10 +2289,8 @@ int Savestate::SaveBRAM(void)
 	if (!BRAM_File)
 		return -2;
 	
-	// Internal BRAM.
+	// Read BRAM.
 	fwrite(Ram_Backup, 1, sizeof(Ram_Backup), BRAM_File);
-	
-	// Cartridge BRAM.
 	if (BRAM_Ex_State & 0x100)
 		fwrite(Ram_Backup_Ex, 1, (8 << BRAM_Ex_Size) * 1024, BRAM_File);
 	
