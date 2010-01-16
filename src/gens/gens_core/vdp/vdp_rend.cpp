@@ -32,6 +32,9 @@
 // C includes.
 #include <stdint.h>
 
+// libgsft includes.
+#include "libgsft/gsft_szprintf.h"
+
 // Full MD palettes.
 uint16_t Palette[0x1000];
 uint32_t Palette32[0x1000];
@@ -135,7 +138,7 @@ void VDP_Update_Palette_HS(void)
 
 
 template<typename pixel>
-static inline void DrawColorBars(pixel *screen, const pixel palette[22], const pixel bg_color)
+static inline void DrawColorBars(pixel *screen, const pixel palette[22])
 {
 	// Go to the correct position in the screen.
 	screen += TAB336[VDP_Lines.Visible.Border_Size] + 8;
@@ -245,6 +248,124 @@ static inline void DrawColorBars_Border(pixel *screen, const pixel bg_color)
 }
 
 
+#include "video/VGA_charset.h"
+template<typename pixel, pixel text_color>
+static inline void DrawChr(pixel *screen, int chr)
+{
+	chr = (chr & 0x7F) - 0x20;
+	
+	// Draw the shadowed character first.
+	pixel *scr_ptr = (screen + 1 + 336);
+	for (unsigned int row = 0; row < 16; row++)
+	{
+		unsigned int chr_data = VGA_charset_ASCII[chr][row];
+		if (chr_data == 0)
+		{
+			// Empty line.
+			scr_ptr += 336;
+			continue;
+		}
+		
+		for (unsigned int col = 8; col != 0; col--, scr_ptr++)
+		{
+			if (chr_data & 0x80)
+				*scr_ptr = 0;
+			chr_data <<= 1;
+		}
+		
+		// Next line.
+		scr_ptr += (336 - 8);
+	}
+	
+	// Draw the normal character.
+	scr_ptr = screen;
+	for (unsigned int row = 0; row < 16; row++)
+	{
+		unsigned int chr_data = VGA_charset_ASCII[chr][row];
+		if (chr_data == 0)
+		{
+			// Empty line.
+			scr_ptr += 336;
+			continue;
+		}
+		
+		for (unsigned int col = 8; col != 0; col--, scr_ptr++)
+		{
+			if (chr_data & 0x80)
+				*scr_ptr = text_color;
+			chr_data <<= 1;
+		}
+		
+		// Next line.
+		scr_ptr += (336 - 8);
+	}
+}
+
+template<typename pixel, pixel text_color>
+static inline void DrawText(pixel *screen, int x, int y, const char *str)
+{
+	pixel *scr_ptr = &screen[TAB336[y] + x + 8];
+	
+	for (; *str != 0x00; scr_ptr += 8, str++)
+	{
+		DrawChr<pixel, text_color>(scr_ptr, *str);
+	}
+}
+
+template<typename pixel, pixel text_color>
+static inline void DrawVDPErrorMessage(pixel *screen)
+{
+	// Determine the starting position.
+	const int barY_1 = ((VDP_Lines.Visible.Total * 2) / 3);
+	int y = VDP_Lines.Visible.Border_Size + ((barY_1 - (16*5)) / 2);
+	int x = ((VDP_Reg.H_Cell - 26) / 2) * 8;
+	
+	DrawText<pixel, text_color>(screen, x, y,    "Gens/GS does not currently");
+	DrawText<pixel, text_color>(screen, x, y+16, "  support this VDP mode.");
+	y += 48;
+	
+	// Mode bits.
+	char buf[32];
+	szprintf(buf, sizeof(buf), "     Mode Bits: %d%d%d%d%d",
+			(VDP_Mode & VDP_MODE_M5) >> 4,
+			(VDP_Mode & VDP_MODE_M4) >> 3,
+			(VDP_Mode & VDP_MODE_M3) >> 2,
+			(VDP_Mode & VDP_MODE_M2) >> 1,
+			(VDP_Mode & VDP_MODE_M1));
+	DrawText<pixel, text_color>(screen, x, y, buf);
+	
+	// VDP mode.
+	static const char *tms9918_modes[] =
+	{
+		"0 (Graphic I)",
+		"1 (Text)",
+		"2 (Graphic II)",
+		"1+2",
+		"3 (Multicolor)",
+		"1+3",
+		"2+3",
+		"1+2+3"
+	};
+	const char *cur_mode;
+	
+	if (VDP_Mode & VDP_MODE_M4)
+	{
+		// Mode 4.
+		cur_mode = "4 (SMS/GG)";
+	}
+	else
+	{
+		// TMS9918 mode.
+		cur_mode = tms9918_modes[VDP_Mode & 0x07];
+	}
+	
+	// Determine the horizontal starting position.
+	x = ((VDP_Reg.H_Cell - (10+strlen(cur_mode))) / 2) * 8;
+	DrawText<pixel, text_color>(screen, x, y+16, "VDP Mode:");
+	DrawText<pixel, text_color>(screen, x+(8*10), y+16, cur_mode);
+}
+
+
 /**
  * VDP_Render_Line(): Render a line.
  */
@@ -264,7 +385,6 @@ void VDP_Render_Line(void)
 	else
 	{
 		// Unsupported mode.
-		// TODO: Show color bars!
 		
 		// 15-bit Color Bar colors.
 		static const uint16_t cb15[22] =
@@ -320,11 +440,11 @@ void VDP_Render_Line(void)
 		{
 			// VDP mode has changed. Redraw the color bars.
 			if (bppMD == 15)
-				DrawColorBars<uint16_t>(MD_Screen, cb15, MD_Palette[0]);
+				DrawColorBars<uint16_t>(MD_Screen, cb15);
 			else if (bppMD == 16)
-				DrawColorBars<uint16_t>(MD_Screen, cb16, MD_Palette[0]);
+				DrawColorBars<uint16_t>(MD_Screen, cb16);
 			else //if (bppMD == 32)
-				DrawColorBars<uint32_t>(MD_Screen32, cb32, MD_Palette32[0]);
+				DrawColorBars<uint32_t>(MD_Screen32, cb32);
 			
 			// Force a palette update.
 			VDP_Flags.CRam = 1;
@@ -348,6 +468,14 @@ void VDP_Render_Line(void)
 					DrawColorBars_Border<uint32_t>(MD_Screen32, MD_Palette32[0]);
 			}
 		}
+		
+		// Print the error message.
+		if (bppMD == 15)
+			DrawVDPErrorMessage<uint16_t, 0x7FFF>(MD_Screen);
+		else if (bppMD == 16)
+			DrawVDPErrorMessage<uint16_t, 0xFFFF>(MD_Screen);
+		else
+			DrawVDPErrorMessage<uint32_t, 0xFFFFF>(MD_Screen32);
 	}
 	
 	// Save the VDP mode.
