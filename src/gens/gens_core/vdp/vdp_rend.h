@@ -49,7 +49,9 @@ extern uint32_t MD_Palette32[256];
 // See g_32x_32bit.h
 extern unsigned int _32X_Rend_Mode;
 
-extern unsigned int TAB336[336];
+// 336/320 tables.
+extern unsigned int TAB336[240];
+extern unsigned int TAB320[240];
 
 typedef struct
 {
