@@ -33,9 +33,8 @@
 // C includes.
 #include <stdint.h>
 
-// Full MD palettes.
-uint16_t Palette[0x1000];
-uint32_t Palette32[0x1000];
+// Full MD palette.
+Palette_t Palette;
 
 
 /**
@@ -121,8 +120,10 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
  */
 void VDP_Update_Palette(void)
 {
-	T_VDP_Update_Palette<false>(MD_Palette, Palette);
-	T_VDP_Update_Palette<false>(MD_Palette32, Palette32);
+	if (bppMD != 32)
+		T_VDP_Update_Palette<false>(MD_Palette, Palette.u16);
+	else
+		T_VDP_Update_Palette<false>(MD_Palette32, Palette.u32);
 }
 
 /**
@@ -130,8 +131,10 @@ void VDP_Update_Palette(void)
  */
 void VDP_Update_Palette_HS(void)
 {
-	T_VDP_Update_Palette<true>(MD_Palette, Palette);
-	T_VDP_Update_Palette<true>(MD_Palette32, Palette32);
+	if (bppMD != 32)
+		T_VDP_Update_Palette<true>(MD_Palette, Palette.u16);
+	else
+		T_VDP_Update_Palette<true>(MD_Palette32, Palette.u32);
 }
 
 

@@ -29,14 +29,20 @@
 extern "C" {
 #endif
 
+// Color palettes.
+typedef union
+{
+	uint16_t u16[0x1000];
+	uint32_t u32[0x1000];
+} Palette_t;
+extern Palette_t Palette;
+
 // 15/16-bit color
 extern uint16_t MD_Screen[336 * 240];
-extern uint16_t Palette[0x1000];
 extern uint16_t MD_Palette[256];
 
 // 32-bit color
 extern uint32_t MD_Screen32[336 * 240];
-extern uint32_t Palette32[0x1000];
 extern uint32_t MD_Palette32[256];
 
 // _32X_Rend_Mode is used for the 32X 32-bit color C functions.

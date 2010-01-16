@@ -273,28 +273,23 @@ static inline void T_Recalculate_Palette_32X(pixel *pal32X, pixel *cramAdjusted3
 
 void Recalculate_Palettes(void)
 {
-	// Always recalculate both the 16-bit and 32-bit MD palettes.
-	if (bppMD == 15)
-		T_Recalculate_Palette_MD<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>(Palette);
-	else
-		T_Recalculate_Palette_MD<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>(Palette);
-	
-	T_Recalculate_Palette_MD<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>(Palette32);
-	
-	// Recalculate only one 32X palette.
 	switch (bppMD)
 	{
 		case 15:
+			T_Recalculate_Palette_MD<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>
 					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
 			break;
 		
 		case 16:
+			T_Recalculate_Palette_MD<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>
 					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
 			break;
 		
 		case 32:
+		default:
+			T_Recalculate_Palette_MD<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>(Palette.u32);
 			T_Recalculate_Palette_32X<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>
 					(_32X_Palette_32B, _32X_VDP_CRam_Adjusted32);
 			break;
