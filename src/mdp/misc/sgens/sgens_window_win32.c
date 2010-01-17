@@ -339,8 +339,9 @@ void MDP_FNCALL sgens_window_close(void)
 	sgens_host_srv->window_unregister(&mdp, sgens_window);
 	
 	// Destroy the window.
-	DestroyWindow(sgens_window);
+	HWND tmp = sgens_window;
 	sgens_window = NULL;
+	DestroyWindow(tmp);
 	
 	// Shut down libgsft_win32_gdi.
 	gsft_win32_gdi_end();
@@ -380,10 +381,7 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 		
 		case WM_DESTROY:
-			if (hWnd != sgens_window)
-				break;
-			
-			sgens_window = NULL;
+			sgens_window_close();
 			break;
 	}
 	
