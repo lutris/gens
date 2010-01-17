@@ -1160,21 +1160,20 @@ bool Options::swRender(void)
 }
 
 /**
- * setSwRender(): Force software rendering in fullscreen mode. (Win32 only)
+ * setSwRender(): Force software rendering for 1x mode. (Win32 only)
  * @param newSwRender New software rendering setting.
  */
 void Options::setSwRender(const bool newSwRender)
 {
-	// TODO: Specify software blit in the parameter.
+	// TODO: Change to "setHwRender".
 	
 	Flag_Clr_Scr = 1;
-	
 	vdraw_set_sw_render(newSwRender);
 	
 	if (vdraw_get_sw_render())
-		vdraw_text_write("Force software blit for Full-Screen", 1000);
+		vdraw_text_write("Disabled HW blit for 1x rendering.", 1000);
 	else
-		vdraw_text_write("Enable hardware blit for Full-Screen", 1000);
+		vdraw_text_write("Enabled HW blit for 1x rendering.", 1000);
 }
 #endif /* GENS_OS_WIN32 */
 
