@@ -32,6 +32,7 @@
 #include "debugger/debugger.hpp"
 
 // C includes.
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -172,16 +173,11 @@ static int vdraw_sdl_flip(void)
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	const int startPos = HBorder * vdraw_scale;		// Starting position from within the screen.
-	
-	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(vdraw_sdl_screen->pixels))[startPos]);
+	uint8_t *start = (uint8_t*)vdraw_sdl_screen->pixels;
 	
 	// Set up the render information.
-	// TODO: Horizontal border using VDP.
 	vdraw_rInfo.destScreen = (void*)start;
-	vdraw_rInfo.width = 320 - vdraw_border_h;
+	vdraw_rInfo.width = 320;
 	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = vdraw_sdl_screen->pitch;
 	
@@ -200,13 +196,16 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	start += (vdraw_sdl_screen->pitch * VDP_Lines.Visible.Border_Size * vdraw_scale);
+	const int msg_width = vdp_getHPix();
+	start += ((vdraw_sdl_screen->pitch * VDP_Lines.Visible.Border_Size) * vdraw_scale);
+	if (msg_width != 320)
+		start += (((320 - msg_width) / 2) * bytespp * vdraw_scale);
 	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, vdraw_sdl_screen->w,
-			  vdraw_rInfo.width * vdraw_scale,
+			  msg_width * vdraw_scale,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
@@ -214,7 +213,7 @@ static int vdraw_sdl_flip(void)
 	{
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,
-			  vdraw_rInfo.width * vdraw_scale,
+			  msg_width * vdraw_scale,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
