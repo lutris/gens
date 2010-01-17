@@ -23,6 +23,9 @@
 #include "vdraw.h"
 #include "vdraw_gdi.h"
 
+// C includes.
+#include <stdint.h>
+
 // Message logging.
 #include "macros/log_msg.h"
 
@@ -174,7 +177,7 @@ static int vdraw_gdi_init(void)
 	}
 	
 	// Select the bitmap object on the device context.
-	(void)SelectBitmap(hdcComp, hbmpDraw);
+	SelectBitmap(hdcComp, hbmpDraw);
 	
 	// Set bpp to 15-bit color.
 	// GDI doesn't actually support 16-bit color.
@@ -299,18 +302,15 @@ static int vdraw_gdi_flip(void)
 	hdcDest = GetDC(gens_window);
 	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
-	
-	// Start of the GDI framebuffer.
 	const int pitch = szGDIBuf.cx * bytespp;
-	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	const int startPos = HBorder * vdraw_scale;		// Starting position from within the screen.
 	
 	// Start of the GDI framebuffer.
-	unsigned char *start = &(((unsigned char*)(pbmpData))[startPos]);
+	uint8_t *start = pbmpData;
 	
 	// Set up the render information.
+	// TODO: Optimize rendering if using a stretch mode.
 	vdraw_rInfo.destScreen = (void*)start;
-	vdraw_rInfo.width = 320 - vdraw_border_h;
+	vdraw_rInfo.width = 320;
 	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
@@ -326,13 +326,17 @@ static int vdraw_gdi_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	start += pitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
+	int msg_width = vdp_getHPix();
+	start += ((pitch * VDP_Lines.Visible.Border_Size) * vdraw_scale);
+	if (msg_width != 320)
+		start += (((320 - msg_width) / 2) * bytespp * vdraw_scale);
+	msg_width *= vdraw_scale;
 	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, szGDIBuf.cx,
-			  vdraw_rInfo.width * vdraw_scale,
+			  msg_width,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
@@ -340,7 +344,7 @@ static int vdraw_gdi_flip(void)
 	{
 		// FPS is enabled.
 		draw_text(start, szGDIBuf.cx,
-			  vdraw_rInfo.width * vdraw_scale,
+			  msg_width,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
@@ -348,7 +352,8 @@ static int vdraw_gdi_flip(void)
 	// Blit the image to the GDI window.
 	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
-		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
+		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
+		       hdcComp, 0, 0, SRCCOPY);
 	}
 	else
 	{
@@ -392,12 +397,12 @@ static void vdraw_gdi_stretch_adjust(void)
 	// Adjust the stretch parameters.
 	vdraw_gdi_stretch_flags = vdraw_get_stretch();
 	
-	if ((vdraw_gdi_stretch_flags & STRETCH_H) && vdp_getHPix() < 320)
+	const int HPix = vdp_getHPix();
+	if ((vdraw_gdi_stretch_flags & STRETCH_H) && HPix < 320)
 	{
 		// Horizontal stretch.
-		// TODO: Add vdp_getHPixBegin().
 		vdraw_gdi_stretch_srcX = (vdraw_border_h / 2) * vdraw_scale;
-		vdraw_gdi_stretch_srcW = vdp_getHPix() * vdraw_scale;
+		vdraw_gdi_stretch_srcW = HPix * vdraw_scale;
 	}
 	else
 	{
