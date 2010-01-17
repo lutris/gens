@@ -37,6 +37,7 @@
 #include "vdraw_cpp.hpp"
 
 // C includes.
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,7 +86,7 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
+static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int& Dep);
 
 
 static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
@@ -109,16 +110,17 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	
 	unsigned char *start = (unsigned char*)pddsd->lpSurface;
 	start += pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
+	if (curHPix < 320)
+	{
+		// Starting position needs to be adjusted for H32.
+		start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
+	}
+	
 	if (vdraw_scale == 1)
 	{
 		// DirectDraw's 1x rendering uses MD_Screen / MD_Screen32 directly.
 		// Thus, it has an invisible 8px column at the beginning.
 		start += (8 * bytespp);
-	}
-	else if (curHPix < 320)
-	{
-		// Starting position needs to be adjusted for H32.
-		start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
 	}
 	
 	if (vdraw_msg_visible)
@@ -597,20 +599,10 @@ int WINAPI vdraw_ddraw_clear_back_screen(void)
  * vdraw_ddraw_calc_draw_area(): Calculate the drawing area.
  * @param RectDest [in, out] Destination rectangle.
  * @param RectSrc [out] Source rectangle.
- * @param Ratio_X [out] X ratio.
- * @param Ratio_Y [out] Y ratio.
  * @param Dep [out] Horizontal border.
  */
-static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
+static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int& Dep)
 {
-	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
-	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
-	Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - and here we floor the value
-	
-	POINT q; //Upth-Add - For determining the correct ratio
-	q.x = RectDest.right; //Upth-Add - we need to get
-	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
-	
 	const uint8_t stretch = vdraw_get_stretch();
 	
 	if (VDP_Lines.Visible.Total < 240 && (stretch & STRETCH_V))
@@ -626,16 +618,21 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 		RectSrc.bottom = (240 * vdraw_scale);
 	}
 	
-	// TODO: Use VDP_Reg.H_Pix and VDP_Reg.H_Pix_Begin.
-	// TODO: Don't just check for 320. (simulates the old vdp_isH40())
-	// Instead, use H_Pix for the actual calculations.
-	if (vdp_getHPix() == 320)
+	const int HPix = vdp_getHPix();
+	const int Clr_Cmp_Val = (HPix / 8);
+	if (Flag_Clr_Scr != Clr_Cmp_Val)
 	{
-		Dep = 0;
-		
+		// MD resolution change. Clear the screen.
+		vdraw_ddraw_clear_screen();
+		Flag_Clr_Scr = Clr_Cmp_Val;
+	}
+	
+	Dep = (320 - HPix);
+	if (Dep == 0 || !(stretch & STRETCH_H))
+	{
 		if (vdraw_scale == 1)
 		{
-			RectSrc.left = 8 + 0 ;
+			RectSrc.left = 8 + 0;
 			RectSrc.right = 8 + 320;
 		}
 		else
@@ -643,29 +640,32 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, flo
 			RectSrc.left = 0; //Upth-Modif - Was "0 * 2"
 			RectSrc.right = 320 * vdraw_scale;
 		}
-		RectDest.left = (int) ((q.x - (320 * Ratio_X)) / 2); //Upth-Add - center the picture
-		RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - along the x axis
 	}
-	else // less-wide X resolution:
+	else
 	{
-		Dep = 64;
-		
-		if (!(stretch & STRETCH_H))
-		{
-			RectDest.left = (q.x - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - center the picture properly
-			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
-		}
-		
 		if (vdraw_scale == 1)
 		{
-			RectSrc.left = 8 + 0;
-			RectSrc.right = 8 + 256;
+			RectSrc.left = 8 + (Dep / 2);
+			RectSrc.right = 8 + (Dep / 2) + HPix;
 		}
 		else
 		{
-			RectSrc.left = 32 * vdraw_scale;
-			RectSrc.right = (32 + 256) * vdraw_scale;
+			RectSrc.left = (Dep / 2) * vdraw_scale;
+			RectSrc.right = ((Dep / 2) + HPix) * vdraw_scale;
 		}
+	}
+	
+	// Check if we're in windowed mode.
+	if (!vdraw_get_fullscreen())
+	{
+		// Windowed. Adjust for the window position.
+		POINT p = {0, 0};
+		ClientToScreen(gens_window, &p);
+		
+		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
+		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
+		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
+		RectDest.right += p.x;  //Upth-Modif - that I use to find the center
 	}
 }
 
@@ -683,8 +683,6 @@ int vdraw_ddraw_flip(void)
 	DDSURFACEDESC2 ddsd;
 	ddsd.dwSize = sizeof(ddsd);
 	RECT RectDest, RectSrc;
-	POINT p;
-	float Ratio_X, Ratio_Y;
 	int Dep = 0;
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
@@ -692,90 +690,12 @@ int vdraw_ddraw_flip(void)
 	
 	if (vdraw_get_fullscreen())
 	{
-		//Upth-Add - So we can set the fullscreen resolution to the current res without changing the value that gets saved to the config
-		int FS_X, FS_Y;
+		RectDest.left = 0;
+		RectDest.top = 0;
+		RectDest.right = Res_X;
+		RectDest.bottom = Res_Y;
 		
-#if 0
-		if (Res_X < (320 << (int)(Video.Render_FS > 0)))
-			Res_X = 320 << (int)(Video.Render_FS > 0); //Upth-Add - Flooring the resolution to 320x240
-		if (Res_Y < (240 << (int)(Video.Render_FS > 0)))
-			Res_Y = 240 << (int)(Video.Render_FS > 0); //Upth-Add - or 640x480, as appropriate
-#endif
-			
-		// TODO: FS_No_Res_Change
-#if 0
-		if (FS_No_Res_Change)
-		{
-			//Upth-Add - If we didn't change resolution when we went Full Screen
-			DEVMODE temp;
-			EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&temp); //Upth-Add - Gets the current screen resolution
-			FS_X = temp.dmPelsWidth;
-			FS_Y = temp.dmPelsHeight;
-		}
-		else
-		{
-#endif
-			//Upth-Add - Otherwise use the configured resolution values
-			FS_X = Res_X; 
-			FS_Y = Res_Y;
-#if 0
-		}
-#endif
-		
-		Ratio_X = (float)FS_X / 320.0f; //Upth-Add - Find the current size-ratio on the x-axis
-		Ratio_Y = (float)FS_Y / 240.0f; //Upth-Add - Find the current size-ratio on the y-axis
-		
-		Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - Floor them to the smaller value for correct ratio display
-		
-		// TODO: Use VDP_Reg.H_Pix and VDP_Reg.H_Pix_Begin.
-		// TODO: Don't just check for 320. (simulates the old vdp_isH40())
-		// Instead, use H_Pix for the actual calculations.
-		if (vdp_getHPix() == 320)
-		{
-			if (Flag_Clr_Scr != 40)
-			{
-				// MD resolution change. Clear the screen.
-				vdraw_ddraw_clear_screen();
-				Flag_Clr_Scr = 40;
-			}
-			
-			Dep = 0;
-			RectSrc.left = 0 + 8;
-			RectSrc.right = 320 + 8;
-			RectDest.left = (int) ((FS_X - (320 * Ratio_X))/2); //Upth-Modif - Offset the left edge of the picture to the center of the screen
-			RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Modif - Stretch the picture and move the right edge the same amount
-			
-			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
-			RectDest.bottom = RectDest.top + (VDP_Lines.Visible.Total * vdraw_scale);
-		}
-		else
-		{
-			if (Flag_Clr_Scr != 32)
-			{
-				// MD resolution change. Clear the screen.
-				vdraw_ddraw_clear_screen();
-				Flag_Clr_Scr = 32;
-			}
-			
-			Dep = 64;
-			RectSrc.left = 0 + 8;
-			RectSrc.right = 256 + 8;
-			
-			if (stretch)
-			{
-				RectDest.left = 0;
-				RectDest.right = FS_X; //Upth-Modif - use the user configured value
-				RectDest.top = 0;      //Upth-Add - also, if we have stretch enabled
-				RectDest.bottom = FS_Y;//Upth-Add - we don't correct the screen ratio
-			}
-			else
-			{
-				RectDest.left = (FS_X - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - Centering the screen left-right
-				RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-modif - again
-				RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
-				RectDest.bottom = RectDest.top + (VDP_Lines.Visible.Total * vdraw_scale);
-			}
-		}
+		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
 		
 		// TODO: Figure out how to get this working.
 		// Until I can get it working, fall back to the standard 2x renderer.
@@ -853,14 +773,8 @@ int vdraw_ddraw_flip(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
-				const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
-				
-				// Start of the DDraw framebuffer.
-				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
-				
-				vdraw_rInfo.destScreen = (void*)start;
-				vdraw_rInfo.width = 320 - vdraw_border_h;
+				vdraw_rInfo.destScreen = (void*)ddsd.lpSurface;
+				vdraw_rInfo.width = 320;
 				vdraw_rInfo.height = 240;
 				vdraw_rInfo.destPitch = ddsd.lPitch;
 				
@@ -879,32 +793,7 @@ int vdraw_ddraw_flip(void)
 			else
 			{
 				// Software rendering is disabled.
-				// If Stretch is enabled, stretch the image.
-				
-				RectSrc.top = 0;
-				RectSrc.bottom = VDP_Lines.Visible.Total;
-				
-				if (!(stretch & STRETCH_V))
-				{
-					RectDest.top = (int)((FS_Y - VDP_Lines.Visible.Total) / 2); //Upth-Add - But we still
-					RectDest.bottom = RectDest.top + VDP_Lines.Visible.Total;   //Upth-Add - center the screen
-				}
-				else
-				{
-					RectDest.top = (int)((FS_Y - 240) / 2); //Upth-Add - for both of the
-					RectDest.bottom = RectDest.top + 240;   //Upth-Add - predefined conditions
-				}
-				
-				if (!(stretch & STRETCH_H))
-				{
-					RectDest.left = (int)((FS_X - (320 - Dep))/2); //Upth-Add - and along the
-					RectDest.right = (320 - Dep) + RectDest.left;  //Upth-Add - x axis, also
-				}
-				else
-				{
-					RectDest.left = (int)((FS_X - 320)/2); //Upth-Add - and along the
-					RectDest.right = 320 + RectDest.left;  //Upth-Add - x axis, also
-				}
+				// TODO: Test this on a system that supports 1x in fullscreen on DirectDraw.
 				
 				vdraw_ddraw_draw_text(&ddsd, lpDDS_Back, true);
 				if (Video.VSync_FS)
@@ -929,14 +818,8 @@ int vdraw_ddraw_flip(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			const int HBorder = Dep * (bytespp / 2);	// Left border width, in pixels.
-			const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
-				
-			// Start of the DDraw framebuffer.
-			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
-			
-			vdraw_rInfo.destScreen = (void*)start;
-			vdraw_rInfo.width = 320 - vdraw_border_h;
+			vdraw_rInfo.destScreen = (void*)ddsd.lpSurface;
+			vdraw_rInfo.width = 320;
 			vdraw_rInfo.height = 240;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
@@ -958,12 +841,7 @@ int vdraw_ddraw_flip(void)
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
-				RectDest.left = 0;
-				RectDest.top = 0;
-				RectDest.right = GetSystemMetrics(SM_CXSCREEN); // not SM_XVIRTUALSCREEN since we only want the primary monitor if there's more than one
-				RectDest.bottom = GetSystemMetrics(SM_CYSCREEN);
-				
-				vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
+				vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
 				
 				if (Video.VSync_FS)
 				{
@@ -988,15 +866,7 @@ int vdraw_ddraw_flip(void)
 	{
 		// Windowed mode.
 		GetClientRect(gens_window, &RectDest);
-		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
-		
-		int Clr_Cmp_Val = vdp_getHPix() / 8;
-		if (Flag_Clr_Scr != Clr_Cmp_Val)
-		{
-			// MD resolution change. Clear the screen.
-			vdraw_ddraw_clear_screen();
-			Flag_Clr_Scr = Clr_Cmp_Val;
-		}
+		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
 		
 		if (vdraw_scale > 1)
 		{
@@ -1005,14 +875,8 @@ int vdraw_ddraw_flip(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			const int HBorder = Dep * (bytespp / 2);	// Left border width, in pixels.
-			const int startPos = HBorder * vdraw_scale;	// Starting position from within the screen.
-				
-			// Start of the DDraw framebuffer.
-			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
-			
-			vdraw_rInfo.destScreen = (void*)start;
-			vdraw_rInfo.width = 320 - vdraw_border_h;
+			vdraw_rInfo.destScreen = (void*)ddsd.lpSurface;
+			vdraw_rInfo.width = 320;
 			vdraw_rInfo.height = 240;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
@@ -1037,14 +901,6 @@ int vdraw_ddraw_flip(void)
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, true);
 		}
-		
-		p.x = p.y = 0;
-		ClientToScreen(gens_window, &p);
-		
-		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
-		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
-		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
-		RectDest.right += p.x;  //Upth-Modif - that I use to find the center
 		
 		if (RectDest.top < RectDest.bottom)
 		{
