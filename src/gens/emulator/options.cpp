@@ -369,12 +369,12 @@ bool Options::soundEnable(void)
 /**
  * setSoundEnable(): Enable or disable sound.
  * @param newSoundEnable New sound enable setting.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Options::setSoundEnable(const bool newSoundEnable)
 {
 	if (newSoundEnable == audio_get_enabled())
-		return 0;
+		return -1;
 	
 	// Make sure WAV dumping has stopped.
 	if (WAV_Dumping)
@@ -385,13 +385,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 	if (!audio_get_enabled())
 	{
 		audio_end();
-		YM2612_Enable = 0;
-		PSG_Enable = 0;
-		DAC_Enable = 0;
-		PCM_Enable = 0;
-		PWM_Enable = 0;
-		CDDA_Enable = 0;
-		vdraw_text_write("Sound Disabled", 1500);
+		vdraw_text_write("Sound Disabled.", 1500);
 	}
 	else
 	{
@@ -399,13 +393,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		{
 			// Error initializing sound.
 			audio_set_enabled(false);
-			YM2612_Enable = 0;
-			PSG_Enable = 0;
-			DAC_Enable = 0;
-			PCM_Enable = 0;
-			PWM_Enable = 0;
-			CDDA_Enable = 0;
-			return 0;
+			return -2;
 		}
 		
 		if (audio_play_sound)
@@ -415,14 +403,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		if (!(Z80_State & Z80_STATE_ENABLED))
 			setSoundZ80(true);
 		
-		YM2612_Enable = 1;
-		PSG_Enable = 1;
-		DAC_Enable = 1;
-		PCM_Enable = 1;
-		PWM_Enable = 1;
-		CDDA_Enable = 1;
-		
-		vdraw_text_write("Sound Enabled", 1500);
+		vdraw_text_write("Sound Enabled.", 1500);
 	}
 	
 	return 1;

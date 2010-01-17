@@ -644,20 +644,16 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Only load the IC sound settings if sound can be initialized.
 	// TODO: Change it to load the settings unconditionally?
-	int new_val = cfg.getInt("Sound", "State", 1);
-	if (new_val == audio_get_enabled() ||
-	    (new_val != audio_get_enabled() && Options::setSoundEnable(true)))
-	{
-		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
-		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
-		DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
-		PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
-		PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
-		CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
-		
-		// Improved sound options
-		YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
-	}
+	Options::setSoundEnable(cfg.getInt("Sound", "State", 1));
+	YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
+	PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
+	DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
+	PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
+	PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
+	CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
+	
+	// Improved sound options
+	YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
 	
 	// Country codes.
 	Country = cfg.getInt("CPU", "Country", -1);
