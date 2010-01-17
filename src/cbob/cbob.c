@@ -91,6 +91,10 @@ int main(int argc, char *argv[])
 	// Filename without full path.
 	char in_filename[PATH_MAX];
 	const char *slash = strrchr(argv[1], DIR_SEP_CHR);
+#ifdef _WIN32
+	if (!slash)
+		slash = strrchr(argv[1], '/');
+#endif
 	if (!slash)
 	{
 		// No path separator found. Copy the entire filename.
@@ -131,7 +135,6 @@ int main(int argc, char *argv[])
 	
 	// Concatenate ".h".
 	strcat(out_filename_h, ".h");
-	printf("Filename: %s\n", out_filename_h);
 	
 	// Open the C output file.
 	FILE *f_out_c = fopen(out_filename_c, "wb");
