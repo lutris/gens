@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "gens_core/mem/mem_sh2.h"
+#include "gens_core/cpu/sh2/sh2.h"
 
 #if PWM_BUF_SIZE == 8
 unsigned char PWM_FULL_TAB[PWM_BUF_SIZE * PWM_BUF_SIZE] =
@@ -242,6 +243,13 @@ void PWM_Update_Timer(unsigned int cycle)
 	if (PWM_Int_Cnt == 0)
 	{
 		PWM_Int_Cnt = PWM_Int;
+		
+		if (PWM_Mode & 0x0080)
+		{
+			// RPT => generate DREQ1 as well as INT
+			SH2_DMA1_Request(&M_SH2, 1);
+			SH2_DMA1_Request(&S_SH2, 1);
+		}
 		
 		if (_32X_MINT & 1)
 			SH2_Interrupt(&M_SH2, 6);
