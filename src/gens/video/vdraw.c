@@ -133,7 +133,9 @@ mdp_render_info_t vdraw_rInfo = { .vmodeFlags = 0 };
 static uint8_t	vdraw_prop_stretch = 0;
 static uint8_t	vdraw_prop_intro_effect_color = 0;
 static BOOL	vdraw_prop_fullscreen = FALSE;
+#ifdef GENS_OS_WIN32
 static BOOL	vdraw_prop_sw_render = FALSE;
+#endif /* GENS_OS_WIN32 */
 static BOOL	vdraw_prop_fast_blur = FALSE;
 int		vdraw_scale = 1;
 
@@ -535,6 +537,7 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 }
 
 
+#ifdef GENS_OS_WIN32
 #include "plugins/render/normal/mdp_render_1x_plugin.h"
 //#include "plugins/render/double/mdp_render_2x_plugin.h"
 BOOL vdraw_get_sw_render(void)
@@ -559,6 +562,7 @@ void vdraw_set_sw_render(const BOOL new_sw_render)
 	//else if (cur_render == mdp_render_2x_render_t.blit)
 	//	vdraw_reset_renderer(TRUE);
 }
+#endif /* GENS_OS_WIN32 */
 
 
 BOOL vdraw_get_msg_enabled(void)

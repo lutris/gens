@@ -142,8 +142,10 @@ extern vdraw_style_t vdraw_msg_style;
 // Properties.
 uint8_t	vdraw_get_stretch(void);
 void	vdraw_set_stretch(const uint8_t new_stretch);
+#ifdef GENS_OS_WIN32
 BOOL	vdraw_get_sw_render(void);
 void	vdraw_set_sw_render(const BOOL new_sw_render);
+#endif /* GENS_OS_WIN32 */
 BOOL	vdraw_get_msg_enabled(void);
 void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
 BOOL	vdraw_get_fps_enabled(void);
