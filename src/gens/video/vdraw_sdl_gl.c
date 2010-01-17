@@ -32,6 +32,7 @@
 #include "debugger/debugger.hpp"
 
 // C includes.
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -385,16 +386,16 @@ static int vdraw_sdl_gl_flip(void)
 	const int pitch = rowLength * bytespp;
 	
 	// Start of the OpenGL texture buffer.
-	unsigned char *start = filterBuffer;
+	uint8_t *start = filterBuffer;
 	
 	// Position in the texture to start rendering from.
 	// This is modified if STRETCH_V is enabled.
-	unsigned char *glStart = start;
+	uint8_t *glStart = start;
 	
 	// Set up the render information.
 	// TODO: If STRETCH_V is set, only render the visible area.
 	vdraw_rInfo.destScreen = (void*)start;
-	vdraw_rInfo.width = 320 - vdraw_border_h;
+	vdraw_rInfo.width = 320;
 	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
@@ -412,15 +413,15 @@ static int vdraw_sdl_gl_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 	}
 	
+	const uint8_t stretch_flags = vdraw_get_stretch();
+	
 	// Calculate the texture size.
 	const int totalHeight = ((rowLength * 3) / 4);
-	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
 	int texHeight = 240 * vdraw_scale;
 	if (VDP_Lines.Visible.Total < 240)
 	{
 		// Check for vertical stretch.
-		const uint8_t stretch_flags = vdraw_get_stretch();
 		const unsigned int start_offset = (pitch * VDP_Lines.Visible.Border_Size * vdraw_scale);
 		start += start_offset;	// Text starting position.
 		
@@ -432,21 +433,37 @@ static int vdraw_sdl_gl_flip(void)
 		}
 	}
 	
+	int texWidth = 320 * vdraw_scale;
+	const int HPix = vdp_getHPix();
+	if (HPix < 320)
+	{
+		// Check for horizontal stretch.
+		const unsigned int start_offset = (((320 - HPix) / 2) * bytespp * vdraw_scale);
+		start += start_offset;	// Text starting position.
+		
+		if (stretch_flags & STRETCH_H)
+		{
+			// Horizontal stretch is enabled.
+			texWidth = HPix * vdraw_scale;
+			glStart += start_offset;
+		}
+	}
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, rowLength,
-			  texWidth,
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style);
+				HPix * vdraw_scale,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, rowLength,
-			  texWidth,
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style);
+				HPix * vdraw_scale,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	// Set the GL MAG filter.
@@ -473,50 +490,35 @@ static int vdraw_sdl_gl_flip(void)
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	// Get the stretch parameters.
-	uint8_t stretch = vdraw_get_stretch();
-	
-	// Calculate the image position.
-	double imgTop, imgBottom;
-	if (texHeight == totalHeight || (stretch & STRETCH_V))
-	{
-		imgTop = 1.0;
-		imgBottom = -1.0;
-	}
-	else
-	{
-		imgTop = (1.0 * ((double)texHeight / (double)totalHeight));
-		imgBottom = -imgTop;
-	}
-	
+	// Determine the left and right corners of the texture.
+#if 0
 	double imgLeft, imgRight;
-	if (vdraw_border_h == 0 || (stretch & STRETCH_H))
+	if (vdraw_border_h == 0 || !(stretch_flags & STRETCH_H))
 	{
-		imgLeft = -1.0;
-		imgRight = 1.0;
+		imgLeft = 0.0;
+		imgRight = (double)(texWidth) / (double)(textureSize * 2);
 	}
 	else
 	{
-		imgLeft = -(1.0 * ((double)(320 - vdraw_border_h) / 320.0));
-		imgRight = -imgLeft;
+		imgLeft = (double)(msg_diff / 2) / (double)(textureSize * 2);
+		imgRight = ((double)(msg_width) / (double)(textureSize * 2) + imgLeft);
 	}
+#endif
 	
-	double imgWidth, imgHeight;
-	imgWidth = (double)(texWidth) / (double)(textureSize * 2);
-	imgHeight = (double)(texHeight) / (double)(textureSize);
+	double imgWidth = (double)(texWidth) / (double)(textureSize * 2);
+	double imgHeight = (double)(texHeight) / (double)(textureSize);
 	
-	glTexCoord2d(0.0, 0.0);		// Upper-left corner of the texture.
-	glVertex2d(imgLeft, imgTop);	// Upper-left vertex of the quad.
+	glTexCoord2d(0.0, 0.0);			// Upper-left corner of the texture.
+	glVertex2d(-1.0,  1.0);			// Upper-left vertex of the quad.
 	
-	glTexCoord2d(imgWidth, 0.0);	// Upper-right corner of the texture.
-	glVertex2d(imgRight, imgTop);	// Upper-right vertex of the quad.
+	glTexCoord2d(imgWidth, 0.0);		// Upper-right corner of the texture.
+	glVertex2d( 1.0,  1.0);			// Upper-right vertex of the quad.
 	
-	// 0.9375 = 240/256; 0.9375 = 480/512
 	glTexCoord2d(imgWidth, imgHeight);	// Lower-right corner of the texture.
-	glVertex2d(imgRight, imgBottom);	// Lower-right vertex of the quad.
+	glVertex2d( 1.0, -1.0);			// Lower-right vertex of the quad.
 	
 	glTexCoord2d(0.0, imgHeight);		// Lower-left corner of the texture.
-	glVertex2d(imgLeft, imgBottom);		// Lower-left corner of the quad.
+	glVertex2d(-1.0, -1.0);			// Lower-left corner of the quad.
 	
 	glEnd();
 	
