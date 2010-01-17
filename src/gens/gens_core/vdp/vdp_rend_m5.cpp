@@ -39,13 +39,14 @@
 // Line buffer for current line.
 // TODO: Mark as static once VDP_Render_Line_m5_asm is ported to C.
 // TODO: Endianness conversions.
+typedef struct _LineBuf_px_t
+{
+	uint8_t pixel;
+	uint8_t layer;
+} LineBuf_px_t;
 typedef union
 {
-	struct
-	{
-		uint8_t pixel;
-		uint8_t layer;
-	} px[336];
+	LineBuf_px_t px[336];
 	uint8_t  u8[336<<1];
 	uint16_t u16[336];
 	uint32_t u32[336>>1];
@@ -1154,25 +1155,50 @@ void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.
- * @param num_px Number of pixels to render.
- * @param src Source. (Line buffer)
  * @param dest Destination surface.
  */
 template<typename pixel, pixel *md_palette>
-static inline void T_Render_LineBuf(unsigned int num_px, uint8_t *src, pixel *dest)
+static inline void T_Render_LineBuf(pixel *dest)
 {
+	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
+	const LineBuf_px_t *src = &LineBuf.px[8];
+	
+	// Border color.
+	// TODO: Verify if the VDP actually uses the shadow color if S/H is enabled.
+	const int border_color = ((VDP_Reg.m5.Set4 & 0x08) ? 0x40 : 0x00);
+
+	// Draw the left border.
+	if (VDP_Reg.H_Pix_Begin != 0)
+	{
+		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
+		{
+			*dest     = md_palette[border_color];
+			*(dest+1) = md_palette[border_color];
+			*(dest+2) = md_palette[border_color];
+			*(dest+3) = md_palette[border_color];
+		}
+	}
+	
 	// Render the line buffer to the destination surface.
-	// Line buffer is accessed using bytes for some reason.
-	for (unsigned int i = (num_px / 4); i != 0; i--)
+	for (unsigned int i = (num_px / 4); i != 0; i--, dest += 4, src += 4)
 	{
 		// TODO: Endianness conversions.
-		*dest     = md_palette[*src];
-		*(dest+1) = md_palette[*(src+2)];
-		*(dest+2) = md_palette[*(src+4)];
-		*(dest+3) = md_palette[*(src+6)];
-			
-		dest += 4;
-		src += 8;
+		*dest     = md_palette[src->pixel];
+		*(dest+1) = md_palette[(src+1)->pixel];
+		*(dest+2) = md_palette[(src+2)->pixel];
+		*(dest+3) = md_palette[(src+3)->pixel];
+	}
+	
+	// Draw the right border.
+	if (VDP_Reg.H_Pix_Begin != 0)
+	{
+		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
+		{
+			*dest     = md_palette[border_color];
+			*(dest+1) = md_palette[border_color];
+			*(dest+2) = md_palette[border_color];
+			*(dest+3) = md_palette[border_color];
+		}
 	}
 }
 
@@ -1233,6 +1259,7 @@ void VDP_Render_Line_m5(void)
 	{
 		// VDP isn't active, or this is the border region.
 		// Clear the line buffer.
+		// TODO: Verify if the VDP actually uses the shadow color if S/H is enabled.
 		if (VDP_Reg.m5.Set4 & 0x08)
 		{
 			// Highlight/Shadow is enabled. Clear with 0x40.
@@ -1286,15 +1313,8 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Render the image.
-	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
-	if (bppMD == 32)
-	{
-		T_Render_LineBuf<uint32_t, MD_Palette32>
-				(num_px, &LineBuf.u8[8<<1], &MD_Screen32[LineStart]);
-	}
+	if (bppMD != 32)
+		T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen[LineStart]);
 	else
-	{
-		T_Render_LineBuf<uint16_t, MD_Palette>
-				(num_px, &LineBuf.u8[8<<1], &MD_Screen[LineStart]);
-	}
+		T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen32[LineStart]);
 }
