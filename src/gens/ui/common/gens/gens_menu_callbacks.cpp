@@ -382,6 +382,10 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Options::setOpenGL_LinearFilter(!state);
 			break;
 		
+		case IDM_GRAPHICS_OPENGL_ORTHOPROJ:
+			Options::setOpenGL_OrthographicProjection(!state);
+			break;
+		
 		case IDM_GRAPHICS_OPENGL_RES_320x240:
 			Options::setOpenGL_Resolution(320, 240);
 			break;

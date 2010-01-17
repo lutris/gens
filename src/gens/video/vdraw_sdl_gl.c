@@ -69,6 +69,7 @@ static int	vdraw_sdl_gl_reinit_gens_window(void);
 
 // Used internally. (Not used in vdraw_backend_t.)
 static int	vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitSDL);
+static void	vdraw_sdl_gl_init_orthographic_projection(void);
 
 // Miscellaneous.
 #define VDRAW_SDL_GL_FLAGS (SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL | SDL_OPENGL)
@@ -281,36 +282,11 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	
 	glViewport(0, 0, vdraw_sdl_gl_screen->w, vdraw_sdl_gl_screen->h);
 	
-	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
-	// TODO: Is this stuff really necessary?
-	// NOTE: Disabled for now due to garbage problems.
-#if 0
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	if ((Video.Width_GL * 3 > Video.Height_GL * 4) && Video.Height_GL != 0)
-	{
-		glOrtho(-((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
-			((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
-			-1, 1, -1, 1);
-	}
-	else if ((Video.Width_GL * 3 < Video.Height_GL * 4) && Video.Width_GL != 0)
-	{
-		glOrtho(-1, 1,
-			-((float)Video.Height_GL * 4) / ((float)Video.Width_GL * 3),
-			((float)Video.Height_GL * 3) / ((float)Video.Width_GL * 3),
-			-1, 1);
-	}
-	else
-	{
-		glOrtho(-1, 1, -1, 1, -1, 1);
-	}
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-#endif
-	
+	// Disable depth testing.
 	glDisable(GL_DEPTH_TEST);
+	
+	// Initialize the orthographic projection.
+	vdraw_sdl_gl_init_orthographic_projection();
 	
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
@@ -334,6 +310,48 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	
 	// SDL+OpenGL initialized.
 	return 0;
+}
+
+
+static void vdraw_sdl_gl_init_orthographic_projection(void)
+{
+	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
+	// TODO: Is this stuff really necessary?
+	// NOTE: Disabled for now due to garbage problems.
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	if (!Video.GL.glOrthographicProjection)
+	{
+		// Orthographic projection is disabled.
+		glOrtho(-1, 1, -1, 1, -1, 1);
+	}
+	else
+	{
+		if ((Video.GL.width * 3 > Video.GL.height * 4) && Video.GL.height != 0)
+		{
+			// Window is wider than 4:3.
+			glOrtho(-((float)Video.GL.width * 3) / ((float)Video.GL.height * 4),
+				((float)Video.GL.width * 3) / ((float)Video.GL.height * 4),
+				-1, 1, -1, 1);
+		}
+		else if ((Video.GL.width * 3 < Video.GL.height * 4) && Video.GL.width != 0)
+		{
+			// Window is taller than 4:3.
+			glOrtho(-1, 1,
+				-((float)Video.GL.height * 4) / ((float)Video.GL.width * 3),
+				((float)Video.GL.height * 4) / ((float)Video.GL.width * 3),
+				-1, 1);
+		}
+		else
+		{
+			// Window is 4:3.
+			glOrtho(-1, 1, -1, 1, -1, 1);
+		}
+	}
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 
@@ -535,6 +553,9 @@ static int vdraw_sdl_gl_flip(void)
  */
 static void vdraw_sdl_gl_update_renderer(void)
 {
+	// Reinitialize the orthographic projection.
+	vdraw_sdl_gl_init_orthographic_projection();
+	
 	// Check if a resolution switch is needed.
 	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;

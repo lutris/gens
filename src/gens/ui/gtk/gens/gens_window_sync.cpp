@@ -284,8 +284,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	Sync_Gens_Window_GraphicsMenu_Backend(gens_menu_find_item(IDM_GRAPHICS_BACKEND));
 	
 #ifdef GENS_OPENGL
-	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)), Video.GL.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+						gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)),
+						Video.GL.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+						gens_menu_find_item(IDM_GRAPHICS_OPENGL_ORTHOPROJ)),
+						Video.GL.glOrthographicProjection);
 	
 	// OpenGL Resolution
 	int resID = 0;

@@ -115,6 +115,7 @@ typedef struct _Gens_VideoSettings_t
 		int width;
 		int height;
 		int glLinearFilter;
+		int glOrthographicProjection;
 	} GL;
 #endif
 } Gens_VideoSettings_t;

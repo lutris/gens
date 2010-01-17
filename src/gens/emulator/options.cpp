@@ -1126,10 +1126,9 @@ bool Options::OpenGL_LinearFilter(void)
 	return Video.GL.glLinearFilter;
 }
 
-
 /**
  * setOpenGL_LinearFilter(): Set the OpenGL Linear Filter state.
- * @param newFilter New linear filter state.
+ * @param newFilter New OpenGL Linear Filter state.
  */
 void Options::setOpenGL_LinearFilter(bool newFilter)
 {
@@ -1142,6 +1141,40 @@ void Options::setOpenGL_LinearFilter(bool newFilter)
 		vdraw_text_write("Enabled OpenGL Linear Filter", 1500);
 	else
 		vdraw_text_write("Disabled OpenGL Linear Filter", 1500);
+	
+	// Synchronize the Graphics Menu.
+	Sync_Gens_Window_GraphicsMenu();
+}
+
+
+/**
+ * OpenGL_OrthographicProjection(): Get the current OpenGL Orthographic Projection state.
+ * @return OpenGL Orthographic Projection state.
+ */
+bool Options::OpenGL_OrthographicProjection(void)
+{
+	return Video.GL.glOrthographicProjection;
+}
+
+/**
+ * setOpenGL_LinearFilter(): Set the OpenGL Orthographic Projection state.
+ * @param newOrthoProj New OpenGL Orthographic Projection state.
+ */
+void Options::setOpenGL_OrthographicProjection(bool newOrthoProj)
+{
+	if (Video.GL.glOrthographicProjection == newOrthoProj)
+		return;
+	
+	Video.GL.glOrthographicProjection = newOrthoProj;
+	
+	if (Video.GL.glOrthographicProjection)
+		vdraw_text_write("Enabled Orthographic Projection.", 1500);
+	else
+		vdraw_text_write("Disabled Orthographic Projection.", 1500);
+	
+	// If OpenGL is in use, reinitialize the renderer.
+	if (vdraw_cur_backend_id == VDRAW_BACKEND_SDL_GL)
+		vdraw_cur_backend->update_renderer();
 	
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();

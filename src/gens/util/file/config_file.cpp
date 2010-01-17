@@ -271,6 +271,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "OpenGL Width", Video.GL.width);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.GL.height);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.GL.glLinearFilter);
+	cfg.writeInt("Graphics", "OpenGL Orthographic Projection", Video.GL.glOrthographicProjection);
 #endif /* GENS_OPENGL */
 	
 	cfg.writeInt("Graphics", "Stretch", Options::stretch());
@@ -613,12 +614,7 @@ int Config::load(const string& filename, void* gameActive)
 	Video.GL.width = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.GL.height = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.GL.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
-	
-	// Set the OpenGL renderer.
-	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
-	// because the window hasn't been created yet.
-//	if (is_gens_running())
-// TODO		Options::setOpenGL(Video.OpenGL);
+	Video.GL.glOrthographicProjection = cfg.getInt("Graphics", "OpenGL Orthographic Projection", 0);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);

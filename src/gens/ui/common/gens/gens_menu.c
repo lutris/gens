@@ -124,6 +124,7 @@ static const GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_BACKEND,		GMF_ITEM_SUBMENU,	"&Backend",			NULL,	GMAM_SHIFT, 'R', 0},
 #ifdef GENS_OPENGL
 	{IDM_GRAPHICS_OPENGL_FILTER,	GMF_ITEM_CHECK,		"OpenGL &Linear Filter",	NULL,	0, 0, 0},
+	{IDM_GRAPHICS_OPENGL_ORTHOPROJ,	GMF_ITEM_CHECK,		"Orthographic &Projection",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_OPENGL_RES,	GMF_ITEM_SUBMENU,	"OpenGL Resolution",		&gmiGraphics_GLRes[0],	0, 0, 0},
 #endif /* GENS_OPENGL */
 #ifdef GENS_OS_UNIX

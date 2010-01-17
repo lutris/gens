@@ -110,6 +110,9 @@ class Options
 		
 		static bool OpenGL_LinearFilter(void);
 		static void setOpenGL_LinearFilter(const bool newFilter);
+		
+		static bool OpenGL_OrthographicProjection(void);
+		static void setOpenGL_OrthographicProjection(const bool newOrthoProj);
 #endif /* GENS_OPENGL */
 		
 		/** Renderer selection. **/
