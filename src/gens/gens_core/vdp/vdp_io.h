@@ -160,6 +160,9 @@ typedef struct
 	// TODO: Eliminate these.
 	int Win_X_Pos;
 	int Win_Y_Pos;
+	
+	// Interlaced mode. (0 == off; 1 == on)
+	int Interlaced;
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 

@@ -296,6 +296,10 @@ void VDP_Set_Visible_Lines(void)
 	VDP_Lines.Visible.Current = ((CPU_Mode == 1)
 					? VisLines_Current_PAL[LineOffset]
 					: VisLines_Current_NTSC[LineOffset]);
+	
+	// Check interlaced mode.
+	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
+	VDP_Reg.Interlaced = ((VDP_Reg.m5.Set4 & 0x04) ? 1 : 0);
 }
 
 

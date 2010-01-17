@@ -80,6 +80,9 @@ struc VDP_Reg_t
 	; TODO: Eliminate these.
 	.Win_X_Pos:		resd 1
 	.Win_Y_Pos:		resd 1
+	
+	; Interlaced mode. (0 == off; 1 == on)
+	.Interlaced:		resd 1
 endstruc
 
 struc VDP_Ctrl_t

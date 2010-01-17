@@ -497,7 +497,7 @@ static inline int T_gens_do_MD_frame(void)
 	// Interlaced frame status.
 	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
 	// This bit is cleared on even frames and if not running in interlaced mode.
-	if (VDP_Reg.m5.Set4 & 0x2)
+	if (VDP_Reg.m5.Set4 & 0x06)
 		VDP_Status ^= 0x0010;
 	else
 		VDP_Status &= ~0x0010;

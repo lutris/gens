@@ -73,8 +73,8 @@ static inline void T_Make_Sprite_Struct(void)
 	unsigned int link;
 	
 	// H40 allows 80 sprites; H32 allows 64 sprites.
-	// TODO: Test 0x81 instead of 0x01?
-	const unsigned int max_spr = (VDP_Reg.m5.Set4 & 0x01) ? 80 : 64;
+	// Essentially, it's (H_Cell * 2).
+	const unsigned int max_spr = (VDP_Reg.H_Cell * 2);
 	
 	do
 	{
@@ -1276,10 +1276,9 @@ void VDP_Render_Line_m5(void)
 		// VDP is active.
 		
 		// Check if sprite structures need to be updated.
-		if (VDP_Reg.m5.Set4 & 0x04)
+		if (VDP_Reg.Interlaced)
 		{
 			// Interlaced.
-			// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 			if (VDP_Flags.VRam)
 				T_Make_Sprite_Struct<true, false>();
 			else if (VDP_Flags.VRam_Spr)
