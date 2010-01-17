@@ -451,13 +451,13 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 #else
 	unsigned int V_Offset = VDP_Data_Misc.Line_7;
 #endif
-	unsigned int TileAddr = (pattern & 0x7FF);		// Tile number.
 	
 	// Get the tile address.
+	unsigned int TileAddr;
 	if (interlaced)
-		TileAddr <<= 6;
+		TileAddr = (pattern & 0x3FF) << 6;
 	else
-		TileAddr <<= 5;
+		TileAddr = (pattern & 0x7FF) << 5;
 	
 	if (pattern & 0x1000)
 	{
