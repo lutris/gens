@@ -266,11 +266,11 @@ static inline int PWM_Update_Scale(int PWM_In)
 	
 	// TODO: Chilly Willy's new scaling algorithm breaks drx's Sonic 1 32X (with PWM drums).
 	//return (((PWM_In & 0xFFFF) - PWM_Offset) * PWM_Scale) >> (8 - PWM_Loudness);
-	const int PWM_adjust = (((PWM_Cycle >> 1) + 1) << 5);
-	int PWM_Ret = (((PWM_In & 0xFFFF) << 5) - PWM_adjust);
+	const int PWM_adjust = ((PWM_Cycle >> 1) + 1);
+	int PWM_Ret = ((PWM_In & 0xFFF) - PWM_adjust);
 	
-	// Multiply PWM by 4 so it's audible.
-	PWM_Ret <<= 2;
+	// Increase PWM volume so it's audible.
+	PWM_Ret <<= (5+2);
 	
 	// Make sure the PWM isn't oversaturated.
 	if (PWM_Ret > 32767)
