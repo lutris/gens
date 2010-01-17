@@ -34,6 +34,11 @@ do { \
 	dest[n-1] = 0x00; \
 } while (0)
 
+/**
+ * Version history:
+ * 0.1.1 (2010/01/17): Fixed generated output on MinGW/Win32.
+ * 0.1.0 (2009/10/10): First public release.
+ */
 #define CBOB_VERSION_MAJOR 0
 #define CBOB_VERSION_MINOR 1
 #define CBOB_VERSION_REVISION 1
