@@ -196,16 +196,17 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS counter.
-	const int msg_width = vdp_getHPix();
+	int msg_width = vdp_getHPix();
 	start += ((vdraw_sdl_screen->pitch * VDP_Lines.Visible.Border_Size) * vdraw_scale);
 	if (msg_width != 320)
 		start += (((320 - msg_width) / 2) * bytespp * vdraw_scale);
+	msg_width *= vdraw_scale;
 	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, vdraw_sdl_screen->w,
-			  msg_width * vdraw_scale,
+			  msg_width,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_msg_style);
 	}
@@ -213,7 +214,7 @@ static int vdraw_sdl_flip(void)
 	{
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,
-			  msg_width * vdraw_scale,
+			  msg_width,
 			  VDP_Lines.Visible.Total * vdraw_scale,
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
