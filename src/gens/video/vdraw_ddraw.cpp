@@ -89,6 +89,28 @@ static HRESULT vdraw_ddraw_restore_graphics(void);
 static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int& Dep);
 
 
+/**
+ * vdraw_ddraw_is_hw_render(): Check if we should use hardware rendering.
+ * @return True if HW rendering is enabled and rendering 1x or 2x; false otherwise.
+ */
+#include "plugins/render/normal/mdp_render_1x_plugin.h"
+//#include "plugins/render/double/mdp_render_2x_plugin.h"
+static bool WINAPI vdraw_ddraw_is_hw_render(void)
+{
+	if (vdraw_get_sw_render())
+		return false;
+	
+	// Check the renderer.
+	mdp_render_fn cur_render = (vdraw_get_fullscreen() ? vdraw_blitFS : vdraw_blitW);
+	if (cur_render == mdp_render_1x_render_t.blit)
+		return true;
+	//else if (cur_render == mdp_render_2x_render_t.blit)
+	//	return true;
+	
+	return false;
+}
+
+
 static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
 {
 	if (lock)
@@ -96,48 +118,62 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 	
 	// Determine the window size using the scaling factor.
 	const int curHPix = vdp_getHPix();
-	const int msg_width = curHPix * vdraw_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
 	// so they won't show up at all.
 	
-	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	uint8_t bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// NOTE: fullW must be (pddsd->lPitch / bytespp).
 	// DirectDraw likes to use absurdly large line lengths in full screen mode.
 	// (pddsd->lPitch / bytespp) does match pddsd->dwWidth in windowed mode, though.
+	uint8_t *start = (uint8_t*)pddsd->lpSurface;
 	
-	unsigned char *start = (unsigned char*)pddsd->lpSurface;
-	start += pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
-	if (curHPix < 320)
+	int msg_height;
+	int msg_width;
+	if (vdraw_ddraw_is_hw_render())
 	{
-		// Starting position needs to be adjusted for H32.
-		start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
-	}
-	
-	if (vdraw_scale == 1)
-	{
-		// DirectDraw's 1x rendering uses MD_Screen / MD_Screen32 directly.
+		// Hardware rendering uses 1x internally.
+		msg_height = VDP_Lines.Visible.Total;
+		msg_width = curHPix;
+		start += pddsd->lPitch * VDP_Lines.Visible.Border_Size;
+		if (curHPix < 320)
+		{
+			// Starting position needs to be adjusted for H32.
+			start += ((320 - curHPix) / 2) * bytespp;
+		}
+		
+		// DirectDraw's hardware rendering uses MD_Screen / MD_Screen32 directly.
 		// Thus, it has an invisible 8px column at the beginning.
 		start += (8 * bytespp);
+	}
+	else
+	{
+		// Software rendering.
+		msg_height = VDP_Lines.Visible.Total * vdraw_scale;
+		msg_width = curHPix * vdraw_scale;
+		start += pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
+		if (curHPix < 320)
+		{
+			// Starting position needs to be adjusted for H32.
+			start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
+		}
 	}
 	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, pddsd->lPitch / bytespp,
-			  msg_width, 
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style);
+				msg_width, msg_height,
+				vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, pddsd->lPitch / bytespp,
-			  msg_width,
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style);
+				msg_width, msg_height,
+				vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	if (lock)
@@ -149,7 +185,7 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
  * vdraw_ddraw_free_all(): Free all DirectDraw objects.
  * @param scl If true, sets the cooperative level of lpDD before freeing it.
  */
-static void vdraw_ddraw_free_all(bool scl)
+static void WINAPI vdraw_ddraw_free_all(bool scl)
 {
 	if (lpDDC_Clipper)
 	{
@@ -383,7 +419,7 @@ int vdraw_ddraw_init(void)
 	
 	// Determine the width and height.
 	// NOTE: For DirectDraw, the actual 336 width is used.
-	if (scale == 1)
+	if (vdraw_ddraw_is_hw_render())
 	{
 		// Normal render mode. 320x240 [336x240]
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
@@ -434,10 +470,10 @@ int vdraw_ddraw_init(void)
 	// TODO: Check if this is right.
 	// I think this might be causing the frame counter flicker in full screen mode.
 	//if (!vdraw_get_fullscreen() || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
-	if (!(vdraw_get_fullscreen() && scale == 1))
+	if (!vdraw_get_fullscreen() || !vdraw_ddraw_is_hw_render())
 		lpDDS_Blit = lpDDS_Back;
 	
-	if (scale == 1)
+	if (vdraw_ddraw_is_hw_render())
 	{
 		// Normal rendering mode uses MD_Screen directly.
 		memset(&ddsd, 0, sizeof(ddsd));
@@ -630,7 +666,7 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int
 	Dep = (320 - HPix);
 	if (Dep == 0 || !(stretch & STRETCH_H))
 	{
-		if (vdraw_scale == 1)
+		if (vdraw_ddraw_is_hw_render())
 		{
 			RectSrc.left = 8 + 0;
 			RectSrc.right = 8 + 320;
@@ -643,7 +679,7 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int
 	}
 	else
 	{
-		if (vdraw_scale == 1)
+		if (vdraw_ddraw_is_hw_render())
 		{
 			RectSrc.left = 8 + (Dep / 2);
 			RectSrc.right = 8 + (Dep / 2) + HPix;
@@ -684,9 +720,6 @@ int vdraw_ddraw_flip(void)
 	ddsd.dwSize = sizeof(ddsd);
 	RECT RectDest, RectSrc;
 	int Dep = 0;
-	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
-	
-	const uint8_t stretch = vdraw_get_stretch();
 	
 	if (vdraw_get_fullscreen())
 	{
@@ -697,121 +730,30 @@ int vdraw_ddraw_flip(void)
 		
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
 		
-		// TODO: Figure out how to get this working.
-		// Until I can get it working, fall back to the standard 2x renderer.
-#if 0
-		if (Video.Render_FS == 1)
+		if (vdraw_ddraw_is_hw_render())
 		{
-			// 2x rendering.
-			if (m_swRender)
-			{
-				// Software rendering is enabled.
-				// Ignore the Stretch setting.
-				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-				
-				if (FAILED(rval))
-					goto cleanup_flip;
-				
-				int VBorder = VDP_Lines.Visible.Border_Size << m_shift;	// Top border height, in pixels.
-				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
-				int startPos = (ddsd.lPitch * VBorder) + HBorder;
-				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			// Hardware rendering.
 			
-				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Lines.Visible.Total, 32 + (Dep * 2));
-				
-				lpDDS_Blit->Unlock(NULL);
-				
-				if (Video.VSync_FS)
-				{
-					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
-				}
-			}
-			else
-			{
-				RectSrc.top = 0;
-				RectSrc.bottom = VDP_Lines.Visible.Total;
-				
-				if ((VDP_Lines.Visible.Total == 224) && !stretch)
-				{
-					RectDest.top = (int) ((FS_Y - (224 * Ratio_Y))/2); //Upth-Modif - centering top-bottom
-					RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - with the method I already described for left-right
-				}
-				else
-				{
-					RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Modif - centering top-bottom under other circumstances
-					RectDest.bottom = (int) (240 * Ratio_Y) + RectDest.top; //Upth-Modif - using the same method
-				}
-				RectDest.left = (int) ((FS_X - (320 * Ratio_X))/2); //Upth-Add - Centering left-right
-				RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - I wonder why I had to change the center-stuff three times...
-
-				if (Video.VSync_FS)
-				{
-					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
-				}
-				else
-				{
-					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-//					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
-				}
-			}
-		}
-		else
-#endif
-		if (vdraw_scale == 1)
-		{
 			// 1x rendering.
 			// TODO: Test this with border color stuff.
 			// Wine doesn't seem to have a 320x240 fullscreen mode available...
-			if (vdraw_get_sw_render())
+			// TODO: Test this on a system that supports 1x in fullscreen on DirectDraw.
+			
+			vdraw_ddraw_draw_text(&ddsd, lpDDS_Back, true);
+			if (Video.VSync_FS)
 			{
-				// Software rendering is enabled.
-				// Ignore the Stretch setting.
-				
-				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-				
-				if (FAILED(rval))
-					goto cleanup_flip;
-				
-				vdraw_rInfo.destScreen = (void*)ddsd.lpSurface;
-				vdraw_rInfo.width = 320;
-				vdraw_rInfo.height = 240;
-				vdraw_rInfo.destPitch = ddsd.lPitch;
-				
-				vdraw_blitFS(&vdraw_rInfo);
-				
-				// Draw the text.
-				vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, false);
-				
-				lpDDS_Blit->Unlock(NULL);
-				
-				if (Video.VSync_FS)
-				{
-					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
-				}
+				lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+				lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 			}
 			else
 			{
-				// Software rendering is disabled.
-				// TODO: Test this on a system that supports 1x in fullscreen on DirectDraw.
-				
-				vdraw_ddraw_draw_text(&ddsd, lpDDS_Back, true);
-				if (Video.VSync_FS)
-				{
-					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
-				}
-				else
-				{
-					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					//lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
-				}
+				lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+				//lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 			}
 		}
 		else
 		{
-			// Other renderer.
-			
+			// Software rendering.
 			LPDIRECTDRAWSURFACE4 curBlit = lpDDS_Blit;
 			rval = curBlit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			
@@ -868,7 +810,7 @@ int vdraw_ddraw_flip(void)
 		GetClientRect(gens_window, &RectDest);
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
 		
-		if (vdraw_scale > 1)
+		if (!vdraw_ddraw_is_hw_render())
 		{
 			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			

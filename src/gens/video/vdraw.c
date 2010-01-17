@@ -535,13 +535,29 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 }
 
 
+#include "plugins/render/normal/mdp_render_1x_plugin.h"
+//#include "plugins/render/double/mdp_render_2x_plugin.h"
 BOOL vdraw_get_sw_render(void)
 {
 	return (vdraw_prop_sw_render ? TRUE : FALSE);
 }
 void vdraw_set_sw_render(const BOOL new_sw_render)
 {
+	if (vdraw_prop_sw_render == new_sw_render)
+		return;
+	
 	vdraw_prop_sw_render = (new_sw_render ? TRUE : FALSE);
+	
+	// TODO: Make this DDraw-only.
+	if (vdraw_cur_backend_id != VDRAW_BACKEND_DDRAW)
+		return;
+	
+	// Check the renderer.
+	mdp_render_fn cur_render = (vdraw_get_fullscreen() ? vdraw_blitFS : vdraw_blitW);
+	if (cur_render == mdp_render_1x_render_t.blit)
+		vdraw_reset_renderer(TRUE);
+	//else if (cur_render == mdp_render_2x_render_t.blit)
+	//	vdraw_reset_renderer(TRUE);
 }
 
 
