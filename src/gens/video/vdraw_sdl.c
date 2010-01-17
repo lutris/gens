@@ -206,17 +206,17 @@ static int vdraw_sdl_flip(void)
 	{
 		// Message is visible.
 		draw_text(start, vdraw_sdl_screen->w,
-			  msg_width,
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style);
+				msg_width,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, vdraw_sdl_screen->w,
-			  msg_width,
-			  VDP_Lines.Visible.Total * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style);
+				msg_width,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	SDL_UnlockSurface(vdraw_sdl_screen);
