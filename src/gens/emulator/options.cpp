@@ -406,7 +406,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		vdraw_text_write("Sound Enabled.", 1500);
 	}
 	
-	return 1;
+	return 0;
 }
 
 
