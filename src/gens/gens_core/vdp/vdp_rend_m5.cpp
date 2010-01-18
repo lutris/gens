@@ -1152,6 +1152,201 @@ void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
 
 
 /**
+ * T_Render_Line_Sprite(): Render a sprite line.
+ * @param interlaced	[in] True for interlaced; false for non-interlaced.
+ * @param h_s		[in] Highlight/Shadow enable.
+ */
+template<bool interlaced, bool h_s>
+static inline void T_Render_Line_Sprite(void)
+{
+	// Update the sprite masks.
+	unsigned int num_spr;
+	if (Sprite_Over)
+		num_spr = T_Update_Mask_Sprite<true>();
+	else
+		num_spr = T_Update_Mask_Sprite<false>();
+	
+	// TODO: Make Update_Mask_Sprite[_Limit]() return number of sprites.
+	num_spr /= sizeof(Sprite_Visible[0]);
+	
+	// NOTE: VDP_Data_Misc.X and VDP_Data_Misc.Borne were used in the asm version,
+	// but aren't required in the C++ version.
+	
+	for (unsigned int spr_vis = 0; spr_vis < num_spr; spr_vis++)
+	{
+		// Get the sprite number. (TODO: Eliminate the sizeof division.)
+		unsigned int spr_num = Sprite_Visible[spr_vis] / sizeof(Sprite_Struct[0]);
+		
+		// Determine the cell and line offsets.
+		unsigned int cell_offset = (VDP_Lines.Visible.Current - Sprite_Struct[spr_num].Pos_Y);
+		unsigned int line_offset = (cell_offset & 7);
+		cell_offset &= 0xF8;
+		
+		// Get the Y cell size.
+		unsigned int Y_cell_size = Sprite_Struct[spr_num].Size_Y;
+		
+		// Get the sprite information.
+		// Also, check for swapped sprite layer priority.
+		unsigned int spr_info = Sprite_Struct[spr_num].Num_Tile;
+		if (VDP_Layers & VDP_LAYER_SPRITE_SWAP)
+			spr_info ^= 0x8000;
+		
+		// Get the palette number, multiplied by 16.
+		const unsigned int palette = ((spr_info >> 9) & 0x30);
+		
+		// Get the pattern number.
+		// TODO: Flickering interlaced support.
+		unsigned int tile_num = (spr_info & 0x7FF);
+		if (interlaced)
+		{
+			Y_cell_size <<= 6;	// Size_Y * 64
+			cell_offset *= 8;	// Num_Pattern * 64
+			tile_num <<= 6;		// point on the contents of the pattern
+		}
+		else
+		{
+			Y_cell_size <<= 5;	// Size_Y * 32
+			cell_offset *= 4;	// Num_Pattern * 32
+			tile_num <<= 5;		// point on the contents of the pattern
+		}
+		
+		// Check for V Flip.
+		if (spr_info & 0x1000)
+		{
+			// V Flip enabled.
+			line_offset ^= 7;
+			tile_num += (Y_cell_size - cell_offset);
+			if (interlaced)
+			{
+				Y_cell_size += 64;
+				tile_num += (line_offset * 8);
+			}
+			else
+			{
+				Y_cell_size += 32;
+				tile_num += (line_offset * 4);
+			}
+		}
+		else
+		{
+			// V Flip disabled.
+			tile_num += cell_offset;
+			if (interlaced)
+			{
+				Y_cell_size += 64;
+				tile_num += (line_offset * 8);
+			}
+			else
+			{
+				Y_cell_size += 32;
+				tile_num += (line_offset * 4);
+			}
+		}
+		
+		// Check for H Flip.
+		int H_Pos_Min;
+		int H_Pos_Max;
+		
+		if (spr_info & 0x800)
+		{
+			// H Flip enabled.
+			// Check the minimum edge of the sprite.
+			H_Pos_Min = Sprite_Struct[spr_num].Pos_X;
+			if (H_Pos_Min < -7)
+				H_Pos_Min = -7;	// minimum edge = clip screen
+			
+			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max;
+			
+			H_Pos_Max -= 7;				// to post the last pattern in first
+			while (H_Pos_Max >= VDP_Reg.H_Pix)
+			{
+				H_Pos_Max -= 8;			// move back to the preceding pattern (screen)
+				tile_num += Y_cell_size;	// go to the next pattern (VRam)
+			}
+			
+			// Draw the sprite.
+			if ((VDP_Layers & VDP_LAYER_SPRITE_ALWAYSONTOP) || (spr_info & 0x8000))
+			{
+				// High priority.
+				for (; H_Pos_Max >= H_Pos_Min; H_Pos_Max -= 8)
+				{
+					uint32_t pattern = VRam.u32[tile_num >> 2];
+					T_PutLine_Sprite<true, h_s, true>(H_Pos_Max, pattern, palette);
+					tile_num += Y_cell_size;
+				}
+			}
+			else
+			{
+				// Low priority.
+				for (; H_Pos_Max >= H_Pos_Min; H_Pos_Max -= 8)
+				{
+					uint32_t pattern = VRam.u32[tile_num >> 2];
+					T_PutLine_Sprite<false, h_s, true>(H_Pos_Max, pattern, palette);
+					tile_num += Y_cell_size;
+				}
+			}
+		}
+		else
+		{
+			// H Flip disabled.
+			// Check the minimum edge of the sprite.
+			H_Pos_Min = Sprite_Struct[spr_num].Pos_X;
+			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max;
+			if (H_Pos_Max >= VDP_Reg.H_Pix)
+				H_Pos_Max = VDP_Reg.H_Pix;
+			
+			while (H_Pos_Min < -7)
+			{
+				H_Pos_Min += 8;			// advance to the next pattern (screen)
+				tile_num += Y_cell_size;	// go to the next pattern (VRam)
+			}
+			
+			// Draw the sprite.
+			if ((VDP_Layers & VDP_LAYER_SPRITE_ALWAYSONTOP) || (spr_info & 0x8000))
+			{
+				// High priority.
+				for (; H_Pos_Min < H_Pos_Max; H_Pos_Min += 8)
+				{
+					uint32_t pattern = VRam.u32[tile_num >> 2];
+					T_PutLine_Sprite<true, h_s, false>(H_Pos_Min, pattern, palette);
+					tile_num += Y_cell_size;
+				}
+			}
+			else
+			{
+				// Low priority.
+				for (; H_Pos_Min < H_Pos_Max; H_Pos_Min += 8)
+				{
+					uint32_t pattern = VRam.u32[tile_num >> 2];
+					T_PutLine_Sprite<false, h_s, false>(H_Pos_Min, pattern, palette);
+					tile_num += Y_cell_size;
+				}
+			}
+		}
+	}
+}
+
+/**
+ * C wrapper functions for T_Render_Line_Sprite().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void Render_Line_Sprite(void);
+	void Render_Line_Sprite_Interlaced(void);
+	void Render_Line_Sprite_HS(void);
+	void Render_Line_Sprite_HS_Interlaced(void);
+}
+void Render_Line_Sprite(void)
+{ T_Render_Line_Sprite<false, false>(); }
+void Render_Line_Sprite_Interlaced(void)
+{ T_Render_Line_Sprite<true, false>(); }
+void Render_Line_Sprite_HS(void)
+{ T_Render_Line_Sprite<false, true>(); }
+void Render_Line_Sprite_HS_Interlaced(void)
+{ T_Render_Line_Sprite<true, true>(); }
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.

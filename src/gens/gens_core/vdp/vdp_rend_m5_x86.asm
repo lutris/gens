@@ -193,6 +193,11 @@ section .text align=64
 	extern SYM(Render_Line_ScrollB_HS_VScroll)
 	extern SYM(Render_Line_ScrollB_HS_VScroll_Interlaced)
 	
+	extern SYM(Render_Line_Sprite)
+	extern SYM(Render_Line_Sprite_Interlaced)
+	extern SYM(Render_Line_Sprite_HS)
+	extern SYM(Render_Line_Sprite_HS_Interlaced)
+	
 ;****************************************
 
 ; macro PUTLINE_P0
@@ -861,234 +866,26 @@ section .text align=64
 ; %2 = Shadow / Highlight (0 = Disable and 1 = Enable)
 
 %macro RENDER_LINE_SPR 2
-	
-	test	dword [SYM(Sprite_Over)], 1
-	jz	near %%No_Sprite_Over
-	
-%%Sprite_Over
-	
-	call	SYM(Update_Mask_Sprite_Limit)	; edi point on the sprite to post
-	mov	esi, eax
-	
-	xor	edi, edi
-	test	esi, esi
-	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
-	jnz	near %%Sprite_Loop
-	jmp	%%End				; quit
-	
-%%No_Sprite_Over
-	
-	call	SYM(Update_Mask_Sprite)		; edi = point on the sprite to post
-	mov	esi, eax
-	
-	xor	edi, edi
-	test	esi, esi
-	mov	dword [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
-	jnz	short %%Sprite_Loop
-	jmp	%%End				; quit
-	
-	align 16
-	
-%%Sprite_Loop
-		mov	edx, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
-		mov	edi, [SYM(Sprite_Visible) + edi]
-		mov	eax, [SYM(Sprite_Struct) + edi + 24]		; eax = CellInfo of the sprite
-		sub	edx, [SYM(Sprite_Struct) + edi + 4]			; edx = Line - Y Pos (Y Offset)
-		mov	ebx, eax					; ebx = CellInfo
-		mov	esi, eax					; esi = CellInfo
-		
-		; Check for swapped sprite priority.
-		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_SWAP
-		jz	short %%No_Swap_Sprite_Priority
-		xor	ax, 0x8000
-		
-	%%No_Swap_Sprite_Priority
-		shr	bx, 9					; isolate the palette in ebx
-		mov	ecx, edx				; ecx = Y Offset
-		and	ebx, 0x30				; keep the palette number an even multiple of 16
-		
-		and	esi, 0x7FF						; esi = number of the first pattern of the sprite
-		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Palette], ebx	; store the palette number * 64 in Palette
-		and	edx, 0xF8						; one erases the 3 least significant bits = Num Pattern * 8
-		mov	ebx, [SYM(Sprite_Struct) + edi + 12]			; ebx = Size Y
-		and	ecx, byte 7						; ecx = (Y Offset & 7) = Line of the current pattern
+
 %if %1 > 0
-		shl	ebx, 6					; ebx = Size Y * 64
-		lea	edx, [edx * 8]				; edx = Num Pattern * 64
-		shl	esi, 6					; esi = point on the contents of the pattern
+	; Interlaced.
+	%if %2 > 0
+		; Highlight/Shadow.
+		call SYM(Render_Line_Sprite_HS_Interlaced)
+	%else
+		; No Highlight/Shadow.
+		call SYM(Render_Line_Sprite_Interlaced)
+	%endif
 %else
-		shl	ebx, 5					; ebx = Size Y * 32
-		lea	edx, [edx * 4]				; edx = Num Pattern * 32
-		shl	esi, 5					; esi = point on the contents of the pattern
+	; Not Interlaced.
+	%if %2 > 0
+		; Highlight/Shadow.
+		call SYM(Render_Line_Sprite_HS)
+	%else
+		; No Highlight/Shadow.
+		call SYM(Render_Line_Sprite)
+	%endif
 %endif
-		
-		test	eax, 0x1000				; test for V Flip
-		jz	%%No_V_Flip
-		
-	%%V_Flip
-		sub	ebx, edx
-		xor	ecx, 7					; ecx = 7 - (Y Offset & 7)
-		add	esi, ebx				; esi = point on the pattern to post
-%if %1 > 0
-		lea	ebx, [ebx + edx + 64]			; restore the value of ebx + 64
-		lea	esi, [esi + ecx * 8]			; and load the good line of the pattern
-		jmp	short %%Suite
-%else
-		lea	ebx, [ebx + edx + 32]			; restore the value of ebx + 64
-		lea	esi, [esi + ecx * 4]			; and load the good line of the pattern
-		jmp	short %%Suite
-%endif
-		
-		align 16
-		
-	%%No_V_Flip
-		add	esi, edx				; esi = point on the pattern to post
-%if %1 > 0
-		add	ebx, byte 64				; add 64 to ebx
-		lea	esi, [esi + ecx * 8]			; and load the good line of the pattern
-%else			
-		add	ebx, byte 32				; add 32 to ebx
-		lea	esi, [esi + ecx * 4]			; and load the good line of the pattern
-%endif
-		
-	%%Suite
-		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell], ebx	; next Cell X of this sprite is with ebx bytes
-		mov	edx, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Palette]	; edx = Palette number * 64
-		
-		test	eax, 0x800				; test H Flip
-		jz	near %%No_H_Flip
-			
-	%%H_Flip
-		mov	ebx, [SYM(Sprite_Struct) + edi + 0]
-		mov	ebp, [SYM(Sprite_Struct) + edi + 16]	; position for X
-		cmp	ebx, -7					; test for the minimum edge of the sprite
-		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell]
-		jg	short %%Spr_X_Min_Norm
-		mov	ebx, -7					; minimum edge = clip screen
-		
-	%%Spr_X_Min_Norm
-		mov	[Data_Spr.H_Min], ebx			; spr min = minimum edge
-		
-	%%Spr_X_Min_OK
-		sub	ebp, byte 7				; to post the last pattern in first
-		jmp	short %%Spr_Test_X_Max
-		
-		align 16
-		
-	%%Spr_Test_X_Max_Loop
-			sub	ebp, byte 8			; one moves back on the preceding pattern (screen)
-			add	esi, edi			; one goes on next the pattern (mem)
-			
-	%%Spr_Test_X_Max
-			cmp	ebp, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix]
-			jge	%%Spr_Test_X_Max_Loop
-		
-		; Check if sprites should always be on top.
-		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_ALWAYSONTOP
-		jnz	near %%H_Flip_P1
-		
-		test	eax, 0x8000				; test the priority
-		jnz	near %%H_Flip_P1
-		jmp	short %%H_Flip_P0
-		
-		align 16
-		
-	%%H_Flip_P0
-	%%H_Flip_P0_Loop
-			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
-			PUTLINE_SPRITE_FLIP 0, %2		; one posts the line of the sprite pattern
-			
-			sub	ebp, byte 8			; one posts the previous pattern
-			add	esi, edi			; one goes on next the pattern
-			cmp	ebp, [Data_Spr.H_Min]		; test if one did all the sprite patterns
-			jge	near %%H_Flip_P0_Loop		; if not, continue
-		jmp	%%End_Sprite_Loop
-		
-		align 16
-		
-	%%H_Flip_P1
-	%%H_Flip_P1_Loop
-			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
-			PUTLINE_SPRITE_FLIP 1, %2		; one posts the line of the sprite pattern
-			
-			sub	ebp, byte 8			; one posts the previous pattern
-			add	esi, edi			; one goes on next the pattern
-			cmp	ebp, [Data_Spr.H_Min]		; test if one did all the sprite patterns
-			jge	near %%H_Flip_P1_Loop		; if not, continue
-		jmp	%%End_Sprite_Loop
-		
-		align 16
-		
-	%%No_H_Flip
-		mov	ebx, [SYM(Sprite_Struct) + edi + 16]
-		mov	ecx, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix]
-		mov	ebp, [SYM(Sprite_Struct) + edi + 0]		; position the pointer ebp
-		cmp	ebx, ecx				; test for the maximum edge of the sprite
-		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Next_Cell]
-		jl	%%Spr_X_Max_Norm
-		mov	[Data_Spr.H_Max], ecx			; max edge = clip screan
-		jmp	short %%Spr_Test_X_Min
-		
-		align 16
-		
-	%%Spr_X_Max_Norm
-		mov	[Data_Spr.H_Max], ebx			; spr max = max edge
-		jmp	short %%Spr_Test_X_Min
-		
-		align 16
-		
-	%%Spr_Test_X_Min_Loop
-			add	ebp, byte 8			; advance to the next pattern (screen)
-			add	esi, edi			; one goes on next the pattern (mem)
-			
-	%%Spr_Test_X_Min
-			cmp	ebp, -7
-			jl	%%Spr_Test_X_Min_Loop
-		
-		; Check if sprites should always be on top.
-		test	dword [SYM(VDP_Layers)], VDP_LAYER_SPRITE_ALWAYSONTOP
-		jnz	near %%No_H_Flip_P1
-		
-		test	ax, 0x8000				; test the priority
-		jnz	near %%No_H_Flip_P1
-		jmp	short %%No_H_Flip_P0
-		
-		align 16
-		
-	%%No_H_Flip_P0
-	%%No_H_Flip_P0_Loop
-			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
-			PUTLINE_SPRITE 0, %2			; one posts the line of the sprite pattern 
-			
-			add	ebp, byte 8			; one posts the previous pattern
-			add	esi, edi			; one goes on next the pattern
-			cmp	ebp, [Data_Spr.H_Max]		; test if one did all the sprite patterns
-			jl	near %%No_H_Flip_P0_Loop	; if not, continue
-		jmp	%%End_Sprite_Loop
-		
-		align 16
-		
-	%%No_H_Flip_P1
-	%%No_H_Flip_P1_Loop
-			mov	ebx, [SYM(VRam) + esi]		; ebx = Pattern Data
-			PUTLINE_SPRITE 1, %2			; on affiche la ligne du pattern sprite
-			
-			add	ebp, byte 8			; one posts the previous pattern
-			add	esi, edi			; one goes on next the pattern
-			cmp	ebp, [Data_Spr.H_Max]		; test if one did all the sprite patterns
-			jl	near %%No_H_Flip_P1_Loop	; if not, continue
-		jmp	short %%End_Sprite_Loop
-		
-		align 16
-		
-	%%End_Sprite_Loop
-		mov	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X]
-		add	edi, byte 4
-		cmp	edi, [SYM(VDP_Data_Misc) + VDP_Data_Misc_t.Borne]
-		mov	[SYM(VDP_Data_Misc) + VDP_Data_Misc_t.X], edi
-		jb	near %%Sprite_Loop
-		
-%%End
 
 %endmacro
 
