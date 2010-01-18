@@ -87,8 +87,13 @@ static inline void T_Make_Sprite_Struct(void)
 				// TODO: Don't do this!
 				// Use proper interlaced mode instead.
 				
+#ifdef FLICKERING_INTERLACED
+				// Interlaced. (Flickering Interlaced is enabled.)
+				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x3FF) - 256;
+#else
 				// Interlaced: Y-pos is divided by 2.
 				Sprite_Struct[spr_num].Pos_Y = ((*CurSpr & 0x3FF) / 2) - 128;
+#endif
 			}
 			else
 			{
@@ -110,9 +115,20 @@ static inline void T_Make_Sprite_Struct(void)
 		
 		if (!partial)
 		{
-			Sprite_Struct[spr_num].Pos_Y_Max =
-					Sprite_Struct[spr_num].Pos_Y +
-					((Sprite_Struct[spr_num].Size_Y * 8) + 7);
+#ifdef FLICKERING_INTERLACED
+			if (interlaced)
+			{
+				Sprite_Struct[spr_num].Pos_Y_Max =
+						Sprite_Struct[spr_num].Pos_Y +
+						((Sprite_Struct[spr_num].Size_Y * 16) + 15);
+			}
+			else
+#endif
+			{
+				Sprite_Struct[spr_num].Pos_Y_Max =
+						Sprite_Struct[spr_num].Pos_Y +
+						((Sprite_Struct[spr_num].Size_Y * 8) + 7);
+			}
 			
 			// Tile number. (Also includes palette, priority, and flip bits.)
 			Sprite_Struct[spr_num].Num_Tile = *(CurSpr + 2);
@@ -145,9 +161,10 @@ static inline void T_Make_Sprite_Struct(void)
 /**
  * T_Update_Mask_Sprite(): Update Sprite_Visible using sprite masking.
  * @param sprite_limit If true, emulates sprite limits.
+ * @param interlaced If true, uses interlaced mode.
  * @return Last sprite visible * sizeof(Sprite_Visible[0]).
  */
-template<bool sprite_limit>
+template<bool sprite_limit, bool interlaced>
 static inline unsigned int T_Update_Mask_Sprite(void)
 {
 	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
@@ -167,12 +184,24 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	// Number of sprites in Sprite_Struct.
 	const unsigned int TotalSprites = (VDP_Data_Misc.Spr_End / sizeof(Sprite_Struct_t)) + 1;
 	
+	// Get the current line number.
+	int vdp_line = VDP_Lines.Visible.Current;
+	
+#ifdef FLICKERING_INTERLACED
+	if (interlaced)
+	{
+		// Adjust the VDP line number for Flickering Interlaced display.
+		vdp_line *= 2;
+		if (VDP_Status & 0x0010)
+			vdp_line++;
+	}
+#endif
+	
 	// Search for all sprites visible on the current scanline.
 	for (; spr_num < TotalSprites; spr_num++)
 	{
-		// Check if the sprite is on the current line.
-		if (Sprite_Struct[spr_num].Pos_Y > VDP_Lines.Visible.Current ||
-		    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Lines.Visible.Current)
+		if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
+		    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
 		{
 			// Sprite is not on the current line.
 			continue;
@@ -218,8 +247,8 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		for (; spr_num < TotalSprites; spr_num++)
 		{
 			// Check if the sprite is on the current line.
-			if (Sprite_Struct[spr_num].Pos_Y > VDP_Lines.Visible.Current ||
-			    Sprite_Struct[spr_num].Pos_Y_Max < VDP_Lines.Visible.Current)
+			if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
+			    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
 			{
 				// Sprite is not on the current line.
 				continue;
@@ -321,7 +350,7 @@ static inline unsigned int T_Update_Y_Offset(unsigned int cur)
 	VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
 	
 	// Get the V Cell offset and prevent it from overflowing.
-	VScroll_Offset = (VScroll_Offset >> 3) & V_Scroll_CMask;
+	VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
 #else
 	if (!interlaced)
 	{
@@ -978,7 +1007,7 @@ static inline void T_Render_Line_ScrollB(void)
 		Y_offset_cell += VDP_Lines.Visible.Current;
 		VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
 		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 7);
-		Y_offset_cell = (Y_offset_cell >> 3) & V_Scroll_CMask;
+		Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
 	}
 	else
 	{
@@ -989,7 +1018,7 @@ static inline void T_Render_Line_ScrollB(void)
 		
 		VDP_Data_Misc.Line_7 = (Y_offset_cell >> 2) & 7;	// NOTE: Obsolete!
 		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 0x0F);
-		Y_offset_cell = (Y_offset_cell >> 4) & V_Scroll_CMask;
+		Y_offset_cell = (Y_offset_cell >> 4) & VDP_Reg.V_Scroll_CMask;
 	}
 #else
 	// Flickering Interlaced mode disabled.
@@ -1095,9 +1124,9 @@ static inline void T_Render_Line_Sprite(void)
 	// Update the sprite masks.
 	unsigned int num_spr;
 	if (Sprite_Over)
-		num_spr = T_Update_Mask_Sprite<true>();
+		num_spr = T_Update_Mask_Sprite<true, interlaced>();
 	else
-		num_spr = T_Update_Mask_Sprite<false>();
+		num_spr = T_Update_Mask_Sprite<false, interlaced>();
 	
 	// TODO: Make Update_Mask_Sprite[_Limit]() return number of sprites.
 	num_spr /= sizeof(Sprite_Visible[0]);
@@ -1111,9 +1140,27 @@ static inline void T_Render_Line_Sprite(void)
 		unsigned int spr_num = Sprite_Visible[spr_vis] / sizeof(Sprite_Struct[0]);
 		
 		// Determine the cell and line offsets.
-		unsigned int cell_offset = (VDP_Lines.Visible.Current - Sprite_Struct[spr_num].Pos_Y);
-		unsigned int line_offset = (cell_offset & 7);
-		cell_offset &= 0xF8;
+		unsigned int cell_offset;
+		unsigned int line_offset;
+#ifdef FLICKERING_INTERLACED
+		if (interlaced)
+		{
+			// Interlaced.
+			cell_offset = ((VDP_Lines.Visible.Current * 2) - Sprite_Struct[spr_num].Pos_Y);
+			if (VDP_Status & 0x0010)
+				cell_offset++;
+			
+			line_offset = (cell_offset & 15);
+			cell_offset &= 0x1F0;
+		}
+		else
+#endif
+		{
+			// Not interlaced.
+			cell_offset = (VDP_Lines.Visible.Current - Sprite_Struct[spr_num].Pos_Y);
+			line_offset = (cell_offset & 7);
+			cell_offset &= 0xF8;
+		}
 		
 		// Get the Y cell size.
 		unsigned int Y_cell_size = Sprite_Struct[spr_num].Size_Y;
@@ -1128,31 +1175,44 @@ static inline void T_Render_Line_Sprite(void)
 		const unsigned int palette = ((spr_info >> 9) & 0x30);
 		
 		// Get the pattern number.
-		// TODO: Flickering interlaced support.
 		unsigned int tile_num = (spr_info & 0x7FF);
 		if (interlaced)
 		{
 			Y_cell_size <<= 6;	// Size_Y * 64
-			cell_offset *= 8;	// Num_Pattern * 64
 			tile_num <<= 6;		// point on the contents of the pattern
+#ifdef FLICKERING_INTERLACED
+			cell_offset *= 4;	// Num_Pattern * 64
+#else
+			cell_offset *= 8;	// Num_Pattern * 64
+#endif
 		}
 		else
 		{
 			Y_cell_size <<= 5;	// Size_Y * 32
-			cell_offset *= 4;	// Num_Pattern * 32
 			tile_num <<= 5;		// point on the contents of the pattern
+			cell_offset *= 4;	// Num_Pattern * 32
 		}
 		
 		// Check for V Flip.
 		if (spr_info & 0x1000)
 		{
 			// V Flip enabled.
-			line_offset ^= 7;
+#ifdef FLICKERING_INTERLACED
+			if (interlaced)
+				line_offset ^= 15;
+			else
+#endif
+				line_offset ^= 7;
+			
 			tile_num += (Y_cell_size - cell_offset);
 			if (interlaced)
 			{
 				Y_cell_size += 64;
+#ifdef FLICKERING_INTERLACED
+				tile_num += (line_offset * 4);
+#else
 				tile_num += (line_offset * 8);
+#endif
 			}
 			else
 			{
@@ -1167,7 +1227,11 @@ static inline void T_Render_Line_Sprite(void)
 			if (interlaced)
 			{
 				Y_cell_size += 64;
+#ifdef FLICKERING_INTERLACED
+				tile_num += (line_offset * 4);
+#else
 				tile_num += (line_offset * 8);
+#endif
 			}
 			else
 			{
