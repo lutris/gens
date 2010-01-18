@@ -1163,19 +1163,15 @@ static inline void T_Render_LineBuf(pixel *dest)
 	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	const LineBuf_px_t *src = &LineBuf.px[8];
 	
-	// Border color.
-	// TODO: Verify if the VDP actually uses the shadow color if S/H is enabled.
-	const int border_color = ((VDP_Reg.m5.Set4 & 0x08) ? 0x40 : 0x00);
-
 	// Draw the left border.
 	if (VDP_Reg.H_Pix_Begin != 0)
 	{
 		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 		{
-			*dest     = md_palette[border_color];
-			*(dest+1) = md_palette[border_color];
-			*(dest+2) = md_palette[border_color];
-			*(dest+3) = md_palette[border_color];
+			*dest     = md_palette[0];
+			*(dest+1) = md_palette[0];
+			*(dest+2) = md_palette[0];
+			*(dest+3) = md_palette[0];
 		}
 	}
 	
@@ -1194,10 +1190,10 @@ static inline void T_Render_LineBuf(pixel *dest)
 	{
 		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 		{
-			*dest     = md_palette[border_color];
-			*(dest+1) = md_palette[border_color];
-			*(dest+2) = md_palette[border_color];
-			*(dest+3) = md_palette[border_color];
+			*dest     = md_palette[0];
+			*(dest+1) = md_palette[0];
+			*(dest+2) = md_palette[0];
+			*(dest+3) = md_palette[0];
 		}
 	}
 }
@@ -1251,6 +1247,8 @@ void VDP_Render_Line_m5(void)
 			memset(&MD_Screen32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
 		else
 			memset(&MD_Screen[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
+		
+		// ...and we're done here.
 		return;
 	}
 	
@@ -1259,17 +1257,7 @@ void VDP_Render_Line_m5(void)
 	{
 		// VDP isn't active, or this is the border region.
 		// Clear the line buffer.
-		// TODO: Verify if the VDP actually uses the shadow color if S/H is enabled.
-		if (VDP_Reg.m5.Set4 & 0x08)
-		{
-			// Highlight/Shadow is enabled. Clear with 0x40.
-			memset(LineBuf.u8, 0x40, sizeof(LineBuf.u8));
-		}
-		else
-		{
-			// Highlight/Shadow is disabled. Clear with 0x00.
-			memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
-		}
+		memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
 	}
 	else
 	{
