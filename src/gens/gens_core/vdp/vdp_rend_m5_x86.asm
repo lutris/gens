@@ -137,9 +137,6 @@ section .text align=64
 	extern SYM(Make_Sprite_Struct_Partial)
 	extern SYM(Make_Sprite_Struct_Partial_Interlaced)
 	
-	extern SYM(Update_Mask_Sprite)
-	extern SYM(Update_Mask_Sprite_Limit)
-	
 	extern SYM(Get_X_Offset_ScrollA)
 	extern SYM(Get_X_Offset_ScrollB)
 	

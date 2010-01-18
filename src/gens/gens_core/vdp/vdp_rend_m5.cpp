@@ -239,25 +239,6 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 
 
 /**
- * C wrapper functions for T_Update_Mask_Sprite().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	unsigned int Update_Mask_Sprite(void);
-	unsigned int Update_Mask_Sprite_Limit(void);
-}
-
-unsigned int Update_Mask_Sprite(void)
-{
-	return T_Update_Mask_Sprite<false>();
-}
-unsigned int Update_Mask_Sprite_Limit(void)
-{
-	return T_Update_Mask_Sprite<true>();
-}
-
-
-/**
  * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
  * @param plane True for Scroll A; false for Scroll B.
  * @return X offset.
