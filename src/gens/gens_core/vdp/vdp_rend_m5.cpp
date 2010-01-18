@@ -1164,6 +1164,7 @@ static inline void T_Render_LineBuf(pixel *dest)
 	const LineBuf_px_t *src = &LineBuf.px[8];
 	
 	// Draw the left border.
+	// NOTE: S/H is ignored if we're in the border region.
 	if (VDP_Reg.H_Pix_Begin != 0)
 	{
 		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
@@ -1186,6 +1187,7 @@ static inline void T_Render_LineBuf(pixel *dest)
 	}
 	
 	// Draw the right border.
+	// NOTE: S/H is ignored if we're in the border region.
 	if (VDP_Reg.H_Pix_Begin != 0)
 	{
 		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
@@ -1252,16 +1254,19 @@ void VDP_Render_Line_m5(void)
 		return;
 	}
 	
-	// Check if the VDP is active.
+	// Check if the VDP is enabled.
 	if (!(VDP_Reg.m5.Set2 & 0x40) || in_border)
 	{
-		// VDP isn't active, or this is the border region.
+		// VDP is disabled, or this is the border region.
 		// Clear the line buffer.
+		
+		// NOTE: S/H is ignored if the VDP is disabled or if
+		// we're in the border region.
 		memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
 	}
 	else
 	{
-		// VDP is active.
+		// VDP is enabled.
 		
 		// Check if sprite structures need to be updated.
 		if (VDP_Reg.Interlaced)
