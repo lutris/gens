@@ -961,54 +961,6 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
 	VDP_Status |= (status & 0x20);
 }
 
-/**
- * C wrapper functions for T_PutLine_Sprite().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void PutLine_Sprite_High(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_High_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Low(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Low_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Flip_High(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Flip_High_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Flip_Low(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_Sprite_Flip_Low_HS(int disp_pixnum, uint32_t pattern, int palette);
-}
-
-void PutLine_Sprite_High(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<true, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_High_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<true, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Low(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<false, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Low_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<false, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Flip_High(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<true, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Flip_High_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<true, true, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Flip_Low(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<false, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_Sprite_Flip_Low_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_Sprite<false, true, true>(disp_pixnum, pattern, palette);
-}
-
 
 /**
  * T_Render_Line_ScrollB(): Render a line for Scroll B.

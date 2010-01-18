@@ -174,16 +174,6 @@ section .text align=64
 	extern SYM(PutLine_P1_Flip_ScrollB)
 	extern SYM(PutLine_P1_Flip_ScrollB_HS)
 	
-	extern SYM(PutLine_Sprite_High)
-	extern SYM(PutLine_Sprite_High_HS)
-	extern SYM(PutLine_Sprite_Low)
-	extern SYM(PutLine_Sprite_Low_HS)
-	
-	extern SYM(PutLine_Sprite_Flip_High)
-	extern SYM(PutLine_Sprite_Flip_High_HS)
-	extern SYM(PutLine_Sprite_Flip_Low)
-	extern SYM(PutLine_Sprite_Flip_Low_HS)
-	
 	extern SYM(Render_Line_ScrollB)
 	extern SYM(Render_Line_ScrollB_Interlaced)
 	extern SYM(Render_Line_ScrollB_VScroll)
@@ -364,90 +354,6 @@ section .text align=64
 	pop	edx
 	
 %%Full_Trans
-
-%endmacro
-
-
-;****************************************
-
-; macro PUTLINE_SPRITE
-; param :
-; %1 = Priority
-; %2 = Highlight/Shadow enable
-; entree :
-; - ebx = Pattern Data
-; - ebp point on dest mais sans le screen
-
-%macro PUTLINE_SPRITE 2
-	
-	push	edx	; palette (not modified, so we can restore it later)
-	push	ebx	; pattern
-	push	ebp	; display pixel number
-	
-%if %1 > 0
-	; High Priority
-	%if %2 > 0
-		; S/H
-		call SYM(PutLine_Sprite_High_HS)
-	%else
-		; No S/H
-		call SYM(PutLine_Sprite_High)
-	%endif
-%else
-	; Low Priority
-	%if %2 > 0
-		; S/H
-		call SYM(PutLine_Sprite_Low_HS)
-	%else
-		; No S/H
-		call SYM(PutLine_Sprite_Low)
-	%endif
-%endif
-	
-	add	esp, byte 2*4
-	pop	edx
-
-%endmacro
-
-
-;****************************************
-
-; macro PUTLINE_SPRITE_FLIP
-; param :
-; %1 = Priority
-; %2 = Highlight/Shadow enable
-; entree :
-; - ebx = Pattern Data
-; - ebp point on dest
-
-%macro PUTLINE_SPRITE_FLIP 2
-	
-	push	edx	; palette (not modified, so we can restore it later)
-	push	ebx	; pattern
-	push	ebp	; display pixel number
-	
-%if %1 > 0
-	; High Priority
-	%if %2 > 0
-		; S/H
-		call SYM(PutLine_Sprite_Flip_High_HS)
-	%else
-		; No S/H
-		call SYM(PutLine_Sprite_Flip_High)
-	%endif
-%else
-	; Low Priority
-	%if %2 > 0
-		; S/H
-		call SYM(PutLine_Sprite_Flip_Low_HS)
-	%else
-		; No S/H
-		call SYM(PutLine_Sprite_Flip_Low)
-	%endif
-%endif
-	
-	add	esp, byte 2*4
-	pop	edx
 
 %endmacro
 
