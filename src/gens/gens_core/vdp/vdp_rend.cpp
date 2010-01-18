@@ -89,9 +89,9 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 			MD_palette[i + 64]	= palette[color1_raw];
 			MD_palette[i + 1 + 64]	= palette[color2_raw];
 			
-			// Highlight color. (1xxx)
-			MD_palette[i + 128]	= palette[0x888 | color1_raw];
-			MD_palette[i + 1 + 128]	= palette[0x888 | color2_raw];
+			// Highlight color. (1xxx - 0001)
+			MD_palette[i + 128]	= palette[(0x888 | color1_raw) - 0x111];
+			MD_palette[i + 1 + 128]	= palette[(0x888 | color2_raw) - 0x111];
 		}
 	}
 	
