@@ -1175,11 +1175,12 @@ static inline void T_Render_Line_Sprite(void)
 		const unsigned int palette = ((spr_info >> 9) & 0x30);
 		
 		// Get the pattern number.
-		unsigned int tile_num = (spr_info & 0x7FF);
+		unsigned int tile_num;
 		if (interlaced)
 		{
+			tile_num = (spr_info & 0x3FF) << 6;	// point on the contents of the pattern
+			
 			Y_cell_size <<= 6;	// Size_Y * 64
-			tile_num <<= 6;		// point on the contents of the pattern
 #ifdef FLICKERING_INTERLACED
 			cell_offset *= 4;	// Num_Pattern * 64
 #else
@@ -1188,8 +1189,9 @@ static inline void T_Render_Line_Sprite(void)
 		}
 		else
 		{
+			tile_num = (spr_info & 0x7FF) << 5;	// point on the contents of the pattern
+			
 			Y_cell_size <<= 5;	// Size_Y * 32
-			tile_num <<= 5;		// point on the contents of the pattern
 			cell_offset *= 4;	// Num_Pattern * 32
 		}
 		
