@@ -456,8 +456,14 @@ uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
 template<bool interlaced>
 static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
+	// Vertical offset.
 #ifdef FLICKERING_INTERLACED
-	unsigned int V_Offset = VDP_Data_Misc.Y_FineOffset;	// Vertical offset.
+	// TODO: Switch to VDP_Data_Misc.Y_FineOffset exclusively once Scroll A is ported to C++.
+	unsigned int V_Offset;
+	if (interlaced)
+		V_Offset = VDP_Data_Misc.Y_FineOffset;
+	else
+		V_Offset = VDP_Data_Misc.Line_7;
 #else
 	unsigned int V_Offset = VDP_Data_Misc.Line_7;
 #endif
