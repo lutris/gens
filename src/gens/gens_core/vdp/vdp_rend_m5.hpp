@@ -32,8 +32,8 @@ void VDP_Render_Line_m5(void);
 typedef struct
 {
 	unsigned int Pattern_Adr;
-	unsigned int Line_7;	// NOTE: OBSOLETE - Replace with Y_FineOffset.
-	int X;			// Render_Line_*() needs to check for less-than-zero condition. (jns)
+	unsigned int Line_7;	// DEPRECATED - Replace with Y_FineOffset.
+	int X;			// DEPRECATED - Render_Line_*() needs to check for less-than-zero condition. (jns)
 	int Cell;		// VSRam cell can be -1 or -2.
 	unsigned int Start_A;
 	unsigned int Length_A;
@@ -41,9 +41,9 @@ typedef struct
 	unsigned int Length_W;
 	unsigned int Mask;
 	unsigned int Spr_End;	// Contains sprite index, in multiples of sizeof(Sprite_Struct_t) == 8*4 == 32.
-	unsigned int Next_Cell;
-	unsigned int Palette;
-	unsigned int Borne;
+	unsigned int Next_Cell;	// DEPRECATED - Remove this!
+	unsigned int Palette;	// DEPRECATED - Remove this!
+	unsigned int Borne;	// DEPRECATED - Remove this!
 	
 	unsigned int Y_FineOffset;	// Fine offset. (0-7 normal; 0-15 interlaced.)
 } VDP_Data_Misc_t;

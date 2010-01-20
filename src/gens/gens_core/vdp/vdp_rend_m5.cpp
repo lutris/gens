@@ -159,10 +159,10 @@ static inline void T_Make_Sprite_Struct(void)
 
 
 /**
- * T_Update_Mask_Sprite(): Update Sprite_Visible using sprite masking.
+ * T_Update_Mask_Sprite(): Update Sprite_Visible[] using sprite masking.
  * @param sprite_limit If true, emulates sprite limits.
  * @param interlaced If true, uses interlaced mode.
- * @return Last sprite visible * sizeof(Sprite_Visible[0]).
+ * @return Number of visible sprites.
  */
 template<bool sprite_limit, bool interlaced>
 static inline unsigned int T_Update_Mask_Sprite(void)
@@ -261,9 +261,8 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		}
 	}
 	
-	// Save the number of visible sprites.
-	VDP_Data_Misc.Borne = (spr_vis * sizeof(Sprite_Visible[0]));
-	return VDP_Data_Misc.Borne;
+	// Return the number of visible sprites.
+	return spr_vis;
 }
 
 
@@ -1133,12 +1132,6 @@ static inline void T_Render_Line_Sprite(void)
 		num_spr = T_Update_Mask_Sprite<true, interlaced>();
 	else
 		num_spr = T_Update_Mask_Sprite<false, interlaced>();
-	
-	// TODO: Make Update_Mask_Sprite[_Limit]() return number of sprites.
-	num_spr /= sizeof(Sprite_Visible[0]);
-	
-	// NOTE: VDP_Data_Misc.X and VDP_Data_Misc.Borne were used in the asm version,
-	// but aren't required in the C++ version.
 	
 	for (unsigned int spr_vis = 0; spr_vis < num_spr; spr_vis++)
 	{
