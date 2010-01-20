@@ -996,8 +996,8 @@ static inline void T_Render_Line_ScrollB(void)
 	// - AND with the horizontal scrolling cell mask to prevent overflow.
 	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & VDP_Reg.H_Scroll_CMask);
 	
-	VDP_Data_Misc.X = VDP_Reg.H_Cell;		// Number of cells to draw.
-	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;	// Current cell for VScroll.
+	// Current cell for VScroll.
+	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;
 	
 	// Drawing will start at LineBuf.u16[offset_fine].
 	unsigned int disp_pixnum = X_offset_fine;
@@ -1034,10 +1034,13 @@ static inline void T_Render_Line_ScrollB(void)
 	Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
 #endif
 	
+	// Cell loop counter.
+	// TODO: Figure out how to get rid of this goto!
+	int x = VDP_Reg.H_Cell;
 	goto Start_Loop;
 	
 	// Loop through the cells.
-	for (; VDP_Data_Misc.X >= 0; VDP_Data_Misc.X--)
+	for (/*int x = VDP_Reg.H_Cell*/; x >= 0; x--)
 	{
 		if (vscroll)
 		{
