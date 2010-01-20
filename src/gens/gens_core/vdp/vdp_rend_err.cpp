@@ -86,6 +86,9 @@ static inline void T_DrawColorBars(pixel *screen, const pixel palette[22])
 	const int barY_1 = ((VDP_Lines.Visible.Total * 2) / 3);
 	const int barY_2 = (barY_1 + (VDP_Lines.Visible.Total / 12));
 	
+	// Adjust the screen position for the horizontal resolution.
+	screen += ((320 - VDP_Reg.H_Pix) / 2);
+	
 	// Current color.
 	int color;
 	
@@ -154,8 +157,49 @@ static inline void T_DrawColorBars_Border(pixel *screen, const pixel bg_color)
 		*(screen + 3) = bg_color;
 	}
 	
-	// Go to the bottom border.
-	screen += (TAB336[VDP_Lines.Visible.Total]);
+	if (VDP_Reg.H_Pix < 320)
+	{
+		// Draw the left and right borders.
+		
+		// Adjust for the (invisible) start of the line.
+		screen += 8;
+		
+		const int HBorder = ((320 - VDP_Reg.H_Pix) / 2);
+		for (unsigned int y = VDP_Lines.Visible.Total; y != 0; y--)
+		{
+			// Left border.
+			for (unsigned int x = HBorder; x != 0; x -= 4, screen += 4)
+			{
+				*screen = bg_color;
+				*(screen + 1) = bg_color;
+				*(screen + 2) = bg_color;
+				*(screen + 3) = bg_color;
+			}
+			
+			// Skip the visible area.
+			screen += VDP_Reg.H_Pix;
+			
+			// Right border.
+			for (unsigned int x = HBorder; x != 0; x -= 4, screen += 4)
+			{
+				*screen = bg_color;
+				*(screen + 1) = bg_color;
+				*(screen + 2) = bg_color;
+				*(screen + 3) = bg_color;
+			}
+			
+			// Next line.
+			screen += 16;
+		}
+		
+		// Go back to the (invisible) start of the line.
+		screen -= 8;
+	}
+	else
+	{
+		// Go to the bottom border.
+		screen += (TAB336[VDP_Lines.Visible.Total]);
+	}
 	
 	// Draw the bottom border.
 	for (unsigned int i = (TAB336[VDP_Lines.Visible.Border_Size]); i != 0; i -= 4, screen += 4)
@@ -263,7 +307,9 @@ static inline void T_DrawVDPErrorMessage(pixel *screen)
 	// Determine the starting position.
 	const int barY_1 = ((VDP_Lines.Visible.Total * 2) / 3);
 	int y = VDP_Lines.Visible.Border_Size + ((barY_1 - (16*5)) / 2);
-	int x = ((VDP_Reg.H_Cell - 26) / 2) * 8;
+	
+	const int x_adj = ((320 - VDP_Reg.H_Pix) / 2);
+	int x = (((VDP_Reg.H_Cell - 26) / 2) * 8) + x_adj;
 	
 	T_DrawText<pixel, text_color>(screen, x, y,    "Gens/GS does not currently");
 	T_DrawText<pixel, text_color>(screen, x, y+16, "  support this VDP mode.");
@@ -305,7 +351,7 @@ static inline void T_DrawVDPErrorMessage(pixel *screen)
 	}
 	
 	// Determine the horizontal starting position.
-	x = ((VDP_Reg.H_Cell - (10+strlen(cur_mode))) / 2) * 8;
+	x = (((VDP_Reg.H_Cell - (10+strlen(cur_mode))) / 2) * 8) + x_adj;
 	T_DrawText<pixel, text_color>(screen, x, y+16, "VDP Mode:");
 	T_DrawText<pixel, text_color>(screen, x+(8*10), y+16, cur_mode);
 }
