@@ -308,11 +308,12 @@ void VDP_Set_Visible_Lines(void)
  */
 static inline void VDP_Update_Mode(void)
 {
-	register uint8_t Set1 = VDP_Reg.m5.Set1;
-	register uint8_t Set2 = VDP_Reg.m5.Set2;
+	const register uint8_t Set1 = VDP_Reg.m5.Set1;
+	const register uint8_t Set2 = VDP_Reg.m5.Set2;
 	VDP_Mode = ((Set2 & 0x10) >> 4) |	// M1
-		   ((Set2 & 0x08) >> 2) |	// M2
-		   ((Set1 & 0x06) << 1) |	// M3, M4/PSEL
+		   ((Set1 & 0x02))      |	// M2
+		   ((Set2 & 0x04))	|	// M3
+		   ((Set1 & 0x04) << 1) |	// M4/PSEL
 		   ((Set2 & 0x04) << 2);	// M5
 	
 	// CRam needs to be updated.
