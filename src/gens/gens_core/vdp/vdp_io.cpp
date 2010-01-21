@@ -263,7 +263,7 @@ void VDP_Set_Visible_Lines(void)
 	else if (VDP_Mode & VDP_MODE_M5)
 	{
 		// Mode 5. Must be either 224 lines or 240 lines.
-		if (VDP_Mode & VDP_MODE_M2)
+		if (VDP_Mode & VDP_MODE_M3)
 			LineOffset = 2; // 240 lines.
 		else
 			LineOffset = 1; // 224 lines.
