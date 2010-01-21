@@ -1047,9 +1047,9 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 		else
 		{
 			// Scroll A. Check if we need to emulate the Left Window bug.
-			if (cell_length == VDP_Reg.H_Cell || !(disp_pixnum & 7) || WinBugCnt <= 0)
+			if (cell_start == 0 || !(disp_pixnum & 7) || WinBugCnt <= 0)
 			{
-				// cell_length == VDP_Reg.H_Cell: Left Window is disabled.
+				// cell_start == 0: Left Window is disabled.
 				// WinBugCnt == 0: Left Window bug has been emulated.
 				// !(disp_pixnum & 15): HScroll is a multiple of 16.
 				pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
