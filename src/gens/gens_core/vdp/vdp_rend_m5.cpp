@@ -311,33 +311,31 @@ uint16_t Get_X_Offset_ScrollB(void)
  * T_Update_Y_Offset(): Update the Y offset.
  * @param plane True for Scroll A; false for Scroll B.
  * @param interlaced True for interlaced; false for non-interlaced.
- * @param cur Current Y offset. (Returned if we're outside of VRam limits.)
+ * @param cell_cur Current X cell number.
  * @return Y offset.
  */
 template<bool plane, bool interlaced>
-static inline unsigned int T_Update_Y_Offset(unsigned int cur)
+static inline unsigned int T_Update_Y_Offset(int cell_cur)
 {
-	if (VDP_Data_Misc.Cell & 0xFF81)
+	if ((cell_cur & 0xFF81) || (cell_cur < 0))
 	{
-		// Outside of VRam limits. Don't change anything.
-		return cur;
+		// Cell number is invalid.
+		return 0;
 	}
 	
-	// If the cell number is negative, don't do anything.
-	if (VDP_Data_Misc.Cell < 0)
-		return 0;
-	
 	// Get the vertical scroll offset.
+	// TODO: Should cell_cur be multiplied by 2?
+	// Check in Mean Bean Machine.
 	unsigned int VScroll_Offset;
 	if (plane)
 	{
 		// Scroll A.
-		VScroll_Offset = VSRam.u16[VDP_Data_Misc.Cell];
+		VScroll_Offset = VSRam.u16[cell_cur];
 	}
 	else
 	{
 		// Scroll B.
-		VScroll_Offset = VSRam.u16[VDP_Data_Misc.Cell + 1];
+		VScroll_Offset = VSRam.u16[cell_cur + 1];
 	}
 	
 #ifdef FLICKERING_INTERLACED
@@ -391,21 +389,13 @@ extern "C" {
 }
 
 unsigned int Update_Y_Offset_ScrollA(unsigned int cur)
-{
-	return T_Update_Y_Offset<true, false>(cur);
-}
+{ return T_Update_Y_Offset<true, false>(cur); }
 unsigned int Update_Y_Offset_ScrollB(unsigned int cur)
-{
-	return T_Update_Y_Offset<false, false>(cur);
-}
+{ return T_Update_Y_Offset<false, false>(cur); }
 unsigned int Update_Y_Offset_ScrollA_Interlaced(unsigned int cur)
-{
-	return T_Update_Y_Offset<true, true>(cur);
-}
+{ return T_Update_Y_Offset<true, true>(cur); }
 unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
-{
-	return T_Update_Y_Offset<false, true>(cur);
-}
+{ return T_Update_Y_Offset<false, true>(cur); }
 
 
 /**
@@ -983,15 +973,27 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
  * @param interlaced	[in] True for interlaced; false for non-interlaced.
  * @param vscroll	[in] True for 2-cell mode; false for full scroll.
  * @param h_s		[in] Highlight/Shadow enable.
+ * @param cell_start	[in] (Scroll A) First cell to draw.
+ * @param cell_length	[in] (Scroll A) Number of cells to draw.
  */
 template<bool plane, bool interlaced, bool vscroll, bool h_s>
-static inline void T_Render_Line_Scroll(void)
+static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 {
 	// TODO: For Scroll A, only render non-window areas.
 	
 	// Get the horizontal scroll offset. (cell and fine offset)
 	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
 	unsigned int X_offset_fine = X_offset_cell & 7;	// Fine offset.
+	
+	// Drawing will start at LineBuf.u16[offset_fine].
+	unsigned int disp_pixnum = X_offset_fine;
+	if (plane)
+	{
+		// Adjust for the cell starting position.
+		const int cell_start_px = (cell_start << 3);
+		X_offset_cell -= cell_start_px;
+		disp_pixnum += cell_start_px;
+	}
 	
 	// Get the correct cell offset:
 	// - Invert the cell position.
@@ -1002,58 +1004,29 @@ static inline void T_Render_Line_Scroll(void)
 	// Current cell for VScroll.
 	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;
 	
-	// Drawing will start at LineBuf.u16[offset_fine].
-	unsigned int disp_pixnum = X_offset_fine;
+	// Current cell number.
+	int cell_cur = (plane ? 0 : cell_start);
 	
 	// Initialize the Y offset.
-	// VSRam entry 0 is the first for Scroll A; entry 1 is the first for Scroll B.
-	unsigned int Y_offset_cell = VSRam.u16[(plane ? 0 : 1)];
-	
-#ifdef FLICKERING_INTERLACED
-	if (!interlaced)
+	unsigned int Y_offset_cell;
+	if (!vscroll)
 	{
-		// Normal mode.
-		Y_offset_cell += VDP_Lines.Visible.Current;
-		VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
-		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 7);
-		Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
+		// Full vertical scrolling.
+		// Initialize the Y offset here.
+		Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(cell_cur);
 	}
-	else
-	{
-		// Interlaced mode.
-		Y_offset_cell += (VDP_Lines.Visible.Current * 2);
-		if (VDP_Status & 0x0010)
-			Y_offset_cell++;
-		
-		VDP_Data_Misc.Line_7 = (Y_offset_cell >> 2) & 7;	// NOTE: Obsolete!
-		VDP_Data_Misc.Y_FineOffset = (Y_offset_cell & 0x0F);
-		Y_offset_cell = (Y_offset_cell >> 4) & VDP_Reg.V_Scroll_CMask;
-	}
-#else
-	// Flickering Interlaced mode disabled.
-	if (interlaced)
-		Y_offset_cell /= 2;
-	Y_offset_cell += VDP_Lines.Visible.Current;
-	VDP_Data_Misc.Line_7 = (Y_offset_cell & 7);		// NOTE: Obsolete!
-	Y_offset_cell = (Y_offset_cell >> 3) & VDP_Reg.V_Scroll_CMask;
-#endif
-	
-	// Cell loop counter.
-	// TODO: Figure out how to get rid of this goto!
-	int x = VDP_Reg.H_Cell;
-	goto Start_Loop;
 	
 	// Loop through the cells.
-	for (/*int x = VDP_Reg.H_Cell*/; x >= 0; x--)
+	for (int x = (plane ? cell_length : VDP_Reg.H_Cell);
+	     x >= 0; x--, cell_cur++)
 	{
 		if (vscroll)
 		{
 			// 2-cell vertical scrolling.
 			// Update the Y offset.
-			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(Y_offset_cell);
+			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(cell_cur);
 		}
 		
-Start_Loop:
 		// Get pattern info and data for the current tile.
 		uint32_t pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
 		uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
@@ -1085,7 +1058,6 @@ Start_Loop:
 		}
 		
 		// Go to the next H cell.
-		VDP_Data_Misc.Cell++;
 		X_offset_cell = (X_offset_cell + 1) & VDP_Reg.H_Scroll_CMask;
 		
 		// Go to the next pattern.
@@ -1108,21 +1080,21 @@ extern "C" {
 	void Render_Line_ScrollB_HS_VScroll_Interlaced(void);
 }
 void Render_Line_ScrollB(void)
-{ T_Render_Line_Scroll<false, false, false, false>(); }
+{ T_Render_Line_Scroll<false, false, false, false>(0, 0); }
 void Render_Line_ScrollB_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, false, false>(); }
+{ T_Render_Line_Scroll<false, true, false, false>(0, 0); }
 void Render_Line_ScrollB_VScroll(void)
-{ T_Render_Line_Scroll<false, false, true, false>(); }
+{ T_Render_Line_Scroll<false, false, true, false>(0, 0); }
 void Render_Line_ScrollB_VScroll_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, true, false>(); }
+{ T_Render_Line_Scroll<false, true, true, false>(0, 0); }
 void Render_Line_ScrollB_HS(void)
-{ T_Render_Line_Scroll<false, false, false, true>(); }
+{ T_Render_Line_Scroll<false, false, false, true>(0, 0); }
 void Render_Line_ScrollB_HS_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, false, true>(); }
+{ T_Render_Line_Scroll<false, true, false, true>(0, 0); }
 void Render_Line_ScrollB_HS_VScroll(void)
-{ T_Render_Line_Scroll<false, false, true, true>(); }
+{ T_Render_Line_Scroll<false, false, true, true>(0, 0); }
 void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, true, true>(); }
+{ T_Render_Line_Scroll<false, true, true, true>(0, 0); }
 
 
 /**
@@ -1138,12 +1110,42 @@ static inline void T_Render_Line_ScrollA(void)
 	// For now, we'll only draw Scroll A.
 	
 	// Cell counts for Scroll A.
-	// TODO: Update for window support.
-	int ScrA_Start = 0;
-	int ScrA_Length = VDP_Reg.H_Cell;
+	int ScrA_Start, ScrA_Length;
+	int Win_Start, Win_Length;
+	
+	// Check if the entire line is part of the window.
+	// TODO: Verify interlaced operation!
+	int vdp_line = VDP_Lines.Visible.Current;
+	vdp_line >>= 3;		// cells
+	if (((VDP_Reg.m5.Win_V_Pos & 0x80) &&		// Window starts from the bottom.
+	     (vdp_line >= VDP_Reg.Win_Y_Pos)) ||	// Current line is >= starting line.
+	    (vdp_line < VDP_Reg.Win_Y_Pos))		// Window starts from top; current line is < ending line.
+	{
+		// Entire line is part of the window.
+		// TODO
+		return;
+	}
+	
+	// Determine the cell starting position and length.
+	if (VDP_Reg.m5.Win_H_Pos & 0x80)
+	{
+		// Window is right-aligned.
+		ScrA_Start = 0;
+		ScrA_Length = VDP_Reg.Win_X_Pos;
+		Win_Start = VDP_Reg.Win_X_Pos;
+		Win_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+	}
+	else
+	{
+		// Window is left-aligned.
+		Win_Start = 0;
+		Win_Length = VDP_Reg.Win_X_Pos;
+		ScrA_Start = VDP_Reg.Win_X_Pos;
+		ScrA_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+	}
 	
 	// Draw the scroll area.
-	T_Render_Line_Scroll<true, interlaced, vscroll, h_s>();
+	T_Render_Line_Scroll<true, interlaced, vscroll, h_s>(ScrA_Start, ScrA_Length);
 }
 
 /**
