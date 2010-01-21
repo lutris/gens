@@ -995,10 +995,11 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	
 	// Get the horizontal scroll offset. (cell and fine offset)
 	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
-	unsigned int X_offset_fine = X_offset_cell & 7;	// Fine offset.
 	
-	// Drawing will start at LineBuf.u16[offset_fine].
-	unsigned int disp_pixnum = X_offset_fine;
+	// Drawing will start at the fine cell offset.
+	// LineBuf.u16[X_offset_cell & 7]
+	unsigned int disp_pixnum = (X_offset_cell & 7);
+	
 	if (plane)
 	{
 		// Adjust for the cell starting position.
@@ -1013,11 +1014,8 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	// - AND with the horizontal scrolling cell mask to prevent overflow.
 	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & VDP_Reg.H_Scroll_CMask);
 	
-	// Current cell for VScroll.
-	VDP_Data_Misc.Cell = (X_offset_cell & 1) - 2;
-	
-	// Current cell number.
-	int cell_cur = (plane ? 0 : cell_start);
+	int cell_cur = (plane ? 0 : cell_start);	// Current cell number.
+	int WinBugCnt = 2;				// Window bug counter.
 	
 	// Initialize the Y offset.
 	unsigned int Y_offset_cell;
@@ -1039,8 +1037,33 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(cell_cur);
 		}
 		
-		// Get pattern info and data for the current tile.
-		uint32_t pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
+		// Get the pattern info for the current tile.
+		uint32_t pattern_info;
+		if (!plane)
+		{
+			// Scroll B.
+			pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
+		}
+		else
+		{
+			// Scroll A. Check if we need to emulate the Left Window bug.
+			if (cell_length == VDP_Reg.H_Cell || !(disp_pixnum & 7) || WinBugCnt <= 0)
+			{
+				// cell_length == VDP_Reg.H_Cell: Left Window is disabled.
+				// WinBugCnt == 0: Left Window bug has been emulated.
+				// !(disp_pixnum & 15): HScroll is a multiple of 16.
+				pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
+			}
+			else
+			{
+				// Window is enabled.
+				WinBugCnt--;
+				const unsigned int TmpXCell = ((X_offset_cell + 2) & VDP_Reg.H_Scroll_CMask);
+				pattern_info = T_Get_Pattern_Info<plane>(TmpXCell, Y_offset_cell);
+			}
+		}
+		
+		// Get the pattern data for the current tile.
 		uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
 		
 		// Extract the palette number.
