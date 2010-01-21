@@ -317,15 +317,16 @@ uint16_t Get_X_Offset_ScrollB(void)
 template<bool plane, bool interlaced>
 static inline unsigned int T_Update_Y_Offset(int cell_cur)
 {
-	if ((cell_cur & 0xFF81) || (cell_cur < 0))
+	if ((cell_cur & 0xFF80) || (cell_cur < 0))
 	{
 		// Cell number is invalid.
 		return 0;
 	}
 	
+	// Mask off odd columns.
+	cell_cur &= ~1;
+	
 	// Get the vertical scroll offset.
-	// TODO: Should cell_cur be multiplied by 2?
-	// Check in Mean Bean Machine.
 	unsigned int VScroll_Offset;
 	if (plane)
 	{
@@ -1042,26 +1043,27 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	// - AND with the horizontal scrolling cell mask to prevent overflow.
 	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & VDP_Reg.H_Scroll_CMask);
 	
-	int cell_cur = (plane ? 0 : cell_start);	// Current cell number.
+	// VSRam cell number.
+	int VSRam_Cell = ((X_offset_cell & 1) - 2);
 	
 	// Initialize the Y offset.
-	unsigned int Y_offset_cell;
+	unsigned int Y_offset_cell;				// Y offset. (in cells)
 	if (!vscroll)
 	{
 		// Full vertical scrolling.
 		// Initialize the Y offset here.
-		Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(cell_cur);
+		Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(VSRam_Cell + 2);
 	}
 	
 	// Loop through the cells.
 	for (int x = (plane ? cell_length : VDP_Reg.H_Cell);
-	     x >= 0; x--, cell_cur++)
+	     x >= 0; x--, VSRam_Cell++)
 	{
 		if (vscroll)
 		{
 			// 2-cell vertical scrolling.
 			// Update the Y offset.
-			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(cell_cur);
+			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(VSRam_Cell);
 		}
 		
 		// Get the pattern info for the current tile.
