@@ -1222,7 +1222,60 @@ static inline void T_Render_Line_ScrollA(void)
 	
 	if (Win_Length > 0)
 	{
+		// Draw the window.
+		// TODO: Test this!
+		
+		// Drawing will start at the first window cell.
+		// (Window is not scrollable.)
+		unsigned int disp_pixnum = (Win_Start * 8) + 8;
+		
+		// Get the cell offsets.
+		// TODO: Is this affected by interlaced mode?
+		unsigned int X_offset_cell = Win_Start;
+		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
+		
+		// Loop through the cells.
+		for (int x = Win_Length; x >= 0; x--)
+		{
+			// Get the pattern info and data for the current tile.
+			uint32_t pattern_info = Get_Pattern_Info_Window(X_offset_cell, Y_offset_cell);
+			uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
+			
+			// Extract the palette number.
+			// Resulting number is palette * 16.
+			unsigned int palette = (pattern_info >> 9) & 0x30;
+			
+			// Check for swapped Scroll A priority.
+			if (VDP_Layers & VDP_LAYER_SCROLLA_SWAP)
+				pattern_info ^= 0x8000;
+			
+			// Check for horizontal flip.
+			if (pattern_info & 0x0800)
+			{
+				// Pattern has H-Flip enabled.
+				if (pattern_info & 0x8000)
+					T_PutLine_P1<true, h_s, true>(disp_pixnum, pattern_data, palette);
+				else
+					T_PutLine_P0<true, h_s, true>(disp_pixnum, pattern_data, palette);
+			}
+			else
+			{
+				// Pattern doesn't have flip enabled.
+				if (pattern_info & 0x8000)
+					T_PutLine_P1<true, h_s, false>(disp_pixnum, pattern_data, palette);
+				else
+					T_PutLine_P0<true, h_s, false>(disp_pixnum, pattern_data, palette);
+			}
+			
+			// Go to the next H cell.
+			X_offset_cell++;
+			
+			// Go to the next pattern.
+			disp_pixnum += 8;
+		}
+		
 		// Mark window pixels.
+		// TODO: Do this in the Window drawing code!
 		const int StartPx = ((Win_Start * 8) + 8) / 2;
 		const int EndPx = StartPx + ((Win_Length * 8) / 2);
 		
@@ -1230,8 +1283,11 @@ static inline void T_Render_Line_ScrollA(void)
 			LineBuf.u32[x] |= LINEBUF_WIN_D;
 	}
 	
-	// Draw the scroll area.
-	T_Render_Line_Scroll<true, interlaced, vscroll, h_s>(ScrA_Start, ScrA_Length);
+	if (ScrA_Length > 0)
+	{
+		// Draw the scroll area.
+		T_Render_Line_Scroll<true, interlaced, vscroll, h_s>(ScrA_Start, ScrA_Length);
+	}
 }
 
 /**
