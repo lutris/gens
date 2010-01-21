@@ -437,6 +437,24 @@ uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
 
 
 /**
+ * Get_Pattern_Info(): Get pattern info for the window.
+ * H_Scroll_CMul must be initialized correctly.
+ * @param x X tile number.
+ * @param y Y tile number.
+ * @return Pattern info.
+ */
+static inline uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
+{
+	// Get the offset.
+	// H_Scroll_CMul is the shift value required for the proper vertical offset.
+	unsigned int offset = (y << VDP_Reg.H_Scroll_CMul) + x;
+	
+	// Return the pattern information.
+	return VDP_Reg.Win_Addr[offset];
+}
+
+
+/**
  * T_Get_Pattern_Data(): Get pattern data for a given tile for the current line.
  * @param interlaced True for interlaced; false for non-interlaced.
  * @param pattern Pattern info.
@@ -1153,37 +1171,53 @@ static inline void T_Render_Line_ScrollA(void)
 	
 	// Cell counts for Scroll A.
 	int ScrA_Start, ScrA_Length;
-	int Win_Start, Win_Length;
+	int Win_Start, Win_Length = 0;
 	
 	// Check if the entire line is part of the window.
 	// TODO: Verify interlaced operation!
-	int vdp_line = VDP_Lines.Visible.Current;
-	vdp_line >>= 3;		// cells
-	if (((VDP_Reg.m5.Win_V_Pos & 0x80) &&		// Window starts from the bottom.
-	     (vdp_line >= VDP_Reg.Win_Y_Pos)) ||	// Current line is >= starting line.
-	    (vdp_line < VDP_Reg.Win_Y_Pos))		// Window starts from top; current line is < ending line.
+	const int vdp_cells = (VDP_Lines.Visible.Current >> 3);
+	if (VDP_Reg.m5.Win_V_Pos & 0x80)
 	{
+		// Window starts from the bottom.
+		if (vdp_cells >= VDP_Reg.Win_Y_Pos)
+		{
+			// Current line is >= starting line.
+			// Entire line is part of the window.
+			ScrA_Start = 0;
+			ScrA_Length = 0;
+			Win_Start = 0;
+			Win_Length = VDP_Reg.H_Cell;
+		}
+	}
+	else if (vdp_cells < VDP_Reg.Win_Y_Pos)
+	{
+		// Current line is < ending line.
 		// Entire line is part of the window.
-		// TODO
-		return;
+		ScrA_Start = 0;
+		ScrA_Length = 0;
+		Win_Start = 0;
+		Win_Length = VDP_Reg.H_Cell;
 	}
 	
-	// Determine the cell starting position and length.
-	if (VDP_Reg.m5.Win_H_Pos & 0x80)
+	if (Win_Length == 0)
 	{
-		// Window is right-aligned.
-		ScrA_Start = 0;
-		ScrA_Length = VDP_Reg.Win_X_Pos;
-		Win_Start = VDP_Reg.Win_X_Pos;
-		Win_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
-	}
-	else
-	{
-		// Window is left-aligned.
-		Win_Start = 0;
-		Win_Length = VDP_Reg.Win_X_Pos;
-		ScrA_Start = VDP_Reg.Win_X_Pos;
-		ScrA_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+		// Determine the cell starting position and length.
+		if (VDP_Reg.m5.Win_H_Pos & 0x80)
+		{
+			// Window is right-aligned.
+			ScrA_Start = 0;
+			ScrA_Length = VDP_Reg.Win_X_Pos;
+			Win_Start = VDP_Reg.Win_X_Pos;
+			Win_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+		}
+		else
+		{
+			// Window is left-aligned.
+			Win_Start = 0;
+			Win_Length = VDP_Reg.Win_X_Pos;
+			ScrA_Start = VDP_Reg.Win_X_Pos;
+			ScrA_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+		}
 	}
 	
 	if (Win_Length > 0)
