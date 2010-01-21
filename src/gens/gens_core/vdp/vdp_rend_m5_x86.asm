@@ -180,6 +180,15 @@ section .text align=64
 	extern SYM(Render_Line_ScrollB_HS_VScroll)
 	extern SYM(Render_Line_ScrollB_HS_VScroll_Interlaced)
 	
+	extern SYM(Render_Line_ScrollA)
+	extern SYM(Render_Line_ScrollA_Interlaced)
+	extern SYM(Render_Line_ScrollA_VScroll)
+	extern SYM(Render_Line_ScrollA_VScroll_Interlaced)
+	extern SYM(Render_Line_ScrollA_HS)
+	extern SYM(Render_Line_ScrollA_HS_Interlaced)
+	extern SYM(Render_Line_ScrollA_HS_VScroll)
+	extern SYM(Render_Line_ScrollA_HS_VScroll_Interlaced)
+	
 	extern SYM(Render_Line_Sprite)
 	extern SYM(Render_Line_Sprite_Interlaced)
 	extern SYM(Render_Line_Sprite_HS)
@@ -417,10 +426,67 @@ section .text align=64
 ; macro RENDER_LINE_SCROLL_A_WIN
 ; param :
 ; %1 = 1 for interlace mode and 0 for normal mode
-; %2 = 1 si V-Scroll mode en 2 cell et 0 si full scroll
+; %2 = 1 if V-Scroll mode in 2 cell and 0 if full scroll
 ; %3 = Highlight/Shadow enable
 
 %macro RENDER_LINE_SCROLL_A_WIN 3
+
+%if %1 > 0
+	; Interlaced.
+	%if %2 > 0
+		; VScroll is 2 cell.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_HS_VScroll_Interlaced)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_VScroll_Interlaced)
+		%endif
+	%else
+		; VScroll is Full.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_HS_Interlaced)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_Interlaced)
+		%endif
+	%endif
+%else
+	; Not Interlaced.
+	%if %2 > 0
+		; VScroll is 2 cell.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_HS_VScroll)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_VScroll)
+		%endif
+	%else
+		; VScroll is Full.
+		%if %3 > 0
+			; Highlight/Shadow.
+			call SYM(Render_Line_ScrollA_HS)
+		%else
+			; No Highlight/Shadow.
+			call SYM(Render_Line_ScrollA)
+		%endif
+	%endif
+%endif
+
+%endmacro
+
+
+;****************************************
+
+; macro RENDER_LINE_SCROLL_A_WIN_OLD
+; param :
+; %1 = 1 for interlace mode and 0 for normal mode
+; %2 = 1 si V-Scroll mode en 2 cell et 0 si full scroll
+; %3 = Highlight/Shadow enable
+
+%macro RENDER_LINE_SCROLL_A_WIN_OLD 3
 	
 	mov	eax, [SYM(VDP_Lines) + VDP_Lines_t.Visible_Current]
 	movzx	ecx, byte [SYM(VDP_Reg) + VDP_Reg_t.Win_V_Pos]

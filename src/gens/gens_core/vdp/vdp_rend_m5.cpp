@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -978,16 +978,19 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
 
 
 /**
- * T_Render_Line_ScrollB(): Render a line for Scroll B.
+ * T_Render_Line_Scroll(): Render a scroll line.
+ * @param plane		[in] True for Scroll A / Window; false for Scroll B.
  * @param interlaced	[in] True for interlaced; false for non-interlaced.
  * @param vscroll	[in] True for 2-cell mode; false for full scroll.
  * @param h_s		[in] Highlight/Shadow enable.
  */
-template<bool interlaced, bool vscroll, bool h_s>
-static inline void T_Render_Line_ScrollB(void)
+template<bool plane, bool interlaced, bool vscroll, bool h_s>
+static inline void T_Render_Line_Scroll(void)
 {
-	// Get the ScrollB offset. (cell and fine offset)
-	unsigned int X_offset_cell = T_Get_X_Offset<false>() & 0x3FF;
+	// TODO: For Scroll A, only render non-window areas.
+	
+	// Get the horizontal scroll offset. (cell and fine offset)
+	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
 	unsigned int X_offset_fine = X_offset_cell & 7;	// Fine offset.
 	
 	// Get the correct cell offset:
@@ -1003,7 +1006,8 @@ static inline void T_Render_Line_ScrollB(void)
 	unsigned int disp_pixnum = X_offset_fine;
 	
 	// Initialize the Y offset.
-	unsigned int Y_offset_cell = VSRam.u16[1];	// Index 1 is the first VSRam entry for Scroll B.
+	// VSRam entry 0 is the first for Scroll A; entry 1 is the first for Scroll B.
+	unsigned int Y_offset_cell = VSRam.u16[(plane ? 0 : 1)];
 	
 #ifdef FLICKERING_INTERLACED
 	if (!interlaced)
@@ -1046,12 +1050,12 @@ static inline void T_Render_Line_ScrollB(void)
 		{
 			// 2-cell vertical scrolling.
 			// Update the Y offset.
-			Y_offset_cell = T_Update_Y_Offset<false, interlaced>(Y_offset_cell);
+			Y_offset_cell = T_Update_Y_Offset<plane, interlaced>(Y_offset_cell);
 		}
 		
 Start_Loop:
 		// Get pattern info and data for the current tile.
-		uint32_t pattern_info = T_Get_Pattern_Info<false>(X_offset_cell, Y_offset_cell);
+		uint32_t pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
 		uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
 		
 		// Extract the palette number.
@@ -1067,17 +1071,17 @@ Start_Loop:
 		{
 			// Pattern has H-Flip enabled.
 			if (pattern_info & 0x8000)
-				T_PutLine_P1<false, h_s, true>(disp_pixnum, pattern_data, palette);
+				T_PutLine_P1<plane, h_s, true>(disp_pixnum, pattern_data, palette);
 			else
-				T_PutLine_P0<false, h_s, true>(disp_pixnum, pattern_data, palette);
+				T_PutLine_P0<plane, h_s, true>(disp_pixnum, pattern_data, palette);
 		}
 		else
 		{
 			// Pattern doesn't have flip enabled.
 			if (pattern_info & 0x8000)
-				T_PutLine_P1<false, h_s, false>(disp_pixnum, pattern_data, palette);
+				T_PutLine_P1<plane, h_s, false>(disp_pixnum, pattern_data, palette);
 			else
-				T_PutLine_P0<false, h_s, false>(disp_pixnum, pattern_data, palette);
+				T_PutLine_P0<plane, h_s, false>(disp_pixnum, pattern_data, palette);
 		}
 		
 		// Go to the next H cell.
@@ -1090,7 +1094,7 @@ Start_Loop:
 }
 
 /**
- * C wrapper functions for T_PutLine_Sprite().
+ * C wrapper functions for T_Render_Line_ScrollB().
  * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
  */
 extern "C" {
@@ -1104,21 +1108,74 @@ extern "C" {
 	void Render_Line_ScrollB_HS_VScroll_Interlaced(void);
 }
 void Render_Line_ScrollB(void)
-{ T_Render_Line_ScrollB<false, false, false>(); }
+{ T_Render_Line_Scroll<false, false, false, false>(); }
 void Render_Line_ScrollB_Interlaced(void)
-{ T_Render_Line_ScrollB<true, false, false>(); }
+{ T_Render_Line_Scroll<false, true, false, false>(); }
 void Render_Line_ScrollB_VScroll(void)
-{ T_Render_Line_ScrollB<false, true, false>(); }
+{ T_Render_Line_Scroll<false, false, true, false>(); }
 void Render_Line_ScrollB_VScroll_Interlaced(void)
-{ T_Render_Line_ScrollB<true, true, false>(); }
+{ T_Render_Line_Scroll<false, true, true, false>(); }
 void Render_Line_ScrollB_HS(void)
-{ T_Render_Line_ScrollB<false, false, true>(); }
+{ T_Render_Line_Scroll<false, false, false, true>(); }
 void Render_Line_ScrollB_HS_Interlaced(void)
-{ T_Render_Line_ScrollB<true, false, true>(); }
+{ T_Render_Line_Scroll<false, true, false, true>(); }
 void Render_Line_ScrollB_HS_VScroll(void)
-{ T_Render_Line_ScrollB<false, true, true>(); }
+{ T_Render_Line_Scroll<false, false, true, true>(); }
 void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
-{ T_Render_Line_ScrollB<true, true, true>(); }
+{ T_Render_Line_Scroll<false, true, true, true>(); }
+
+
+/**
+ * T_Render_Line_ScrollA(): Render a line for Scroll A / Window.
+ * @param interlaced	[in] True for interlaced; false for non-interlaced.
+ * @param vscroll	[in] True for 2-cell mode; false for full scroll.
+ * @param h_s		[in] Highlight/Shadow enable.
+ */
+template<bool interlaced, bool vscroll, bool h_s>
+static inline void T_Render_Line_ScrollA(void)
+{
+	// TODO: Window code.
+	// For now, we'll only draw Scroll A.
+	
+	// Cell counts for Scroll A.
+	// TODO: Update for window support.
+	int ScrA_Start = 0;
+	int ScrA_Length = VDP_Reg.H_Cell;
+	
+	// Draw the scroll area.
+	T_Render_Line_Scroll<true, interlaced, vscroll, h_s>();
+}
+
+/**
+ * C wrapper functions for T_Render_Line_ScrollA().
+ * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
+ */
+extern "C" {
+	void Render_Line_ScrollA(void);
+	void Render_Line_ScrollA_Interlaced(void);
+	void Render_Line_ScrollA_VScroll(void);
+	void Render_Line_ScrollA_VScroll_Interlaced(void);
+	void Render_Line_ScrollA_HS(void);
+	void Render_Line_ScrollA_HS_Interlaced(void);
+	void Render_Line_ScrollA_HS_VScroll(void);
+	void Render_Line_ScrollA_HS_VScroll_Interlaced(void);
+}
+void Render_Line_ScrollA(void)
+{ T_Render_Line_ScrollA<false, false, false>(); }
+void Render_Line_ScrollA_Interlaced(void)
+{ T_Render_Line_ScrollA<true, false, false>(); }
+void Render_Line_ScrollA_VScroll(void)
+{ T_Render_Line_ScrollA<false, true, false>(); }
+void Render_Line_ScrollA_VScroll_Interlaced(void)
+{ T_Render_Line_ScrollA<true, true, false>(); }
+void Render_Line_ScrollA_HS(void)
+{ T_Render_Line_ScrollA<false, false, true>(); }
+void Render_Line_ScrollA_HS_Interlaced(void)
+{ T_Render_Line_ScrollA<true, false, true>(); }
+void Render_Line_ScrollA_HS_VScroll(void)
+{ T_Render_Line_ScrollA<false, true, true>(); }
+void Render_Line_ScrollA_HS_VScroll_Interlaced(void)
+{ T_Render_Line_ScrollA<true, true, true>(); }
 
 
 /**
