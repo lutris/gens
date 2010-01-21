@@ -506,11 +506,13 @@ unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
 #define LINEBUF_SHAD_B	0x40
 #define LINEBUF_PRIO_B	0x01
 #define LINEBUF_SPR_B	0x20
+#define LINEBUF_WIN_B	0x02
 
 #define LINEBUF_HIGH_W	0x8080
 #define LINEBUF_SHAD_W	0x4040
 #define LINEBUF_PRIO_W	0x0100
 #define LINEBUF_SPR_W	0x2000
+#define LINEBUF_WIN_W	0x0200
 
 /**
  * T_PutPixel_P0(): Put a pixel in background graphics layer 0.
@@ -535,9 +537,10 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
 	// Check the layer bits of the current pixel.
 	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum);
 	uint8_t layer_bits = LineBuf.px[LineBuf_pixnum].layer;
-	if (plane && (layer_bits & LINEBUF_PRIO_B))
+	if (plane && (layer_bits & (LINEBUF_PRIO_B | LINEBUF_WIN_B)))
 	{
-		// Scroll A; however, pixel has priority set.
+		// Scroll A: Either the pixel has priority set,
+		// or the pixel is a window pixel.
 		return;
 	}
 	
@@ -558,6 +561,7 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
 
 /**
  * T_PutPixel_P1(): Put a pixel in background graphics layer 1.
+ * @param plane		[in] True for Scroll A; false for Scroll B.
  * @param h_s		[in] Highlight/Shadow enable.
  * @param pat_pixnum	[in] Pattern pixel number.
  * @param mask		[in] Mask to isolate the good pixel.
@@ -566,7 +570,7 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
  * @param pattern	[in] Pattern data.
  * @param palette	[in] Palette number * 16.
  */
-template<bool h_s, int pat_pixnum, uint32_t mask, int shift>
+template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
 static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
@@ -576,6 +580,15 @@ static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int
 	if (px == 0)
 		return;
 	
+	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum);
+	
+	if (plane)
+	{
+		// Scroll A: If the pixel is a Window pixel, don't do anything.
+		if (LineBuf.px[LineBuf_pixnum].layer & LINEBUF_WIN_B)
+			return;
+	}
+	
 	// Shift the pixel.
 	px >>= shift;
 	
@@ -584,8 +597,6 @@ static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int
 	// - Mark the pixel as priority.
 	// - Save it to the linebuffer.
 	px |= palette | LINEBUF_PRIO_W;
-	
-	const unsigned int LineBuf_pixnum = (disp_pixnum + pat_pixnum);
 	LineBuf.u16[LineBuf_pixnum] = (uint16_t)px;
 }
 
@@ -674,6 +685,7 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
 #define LINEBUF_SHAD_D	0x40404040
 #define LINEBUF_PRIO_D	0x01000100
 #define LINEBUF_SPR_D	0x20002000
+#define LINEBUF_WIN_D	0x02000200
 
 /**
  * T_PutLine_P0(): Put a line in background graphics layer 0.
@@ -844,26 +856,26 @@ static inline void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
 	if (!flip)
 	{
 		// No flip.
-		T_PutPixel_P1<h_s, 0, 0x0000F000, 12>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 1, 0x00000F00,  8>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 2, 0x000000F0,  4>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 3, 0x0000000F,  0>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 4, 0xF0000000, 28>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 5, 0x0F000000, 24>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 6, 0x00F00000, 20>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 7, 0x000F0000, 16>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 0, 0x0000F000, 12>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 1, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 2, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 3, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 4, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 5, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 6, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 7, 0x000F0000, 16>(disp_pixnum, pattern, palette);
 	}
 	else
 	{
 		// Horizontal flip.
-		T_PutPixel_P1<h_s, 0, 0x000F0000, 16>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 1, 0x00F00000, 20>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 2, 0x0F000000, 24>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 3, 0xF0000000, 28>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 4, 0x0000000F,  0>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 5, 0x000000F0,  4>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 6, 0x00000F00,  8>(disp_pixnum, pattern, palette);
-		T_PutPixel_P1<h_s, 7, 0x0000F000, 12>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 0, 0x000F0000, 16>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 1, 0x00F00000, 20>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 2, 0x0F000000, 24>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 3, 0xF0000000, 28>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 4, 0x0000000F,  0>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 5, 0x000000F0,  4>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 6, 0x00000F00,  8>(disp_pixnum, pattern, palette);
+		T_PutPixel_P1<plane, h_s, 7, 0x0000F000, 12>(disp_pixnum, pattern, palette);
 	}
 }
 
@@ -1142,6 +1154,16 @@ static inline void T_Render_Line_ScrollA(void)
 		Win_Length = VDP_Reg.Win_X_Pos;
 		ScrA_Start = VDP_Reg.Win_X_Pos;
 		ScrA_Length = (VDP_Reg.H_Cell - VDP_Reg.Win_X_Pos);
+	}
+	
+	if (Win_Length > 0)
+	{
+		// Mark window pixels.
+		const int StartPx = ((Win_Start * 8) + 8) / 2;
+		const int EndPx = (StartPx + (Win_Length * 8)) / 2;
+		
+		for (int x = StartPx; x < EndPx; x++)
+			LineBuf.u32[x] |= LINEBUF_WIN_D;
 	}
 	
 	// Draw the scroll area.
