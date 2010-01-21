@@ -1236,6 +1236,11 @@ static inline void T_Render_Line_ScrollA(void)
 		unsigned int X_offset_cell = Win_Start;
 		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
+		// Calculate the fine offsets.
+		// TODO: Is this affected by interlaced mode?
+		VDP_Data_Misc.Line_7 = (VDP_Lines.Visible.Current & 7);		// DEPRECATED
+		VDP_Data_Misc.Y_FineOffset = (VDP_Lines.Visible.Current & 7);
+		
 		// Loop through the cells.
 		for (int x = Win_Length; x >= 0; x--)
 		{
