@@ -1000,6 +1000,16 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	// LineBuf.u16[X_offset_cell & 7]
 	unsigned int disp_pixnum = (X_offset_cell & 7);
 	
+	// Determine if we should apply the Left Window bug.
+	int LeftWindowBugCnt = 0;	// Left Window bug counter.
+	if (plane && (cell_start != 0))
+	{
+		// Determine the value for the Left Window bug counter.
+		// First tile: Counter should be 2.
+		// Second tile: Counter should be 1.
+		LeftWindowBugCnt = ((X_offset_cell & 8) ? 2 : 1);
+	}
+	
 	if (plane)
 	{
 		// Adjust for the cell starting position.
@@ -1015,7 +1025,6 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	X_offset_cell = (((X_offset_cell ^ 0x3FF) >> 3) & VDP_Reg.H_Scroll_CMask);
 	
 	int cell_cur = (plane ? 0 : cell_start);	// Current cell number.
-	int WinBugCnt = 2;				// Window bug counter.
 	
 	// Initialize the Y offset.
 	unsigned int Y_offset_cell;
@@ -1047,17 +1056,15 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 		else
 		{
 			// Scroll A. Check if we need to emulate the Left Window bug.
-			if (cell_start == 0 || !(disp_pixnum & 7) || WinBugCnt <= 0)
+			if (LeftWindowBugCnt <= 0)
 			{
-				// cell_start == 0: Left Window is disabled.
-				// WinBugCnt == 0: Left Window bug has been emulated.
-				// !(disp_pixnum & 15): HScroll is a multiple of 16.
+				// Left Window bug doesn't apply or has already been emulated.
 				pattern_info = T_Get_Pattern_Info<plane>(X_offset_cell, Y_offset_cell);
 			}
 			else
 			{
-				// Window is enabled.
-				WinBugCnt--;
+				// Left Window bug applies.
+				LeftWindowBugCnt--;
 				const unsigned int TmpXCell = ((X_offset_cell + 2) & VDP_Reg.H_Scroll_CMask);
 				pattern_info = T_Get_Pattern_Info<plane>(TmpXCell, Y_offset_cell);
 			}
