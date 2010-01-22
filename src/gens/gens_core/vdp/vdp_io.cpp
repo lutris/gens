@@ -312,7 +312,7 @@ static inline void VDP_Update_Mode(void)
 	const register uint8_t Set2 = VDP_Reg.m5.Set2;
 	VDP_Mode = ((Set2 & 0x10) >> 4) |	// M1
 		   ((Set1 & 0x02))      |	// M2
-		   ((Set2 & 0x04))	|	// M3
+		   ((Set2 & 0x08) >> 1)	|	// M3
 		   ((Set1 & 0x04) << 1) |	// M4/PSEL
 		   ((Set2 & 0x04) << 2);	// M5
 	
