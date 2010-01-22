@@ -1385,6 +1385,31 @@ void Render_Line_Sprite_HS_Interlaced(void)
 
 
 /**
+ * T_Render_Line(): Render a line.
+ * @param interlaced	[in] True for interlaced; false for non-interlaced.
+ * @param h_s		[in] Highlight/Shadow enable.
+ */
+template<bool interlaced, bool h_s>
+static inline void T_Render_Line_m5(void)
+{
+	if (VDP_Reg.m5.Set3 & 0x04)
+	{
+		// 2-cell VScroll.
+		T_Render_Line_Scroll<false, interlaced, true, h_s>(0, 0);	// Scroll B
+		T_Render_Line_ScrollA<interlaced, true, h_s>();			// Scroll A
+	}
+	else
+	{
+		// Full VScroll.
+		T_Render_Line_Scroll<false, interlaced, false, h_s>(0, 0);	// Scroll B
+		T_Render_Line_ScrollA<interlaced, false, h_s>();		// Scroll A
+	}
+	
+	T_Render_Line_Sprite<interlaced, h_s>();
+}
+
+
+/**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
  * @param md_palette MD palette buffer.
@@ -1523,8 +1548,30 @@ void VDP_Render_Line_m5(void)
 		VDP_Flags.VRam = 0;
 		VDP_Flags.VRam_Spr = 0;
 		
-		// Run the rest of the asm code.
-		VDP_Render_Line_m5_asm();
+		// Determine how to render the image.
+		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced;
+		switch (RenderMode & 3)
+		{
+			case 0:
+				// H/S disabled; interlaced disabled.
+				T_Render_Line_m5<false, false>();
+				break;
+			case 1:
+				// H/S disabled: interlaced enabled.
+				T_Render_Line_m5<true, false>();
+				break;
+			case 2:
+				// H/S enabled; interlaced disabled.
+				T_Render_Line_m5<false, true>();
+				break;
+			case 3:
+				// H/S enabled: interlaced enabled.
+				T_Render_Line_m5<true, true>();
+				break;
+			default:
+				// to make gcc shut up
+				break;
+		}
 	}
 	
 	// Check if the palette was modified.
