@@ -946,37 +946,6 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 	}
 }
 
-/**
- * C wrapper functions for T_Render_Line_ScrollB().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void Render_Line_ScrollB(void);
-	void Render_Line_ScrollB_Interlaced(void);
-	void Render_Line_ScrollB_VScroll(void);
-	void Render_Line_ScrollB_VScroll_Interlaced(void);
-	void Render_Line_ScrollB_HS(void);
-	void Render_Line_ScrollB_HS_Interlaced(void);
-	void Render_Line_ScrollB_HS_VScroll(void);
-	void Render_Line_ScrollB_HS_VScroll_Interlaced(void);
-}
-void Render_Line_ScrollB(void)
-{ T_Render_Line_Scroll<false, false, false, false>(0, 0); }
-void Render_Line_ScrollB_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, false, false>(0, 0); }
-void Render_Line_ScrollB_VScroll(void)
-{ T_Render_Line_Scroll<false, false, true, false>(0, 0); }
-void Render_Line_ScrollB_VScroll_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, true, false>(0, 0); }
-void Render_Line_ScrollB_HS(void)
-{ T_Render_Line_Scroll<false, false, false, true>(0, 0); }
-void Render_Line_ScrollB_HS_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, false, true>(0, 0); }
-void Render_Line_ScrollB_HS_VScroll(void)
-{ T_Render_Line_Scroll<false, false, true, true>(0, 0); }
-void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
-{ T_Render_Line_Scroll<false, true, true, true>(0, 0); }
-
 
 /**
  * T_Render_Line_ScrollA(): Render a line for Scroll A / Window.
@@ -1113,37 +1082,6 @@ static inline void T_Render_Line_ScrollA(void)
 		T_Render_Line_Scroll<true, interlaced, vscroll, h_s>(ScrA_Start, ScrA_Length);
 	}
 }
-
-/**
- * C wrapper functions for T_Render_Line_ScrollA().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void Render_Line_ScrollA(void);
-	void Render_Line_ScrollA_Interlaced(void);
-	void Render_Line_ScrollA_VScroll(void);
-	void Render_Line_ScrollA_VScroll_Interlaced(void);
-	void Render_Line_ScrollA_HS(void);
-	void Render_Line_ScrollA_HS_Interlaced(void);
-	void Render_Line_ScrollA_HS_VScroll(void);
-	void Render_Line_ScrollA_HS_VScroll_Interlaced(void);
-}
-void Render_Line_ScrollA(void)
-{ T_Render_Line_ScrollA<false, false, false>(); }
-void Render_Line_ScrollA_Interlaced(void)
-{ T_Render_Line_ScrollA<true, false, false>(); }
-void Render_Line_ScrollA_VScroll(void)
-{ T_Render_Line_ScrollA<false, true, false>(); }
-void Render_Line_ScrollA_VScroll_Interlaced(void)
-{ T_Render_Line_ScrollA<true, true, false>(); }
-void Render_Line_ScrollA_HS(void)
-{ T_Render_Line_ScrollA<false, false, true>(); }
-void Render_Line_ScrollA_HS_Interlaced(void)
-{ T_Render_Line_ScrollA<true, false, true>(); }
-void Render_Line_ScrollA_HS_VScroll(void)
-{ T_Render_Line_ScrollA<false, true, true>(); }
-void Render_Line_ScrollA_HS_VScroll_Interlaced(void)
-{ T_Render_Line_ScrollA<true, true, true>(); }
 
 
 /**
@@ -1329,25 +1267,6 @@ static inline void T_Render_Line_Sprite(void)
 		}
 	}
 }
-
-/**
- * C wrapper functions for T_Render_Line_Sprite().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void Render_Line_Sprite(void);
-	void Render_Line_Sprite_Interlaced(void);
-	void Render_Line_Sprite_HS(void);
-	void Render_Line_Sprite_HS_Interlaced(void);
-}
-void Render_Line_Sprite(void)
-{ T_Render_Line_Sprite<false, false>(); }
-void Render_Line_Sprite_Interlaced(void)
-{ T_Render_Line_Sprite<true, false>(); }
-void Render_Line_Sprite_HS(void)
-{ T_Render_Line_Sprite<false, true>(); }
-void Render_Line_Sprite_HS_Interlaced(void)
-{ T_Render_Line_Sprite<true, true>(); }
 
 
 /**
