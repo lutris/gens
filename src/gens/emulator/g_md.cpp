@@ -521,6 +521,8 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
+		// NOTE: Gauntlet 4's Start button is broken if we run the
+		// top border before the visible area.
 		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
 						VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
 		
