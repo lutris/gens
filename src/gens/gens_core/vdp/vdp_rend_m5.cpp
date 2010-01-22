@@ -447,8 +447,13 @@ uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
 static inline uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
 {
 	// Get the offset.
-	// H_Scroll_CMul is the shift value required for the proper vertical offset.
-	unsigned int offset = (y << VDP_Reg.H_Scroll_CMul) + x;
+	// Window size is dependent on display resolution, not scroll size.
+	// H40 == 64 cells horizontally; H32 == 32 cells horizontally.
+	unsigned int offset = x;
+	if (VDP_Reg.H_Cell == 32)
+		offset += (y << 5);
+	else //if (VDP_Reg.H_Cell == 40)
+		offset += (y << 6);
 	
 	// Return the pattern information.
 	return VDP_Reg.Win_Addr[offset];
@@ -1010,8 +1015,6 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
 template<bool plane, bool interlaced, bool vscroll, bool h_s>
 static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
 {
-	// TODO: For Scroll A, only render non-window areas.
-	
 	// Get the horizontal scroll offset. (cell and fine offset)
 	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
 	
@@ -1168,9 +1171,6 @@ void Render_Line_ScrollB_HS_VScroll_Interlaced(void)
 template<bool interlaced, bool vscroll, bool h_s>
 static inline void T_Render_Line_ScrollA(void)
 {
-	// TODO: Window code.
-	// For now, we'll only draw Scroll A.
-	
 	// Cell counts for Scroll A.
 	int ScrA_Start, ScrA_Length;
 	int Win_Start, Win_Length = 0;
@@ -1225,7 +1225,6 @@ static inline void T_Render_Line_ScrollA(void)
 	if (Win_Length > 0)
 	{
 		// Draw the window.
-		// TODO: Test this!
 		
 		// Drawing will start at the first window cell.
 		// (Window is not scrollable.)
