@@ -44,6 +44,7 @@
 
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_m68k_cd.h"
@@ -260,6 +261,14 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Sprite Limit
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SPRITELIMIT,
 			MF_BYCOMMAND | (Sprite_Over ? MF_CHECKED : MF_UNCHECKED));
+	
+	// Interlaced Mode
+	HMENU mnuIntRend_Mode = gens_menu_find_item(IDM_GRAPHICS_INTREND);
+	CheckMenuRadioItem(mnuIntRend_Mode,
+				IDM_GRAPHICS_INTREND_EVEN,
+				IDM_GRAPHICS_INTREND_FLICKER,
+				IDM_GRAPHICS_INTREND_EVEN + (int)VDP_IntRend_Mode,
+				MF_BYCOMMAND);
 	
 	// Frame Skip
 	HMENU mnuFrameSkip = gens_menu_find_item(IDM_GRAPHICS_FRAMESKIP);

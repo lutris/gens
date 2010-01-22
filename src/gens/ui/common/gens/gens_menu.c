@@ -112,6 +112,7 @@ static const GensMenuItem_t gmiGraphics_GLRes[];
 #ifdef GENS_OS_UNIX
 static const GensMenuItem_t gmiGraphics_bpp[];
 #endif
+static const GensMenuItem_t gmiGraphics_IntRend[];
 static const GensMenuItem_t gmiGraphics_FrameSkip[];
 
 static const GensMenuItem_t gmiGraphics[] =
@@ -135,6 +136,7 @@ static const GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_RENDER,		GMF_ITEM_SUBMENU,	"&Render",			NULL,	0, 0, IDIM_RENDER},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_SPRITELIMIT,	GMF_ITEM_CHECK,		"Sprite Limit",			NULL,	0, 0, 0},
+ 	{IDM_GRAPHICS_INTREND,		GMF_ITEM_SUBMENU,	"Interlaced Display",		&gmiGraphics_IntRend[0], 0, 0, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_FRAMESKIP,	GMF_ITEM_SUBMENU,	"Frame Skip",			&gmiGraphics_FrameSkip[0], 0, 0, IDIM_FRAMESKIP},
 	{IDM_GRAPHICS_SCREENSHOT,	GMF_ITEM_NORMAL,	"Screenshot",			NULL,	GMAM_SHIFT, GMAK_BACKSPACE, IDIM_SCREENSHOT},
@@ -176,6 +178,15 @@ static const GensMenuItem_t gmiGraphics_bpp[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 #endif
+
+static const GensMenuItem_t gmiGraphics_IntRend[] =
+{
+	{IDM_GRAPHICS_INTREND_EVEN,	GMF_ITEM_RADIO,		"Even Fields Only",	NULL,	0, 0, 0},
+	{IDM_GRAPHICS_INTREND_ODD,	GMF_ITEM_RADIO,		"Odd Fields Only",	NULL,	0, 0, 0},
+	{IDM_GRAPHICS_INTREND_FLICKER,	GMF_ITEM_RADIO,		"Alternating Fields",	NULL,	0, 0, 0},
+	//{IDM_GRAPHICS_INTREND_2X,	GMF_ITEM_RADIO,		"2x Resolution",	NULL,	0, 0, 0},
+	{0, 0, NULL, NULL, 0, 0, 0}
+};
 
 static const GensMenuItem_t gmiGraphics_FrameSkip[] =
 {

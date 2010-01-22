@@ -58,6 +58,7 @@ using std::list;
 
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 #include "gens_core/cpu/sh2/cpu_sh2.h"
@@ -1161,6 +1162,53 @@ void Options::setOpenGL_OrthographicProjection(bool newOrthoProj)
 	Sync_Gens_Window_GraphicsMenu();
 }
 #endif /* GENS_OPENGL */
+
+
+/**
+ * IntRend_Mode(): Get the interlaced rendering mode.
+ * @return Interlaced rendering mode.
+ */
+int Options::IntRend_Mode(void)
+{
+	return VDP_IntRend_Mode;
+}
+
+/**
+ * setIntRend_Mode(): Set the interlaced rendering mode.
+ * @param newIntRend_Mode New interlaced rendering mode.
+ */
+void Options::setIntRend_Mode(const int newIntRend_Mode)
+{
+	if ((VDP_IntRend_Mode == newIntRend_Mode) ||
+	    (newIntRend_Mode < 0) ||
+	    (newIntRend_Mode > (int)(INTREND_FLICKER)))
+	{
+		// Same setting, or invalid setting.
+		return;
+	}
+	
+	VDP_IntRend_Mode = (IntRend_Mode_t)newIntRend_Mode;
+	
+	switch (VDP_IntRend_Mode)
+	{
+		case INTREND_EVEN:
+		default:
+			vdraw_text_write("Interlaced: Even fields only.", 1500);
+			break;
+		
+		case INTREND_ODD:
+			vdraw_text_write("Interlaced: Odd fields only.", 1500);
+			break;
+		
+		case INTREND_FLICKER:
+			vdraw_text_write("Interlaced: Alternating fields.", 1500);
+			break;
+		
+		case INTREND_2X:
+			vdraw_text_write("Interlaced: 2x resolution.", 1500);
+			break;
+	}
+}
 
 
 #ifdef GENS_OS_WIN32

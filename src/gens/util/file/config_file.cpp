@@ -61,6 +61,7 @@ using std::string;
 // VDP
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 // Audio
@@ -261,6 +262,7 @@ int Config::save(const string& filename)
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	cfg.writeBool("Graphics", "NTSC V30 Rolling", Video.ntscV30rolling);
+	cfg.writeInt("Graphics", "Interlaced Display", (int)VDP_IntRend_Mode);
 	
 #ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
@@ -548,6 +550,9 @@ int Config::load(const string& filename, void* gameActive)
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	Video.ntscV30rolling = cfg.getBool("Graphics", "NTSC V30 Rolling", true);
+	
+	// TODO: Change default to INTREND_2X once it's implemented.
+	VDP_IntRend_Mode = (IntRend_Mode_t)cfg.getInt("Graphics", "Interlaced Display", INTREND_FLICKER);
 	
 	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "Double");

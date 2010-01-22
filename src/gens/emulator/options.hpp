@@ -115,6 +115,9 @@ class Options
 		static void setOpenGL_OrthographicProjection(const bool newOrthoProj);
 #endif /* GENS_OPENGL */
 		
+		static int IntRend_Mode(void);
+		static void setIntRend_Mode(const int newIntRend_Mode);
+		
 		/** Renderer selection. **/
 		static void rendererNext(void);
 		static void rendererPrev(void);

@@ -442,6 +442,15 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
+		case IDM_GRAPHICS_INTREND_EVEN:
+		case IDM_GRAPHICS_INTREND_ODD:
+		case IDM_GRAPHICS_INTREND_FLICKER:
+		//case IDM_GRAPHICS_INTREND_2X:
+			// Interlaced Rendering Mode.
+			Options::setIntRend_Mode(menuID - IDM_GRAPHICS_INTREND_EVEN);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
 		case IDM_GRAPHICS_FRAMESKIP_AUTO:
 		case IDM_GRAPHICS_FRAMESKIP_0:
 		case IDM_GRAPHICS_FRAMESKIP_1:
