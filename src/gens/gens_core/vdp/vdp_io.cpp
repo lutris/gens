@@ -797,7 +797,7 @@ unsigned int VDP_Update_DMA(void)
 	
 	// Check if we're in VBlank or if the VDP is disabled.
 	if (VDP_Lines.Visible.Current < 0 ||
-	    VDP_Lines.Visible.Current >= VDP_Lines.Visible.Current ||
+	    VDP_Lines.Visible.Current >= VDP_Lines.Visible.Total ||
 	    (!(VDP_Reg.m5.Set2 & 0x40)))
 	{
 		// In VBlank, or VDP is disabled.
