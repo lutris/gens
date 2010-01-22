@@ -288,24 +288,6 @@ static inline uint16_t T_Get_X_Offset(void)
 	}
 }
 
-/**
- * C wrapper functions for T_Get_X_Offset().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	uint16_t Get_X_Offset_ScrollA(void);
-	uint16_t Get_X_Offset_ScrollB(void);
-}
-
-uint16_t Get_X_Offset_ScrollA(void)
-{
-	return T_Get_X_Offset<true>();
-}
-uint16_t Get_X_Offset_ScrollB(void)
-{
-	return T_Get_X_Offset<false>();
-}
-
 
 /**
  * T_Update_Y_Offset(): Update the Y offset.
@@ -378,26 +360,6 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
 	return VScroll_Offset;
 }
 
-/**
- * C wrapper functions for T_Update_Y_Offset().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	unsigned int Update_Y_Offset_ScrollA(unsigned int cur);
-	unsigned int Update_Y_Offset_ScrollB(unsigned int cur);
-	unsigned int Update_Y_Offset_ScrollA_Interlaced(unsigned int cur);
-	unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur);
-}
-
-unsigned int Update_Y_Offset_ScrollA(unsigned int cur)
-{ return T_Update_Y_Offset<true, false>(cur); }
-unsigned int Update_Y_Offset_ScrollB(unsigned int cur)
-{ return T_Update_Y_Offset<false, false>(cur); }
-unsigned int Update_Y_Offset_ScrollA_Interlaced(unsigned int cur)
-{ return T_Update_Y_Offset<true, true>(cur); }
-unsigned int Update_Y_Offset_ScrollB_Interlaced(unsigned int cur)
-{ return T_Update_Y_Offset<false, true>(cur); }
-
 
 /**
  * T_Get_Pattern_Info(): Get pattern info from a scroll plane.
@@ -416,24 +378,6 @@ static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 	
 	// Return the pattern information.
 	return (plane ? VDP_Reg.ScrA_Addr[offset] : VDP_Reg.ScrB_Addr[offset]);
-}
-
-/**
- * C wrapper functions for T_Get_Pattern_Info().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	uint16_t Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y);
-	uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y);
-}
-
-uint16_t Get_Pattern_Info_ScrollA(unsigned int x, unsigned int y)
-{
-	return T_Get_Pattern_Info<true>(x, y);
-}
-uint16_t Get_Pattern_Info_ScrollB(unsigned int x, unsigned int y)
-{
-	return T_Get_Pattern_Info<false>(x, y);
 }
 
 
@@ -505,24 +449,6 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 	else
 #endif
 		return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
-}
-
-/**
- * C wrapper functions for T_Get_Pattern_Data().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	unsigned int Get_Pattern_Data(uint16_t pattern);
-	unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern);
-}
-
-unsigned int Get_Pattern_Data(uint16_t pattern)
-{
-	return T_Get_Pattern_Data<false>(pattern);
-}
-unsigned int Get_Pattern_Data_Interlaced(uint16_t pattern)
-{
-	return T_Get_Pattern_Data<true>(pattern);
 }
 
 
@@ -782,54 +708,6 @@ static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
 	}
 }
 
-/**
- * C wrapper functions for T_PutLine_P0().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void PutLine_P0_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P0_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
-}
-
-void PutLine_P0_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<true, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<true, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<false, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<false, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<true, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<true, true, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<false, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P0_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P0<false, true, true>(disp_pixnum, pattern, palette);
-}
-
 
 /**
  * T_PutLine_P1(): Put a line in background graphics layer 1.
@@ -901,54 +779,6 @@ static inline void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
 		T_PutPixel_P1<plane, h_s, 6, 0x00000F00,  8>(disp_pixnum, pattern, palette);
 		T_PutPixel_P1<plane, h_s, 7, 0x0000F000, 12>(disp_pixnum, pattern, palette);
 	}
-}
-
-/**
- * C wrapper functions for T_PutLine_P1().
- * TODO: Remove these once vdp_rend_m5_x86.asm is fully ported to C++.
- */
-extern "C" {
-	void PutLine_P1_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette);
-	void PutLine_P1_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette);
-}
-
-void PutLine_P1_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<true, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<true, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<false, false, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<false, true, false>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_Flip_ScrollA(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<true, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_Flip_ScrollA_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<true, true, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_Flip_ScrollB(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<false, false, true>(disp_pixnum, pattern, palette);
-}
-void PutLine_P1_Flip_ScrollB_HS(int disp_pixnum, uint32_t pattern, int palette)
-{
-	T_PutLine_P1<false, true, true>(disp_pixnum, pattern, palette);
 }
 
 
