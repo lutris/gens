@@ -321,7 +321,7 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
 		VScroll_Offset = VSRam.u16[cell_cur + 1];
 	}
 	
-#ifdef FLICKERING_INTERLACED
+#if !defined(FLICKERING_INTERLACED)
 	// Flickering Interlaced mode is disabled.
 	if (interlaced)
 		VScroll_Offset /= 2;
@@ -1066,9 +1066,21 @@ static inline void T_Render_Line_ScrollA(void)
 		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
 		// Calculate the fine offsets.
-		// TODO: Is this affected by interlaced mode?
-		VDP_Data_Misc.Line_7 = (VDP_Lines.Visible.Current & 7);		// DEPRECATED
-		VDP_Data_Misc.Y_FineOffset = (VDP_Lines.Visible.Current & 7);
+#ifdef FLICKERING_INTERLACED
+		if (interlaced)
+		{
+			int vdp_line = VDP_Lines.Visible.Current;
+			if (VDP_Status & 0x0010)
+				vdp_line++;
+			
+			VDP_Data_Misc.Y_FineOffset = (vdp_line & 15);
+		}
+		else
+#endif
+		{
+			VDP_Data_Misc.Y_FineOffset = (VDP_Lines.Visible.Current & 7);
+		}
+		VDP_Data_Misc.Line_7 = VDP_Data_Misc.Y_FineOffset;	// DEPRECATED
 		
 		// Loop through the cells.
 		for (int x = Win_Length; x > 0; x--)
