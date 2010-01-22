@@ -914,7 +914,12 @@ static void DMA_Fill(uint16_t data)
 	
 	// Write the low byte first.
 	// TODO: Endianness conversions.
-	VRam.u8[address ^ 1] = (data & 0xFF);
+	// TODO: Verify if this is right.
+	// This is what the original asm code says, not what the manual says.
+	// Using this version fixes random dots appearing in title cards in
+	// Sonic 2's 2P VS mode when using Odd Fields Only or Flickering Interlaced.
+	VRam.u8[address] = (data & 0xFF);
+	address ^= 1;
 	
 	// Fill the data.
 	const uint8_t fill_hi = (data >> 8) & 0xFF;
