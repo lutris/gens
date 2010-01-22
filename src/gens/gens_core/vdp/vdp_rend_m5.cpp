@@ -31,11 +31,6 @@
 #include <string.h>
 
 
-// Flickering Interlaced display testing.
-// USE AT YOUR OWN RISK!
-//#define FLICKERING_INTERLACED 1
-
-
 // Line buffer for current line.
 // TODO: Mark as static once VDP_Render_Line_m5_asm is ported to C.
 // TODO: Endianness conversions.
@@ -53,11 +48,51 @@ typedef union
 } LineBuf_t;
 LineBuf_t LineBuf;
 
-
-// asm rendering code.
-extern "C" void VDP_Render_Line_m5_asm(void);
-
 VDP_Data_Misc_t VDP_Data_Misc;
+
+// Interlaced rendering mode.
+IntRend_Mode_t VDP_IntRend_Mode = INTREND_FLICKER;
+
+
+/**
+ * VDP_m5_GetLineNumber(): Get the current line number, adjusted for interlaced display.
+ * @param interlaced True for interlaced; false for non-interlaced.
+ * @return Line number.
+ */
+template<bool interlaced>
+static inline int VDP_m5_GetLineNumber(void)
+{
+	// Get the current line number.
+	int vdp_line = VDP_Lines.Visible.Current;
+	
+	if (interlaced)
+	{
+		// Adjust the VDP line number for Flickering Interlaced display.
+		vdp_line *= 2;
+		
+		switch (VDP_IntRend_Mode)
+		{
+			case INTREND_EVEN:
+			default:
+				// Even lines only.
+				// Don't do anything.
+				break;
+			
+			case INTREND_ODD:
+				// Odd lines only.
+				vdp_line++;
+				break;
+			
+			case INTREND_FLICKER:
+				// Flickering Interlaced mode.
+				if (VDP_Status & 0x0010)
+					vdp_line++;
+				break;
+		}
+	}
+	
+	return vdp_line;
+}
 
 
 /**
@@ -84,20 +119,12 @@ static inline void T_Make_Sprite_Struct(void)
 		{
 			if (interlaced)
 			{
-				// TODO: Don't do this!
-				// Use proper interlaced mode instead.
-				
-#ifdef FLICKERING_INTERLACED
-				// Interlaced. (Flickering Interlaced is enabled.)
+				// Interlaced mode. Y position is 11-bit.
 				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x3FF) - 256;
-#else
-				// Interlaced: Y-pos is divided by 2.
-				Sprite_Struct[spr_num].Pos_Y = ((*CurSpr & 0x3FF) / 2) - 128;
-#endif
 			}
 			else
 			{
-				// Non-Interlaced. Y-pos is kept as-is.
+				// Non-Interlaced mode. Y position is 10-bit.
 				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x1FF) - 128;
 			}
 		}
@@ -115,16 +142,16 @@ static inline void T_Make_Sprite_Struct(void)
 		
 		if (!partial)
 		{
-#ifdef FLICKERING_INTERLACED
 			if (interlaced)
 			{
+				// Interlaced mode. Cells are 8x16.
 				Sprite_Struct[spr_num].Pos_Y_Max =
 						Sprite_Struct[spr_num].Pos_Y +
 						((Sprite_Struct[spr_num].Size_Y * 16) + 15);
 			}
 			else
-#endif
 			{
+				// Non-Interlaced mode. Cells are 8x8.
 				Sprite_Struct[spr_num].Pos_Y_Max =
 						Sprite_Struct[spr_num].Pos_Y +
 						((Sprite_Struct[spr_num].Size_Y * 8) + 7);
@@ -185,17 +212,7 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	const unsigned int TotalSprites = (VDP_Data_Misc.Spr_End / sizeof(Sprite_Struct_t)) + 1;
 	
 	// Get the current line number.
-	int vdp_line = VDP_Lines.Visible.Current;
-	
-#ifdef FLICKERING_INTERLACED
-	if (interlaced)
-	{
-		// Adjust the VDP line number for Flickering Interlaced display.
-		vdp_line *= 2;
-		if (VDP_Status & 0x0010)
-			vdp_line++;
-	}
-#endif
+	int vdp_line = VDP_m5_GetLineNumber<interlaced>();
 	
 	// Search for all sprites visible on the current scanline.
 	for (; spr_num < TotalSprites; spr_num++)
@@ -321,41 +338,25 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
 		VScroll_Offset = VSRam.u16[cell_cur + 1];
 	}
 	
-#if !defined(FLICKERING_INTERLACED)
-	// Flickering Interlaced mode is disabled.
+	// Add the current line number to the VScroll offset.
+	VScroll_Offset += VDP_m5_GetLineNumber<interlaced>();
+	
 	if (interlaced)
-		VScroll_Offset /= 2;
-	
-	VScroll_Offset += VDP_Lines.Visible.Current;
-	VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
-	
-	// Get the V Cell offset and prevent it from overflowing.
-	VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
-#else
-	if (!interlaced)
 	{
-		// Normal mode.
-		VScroll_Offset += VDP_Lines.Visible.Current;
-		VDP_Data_Misc.Line_7 = (VScroll_Offset & 7);		// NOTE: Obsolete!
+		// Interlaced mode.
+		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 15);
+		
+		// Get the V Cell offset and prevent it from overflowing.
+		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
+	}
+	else
+	{
+		// Non-Interlaced mode.
 		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 7);
 		
 		// Get the V Cell offset and prevent it from overflowing.
 		VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
 	}
-	else
-	{
-		// Interlaced mode.
-		VScroll_Offset += (VDP_Lines.Visible.Current * 2);
-		if (VDP_Status & 0x0010)
-			VScroll_Offset++;
-		
-		VDP_Data_Misc.Line_7 = (VScroll_Offset >> 2) & 7;	// NOTE: Obsolete!
-		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 0x0F);
-		
-		// Get the V Cell offset and prevent it from overflowing.
-		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
-	}
-#endif
 	
 	return VScroll_Offset;
 }
@@ -414,16 +415,7 @@ template<bool interlaced>
 static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
 	// Vertical offset.
-#ifdef FLICKERING_INTERLACED
-	// TODO: Switch to VDP_Data_Misc.Y_FineOffset exclusively once Scroll A is ported to C++.
-	unsigned int V_Offset;
-	if (interlaced)
-		V_Offset = VDP_Data_Misc.Y_FineOffset;
-	else
-		V_Offset = VDP_Data_Misc.Line_7;
-#else
-	unsigned int V_Offset = VDP_Data_Misc.Line_7;
-#endif
+	unsigned int V_Offset = VDP_Data_Misc.Y_FineOffset;
 	
 	// Get the tile address.
 	unsigned int TileAddr;
@@ -435,20 +427,14 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 	if (pattern & 0x1000)
 	{
 		// V Flip enabled. Flip the tile vertically.
-#ifdef FLICKERING_INTERLACED
 		if (interlaced)
 			V_Offset ^= 15;
 		else
-#endif
 			V_Offset ^= 7;
 	}
 	
-#ifndef FLICKERING_INTERLACED
-	if (interlaced)
-		return VRam.u32[(TileAddr + (V_Offset * 8)) >> 2];
-	else
-#endif
-		return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
+	// Return the pattern data.
+	return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
 }
 
 
@@ -1066,21 +1052,11 @@ static inline void T_Render_Line_ScrollA(void)
 		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
 		// Calculate the fine offsets.
-#ifdef FLICKERING_INTERLACED
+		int vdp_line = VDP_m5_GetLineNumber<interlaced>();
 		if (interlaced)
-		{
-			int vdp_line = VDP_Lines.Visible.Current;
-			if (VDP_Status & 0x0010)
-				vdp_line++;
-			
 			VDP_Data_Misc.Y_FineOffset = (vdp_line & 15);
-		}
 		else
-#endif
-		{
-			VDP_Data_Misc.Y_FineOffset = (VDP_Lines.Visible.Current & 7);
-		}
-		VDP_Data_Misc.Line_7 = VDP_Data_Misc.Y_FineOffset;	// DEPRECATED
+			VDP_Data_Misc.Y_FineOffset = (vdp_line & 7);
 		
 		// Loop through the cells.
 		for (int x = Win_Length; x > 0; x--)
@@ -1191,24 +1167,18 @@ static inline void T_Render_Line_Sprite(void)
 		unsigned int spr_num = Sprite_Visible[spr_vis] / sizeof(Sprite_Struct[0]);
 		
 		// Determine the cell and line offsets.
-		unsigned int cell_offset;
+		unsigned int cell_offset = (VDP_m5_GetLineNumber<interlaced>() - Sprite_Struct[spr_num].Pos_Y);
 		unsigned int line_offset;
-#ifdef FLICKERING_INTERLACED
+		
 		if (interlaced)
 		{
 			// Interlaced.
-			cell_offset = ((VDP_Lines.Visible.Current * 2) - Sprite_Struct[spr_num].Pos_Y);
-			if (VDP_Status & 0x0010)
-				cell_offset++;
-			
 			line_offset = (cell_offset & 15);
 			cell_offset &= 0x1F0;
 		}
 		else
-#endif
 		{
-			// Not interlaced.
-			cell_offset = (VDP_Lines.Visible.Current - Sprite_Struct[spr_num].Pos_Y);
+			// Non-Interlaced.
 			line_offset = (cell_offset & 7);
 			cell_offset &= 0xF8;
 		}
@@ -1230,18 +1200,12 @@ static inline void T_Render_Line_Sprite(void)
 		if (interlaced)
 		{
 			tile_num = (spr_info & 0x3FF) << 6;	// point on the contents of the pattern
-			
 			Y_cell_size <<= 6;	// Size_Y * 64
-#ifdef FLICKERING_INTERLACED
 			cell_offset *= 4;	// Num_Pattern * 64
-#else
-			cell_offset *= 8;	// Num_Pattern * 64
-#endif
 		}
 		else
 		{
 			tile_num = (spr_info & 0x7FF) << 5;	// point on the contents of the pattern
-			
 			Y_cell_size <<= 5;	// Size_Y * 32
 			cell_offset *= 4;	// Num_Pattern * 32
 		}
@@ -1250,22 +1214,16 @@ static inline void T_Render_Line_Sprite(void)
 		if (spr_info & 0x1000)
 		{
 			// V Flip enabled.
-#ifdef FLICKERING_INTERLACED
 			if (interlaced)
 				line_offset ^= 15;
 			else
-#endif
 				line_offset ^= 7;
 			
 			tile_num += (Y_cell_size - cell_offset);
 			if (interlaced)
 			{
 				Y_cell_size += 64;
-#ifdef FLICKERING_INTERLACED
 				tile_num += (line_offset * 4);
-#else
-				tile_num += (line_offset * 8);
-#endif
 			}
 			else
 			{
@@ -1280,11 +1238,7 @@ static inline void T_Render_Line_Sprite(void)
 			if (interlaced)
 			{
 				Y_cell_size += 64;
-#ifdef FLICKERING_INTERLACED
 				tile_num += (line_offset * 4);
-#else
-				tile_num += (line_offset * 8);
-#endif
 			}
 			else
 			{

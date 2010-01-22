@@ -49,6 +49,16 @@ typedef struct
 } VDP_Data_Misc_t;
 extern VDP_Data_Misc_t VDP_Data_Misc;
 
+// Interlaced rendering mode.
+typedef enum
+{
+	INTREND_EVEN	= 0,	// Even lines only. (Old Gens)
+	INTREND_ODD	= 1,	// Odd lines only.
+	INTREND_FLICKER	= 2,	// Alternating fields. (Flickering Interlaced)
+	INTREND_2X	= 3,	// 2x Resolution. (TODO)
+} IntRend_Mode_t;
+extern IntRend_Mode_t VDP_IntRend_Mode;
+
 #ifdef __cplusplus
 }
 #endif
