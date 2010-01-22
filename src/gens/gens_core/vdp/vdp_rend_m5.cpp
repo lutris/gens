@@ -1069,11 +1069,14 @@ static inline void T_Render_Line_ScrollA(void)
 		
 		// Mark window pixels.
 		// TODO: Do this in the Window drawing code!
-		const int StartPx = ((Win_Start * 8) + 8) / 2;
-		const int EndPx = StartPx + ((Win_Length * 8) / 2);
-		
-		for (int x = StartPx; x < EndPx; x++)
-			LineBuf.u32[x] |= LINEBUF_WIN_D;
+		if (ScrA_Length > 0)
+		{
+			const int StartPx = ((Win_Start * 8) + 8) / 2;
+			const int EndPx = StartPx + ((Win_Length * 8) / 2);
+			
+			for (int x = StartPx; x < EndPx; x++)
+				LineBuf.u32[x] |= LINEBUF_WIN_D;
+		}
 	}
 	
 	if (ScrA_Length > 0)
