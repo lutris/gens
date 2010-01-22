@@ -1241,7 +1241,7 @@ static inline void T_Render_Line_ScrollA(void)
 		VDP_Data_Misc.Y_FineOffset = (VDP_Lines.Visible.Current & 7);
 		
 		// Loop through the cells.
-		for (int x = Win_Length; x >= 0; x--)
+		for (int x = Win_Length; x > 0; x--)
 		{
 			// Get the pattern info and data for the current tile.
 			uint32_t pattern_info = Get_Pattern_Info_Window(X_offset_cell, Y_offset_cell);
