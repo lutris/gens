@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "vdp_rend_m5.hpp"
 #include "vdp_rend.h"
 #include "vdp_io.h"
@@ -32,6 +36,13 @@
 // C includes.
 #include <stdint.h>
 #include <string.h>
+
+// Force inlining if we're not making a debug build.
+#if !defined(GENS_DEBUG) && defined(__GNUC__) && (__GNUC__ >= 4)
+#define VDP_INLINE __attribute__ ((always_inline))
+#else
+#define VDP_INLINE inline
+#endif
 
 
 // Line buffer for current line.
@@ -65,7 +76,7 @@ static unsigned int TotalSprites;
  * @return Line number.
  */
 template<bool interlaced>
-static inline int VDP_m5_GetLineNumber(void)
+static VDP_INLINE int VDP_m5_GetLineNumber(void)
 {
 	// Get the current line number.
 	int vdp_line = VDP_Lines.Visible.Current;
@@ -106,7 +117,7 @@ static inline int VDP_m5_GetLineNumber(void)
  * @param partial If true, only do a partial update. (X pos, X size)
  */
 template<bool interlaced, bool partial>
-static inline void T_Make_Sprite_Struct(void)
+static VDP_INLINE void T_Make_Sprite_Struct(void)
 {
 	uint16_t *CurSpr = VDP_Reg.Spr_Addr;
 	unsigned int spr_num = 0;
@@ -197,7 +208,7 @@ static inline void T_Make_Sprite_Struct(void)
  * @return Number of visible sprites.
  */
 template<bool sprite_limit, bool interlaced>
-static inline unsigned int T_Update_Mask_Sprite(void)
+static VDP_INLINE unsigned int T_Update_Mask_Sprite(void)
 {
 	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
 	// - Maximum sprite dots per line: 256/320
@@ -291,7 +302,7 @@ static inline unsigned int T_Update_Mask_Sprite(void)
  * @return X offset.
  */
 template<bool plane>
-static inline uint16_t T_Get_X_Offset(void)
+static VDP_INLINE uint16_t T_Get_X_Offset(void)
 {
 	const unsigned int H_Scroll_Offset = (VDP_Lines.Visible.Current & VDP_Reg.H_Scroll_Mask) * 2;
 	
@@ -316,7 +327,7 @@ static inline uint16_t T_Get_X_Offset(void)
  * @return Y offset.
  */
 template<bool plane, bool interlaced>
-static inline unsigned int T_Update_Y_Offset(int cell_cur)
+static VDP_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
 {
 	if ((cell_cur & 0xFF80) || (cell_cur < 0))
 	{
@@ -373,7 +384,7 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
  * @return Pattern info.
  */
 template<bool plane>
-static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
+static VDP_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// H_Scroll_CMul is the shift value required for the proper vertical offset.
@@ -391,7 +402,7 @@ static inline uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
  * @param y Y tile number.
  * @return Pattern info.
  */
-static inline uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
+static VDP_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// Window size is dependent on display resolution, not scroll size.
@@ -414,7 +425,7 @@ static inline uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
  * @return Pattern data.
  */
 template<bool interlaced>
-static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
+static VDP_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
 	// Vertical offset.
 	unsigned int V_Offset = Y_FineOffset;
@@ -464,7 +475,7 @@ static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static VDP_INLINE void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -509,7 +520,7 @@ static inline void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static VDP_INLINE void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -552,7 +563,7 @@ static inline void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int
  * @return Linebuffer byte.
  */
 template<bool priority, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static VDP_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -635,24 +646,11 @@ static inline uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsig
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, bool flip>
-static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
+static VDP_INLINE void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
 {
 	if (!plane)
 	{
 		// Scroll B.
-		if (h_s)
-		{
-			// Highlight/Shadow is enabled.
-			// Set the line to shadow by default.
-			memset(&LineBuf.u16[disp_pixnum], LINEBUF_SHAD_B, 8*2);
-		}
-		else
-		{
-			// Highlight/Shadow is disabled.
-			// Clear the line.
-			memset(&LineBuf.u16[disp_pixnum], 0x00, 8*2);
-		}
-		
 		// If ScrollB_Low is disabled, don't do anything.
 		if (!(VDP_Layers & VDP_LAYER_SCROLLB_LOW))
 			return;
@@ -707,7 +705,7 @@ static inline void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, bool flip>
-static inline void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
+static VDP_INLINE void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
 {
 	if (!plane)
 	{
@@ -780,7 +778,7 @@ static inline void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
  * @param palette	[in] Palette number * 16.
  */
 template<bool priority, bool h_s, bool flip>
-static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palette)
+static VDP_INLINE void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palette)
 {
 	// Check if the sprite layer is disabled.
 	if (!(VDP_Layers & (priority ? VDP_LAYER_SPRITE_HIGH : VDP_LAYER_SPRITE_LOW)))
@@ -831,7 +829,7 @@ static inline void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palet
  * @param cell_length	[in] (Scroll A) Number of cells to draw.
  */
 template<bool plane, bool interlaced, bool vscroll, bool h_s>
-static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
+static VDP_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
 {
 	// Get the horizontal scroll offset. (cell and fine offset)
 	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
@@ -956,7 +954,7 @@ static inline void T_Render_Line_Scroll(int cell_start, int cell_length)
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool vscroll, bool h_s>
-static inline void T_Render_Line_ScrollA(void)
+static VDP_INLINE void T_Render_Line_ScrollA(void)
 {
 	// Cell counts for Scroll A.
 	int ScrA_Start, ScrA_Length;
@@ -1095,7 +1093,7 @@ static inline void T_Render_Line_ScrollA(void)
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool h_s>
-static inline void T_Render_Line_Sprite(void)
+static VDP_INLINE void T_Render_Line_Sprite(void)
 {
 	// Update the sprite masks.
 	unsigned int num_spr;
@@ -1275,13 +1273,16 @@ static inline void T_Render_Line_Sprite(void)
 
 
 /**
- * T_Render_Line(): Render a line.
+ * T_Render_Line_m5(): Render a line.
  * @param interlaced	[in] True for interlaced; false for non-interlaced.
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool h_s>
-static inline void T_Render_Line_m5(void)
+static VDP_INLINE void T_Render_Line_m5(void)
 {
+	// Clear the line first.
+	memset(&LineBuf, (h_s ? LINEBUF_SHAD_B : 0), sizeof(LineBuf));
+	
 	if (VDP_Reg.m5.Set3 & 0x04)
 	{
 		// 2-cell VScroll.
@@ -1306,45 +1307,44 @@ static inline void T_Render_Line_m5(void)
  * @param dest Destination surface.
  */
 template<typename pixel, pixel *md_palette>
-static inline void T_Render_LineBuf(pixel *dest)
+static VDP_INLINE void T_Render_LineBuf(pixel *dest)
 {
 	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	const LineBuf_px_t *src = &LineBuf.px[8];
 	
-	// Draw the left border.
-	// NOTE: S/H is ignored if we're in the border region.
-	if (VDP_Reg.H_Pix_Begin != 0)
-	{
-		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
-		{
-			*dest     = md_palette[0];
-			*(dest+1) = md_palette[0];
-			*(dest+2) = md_palette[0];
-			*(dest+3) = md_palette[0];
-		}
-	}
-	
 	// Render the line buffer to the destination surface.
-	for (unsigned int i = (num_px / 4); i != 0; i--, dest += 4, src += 4)
+	pixel *dest_v = (dest + VDP_Reg.H_Pix_Begin);
+	for (unsigned int i = (num_px / 4); i != 0; i--, dest_v += 4, src += 4)
 	{
 		// TODO: Endianness conversions.
-		*dest     = md_palette[src->pixel];
-		*(dest+1) = md_palette[(src+1)->pixel];
-		*(dest+2) = md_palette[(src+2)->pixel];
-		*(dest+3) = md_palette[(src+3)->pixel];
+		*dest_v     = md_palette[src->pixel];
+		*(dest_v+1) = md_palette[(src+1)->pixel];
+		*(dest_v+2) = md_palette[(src+2)->pixel];
+		*(dest_v+3) = md_palette[(src+3)->pixel];
 	}
 	
-	// Draw the right border.
+	if (VDP_Reg.H_Pix_Begin == 0)
+		return;
+	
+	// Draw the borders.
 	// NOTE: S/H is ignored if we're in the border region.
-	if (VDP_Reg.H_Pix_Begin != 0)
+	
+	// Left border.
+	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 	{
-		for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
-		{
-			*dest     = md_palette[0];
-			*(dest+1) = md_palette[0];
-			*(dest+2) = md_palette[0];
-			*(dest+3) = md_palette[0];
-		}
+		*dest     = md_palette[0];
+		*(dest+1) = md_palette[0];
+		*(dest+2) = md_palette[0];
+		*(dest+3) = md_palette[0];
+	}
+	
+	// Right border.
+	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest_v += 4)
+	{
+		*dest_v     = md_palette[0];
+		*(dest_v+1) = md_palette[0];
+		*(dest_v+2) = md_palette[0];
+		*(dest_v+3) = md_palette[0];
 	}
 }
 
@@ -1492,7 +1492,7 @@ void VDP_Render_Line_m5(void)
  * @param _32X_Rend_Mode 32X rendering mode.
  */
 template<typename pixel, pixel *md_palette, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted>
-static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
+static VDP_INLINE void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 {
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
 	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
@@ -1500,8 +1500,10 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 	unsigned char pixC; 
 	unsigned short pixS; 
 	
+	LineBuf_px_t *lbptr = &LineBuf.px[8];
+	
 	// NOTE: We're always assuming H40 mode for 32X.
-	// If that's not the case, replace (320-1) to (VDP_Reg.H_Pix - 1).
+	// If that's not the case, replace (320-1) with (VDP_Reg.H_Pix - 1).
 	
 	switch (_32X_Rend_Mode)
 	{
@@ -1510,12 +1512,12 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 		case 8:
 		case 12:
 			//POST_LINE_32X_M00;
-			for (int px = 0; px < 320; px += 4)
+			for (unsigned int px = (320/4)-1; px != 0; px--, dest += 4, lbptr += 4)
 			{
-				dest[px] = md_palette[LineBuf.px[px+8].pixel];
-				dest[px+1] = md_palette[LineBuf.px[px+8+1].pixel];
-				dest[px+2] = md_palette[LineBuf.px[px+8+2].pixel];
-				dest[px+3] = md_palette[LineBuf.px[px+8+3].pixel];
+				*dest = md_palette[(lbptr)->pixel];
+				*(dest+1) = md_palette[(lbptr+1)->pixel];
+				*(dest+2) = md_palette[(lbptr+2)->pixel];
+				*(dest+3) = md_palette[(lbptr+3)->pixel];
 			}
 			
 			break;
@@ -1523,15 +1525,15 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 		case 1:
 			//POST_LINE_32X_M01;
 			VRam_Ind *= 2;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				
-				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = _32X_vdp_cram_adjusted[pixC];
+				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
+					*dest = _32X_vdp_cram_adjusted[pixC];
 				else
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+					*dest = md_palette[lbptr->pixel];
 			}
 			
 			break;
@@ -1539,14 +1541,14 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 		case 2:
 		case 10:
 			//POST_LINE_32X_M10;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				
-				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = _32X_palette[pixS];
+				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
+					*dest = _32X_palette[pixS];
 				else
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+					*dest = md_palette[lbptr->pixel];
 			}
 			break;
 		
@@ -1555,7 +1557,8 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 		case 11:
 		case 15:
 			//POST_LINE_32X_M11;
-			for (int px = 0; px < 320; px++)
+			// TODO: Convert this to use decrementing px and pointer arithmetic.
+			for (int px = 0; px < 320; px--)
 			{
 				pixC = (_32X_VDP_Ram.u16[VRam_Ind] & 0xFF);
 				uint8_t Num = (_32X_VDP_Ram.u16[VRam_Ind++] >> 8);
@@ -1571,59 +1574,59 @@ static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 		case 5:
 			//POST_LINE_32X_M01_P;
 			VRam_Ind *= 2;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				
-				if ((pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+				if ((pixS & 0x8000) && (lbptr->pixel & 0x0F))
+					*dest = md_palette[lbptr->pixel];
 				else
-					dest[px] = _32X_vdp_cram_adjusted[pixC];
+					*dest = _32X_vdp_cram_adjusted[pixC];
 			}
 			break;
 		
 		case 6:
 		case 14:
 			//POST_LINE_32X_M10_P;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				
-				if (!(pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = _32X_palette[pixS];
+				if (!(pixS & 0x8000) && (lbptr->pixel & 0x0F))
+					*dest = _32X_palette[pixS];
 				else
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+					*dest = md_palette[lbptr->pixel];
 			}
 			break;
 		
 		case 9:
 			//POST_LINE_32X_SM01;
 			VRam_Ind *= 2;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				
-				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = _32X_vdp_cram_adjusted[pixC];
+				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
+					*dest = _32X_vdp_cram_adjusted[pixC];
 				else
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+					*dest = md_palette[lbptr->pixel];
 			}
 			break;
 		
 		case 13:
 			//POST_LINE_32X_SM01_P;
 			VRam_Ind *= 2;
-			for (int px = 0; px < 320; px++)
+			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
 				
-				if ((pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
-					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+				if ((pixS & 0x8000) && (lbptr->pixel & 0x0F))
+					*dest = md_palette[lbptr->pixel];
 				else
-					dest[px] = _32X_vdp_cram_adjusted[pixC];
+					*dest = _32X_vdp_cram_adjusted[pixC];
 			}
 			break;
 		
