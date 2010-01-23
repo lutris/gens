@@ -592,15 +592,19 @@ static inline int T_gens_do_MD_frame(void)
 	
 	// Raise the MDP_EVENT_POST_FRAME event.
 	mdp_event_post_frame_t post_frame;
-	const unsigned int screen_offset = (TAB336[VDP_Lines.Visible.Border_Size] + 8);
-	if (bppMD == 32)
-		post_frame.md_screen = &MD_Screen32[screen_offset];
-	else
-		post_frame.md_screen = &MD_Screen[screen_offset];
 	post_frame.width = vdp_getHPix();
 	post_frame.height = VDP_Lines.Visible.Total;
 	post_frame.pitch = 336;
 	post_frame.bpp = bppMD;
+	
+	int screen_offset = (TAB336[VDP_Lines.Visible.Border_Size] + 8);
+	if (post_frame.width < 320)
+		screen_offset += ((320 - post_frame.width) / 2);
+	
+	if (bppMD == 32)
+		post_frame.md_screen = &MD_Screen32[screen_offset];
+	else
+		post_frame.md_screen = &MD_Screen[screen_offset];
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
 	
