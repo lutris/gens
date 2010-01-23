@@ -319,17 +319,17 @@ void Debug_Event(int key, int mod)
 				// Which is it?!
 				if (bppMD == 15)
 				{
-					MD_Palette[7 * 16 + i] =
+					MD_Palette.u16[7 * 16 + i] =
 						((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
 				}
 				else if (bppMD == 16)
 				{
-					MD_Palette[7 * 16 + i] =
+					MD_Palette.u16[7 * 16 + i] =
 						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
 				}
 				else //if (bppMD == 32)
 				{
-					MD_Palette32[7 * 16 * i] =
+					MD_Palette.u32[7 * 16 * i] =
 						((16 * i) << 16) + ((16 * i) << 8) + (16 * i);
 				}
 			}
@@ -951,19 +951,19 @@ static void Refresh_VDP_Palette(void)
 	if (bppMD == 15)
 	{
 		// 15-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 4);
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette.u16, 4);
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x03, 0x7FFF);
 	}
 	else if (bppMD == 16)
 	{
 		// 16-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 4);
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette.u16, 4);
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x03, 0xFFFF);
 	}
 	else //if (bppMD == 32)
 	{
 		// 32-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette32, 4);
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette.u32, 4);
 		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen.u32, 0x03, 0xFFFFFF);
 	}
 	
@@ -1143,19 +1143,19 @@ static void Refresh_Word_RAM_Pattern(void)
 	if (bppMD == 15)
 	{
 		// 15-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 16);
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette.u16, 16);
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x0F, 0x7FFF);
 	}
 	else if (bppMD == 16)
 	{
 		// 16-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 16);
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette.u16, 16);
 		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x0F, 0xFFFF);
 	}
 	else //if (bppMD == 32)
 	{
 		// 32-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette32, 16);
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette.u32, 16);
 		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen.u32, 0x0F, 0xFFFFFF);
 	}
 	

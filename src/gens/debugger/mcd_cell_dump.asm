@@ -26,7 +26,6 @@ section .data align=64
 	
 	extern SYM(MD_Screen)
 	extern SYM(MD_Palette)
-	extern SYM(MD_Palette32)
 	
 	; MD bpp
 	extern SYM(bppMD)
@@ -46,7 +45,7 @@ section .text align=64
 	mov	eax, ebx				; eax = data pixels
 	shr	eax, %2					; keep the first
 	and	eax, 0xF
-	mov	eax, [SYM(MD_Palette32) + eax * 4 + ebp]	; conversion 8->32 bits palette
+	mov	eax, [SYM(MD_Palette) + eax * 4 + ebp]	; conversion 8->32 bits palette
 	mov	[edi + (%1 * 4)], eax			; write the pixel to Dest
 %endmacro
 

@@ -1297,11 +1297,11 @@ static FORCE_INLINE void T_Render_Line_m5(void)
 /**
  * T_Render_LineBuf(): Render the line buffer to the destination surface.
  * @param pixel Type of pixel.
- * @param md_palette MD palette buffer.
  * @param dest Destination surface.
+ * @param md_palette MD palette buffer.
  */
-template<typename pixel, pixel *md_palette>
-static FORCE_INLINE void T_Render_LineBuf(pixel *dest)
+template<typename pixel>
+static FORCE_INLINE void T_Render_LineBuf(pixel *dest, pixel *md_palette)
 {
 	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	const LineBuf_px_t *src = &LineBuf.px[8];
@@ -1476,23 +1476,24 @@ void VDP_Render_Line_m5(void)
 	
 	// Render the image.
 	if (bppMD != 32)
-		T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen.u16[LineStart]);
+		T_Render_LineBuf<uint16_t>(&MD_Screen.u16[LineStart], MD_Palette.u16);
 	else
-		T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen.u32[LineStart]);
+		T_Render_LineBuf<uint32_t>(&MD_Screen.u32[LineStart], MD_Palette.u32);
 }
 
 
 /**
  * T_Render_LineBuf_32X(): Render the 32X line buffer to the destination surface.
  * @param pixel Type of pixel.
+ * @param dest Destination surface.
  * @param md_palette MD palette buffer.
+ * @param _32X_Rend_Mode 32X rendering mode.
  * @param _32X_palette 32X palette buffer.
  * @param _32X_vdp_cram_adjusted 32X adjusted CRam.
- * @param dest Destination surface.
- * @param _32X_Rend_Mode 32X rendering mode.
  */
-template<typename pixel, pixel *md_palette, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted>
-static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
+template<typename pixel>
+static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
+			int _32X_Rend_Mode, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted)
 {
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
 	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
@@ -1777,23 +1778,23 @@ void VDP_Render_Line_m5_32X(void)
 	{
 		if (bppMD != 32)
 		{
-			T_Render_LineBuf_32X<uint16_t, MD_Palette,
-						_32X_Palette_16B, _32X_VDP_CRam_Adjusted>
-						(&MD_Screen.u16[LineStart], _32X_Rend_Mode);
+			T_Render_LineBuf_32X<uint16_t>
+						(&MD_Screen.u16[LineStart], MD_Palette.u16,
+						_32X_Rend_Mode, _32X_Palette_16B, _32X_VDP_CRam_Adjusted);
 		}
 		else
 		{
-			T_Render_LineBuf_32X<uint32_t, MD_Palette32,
-						_32X_Palette_32B, _32X_VDP_CRam_Adjusted32>
-						(&MD_Screen.u32[LineStart], _32X_Rend_Mode);
+			T_Render_LineBuf_32X<uint32_t>
+						(&MD_Screen.u32[LineStart], MD_Palette.u32,
+						_32X_Rend_Mode, _32X_Palette_32B, _32X_VDP_CRam_Adjusted32);
 		}
 	}
 	else
 	{
 		// In border. Use standard MD rendering.
 		if (bppMD != 32)
-			T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen.u16[LineStart]);
+			T_Render_LineBuf<uint16_t>(&MD_Screen.u16[LineStart], MD_Palette.u16);
 		else
-			T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen.u32[LineStart]);
+			T_Render_LineBuf<uint32_t>(&MD_Screen.u32[LineStart], MD_Palette.u32);
 	}
 }

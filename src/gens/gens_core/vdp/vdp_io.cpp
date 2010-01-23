@@ -124,12 +124,9 @@ void VDP_Reset(void)
 	memset(&CRam, 0x00, sizeof(CRam));
 	memset(&VSRam, 0x00, sizeof(VSRam));
 	
-	// Clear MD_Palette and MD_Palette32.
+	// Clear MD_Palette.
 	if (!(VDP_Layers & VDP_LAYER_PALETTE_LOCK))
-	{
 		memset(&MD_Palette, 0x00, sizeof(MD_Palette));
-		memset(&MD_Palette32, 0x00, sizeof(MD_Palette32));
-	}
 	
 	// Sprite arrays.
 	memset(&Sprite_Struct, 0x00, sizeof(Sprite_Struct));

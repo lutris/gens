@@ -37,6 +37,14 @@ typedef union
 } Palette_t;
 extern Palette_t Palette;
 
+// Active MD palette.
+typedef union
+{
+	uint16_t u16[0x100];
+	uint32_t u32[0x100];
+} MD_Palette_t;
+extern MD_Palette_t MD_Palette;
+
 // Screen buffer.
 typedef union
 {
@@ -44,10 +52,6 @@ typedef union
 	uint32_t u32[336 * 240];
 } Screen_t;
 extern Screen_t MD_Screen;
-
-// Active MD palette.
-extern uint16_t MD_Palette[256];
-extern uint32_t MD_Palette32[256];
 
 // Sprite structs.
 typedef struct

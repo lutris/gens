@@ -450,9 +450,9 @@ void VDP_Render_Error(void)
 		{
 			// Update the color bar borders.
 			if (bppMD != 32)
-				T_DrawColorBars_Border<uint16_t>(MD_Screen.u16, MD_Palette[0]);
+				T_DrawColorBars_Border<uint16_t>(MD_Screen.u16, MD_Palette.u16[0]);
 			else //if (bppMD == 32)
-				T_DrawColorBars_Border<uint32_t>(MD_Screen.u32, MD_Palette32[0]);
+				T_DrawColorBars_Border<uint32_t>(MD_Screen.u32, MD_Palette.u32[0]);
 		}
 	}
 }

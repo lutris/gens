@@ -33,18 +33,15 @@
 // C includes.
 #include <stdint.h>
 
-// Palettes and screen buffer.
+// Palettes.
 Palette_t Palette;
+MD_Palette_t MD_Palette;
+// Screen buffer.
 Screen_t MD_Screen;
 
 // VDP layer control.
 // TODO: Figure out 32X and Mode 4 layer assignments.
 unsigned int VDP_Layers = VDP_LAYER_DEFAULT;
-
-// MD screen and palette buffers.
-// TODO: Unionize these!
-uint16_t MD_Palette[0x100];
-uint32_t MD_Palette32[0x100];
 
 // Sprite structs.
 Sprite_Struct_t Sprite_Struct[128];
@@ -138,9 +135,9 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 void VDP_Update_Palette(void)
 {
 	if (bppMD != 32)
-		T_VDP_Update_Palette<false>(MD_Palette, Palette.u16);
+		T_VDP_Update_Palette<false>(MD_Palette.u16, Palette.u16);
 	else
-		T_VDP_Update_Palette<false>(MD_Palette32, Palette.u32);
+		T_VDP_Update_Palette<false>(MD_Palette.u32, Palette.u32);
 }
 
 /**
@@ -149,9 +146,9 @@ void VDP_Update_Palette(void)
 void VDP_Update_Palette_HS(void)
 {
 	if (bppMD != 32)
-		T_VDP_Update_Palette<true>(MD_Palette, Palette.u16);
+		T_VDP_Update_Palette<true>(MD_Palette.u16, Palette.u16);
 	else
-		T_VDP_Update_Palette<true>(MD_Palette32, Palette.u32);
+		T_VDP_Update_Palette<true>(MD_Palette.u32, Palette.u32);
 }
 
 
