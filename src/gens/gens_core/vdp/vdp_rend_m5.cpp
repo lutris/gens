@@ -37,13 +37,7 @@
 #include <stdint.h>
 #include <string.h>
 
-// Force inlining if we're not making a debug build.
-#if !defined(GENS_DEBUG) && defined(__GNUC__) && (__GNUC__ >= 4)
-#define VDP_INLINE __attribute__ ((always_inline))
-#else
-#define VDP_INLINE inline
-#endif
-
+#include "macros/force_inline.h"
 
 // Line buffer for current line.
 // TODO: Mark as static once VDP_Render_Line_m5_asm is ported to C.
@@ -76,7 +70,7 @@ static unsigned int TotalSprites;
  * @return Line number.
  */
 template<bool interlaced>
-static VDP_INLINE int VDP_m5_GetLineNumber(void)
+static FORCE_INLINE int VDP_m5_GetLineNumber(void)
 {
 	// Get the current line number.
 	int vdp_line = VDP_Lines.Visible.Current;
@@ -117,7 +111,7 @@ static VDP_INLINE int VDP_m5_GetLineNumber(void)
  * @param partial If true, only do a partial update. (X pos, X size)
  */
 template<bool interlaced, bool partial>
-static VDP_INLINE void T_Make_Sprite_Struct(void)
+static FORCE_INLINE void T_Make_Sprite_Struct(void)
 {
 	uint16_t *CurSpr = VDP_Reg.Spr_Addr;
 	unsigned int spr_num = 0;
@@ -208,7 +202,7 @@ static VDP_INLINE void T_Make_Sprite_Struct(void)
  * @return Number of visible sprites.
  */
 template<bool sprite_limit, bool interlaced>
-static VDP_INLINE unsigned int T_Update_Mask_Sprite(void)
+static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 {
 	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
 	// - Maximum sprite dots per line: 256/320
@@ -302,7 +296,7 @@ static VDP_INLINE unsigned int T_Update_Mask_Sprite(void)
  * @return X offset.
  */
 template<bool plane>
-static VDP_INLINE uint16_t T_Get_X_Offset(void)
+static FORCE_INLINE uint16_t T_Get_X_Offset(void)
 {
 	const unsigned int H_Scroll_Offset = (VDP_Lines.Visible.Current & VDP_Reg.H_Scroll_Mask) * 2;
 	
@@ -327,7 +321,7 @@ static VDP_INLINE uint16_t T_Get_X_Offset(void)
  * @return Y offset.
  */
 template<bool plane, bool interlaced>
-static VDP_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
+static FORCE_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
 {
 	if ((cell_cur & 0xFF80) || (cell_cur < 0))
 	{
@@ -384,7 +378,7 @@ static VDP_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
  * @return Pattern info.
  */
 template<bool plane>
-static VDP_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
+static FORCE_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// H_Scroll_CMul is the shift value required for the proper vertical offset.
@@ -402,7 +396,7 @@ static VDP_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
  * @param y Y tile number.
  * @return Pattern info.
  */
-static VDP_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
+static FORCE_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
 {
 	// Get the offset.
 	// Window size is dependent on display resolution, not scroll size.
@@ -425,7 +419,7 @@ static VDP_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int 
  * @return Pattern data.
  */
 template<bool interlaced>
-static VDP_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
+static FORCE_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
 	// Vertical offset.
 	unsigned int V_Offset = Y_FineOffset;
@@ -475,7 +469,7 @@ static VDP_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static VDP_INLINE void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static FORCE_INLINE void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -520,7 +514,7 @@ static VDP_INLINE void T_PutPixel_P0(int disp_pixnum, uint32_t pattern, unsigned
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static VDP_INLINE void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static FORCE_INLINE void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -563,7 +557,7 @@ static VDP_INLINE void T_PutPixel_P1(int disp_pixnum, uint32_t pattern, unsigned
  * @return Linebuffer byte.
  */
 template<bool priority, bool h_s, int pat_pixnum, uint32_t mask, int shift>
-static VDP_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsigned int palette)
+static FORCE_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, unsigned int palette)
 {
 	// TODO: Convert mask and shift to template parameters.
 	
@@ -646,7 +640,7 @@ static VDP_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern, u
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, bool flip>
-static VDP_INLINE void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
+static FORCE_INLINE void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palette)
 {
 	if (!plane)
 	{
@@ -705,7 +699,7 @@ static VDP_INLINE void T_PutLine_P0(int disp_pixnum, uint32_t pattern, int palet
  * @param palette	[in] Palette number * 16.
  */
 template<bool plane, bool h_s, bool flip>
-static VDP_INLINE void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
+static FORCE_INLINE void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palette)
 {
 	if (!plane)
 	{
@@ -778,7 +772,7 @@ static VDP_INLINE void T_PutLine_P1(int disp_pixnum, uint32_t pattern, int palet
  * @param palette	[in] Palette number * 16.
  */
 template<bool priority, bool h_s, bool flip>
-static VDP_INLINE void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palette)
+static FORCE_INLINE void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int palette)
 {
 	// Check if the sprite layer is disabled.
 	if (!(VDP_Layers & (priority ? VDP_LAYER_SPRITE_HIGH : VDP_LAYER_SPRITE_LOW)))
@@ -829,7 +823,7 @@ static VDP_INLINE void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int p
  * @param cell_length	[in] (Scroll A) Number of cells to draw.
  */
 template<bool plane, bool interlaced, bool vscroll, bool h_s>
-static VDP_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
+static FORCE_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
 {
 	// Get the horizontal scroll offset. (cell and fine offset)
 	unsigned int X_offset_cell = T_Get_X_Offset<plane>() & 0x3FF;
@@ -954,7 +948,7 @@ static VDP_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool vscroll, bool h_s>
-static VDP_INLINE void T_Render_Line_ScrollA(void)
+static FORCE_INLINE void T_Render_Line_ScrollA(void)
 {
 	// Cell counts for Scroll A.
 	int ScrA_Start, ScrA_Length;
@@ -1093,7 +1087,7 @@ static VDP_INLINE void T_Render_Line_ScrollA(void)
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool h_s>
-static VDP_INLINE void T_Render_Line_Sprite(void)
+static FORCE_INLINE void T_Render_Line_Sprite(void)
 {
 	// Update the sprite masks.
 	unsigned int num_spr;
@@ -1278,7 +1272,7 @@ static VDP_INLINE void T_Render_Line_Sprite(void)
  * @param h_s		[in] Highlight/Shadow enable.
  */
 template<bool interlaced, bool h_s>
-static VDP_INLINE void T_Render_Line_m5(void)
+static FORCE_INLINE void T_Render_Line_m5(void)
 {
 	// Clear the line first.
 	memset(&LineBuf, (h_s ? LINEBUF_SHAD_B : 0), sizeof(LineBuf));
@@ -1307,7 +1301,7 @@ static VDP_INLINE void T_Render_Line_m5(void)
  * @param dest Destination surface.
  */
 template<typename pixel, pixel *md_palette>
-static VDP_INLINE void T_Render_LineBuf(pixel *dest)
+static FORCE_INLINE void T_Render_LineBuf(pixel *dest)
 {
 	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	const LineBuf_px_t *src = &LineBuf.px[8];
@@ -1498,7 +1492,7 @@ void VDP_Render_Line_m5(void)
  * @param _32X_Rend_Mode 32X rendering mode.
  */
 template<typename pixel, pixel *md_palette, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted>
-static VDP_INLINE void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
+static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 {
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
 	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
