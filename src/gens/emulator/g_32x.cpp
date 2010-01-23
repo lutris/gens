@@ -44,9 +44,6 @@
 // MDP Event Manager.
 #include "plugins/eventmgr.hpp"
 
-// 32X 32-bit color functions
-#include "gens_core/vdp/vdp_32x_32bit.h"
-
 // Reverse-engineered 32X firmware.
 #include "fw/bios32xg.bin.h"
 #include "fw/bios32xm.bin.h"
@@ -325,8 +322,8 @@ int Do_32X_VDP_Only(void)
 	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
 	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		Render_Line_32X();
-		Post_Line_32X();
+		// TODO: Call VDP_Render_Line_m5_32X() directly?
+		VDP_Render_Line();
 	}
 	
 	return 0;
@@ -340,7 +337,6 @@ int Do_32X_VDP_Only(void)
 template<bool VDP>
 static inline int T_gens_do_32X_frame(void)
 {
-	// TODO: Update the 32X line renderer to use VDP_Render_Line_m5().
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
@@ -454,8 +450,8 @@ static inline int T_gens_do_32X_frame(void)
 			if (VDP)
 			{
 				// VDP needs to be updated.
-				Render_Line_32X();
-				Post_Line_32X();
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
 			}
 			
 			/* instruction by instruction execution */
@@ -536,8 +532,8 @@ static inline int T_gens_do_32X_frame(void)
 			if (VDP)
 			{
 				// VDP needs to be updated.
-				Render_Line_32X();
-				Post_Line_32X();
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
 			}
 			
 			while (i < Cycles_M68K)
@@ -583,8 +579,8 @@ static inline int T_gens_do_32X_frame(void)
 			if (VDP)
 			{
 				// VDP needs to be updated.
-				Render_Line_32X();
-				Post_Line_32X();
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
 			}
 			
 			/* instruction by instruction execution */

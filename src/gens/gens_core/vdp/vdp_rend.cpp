@@ -147,7 +147,10 @@ void VDP_Render_Line(void)
 	if (VDP_Mode & VDP_MODE_M5)
 	{
 		// Mode 5.
-		VDP_Render_Line_m5();
+		if (_32X_Started)
+			VDP_Render_Line_m5_32X();
+		else
+			VDP_Render_Line_m5();
 	}
 	else
 	{

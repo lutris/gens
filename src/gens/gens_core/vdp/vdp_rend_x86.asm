@@ -2045,6 +2045,7 @@ section .text align=64
 		mov	eax, [SYM(VDP_Reg) + VDP_Reg_t.H_Pix_Begin]
 		mov	edi, [esp]
 		add	esp, byte 4
+		
 		mov	esi, [SYM(_32X_VDP) + vx.State]
 		mov	eax, [SYM(_32X_VDP) + vx.Mode]
 		and	esi, byte 1

@@ -28,6 +28,7 @@ extern "C" {
 #endif
 
 void VDP_Render_Line_m5(void);
+void VDP_Render_Line_m5_32X(void);
 
 typedef struct
 {

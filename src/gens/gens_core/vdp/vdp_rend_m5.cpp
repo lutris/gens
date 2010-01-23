@@ -24,6 +24,8 @@
 #include "vdp_rend.h"
 #include "vdp_io.h"
 
+#include "vdp_32x.h"
+
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -1477,4 +1479,317 @@ void VDP_Render_Line_m5(void)
 		T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen[LineStart]);
 	else
 		T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen32[LineStart]);
+}
+
+
+/**
+ * T_Render_LineBuf_32X(): Render the 32X line buffer to the destination surface.
+ * @param pixel Type of pixel.
+ * @param md_palette MD palette buffer.
+ * @param _32X_palette 32X palette buffer.
+ * @param _32X_vdp_cram_adjusted 32X adjusted CRam.
+ * @param dest Destination surface.
+ */
+template<typename pixel, pixel *md_palette, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted>
+static inline void T_Render_LineBuf_32X(pixel *dest)
+{
+	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
+	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
+	
+	unsigned char pixC; 
+	unsigned short pixS; 
+	
+	// NOTE: We're always assuming H40 mode for 32X.
+	// If that's not the case, replace (320-1) to (VDP_Reg.H_Pix - 1).
+	
+	switch (_32X_Rend_Mode)
+	{
+		case 0:
+		case 4:
+		case 8:
+		case 12:
+			//POST_LINE_32X_M00;
+			for (int px = 0; px < 320; px += 4)
+			{
+				dest[px] = md_palette[LineBuf.px[px+8].pixel];
+				dest[px+1] = md_palette[LineBuf.px[px+8+1].pixel];
+				dest[px+2] = md_palette[LineBuf.px[px+8+2].pixel];
+				dest[px+3] = md_palette[LineBuf.px[px+8+3].pixel];
+			}
+			
+			break;
+		
+		case 1:
+			//POST_LINE_32X_M01;
+			VRam_Ind *= 2;
+			for (int px = 0; px < 320; px++)
+			{
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
+				pixS = _32X_VDP_CRam[pixC];
+				
+				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = _32X_vdp_cram_adjusted[pixC];
+				else
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+			}
+			
+			break;
+		
+		case 2:
+		case 10:
+			//POST_LINE_32X_M10;
+			for (int px = 0; px < 320; px++)
+			{
+				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
+				
+				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = _32X_palette[pixS];
+				else
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+			}
+			break;
+		
+		case 3:
+		case 7:
+		case 11:
+		case 15:
+			//POST_LINE_32X_M11;
+			for (int px = 0; px < 320; px++)
+			{
+				pixC = (_32X_VDP_Ram.u16[VRam_Ind] & 0xFF);
+				uint8_t Num = (_32X_VDP_Ram.u16[VRam_Ind++] >> 8);
+				
+				int px_end = px + Num;
+				for (; px < px_end; px++)
+				{
+					dest[px] = _32X_vdp_cram_adjusted[pixC];
+				}
+			}
+			break;
+		
+		case 5:
+			//POST_LINE_32X_M01_P;
+			VRam_Ind *= 2;
+			for (int px = 0; px < 320; px++)
+			{
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
+				pixS = _32X_VDP_CRam[pixC];
+				
+				if ((pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+				else
+					dest[px] = _32X_vdp_cram_adjusted[pixC];
+			}
+			break;
+		
+		case 6:
+		case 14:
+			//POST_LINE_32X_M10_P;
+			for (int px = 0; px < 320; px++)
+			{
+				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
+				
+				if (!(pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = _32X_palette[pixS];
+				else
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+			}
+			break;
+		
+		case 9:
+			//POST_LINE_32X_SM01;
+			VRam_Ind *= 2;
+			for (int px = 0; px < 320; px++)
+			{
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
+				pixS = _32X_VDP_CRam[pixC];
+				
+				if ((pixS & 0x8000) || !(LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = _32X_vdp_cram_adjusted[pixC];
+				else
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+			}
+			break;
+		
+		case 13:
+			//POST_LINE_32X_SM01_P;
+			VRam_Ind *= 2;
+			for (int px = 0; px < 320; px++)
+			{
+				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
+				pixS = _32X_VDP_CRam[pixC];
+				
+				if ((pixS & 0x8000) && (LineBuf.px[px+8].pixel & 0x0F))
+					dest[px] = md_palette[LineBuf.px[px+8].pixel];
+				else
+					dest[px] = _32X_vdp_cram_adjusted[pixC];
+			}
+			break;
+		
+		default:
+			// Invalid.
+			break;
+	}
+}
+
+
+/**
+ * VDP_Render_Line_m5_32X(): Render a line. (Mode 5, 32X)
+ */
+void VDP_Render_Line_m5_32X(void)
+{
+	// Determine what part of the screen we're in.
+	bool in_border = false;
+	if (VDP_Lines.Visible.Current >= -VDP_Lines.Visible.Border_Size &&
+	    VDP_Lines.Visible.Current < 0)
+	{
+		// Top border.
+		in_border = true;
+	}
+	else if (VDP_Lines.Visible.Current >= VDP_Lines.Visible.Total &&
+		 VDP_Lines.Visible.Current < (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size))
+	{
+		// Bottom border.
+		in_border = true;
+	}
+	else if (VDP_Lines.Visible.Current < -VDP_Lines.Visible.Border_Size ||
+		 VDP_Lines.Visible.Current >= (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size))
+	{
+		// Off screen.
+		return;
+	}
+	
+	// Determine the starting line in MD_Screen.
+	int LineStart = VDP_Lines.Visible.Current;
+	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08) && Video.ntscV30rolling)
+	{
+		// NTSC V30 mode. Simulate screen rolling.
+		LineStart -= VDP_Lines.NTSC_V30.Offset;
+		
+		// Prevent underflow.
+		if (LineStart < 0)
+			LineStart += 240;
+	}
+	LineStart = TAB336[LineStart + VDP_Lines.Visible.Border_Size] + 8;
+	
+	if (in_border && !Video.borderColorEmulation)
+	{
+		// We're in the border area, but border color emulation is disabled.
+		// Clear the border area.
+		// TODO: Only clear this if the option changes or V/H mode changes.
+		if (bppMD == 32)
+			memset(&MD_Screen32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
+		else
+			memset(&MD_Screen[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
+		
+		// ...and we're done here.
+		return;
+	}
+	
+	// Check if the VDP is enabled.
+	if (!(VDP_Reg.m5.Set2 & 0x40) || in_border)
+	{
+		// VDP is disabled, or this is the border region.
+		// Clear the line buffer.
+		
+		// NOTE: S/H is ignored if the VDP is disabled or if
+		// we're in the border region.
+		memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
+	}
+	else
+	{
+		// VDP is enabled.
+		
+		// Check if sprite structures need to be updated.
+		if (VDP_Reg.Interlaced)
+		{
+			// Interlaced.
+			if (VDP_Flags.VRam)
+				T_Make_Sprite_Struct<true, false>();
+			else if (VDP_Flags.VRam_Spr)
+				T_Make_Sprite_Struct<true, true>();
+		}
+		else
+		{
+			// Non-Interlaced.
+			if (VDP_Flags.VRam)
+				T_Make_Sprite_Struct<false, false>();
+			else if (VDP_Flags.VRam_Spr)
+				T_Make_Sprite_Struct<false, true>();
+		}
+		
+		// Clear the VRam flags.
+		VDP_Flags.VRam = 0;
+		VDP_Flags.VRam_Spr = 0;
+		
+		// Determine how to render the image.
+		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced;
+		switch (RenderMode & 3)
+		{
+			case 0:
+				// H/S disabled; interlaced disabled.
+				T_Render_Line_m5<false, false>();
+				break;
+			case 1:
+				// H/S disabled: interlaced enabled.
+				T_Render_Line_m5<true, false>();
+				break;
+			case 2:
+				// H/S enabled; interlaced disabled.
+				T_Render_Line_m5<false, true>();
+				break;
+			case 3:
+				// H/S enabled: interlaced enabled.
+				T_Render_Line_m5<true, true>();
+				break;
+			default:
+				// to make gcc shut up
+				break;
+		}
+	}
+	
+	// Check if the palette was modified.
+	if (VDP_Flags.CRam)
+	{
+		// Update the palette.
+		if (VDP_Reg.m5.Set4 & 0x08)
+			VDP_Update_Palette_HS();
+		else
+			VDP_Update_Palette();
+	}
+	
+	// 32X processing.
+	unsigned int eax = (_32X_VDP.Mode);
+	unsigned int edx = (eax >> 3) & 0x10;
+	unsigned int ebp = (eax >> 11) & 0x20;
+	eax &= 0x03;
+	edx |= ebp;
+	
+	// Set the 32X render mode for the 32-bit color C macros.
+	_32X_Rend_Mode = (eax | ((edx >> 2) & 0xFF));
+	
+	// Render the 32X line.
+	if (!in_border)
+	{
+		if (bppMD != 32)
+		{
+			T_Render_LineBuf_32X<uint16_t, MD_Palette,
+						_32X_Palette_16B, _32X_VDP_CRam_Adjusted>
+						(&MD_Screen[LineStart]);
+		}
+		else
+		{
+			T_Render_LineBuf_32X<uint32_t, MD_Palette32,
+						_32X_Palette_32B, _32X_VDP_CRam_Adjusted32>
+						(&MD_Screen32[LineStart]);
+		}
+	}
+	else
+	{
+		// In border. Use standard MD rendering.
+		if (bppMD != 32)
+			T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen[LineStart]);
+		else
+			T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen32[LineStart]);
+	}
 }
