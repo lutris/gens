@@ -237,7 +237,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				// Render as 565, and convert it afterwards.
 				// TODO: Check if the plugin supports 565 rendering.
 				bppMD = 16;
-				vdraw_rInfo.mdScreen = (void*)(&MD_Screen.u32[8]);
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen.u16[8]);
 				vdraw_rInfo.vmodeFlags |=
 					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
 				vdraw_needs_conversion = true;
