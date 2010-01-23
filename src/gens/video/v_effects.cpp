@@ -40,6 +40,7 @@
 
 #include "v_effects.hpp"
 #include "gens_core/gfx/fastblur.hpp"
+#include "macros/force_inline.h"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -51,7 +52,7 @@
  * T_Update_Gens_Logo(): Update the Gens logo.
  */
 template<typename pixel, int trans_min, int trans_max>
-static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
+static FORCE_INLINE void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 {
 	// The Gens logo is 260x180.
 	// Thus, in 16-bit color, it's 93,600 bytes,
@@ -220,7 +221,7 @@ int Update_Gens_Logo(void)
  */
 template<typename pixel, pixel Rmask, pixel Gmask, pixel Bmask,
 		  pixel Radd, pixel Gadd, pixel Badd>
-static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
+static FORCE_INLINE void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
 {
 	if (introEffectColor == 0)
 	{

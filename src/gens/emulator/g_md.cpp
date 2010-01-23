@@ -36,6 +36,7 @@
 #include "util/sound/gym.hpp"
 
 #include "libgsft/gsft_byteswap.h"
+#include "macros/force_inline.h"
 
 #include "gens_ui.hpp"
 
@@ -447,7 +448,7 @@ do {									\
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static inline int T_gens_do_MD_frame(void)
+static FORCE_INLINE int T_gens_do_MD_frame(void)
 {
 	int *buf[2];
 	int HInt_Counter;

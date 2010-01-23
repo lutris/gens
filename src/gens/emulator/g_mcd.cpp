@@ -48,6 +48,7 @@ using std::string;
 #include "util/sound/gym.hpp"
 
 #include "libgsft/gsft_byteswap.h"
+#include "macros/force_inline.h"
 
 #include "ui/gens_ui.hpp"
 
@@ -342,7 +343,7 @@ void Reset_SegaCD(void)
  * @param startCol Left-most column of the LED.
  */
 template<typename pixel>
-static inline void T_Draw_SegaCD_LED(pixel* screen, pixel color, unsigned short start_column)
+static FORCE_INLINE void T_Draw_SegaCD_LED(pixel* screen, pixel color, unsigned short start_column)
 {
 	// Get the line offsets.
 	const unsigned int bottom_line = (VDP_Lines.Visible.Total + VDP_Lines.Visible.Border_Size);
@@ -409,7 +410,7 @@ static void SegaCD_Display_LED(void)
  * @param perfect_sync If true, use perfect synchronization.
  */
 template<bool VDP, bool perfect_sync>
-static inline int T_gens_do_MCD_frame(void)
+static FORCE_INLINE int T_gens_do_MCD_frame(void)
 {
 	// TODO: Update for VDP border changes.
 	int *buf[2], i, j;

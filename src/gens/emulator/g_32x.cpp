@@ -38,6 +38,7 @@
 #include "util/sound/gym.hpp"
 
 #include "libgsft/gsft_byteswap.h"
+#include "macros/force_inline.h"
 
 #include "ui/gens_ui.hpp"
 
@@ -338,7 +339,7 @@ int Do_32X_VDP_Only(void)
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static inline int T_gens_do_32X_frame(void)
+static FORCE_INLINE int T_gens_do_32X_frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
