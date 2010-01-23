@@ -43,6 +43,7 @@
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
 
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
@@ -486,7 +487,9 @@ int ImageUtil::ScreenShot(void)
 	// TODO: Use macros in video/v_inline.h
 	const int w = vdp_getHPix();
 	const int h = VDP_Lines.Visible.Total;
-	const int start = (VDP_Lines.Visible.Border_Size * 336) + 8;
+	int start = TAB336[VDP_Lines.Visible.Border_Size] + 8;
+	if (w < 320)
+		start += ((320 - w) / 2);
 	
 	// Build the filename.
 	int num = -1;
