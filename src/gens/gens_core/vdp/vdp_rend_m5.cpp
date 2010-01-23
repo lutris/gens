@@ -1313,14 +1313,14 @@ static VDP_INLINE void T_Render_LineBuf(pixel *dest)
 	const LineBuf_px_t *src = &LineBuf.px[8];
 	
 	// Render the line buffer to the destination surface.
-	pixel *dest_v = (dest + VDP_Reg.H_Pix_Begin);
-	for (unsigned int i = (num_px / 4); i != 0; i--, dest_v += 4, src += 4)
+	dest += VDP_Reg.H_Pix_Begin;
+	for (unsigned int i = (num_px / 4); i != 0; i--, dest += 4, src += 4)
 	{
 		// TODO: Endianness conversions.
-		*dest_v     = md_palette[src->pixel];
-		*(dest_v+1) = md_palette[(src+1)->pixel];
-		*(dest_v+2) = md_palette[(src+2)->pixel];
-		*(dest_v+3) = md_palette[(src+3)->pixel];
+		*dest     = md_palette[src->pixel];
+		*(dest+1) = md_palette[(src+1)->pixel];
+		*(dest+2) = md_palette[(src+2)->pixel];
+		*(dest+3) = md_palette[(src+3)->pixel];
 	}
 	
 	if (VDP_Reg.H_Pix_Begin == 0)
@@ -1333,6 +1333,8 @@ static VDP_INLINE void T_Render_LineBuf(pixel *dest)
 	register const pixel border_color = (Video.borderColorEmulation ? md_palette[0] : 0);
 	
 	// Left border.
+	dest -= VDP_Reg.H_Pix_Begin;
+	dest -= VDP_Reg.H_Pix;
 	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 	{
 		*dest     = border_color;
@@ -1342,12 +1344,13 @@ static VDP_INLINE void T_Render_LineBuf(pixel *dest)
 	}
 	
 	// Right border.
-	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest_v += 4)
+	dest += VDP_Reg.H_Pix;
+	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 	{
-		*dest_v     = border_color;
-		*(dest_v+1) = border_color;
-		*(dest_v+2) = border_color;
-		*(dest_v+3) = border_color;
+		*dest     = border_color;
+		*(dest+1) = border_color;
+		*(dest+2) = border_color;
+		*(dest+3) = border_color;
 	}
 }
 
