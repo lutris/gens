@@ -1563,7 +1563,7 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		
 		// We recalculate rate and frequence after interpolation
 		
-		YM2612.Rate = YM2612.Clock / 144;
+		YM2612.Rate = YM2612.Clock / 144.0;
 		YM2612.Frequence = 1.0;
 	}
 	else
