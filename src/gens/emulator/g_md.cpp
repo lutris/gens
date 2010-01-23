@@ -491,9 +491,6 @@ static inline int T_gens_do_MD_frame(void)
 	// Set the VRam flag to force a VRam update.
 	VDP_Flags.VRam = 1;
 	
-	// Clear VBlank status.
-	VDP_Status &= ~0x0008;
-	
 	// Interlaced frame status.
 	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
 	// This bit is cleared on even frames and if not running in interlaced mode.
@@ -521,14 +518,17 @@ static inline int T_gens_do_MD_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
-		// NOTE: Gauntlet 4's Start button is broken if we run the
-		// top border before the visible area.
 		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
 						VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
 		
 		if (inVisibleArea)
 		{
 			// In visible area.
+			
+			// Clear VBlank status.
+			// TODO: Only do this on visible line 0.
+			VDP_Status &= ~0x0008;
+			
 			VDP_Status |=  0x0004;	// HBlank = 1
 			main68k_exec(Cycles_M68K - 404);
 			VDP_Status &= ~0x0004;	// HBlank = 0

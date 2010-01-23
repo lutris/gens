@@ -433,9 +433,6 @@ static inline int T_gens_do_MCD_frame(void)
 	// Set the VRam flag to force a VRam update.
 	VDP_Flags.VRam = 1;
 	
-	// Clear VBlank status.
-	VDP_Status &= ~0x0008;
-	
 	// Interlaced frame status.
 	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
 	// This bit is cleared on even frames and if not running in interlaced mode.
@@ -480,6 +477,10 @@ static inline int T_gens_do_MCD_frame(void)
 		// TODO: Combine chunks of code here.
 		if (inVisibleArea)
 		{
+			// Clear VBlank status.
+			// TODO: Only do this on visible line 0.
+			VDP_Status &= ~0x0008;
+			
 			VDP_Status |= 0x0004;	// HBlank = 1
 			
 			if (!perfect_sync)
