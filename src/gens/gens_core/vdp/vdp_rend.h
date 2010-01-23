@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-// Color palettes.
+// Full MD palette.
 typedef union
 {
 	uint16_t u16[0x1000];
@@ -37,12 +37,16 @@ typedef union
 } Palette_t;
 extern Palette_t Palette;
 
-// 15/16-bit color
-extern uint16_t MD_Screen[336 * 240];
-extern uint16_t MD_Palette[256];
+// Screen buffer.
+typedef union
+{
+	uint16_t u16[336 * 240];
+	uint32_t u32[336 * 240];
+} Screen_t;
+extern Screen_t MD_Screen;
 
-// 32-bit color
-extern uint32_t MD_Screen32[336 * 240];
+// Active MD palette.
+extern uint16_t MD_Palette[256];
 extern uint32_t MD_Palette32[256];
 
 // Sprite structs.

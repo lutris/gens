@@ -25,7 +25,6 @@
 section .bss align=64
 	
 	extern SYM(MD_Screen)
-	extern SYM(MD_Screen32)
 	
 	; MD bpp
 	extern SYM(bppMD)
@@ -186,7 +185,7 @@ section .text align=64
 	
 	; 32-bit color
 	._32BIT:
-		lea	edi, [SYM(MD_Screen32) + 8 * 4]
+		lea	edi, [SYM(MD_Screen) + 8 * 4]
 
 	.Loop_Y32:
 		mov	eax, [SYM(_32X_VDP.Mode)]
@@ -269,7 +268,7 @@ section .text align=64
 		cmp	ebp, 220
 		jb	near .Loop_Y32
 		
-		lea	edi, [SYM(MD_Screen32) + 8 * 4 + 336 * 4 * 220]
+		lea	edi, [SYM(MD_Screen) + 8 * 4 + 336 * 4 * 220]
 		xor	eax, eax
 		mov	ecx, 128
 	

@@ -26,7 +26,6 @@ section .data align=64
 	
 	extern SYM(MD_Screen)
 	extern SYM(MD_Palette)
-	extern SYM(MD_Screen32)
 	extern SYM(MD_Palette32)
 	
 	; MD bpp
@@ -111,7 +110,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 6
-	lea	edi, [SYM(MD_Screen32) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -215,7 +214,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 6
-	lea	edi, [SYM(MD_Screen32) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -349,7 +348,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 1
-	lea	edi, [SYM(MD_Screen32) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row
@@ -484,7 +483,7 @@ align 16
 
 ._32BIT:
 	shl	ebp, 1
-	lea	edi, [SYM(MD_Screen32) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
+	lea	edi, [SYM(MD_Screen) + (((10+8)*336)+30)*4]	; edi = MD_Screen + copy offset
 
 .Loop_EDX32:
 	mov	ecx, 16					; ecx = Number of patterns per row

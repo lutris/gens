@@ -602,9 +602,9 @@ static inline int T_gens_do_MD_frame(void)
 		screen_offset += ((320 - post_frame.width) / 2);
 	
 	if (bppMD == 32)
-		post_frame.md_screen = &MD_Screen32[screen_offset];
+		post_frame.md_screen = &MD_Screen.u32[screen_offset];
 	else
-		post_frame.md_screen = &MD_Screen[screen_offset];
+		post_frame.md_screen = &MD_Screen.u16[screen_offset];
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
 	

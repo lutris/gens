@@ -33,8 +33,9 @@
 // C includes.
 #include <stdint.h>
 
-// Full MD palette.
+// Palettes and screen buffer.
 Palette_t Palette;
+Screen_t MD_Screen;
 
 // VDP layer control.
 // TODO: Figure out 32X and Mode 4 layer assignments.
@@ -42,8 +43,6 @@ unsigned int VDP_Layers = VDP_LAYER_DEFAULT;
 
 // MD screen and palette buffers.
 // TODO: Unionize these!
-uint16_t MD_Screen[336*240];
-uint32_t MD_Screen32[336*240];
 uint16_t MD_Palette[0x100];
 uint32_t MD_Palette32[0x100];
 

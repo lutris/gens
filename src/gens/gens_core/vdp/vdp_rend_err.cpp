@@ -419,18 +419,18 @@ void VDP_Render_Error(void)
 		// Redraw the color bars and reprint the error message.
 		if (bppMD == 15)
 		{
-			T_DrawColorBars<uint16_t>(MD_Screen, cb15);
-			T_DrawVDPErrorMessage<uint16_t, 0x7FFF>(MD_Screen);
+			T_DrawColorBars<uint16_t>(MD_Screen.u16, cb15);
+			T_DrawVDPErrorMessage<uint16_t, 0x7FFF>(MD_Screen.u16);
 		}
 		else if (bppMD == 16)
 		{
-			T_DrawColorBars<uint16_t>(MD_Screen, cb16);
-			T_DrawVDPErrorMessage<uint16_t, 0xFFFF>(MD_Screen);
+			T_DrawColorBars<uint16_t>(MD_Screen.u16, cb16);
+			T_DrawVDPErrorMessage<uint16_t, 0xFFFF>(MD_Screen.u16);
 		}
 		else //if (bppMD == 32)
 		{
-			T_DrawColorBars<uint32_t>(MD_Screen32, cb32);
-			T_DrawVDPErrorMessage<uint32_t, 0xFFFFFF>(MD_Screen32);
+			T_DrawColorBars<uint32_t>(MD_Screen.u32, cb32);
+			T_DrawVDPErrorMessage<uint32_t, 0xFFFFFF>(MD_Screen.u32);
 		}
 		
 		// Force a palette update.
@@ -450,9 +450,9 @@ void VDP_Render_Error(void)
 		{
 			// Update the color bar borders.
 			if (bppMD != 32)
-				T_DrawColorBars_Border<uint16_t>(MD_Screen, MD_Palette[0]);
+				T_DrawColorBars_Border<uint16_t>(MD_Screen.u16, MD_Palette[0]);
 			else //if (bppMD == 32)
-				T_DrawColorBars_Border<uint32_t>(MD_Screen32, MD_Palette32[0]);
+				T_DrawColorBars_Border<uint32_t>(MD_Screen.u32, MD_Palette32[0]);
 		}
 	}
 }

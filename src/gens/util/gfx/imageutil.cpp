@@ -521,9 +521,9 @@ int ImageUtil::ScreenShot(void)
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
-		screen = (void*)(&MD_Screen[start]);
+		screen = (void*)(&MD_Screen.u16[start]);
 	else //if (bppMD == 32)
-		screen = (void*)(&MD_Screen32[start]);
+		screen = (void*)(&MD_Screen.u32[start]);
 	
 	// Attempt to save the screenshot.
 	int rval = WriteImage(filename, fmt, w, h, 336, screen, bppMD);

@@ -948,17 +948,23 @@ static void Refresh_VDP_Palette(void)
 {
 	Print_Text("******** VDP PALETTE ********", 180, 0, TEXT_RED);
 	
-	if (bppMD == 32)
+	if (bppMD == 15)
+	{
+		// 15-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 4);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x03, 0x7FFF);
+	}
+	else if (bppMD == 16)
+	{
+		// 16-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 4);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x03, 0xFFFF);
+	}
+	else //if (bppMD == 32)
 	{
 		// 32-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen32, MD_Palette32, 4);
-		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen32, 0x03, 0xFFFFFF);
-	}
-	else
-	{
-		// 15/16-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen, MD_Palette, 4);
-		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x03, 0xFFFF);
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette32, 4);
+		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen.u32, 0x03, 0xFFFFFF);
 	}
 	
 	Print_Text("******** VDP CONTROL ********", 180, 60, TEXT_WHITE);
@@ -1134,17 +1140,23 @@ static void Refresh_Word_RAM_Pattern(void)
 	
 	Print_Text("******** VDP PALETTE ********", 180, 0, TEXT_RED);
 	
-	if (bppMD == 32)
+	if (bppMD == 15)
+	{
+		// 15-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 16);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x0F, 0x7FFF);
+	}
+	else if (bppMD == 16)
+	{
+		// 16-bit color palette update.
+		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen.u16, MD_Palette, 16);
+		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen.u16, 0x0F, 0xFFFF);
+	}
+	else //if (bppMD == 32)
 	{
 		// 32-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen32, MD_Palette32, 16);
-		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen32, 0x0F, 0xFFFFFF);
-	}
-	else
-	{
-		// 15/16-bit color palette update.
-		T_Refresh_VDP_Palette_Colors<uint16_t>(MD_Screen, MD_Palette, 16);
-		T_Refresh_VDP_Palette_Outline<uint16_t>(MD_Screen, 0x0F, 0xFFFF);
+		T_Refresh_VDP_Palette_Colors<uint32_t>(MD_Screen.u32, MD_Palette32, 16);
+		T_Refresh_VDP_Palette_Outline<uint32_t>(MD_Screen.u32, 0x0F, 0xFFFFFF);
 	}
 	
 	Print_Text("****** WORD RAM PATTERN ******", 28, 0, TEXT_GREEN);
@@ -1191,9 +1203,9 @@ void Update_Debug_Screen(void)
 {
 	// Clear the MD screen.
 	if (bppMD == 32)
-		memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+		memset(&MD_Screen.u32, 0x00, sizeof(MD_Screen.u32));
 	else
-		memset(MD_Screen, 0x00, sizeof(MD_Screen));
+		memset(&MD_Screen.u16, 0x00, sizeof(MD_Screen.u16));
 	
 	if (debug_show_vdp)
 	{

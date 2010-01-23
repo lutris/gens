@@ -383,22 +383,22 @@ static void SegaCD_Display_LED(void)
 	if (LED_Status & 2)
 	{
 		if (bppMD == 15)
-			T_Draw_SegaCD_LED(MD_Screen, ledReady_15, 0);
+			T_Draw_SegaCD_LED(MD_Screen.u16, ledReady_15, 0);
 		else if (bppMD == 16)
-			T_Draw_SegaCD_LED(MD_Screen, ledReady_16, 0);
+			T_Draw_SegaCD_LED(MD_Screen.u16, ledReady_16, 0);
 		else //if (bppMD == 32)
-			T_Draw_SegaCD_LED(MD_Screen32, ledReady_32, 0);
+			T_Draw_SegaCD_LED(MD_Screen.u32, ledReady_32, 0);
 	}
 	
 	// Access LED
 	if (LED_Status & 1)
 	{
 		if (bppMD == 15)
-			T_Draw_SegaCD_LED(MD_Screen, ledAccess_15, 8);
+			T_Draw_SegaCD_LED(MD_Screen.u16, ledAccess_15, 8);
 		else if (bppMD == 16)
-			T_Draw_SegaCD_LED(MD_Screen, ledAccess_16, 8);
+			T_Draw_SegaCD_LED(MD_Screen.u16, ledAccess_16, 8);
 		else //if (bppMD == 32)
-			T_Draw_SegaCD_LED(MD_Screen32, ledAccess_32, 8);
+			T_Draw_SegaCD_LED(MD_Screen.u32, ledAccess_32, 8);
 	}
 }
 
@@ -681,9 +681,9 @@ static inline int T_gens_do_MCD_frame(void)
 		screen_offset += ((320 - post_frame.width) / 2);
 	
 	if (bppMD == 32)
-		post_frame.md_screen = &MD_Screen32[screen_offset];
+		post_frame.md_screen = &MD_Screen.u32[screen_offset];
 	else
-		post_frame.md_screen = &MD_Screen[screen_offset];
+		post_frame.md_screen = &MD_Screen.u16[screen_offset];
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
 	

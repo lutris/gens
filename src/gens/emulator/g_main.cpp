@@ -351,8 +351,7 @@ int W_VSync;
 int ice = 0;
 void Clear_Screen_MD(void)
 {
-	memset(MD_Screen, 0x00, sizeof(MD_Screen));
-	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+	memset(&MD_Screen, 0x00, sizeof(MD_Screen));
 }
 
 

@@ -221,7 +221,6 @@ section .rodata align=64
 section .bss align=64
 	
 	extern SYM(MD_Screen)
-	extern SYM(MD_Screen32)
 	
 	extern SYM(CDD.Control)
 	extern SYM(CDD.Rcv_Status)
@@ -1006,7 +1005,7 @@ section .text align=64
 	Print_Text32:	; 32-bit color text printing functions.
 
 		shl	ebx, 1					; Pitch Dest
-		lea	edi, [SYM(MD_Screen32) + 8 * 4]		; edi = Dest
+		lea	edi, [SYM(MD_Screen) + 8 * 4]		; edi = Dest
 		
 		; Print on the bottom of the screen.
 		mov	ebx, 336 * 4				; Pitch Dest

@@ -115,9 +115,8 @@ int _32X_Started = 0;
  */
 void VDP_Reset(void)
 {
-	// Clear MD_Screen and MD_Screen32.
+	// Clear MD_Screen.
 	memset(&MD_Screen, 0x00, sizeof(MD_Screen));
-	memset(&MD_Screen32, 0x00, sizeof(MD_Screen32));
 	
 	// Clear VRam, CRam, and VSRam.
 	// (This also clears the VSRam overflow area.)

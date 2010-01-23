@@ -495,13 +495,13 @@ int vdraw_ddraw_init(void)
 		if (ddsd.ddpfPixelFormat.dwRGBBitCount > 16)
 		{
 			// 32-bit color.
-			ddsd.lpSurface = MD_Screen32;
+			ddsd.lpSurface = MD_Screen.u32;
 			ddsd.lPitch = 336 * 4;
 		}
 		else
 		{
 			// 15-bit or 16-bit color.
-			ddsd.lpSurface = MD_Screen;
+			ddsd.lpSurface = MD_Screen.u16;
 			ddsd.lPitch = 336 * 2;
 		}
 		

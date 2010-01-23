@@ -1394,9 +1394,9 @@ void VDP_Render_Line_m5(void)
 		// Clear the border area.
 		// TODO: Only clear this if the option changes or V/H mode changes.
 		if (bppMD == 32)
-			memset(&MD_Screen32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
+			memset(&MD_Screen.u32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
 		else
-			memset(&MD_Screen[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
+			memset(&MD_Screen.u16[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
 		
 		// ...and we're done here.
 		return;
@@ -1476,9 +1476,9 @@ void VDP_Render_Line_m5(void)
 	
 	// Render the image.
 	if (bppMD != 32)
-		T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen[LineStart]);
+		T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen.u16[LineStart]);
 	else
-		T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen32[LineStart]);
+		T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen.u32[LineStart]);
 }
 
 
@@ -1679,9 +1679,9 @@ void VDP_Render_Line_m5_32X(void)
 		// Clear the border area.
 		// TODO: Only clear this if the option changes or V/H mode changes.
 		if (bppMD == 32)
-			memset(&MD_Screen32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
+			memset(&MD_Screen.u32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
 		else
-			memset(&MD_Screen[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
+			memset(&MD_Screen.u16[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
 		
 		// ...and we're done here.
 		return;
@@ -1776,21 +1776,21 @@ void VDP_Render_Line_m5_32X(void)
 		{
 			T_Render_LineBuf_32X<uint16_t, MD_Palette,
 						_32X_Palette_16B, _32X_VDP_CRam_Adjusted>
-						(&MD_Screen[LineStart], _32X_Rend_Mode);
+						(&MD_Screen.u16[LineStart], _32X_Rend_Mode);
 		}
 		else
 		{
 			T_Render_LineBuf_32X<uint32_t, MD_Palette32,
 						_32X_Palette_32B, _32X_VDP_CRam_Adjusted32>
-						(&MD_Screen32[LineStart], _32X_Rend_Mode);
+						(&MD_Screen.u32[LineStart], _32X_Rend_Mode);
 		}
 	}
 	else
 	{
 		// In border. Use standard MD rendering.
 		if (bppMD != 32)
-			T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen[LineStart]);
+			T_Render_LineBuf<uint16_t, MD_Palette>(&MD_Screen.u16[LineStart]);
 		else
-			T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen32[LineStart]);
+			T_Render_LineBuf<uint32_t, MD_Palette32>(&MD_Screen.u32[LineStart]);
 	}
 }

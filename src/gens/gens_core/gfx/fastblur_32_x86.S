@@ -28,7 +28,7 @@
 
 /* External symbols. */
 #ifndef __APPLE__
-.extern SYM(MD_Screen32)
+.extern SYM(MD_Screen)
 #endif
 
 /** .data section **/
@@ -57,7 +57,7 @@ SYM(Fast_Blur_32_x86):
 	pushl	%esi
 	
 	/* Start at the beginning of the actual display data. */
-	movl	$(SYM(MD_Screen32) + (8*4)), %esi
+	movl	$(SYM(MD_Screen) + (8*4)), %esi
 	movl	$(MD_SCREEN_SIZE - 8), %ecx
 	xorl	%ebx, %ebx
 	jmp	0f
@@ -101,7 +101,7 @@ SYM(Fast_Blur_32_x86_mmx):
 	pushl	%esi
 	
 	/* Start at the beginning of the actual display data. */
-	movl	$(SYM(MD_Screen32) + (8*4)), %esi
+	movl	$(SYM(MD_Screen) + (8*4)), %esi
 	movl	$((MD_SCREEN_SIZE - 8) / 2), %ecx
 	
 	/* Load the 32-bit color mask. */

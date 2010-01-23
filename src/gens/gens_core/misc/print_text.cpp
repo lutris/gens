@@ -226,8 +226,9 @@ static inline void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, in
 /**
  * T_Print_Text(): Print text directly to MD_Screen[] / MD_Screen32[].
  */
-template<typename pixel, pixel *screen>
-static inline void T_Print_Text(const char *str, int row_length, const pixel *palette,
+template<typename pixel>
+static inline void T_Print_Text(pixel *screen, const char *str,
+				int row_length, const pixel *palette,
 				int Pos_X, int Pos_Y, int Style)
 {
 	// Get the screen pointer.
@@ -298,21 +299,21 @@ void Print_Text(const char *str, int Pos_X, int Pos_Y, int Style)
 	// Render the text.
 	if (bppMD == 15)
 	{
-		T_Print_Text<uint16_t, MD_Screen>(str, row_length,
-							&Text_Palette_15[palette_num][0],
-							Pos_X, Pos_Y, Style);
+		T_Print_Text<uint16_t>(MD_Screen.u16, str, row_length,
+					&Text_Palette_15[palette_num][0],
+					Pos_X, Pos_Y, Style);
 	}
 	else if (bppMD == 16)
 	{
-		T_Print_Text<uint16_t, MD_Screen>(str, row_length,
-							&Text_Palette_16[palette_num][0],
-							Pos_X, Pos_Y, Style);
+		T_Print_Text<uint16_t>(MD_Screen.u16, str, row_length,
+					&Text_Palette_16[palette_num][0],
+					Pos_X, Pos_Y, Style);
 	}
 	else //if (bppMD == 32)
 	{
-		T_Print_Text<uint32_t, MD_Screen32>(str, row_length,
-							&Text_Palette_32[palette_num][0],
-							Pos_X, Pos_Y, Style);
+		T_Print_Text<uint32_t>(MD_Screen.u32, str, row_length,
+					&Text_Palette_32[palette_num][0],
+					Pos_X, Pos_Y, Style);
 	}
 }
 

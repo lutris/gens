@@ -206,9 +206,9 @@ int Update_Gens_Logo(void)
 	}
 	
 	if (bppMD != 32)
-		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen, (uint16_t*)logo_data);
+		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen.u16, (uint16_t*)logo_data);
 	else
-		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen32, (uint32_t*)logo_data);
+		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen.u32, (uint32_t*)logo_data);
 	
 	return 0;
 }
@@ -303,17 +303,17 @@ void Update_Crazy_Effect(int introEffectColor)
 	{
 		case 15:
 			T_Update_Crazy_Effect<uint16_t, 0x7C00, 0x03E0, 0x001F,
-					      0x0400, 0x0020, 0x0001>(introEffectColor, MD_Screen);
+					      0x0400, 0x0020, 0x0001>(introEffectColor, MD_Screen.u16);
 			break;
 		
 		case 16:
 			T_Update_Crazy_Effect<uint16_t, 0xF800, 0x07C0, 0x001F,
-					      0x0800, 0x0040, 0x0001>(introEffectColor, MD_Screen);
+					      0x0800, 0x0040, 0x0001>(introEffectColor, MD_Screen.u16);
 			break;
 		
 		case 32:
-			T_Update_Crazy_Effect<uint32_t, (uint32_t)0xF80000, (uint32_t)0x00F800, (uint32_t)0x0000F8,
-					      (uint32_t)0x080000, (uint32_t)0x000800, (uint32_t)0x000008>(introEffectColor, MD_Screen32);
+			T_Update_Crazy_Effect<uint32_t, 0xF80000, 0x00F800, 0x0000F8,
+					      0x080000, 0x000800, 0x000008>(introEffectColor, MD_Screen.u32);
 			break;
 	}
 }
@@ -321,7 +321,7 @@ void Update_Crazy_Effect(int introEffectColor)
 
 /**
  * T_veffect_pause_tint(): Tint the screen a purple hue to indicate that emulation is paused.
- * @param mdScreen Pointer to the MD screen buffer.
+ * @param pixel Type of pixel.
  * @param RMask Red component mask.
  * @param GMask Green component mask.
  * @param BMask Blue component mask.
@@ -330,24 +330,22 @@ void Update_Crazy_Effect(int introEffectColor)
  * @param BShift Blue component shift.
  * @param rInfo Rendering information.
  * @param scale Scaling value.
+ * @param mdScreen Pointer to the MD screen buffer.
  */
-template<typename pixel, pixel *mdScreen,
-	 pixel RMask, pixel GMask, pixel BMask,
+template<typename pixel, pixel RMask, pixel GMask, pixel BMask,
 	 unsigned int RShift, unsigned int GShift, unsigned int BShift>
-static void T_veffect_pause_tint(void)
+static void T_veffect_pause_tint(pixel *mdScreen)
 {
 	// TODO: Adjust this function for RGB Color Scaling.
 	uint8_t r, g, b, nr, ng, nb;
 	uint16_t sum;
 	
-	pixel *pos = mdScreen;
-	
 	for (unsigned int i = (336*240); i != 0; i--)
 	{
 		// Get the color components.
-		r = (uint8_t)((*pos & RMask) >> RShift);
-		g = (uint8_t)((*pos & GMask) >> GShift);
-		b = (uint8_t)((*pos & BMask) >> BShift);
+		r = (uint8_t)((*mdScreen & RMask) >> RShift);
+		g = (uint8_t)((*mdScreen & GMask) >> GShift);
+		b = (uint8_t)((*mdScreen & BMask) >> BShift);
 		
 		// Add the components together.
 		sum = r + g + b;
@@ -365,7 +363,7 @@ static void T_veffect_pause_tint(void)
 		nb &= 0x1E;
 		
 		// Put the new pixel.
-		*pos++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
+		*mdScreen++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
 	}
 }
 
@@ -379,21 +377,15 @@ void veffect_pause_tint(void)
 	{
 		case 32:
 			// 32-bit color.
-			T_veffect_pause_tint<uint32_t, MD_Screen32,
-					     (uint32_t)0xFF0000, (uint32_t)0x00FF00, (uint32_t)0x0000FF,
-					     16+3, 8+3, 0+3>();
+			T_veffect_pause_tint<uint32_t, 0xFF0000, 0x00FF00, 0x0000FF, 16+3, 8+3, 0+3>(MD_Screen.u32);
 			break;
 		case 16:
 			// 16-bit color.
-			T_veffect_pause_tint<uint16_t, MD_Screen,
-					     (uint16_t)0xF800, (uint16_t)0x07C0, (uint16_t)0x001F,
-					     11, 6, 0>();
+			T_veffect_pause_tint<uint16_t, 0xF800, 0x07C0, 0x001F, 11, 6, 0>(MD_Screen.u16);
 			break;
 		case 15:
 			// 15-bit color.
-			T_veffect_pause_tint<uint16_t, MD_Screen,
-					     (uint16_t)0x7C00, (uint16_t)0x03E0, (uint16_t)0x001F,
-					     10, 5, 0>();
+			T_veffect_pause_tint<uint16_t, 0x7C00, 0x03E0, 0x001F, 10, 5, 0>(MD_Screen.u16);
 			break;
 	}
 }
