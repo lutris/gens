@@ -155,8 +155,8 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			else
 			{
 				// Plugin doesn't support 555 output at all.
-				// TODO: Add a variable to indicate automatic color depth conversion.
-				// For now, just outputs 555.
+				// Render as 555, and convert it afterwards.
+				// TODO: Check if the plugin supports 555 rendering.
 				bppMD = 15;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen.u16[8]);
 				vdraw_rInfo.vmodeFlags |=
@@ -195,8 +195,8 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			else
 			{
 				// Plugin doesn't support 565 output at all.
-				// TODO: Add a variable to indicate automatic color depth conversion.
-				// For now, just outputs 565.
+				// Render as 565, and convert it afterwards.
+				// TODO: Check if the plugin supports 565 rendering.
 				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen.u16[8]);
 				vdraw_rInfo.vmodeFlags |=
@@ -234,12 +234,12 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			else
 			{
 				// Plugin doesn't support 888 output at all.
-				// TODO: Add a variable to indicate automatic color depth conversion.
-				// For now, just output 888.
-				bppMD = 32;
+				// Render as 565, and convert it afterwards.
+				// TODO: Check if the plugin supports 565 rendering.
+				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen.u32[8]);
 				vdraw_rInfo.vmodeFlags |=
-					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_888);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
 				vdraw_needs_conversion = true;
 			}
 			break;
