@@ -31,7 +31,6 @@ using std::string;
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "mdZ80/mdZ80.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 #include "segacd/cd_sys.hpp"
@@ -40,6 +39,10 @@ using std::string;
 #include "gens_core/sound/pcm.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/cd_file.h"
+
+// VDP rendering functions.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -520,7 +523,7 @@ static inline int T_gens_do_MCD_frame(void)
 			if (VDP)
 			{
 				// VDP needs to be updated.
-				Render_Line();
+				VDP_Render_Line();
 			}
 			
 			if (perfect_sync)

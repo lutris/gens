@@ -25,6 +25,7 @@
 // VDP includes.
 #include "vdp_rend.h"
 #include "vdp_io.h"
+#include "TAB336.h"
 
 // C includes.
 #include <stdint.h>

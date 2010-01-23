@@ -30,8 +30,7 @@ ASMFILES = \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/cpu/sh2/sh2_io.o \
-		gens_core/vdp/vdp_32x_x86.o \
-		gens_core/vdp/vdp_rend_x86.o
+		gens_core/vdp/vdp_32x_x86.o
 
 NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
@@ -104,7 +103,7 @@ gens_SOURCES = \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
 		gens_core/vdp/vdp_io.cpp \
-		gens_core/vdp/vdp_rend_x86.asm \
+		gens_core/vdp/TAB336.c \
 		gens_core/vdp/vdp_rend.cpp \
 		gens_core/vdp/vdp_rend_err.cpp \
 		gens_core/vdp/vdp_rend_m5.cpp \
@@ -227,6 +226,7 @@ noinst_HEADERS = \
 		gens_core/io/io.h \
 		gens_core/io/io_teamplayer.h \
 		gens_core/vdp/vdp_io.h \
+		gens_core/vdp/TAB336.h \
 		gens_core/vdp/vdp_rend.h \
 		gens_core/vdp/vdp_rend_err.hpp \
 		gens_core/vdp/vdp_rend_m5.hpp \

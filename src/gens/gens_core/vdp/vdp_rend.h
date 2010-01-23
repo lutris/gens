@@ -45,14 +45,6 @@ extern uint16_t MD_Palette[256];
 extern uint32_t MD_Screen32[336 * 240];
 extern uint32_t MD_Palette32[256];
 
-// _32X_Rend_Mode is used for the 32X 32-bit color C functions.
-// See g_32x_32bit.h
-extern unsigned int _32X_Rend_Mode;
-
-// 336/320 tables.
-extern unsigned int TAB336[240];
-extern unsigned int TAB320[240];
-
 typedef struct
 {
 	int Pos_X;

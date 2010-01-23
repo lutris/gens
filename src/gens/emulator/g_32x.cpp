@@ -25,11 +25,14 @@
 #include "mdZ80/mdZ80.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 #include "gens_core/sound/pwm.h"
+
+// VDP rendering functions.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
+#include "gens_core/vdp/vdp_32x.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"

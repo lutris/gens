@@ -28,8 +28,9 @@
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 
-// VDP Rendering Functions.
+// VDP rendering functions.
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"

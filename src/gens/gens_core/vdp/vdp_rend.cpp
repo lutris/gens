@@ -36,6 +36,25 @@
 // Full MD palette.
 Palette_t Palette;
 
+// VDP layer control.
+// TODO: Figure out 32X and Mode 4 layer assignments.
+unsigned int VDP_Layers = VDP_LAYER_DEFAULT;
+
+// MD screen and palette buffers.
+// TODO: Unionize these!
+uint16_t MD_Screen[336*240];
+uint32_t MD_Screen32[336*240];
+uint16_t MD_Palette[0x100];
+uint32_t MD_Palette32[0x100];
+
+// Sprite structures.
+// TODO: Move these to vdp_rend_m5.cpp.
+Sprite_Struct_t Sprite_Struct[0x100];
+int Sprite_Visible[0x100];
+
+// Sprite Limit toggle.
+int Sprite_Over;
+
 
 /**
  * T_VDP_Update_Palette(): VDP palette update function.

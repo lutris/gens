@@ -23,6 +23,7 @@
 #include "vdp_rend_m5.hpp"
 #include "vdp_rend.h"
 #include "vdp_io.h"
+#include "TAB336.h"
 
 #include "vdp_32x.h"
 
@@ -1489,9 +1490,10 @@ void VDP_Render_Line_m5(void)
  * @param _32X_palette 32X palette buffer.
  * @param _32X_vdp_cram_adjusted 32X adjusted CRam.
  * @param dest Destination surface.
+ * @param _32X_Rend_Mode 32X rendering mode.
  */
 template<typename pixel, pixel *md_palette, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted>
-static inline void T_Render_LineBuf_32X(pixel *dest)
+static inline void T_Render_LineBuf_32X(pixel *dest, int _32X_Rend_Mode)
 {
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
 	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
@@ -1766,7 +1768,7 @@ void VDP_Render_Line_m5_32X(void)
 	edx |= ebp;
 	
 	// Set the 32X render mode for the 32-bit color C macros.
-	_32X_Rend_Mode = (eax | ((edx >> 2) & 0xFF));
+	int _32X_Rend_Mode = (eax | ((edx >> 2) & 0xFF));
 	
 	// Render the 32X line.
 	if (!in_border)
@@ -1775,13 +1777,13 @@ void VDP_Render_Line_m5_32X(void)
 		{
 			T_Render_LineBuf_32X<uint16_t, MD_Palette,
 						_32X_Palette_16B, _32X_VDP_CRam_Adjusted>
-						(&MD_Screen[LineStart]);
+						(&MD_Screen[LineStart], _32X_Rend_Mode);
 		}
 		else
 		{
 			T_Render_LineBuf_32X<uint32_t, MD_Palette32,
 						_32X_Palette_32B, _32X_VDP_CRam_Adjusted32>
-						(&MD_Screen32[LineStart]);
+						(&MD_Screen32[LineStart], _32X_Rend_Mode);
 		}
 	}
 	else

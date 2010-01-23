@@ -44,6 +44,7 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
 
 
 /**
