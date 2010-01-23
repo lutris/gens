@@ -58,6 +58,7 @@ typedef struct
 	int reserved;
 } Sprite_Struct_t;
 extern Sprite_Struct_t Sprite_Struct[128];
+extern unsigned int Sprite_Visible[128];
 
 extern int Sprite_Over;
 
