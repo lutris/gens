@@ -51,10 +51,12 @@ typedef union
 } LineBuf_t;
 LineBuf_t LineBuf;
 
-VDP_Data_Misc_t VDP_Data_Misc;
-
 // Interlaced rendering mode.
 IntRend_Mode_t VDP_IntRend_Mode = INTREND_FLICKER;
+
+// Temporary VDP data.
+static unsigned int Y_FineOffset;
+static unsigned int TotalSprites;
 
 
 /**
@@ -184,7 +186,7 @@ static inline void T_Make_Sprite_Struct(void)
 	
 	// Store the byte index of the last sprite.
 	if (!partial)
-		VDP_Data_Misc.Spr_End = (spr_num - 1) * sizeof(Sprite_Struct_t);
+		TotalSprites = (spr_num - 1);
 }
 
 
@@ -210,9 +212,6 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 	
 	unsigned int spr_num = 0;	// Current sprite number in Sprite_Struct[].
 	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
-	
-	// Number of sprites in Sprite_Struct.
-	const unsigned int TotalSprites = (VDP_Data_Misc.Spr_End / sizeof(Sprite_Struct_t)) + 1;
 	
 	// Get the current line number.
 	int vdp_line = VDP_m5_GetLineNumber<interlaced>();
@@ -248,7 +247,7 @@ static inline unsigned int T_Update_Mask_Sprite(void)
 		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
 		{
 			// Sprite is onscreen.
-			Sprite_Visible[spr_vis] = (spr_num * sizeof(Sprite_Struct_t));
+			Sprite_Visible[spr_vis] = spr_num;
 			spr_vis++;
 		}
 		
@@ -347,7 +346,7 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
 	if (interlaced)
 	{
 		// Interlaced mode.
-		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 15);
+		Y_FineOffset = (VScroll_Offset & 15);
 		
 		// Get the V Cell offset and prevent it from overflowing.
 		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
@@ -355,7 +354,7 @@ static inline unsigned int T_Update_Y_Offset(int cell_cur)
 	else
 	{
 		// Non-Interlaced mode.
-		VDP_Data_Misc.Y_FineOffset = (VScroll_Offset & 7);
+		Y_FineOffset = (VScroll_Offset & 7);
 		
 		// Get the V Cell offset and prevent it from overflowing.
 		VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
@@ -418,7 +417,7 @@ template<bool interlaced>
 static inline unsigned int T_Get_Pattern_Data(uint16_t pattern)
 {
 	// Vertical offset.
-	unsigned int V_Offset = VDP_Data_Misc.Y_FineOffset;
+	unsigned int V_Offset = Y_FineOffset;
 	
 	// Get the tile address.
 	unsigned int TileAddr;
@@ -1026,9 +1025,9 @@ static inline void T_Render_Line_ScrollA(void)
 		// Calculate the fine offsets.
 		int vdp_line = VDP_m5_GetLineNumber<interlaced>();
 		if (interlaced)
-			VDP_Data_Misc.Y_FineOffset = (vdp_line & 15);
+			Y_FineOffset = (vdp_line & 15);
 		else
-			VDP_Data_Misc.Y_FineOffset = (vdp_line & 7);
+			Y_FineOffset = (vdp_line & 7);
 		
 		// Loop through the cells.
 		for (int x = Win_Length; x > 0; x--)
@@ -1108,7 +1107,7 @@ static inline void T_Render_Line_Sprite(void)
 	for (unsigned int spr_vis = 0; spr_vis < num_spr; spr_vis++)
 	{
 		// Get the sprite number. (TODO: Eliminate the sizeof division.)
-		unsigned int spr_num = Sprite_Visible[spr_vis] / sizeof(Sprite_Struct[0]);
+		unsigned int spr_num = Sprite_Visible[spr_vis];
 		
 		// Determine the cell and line offsets.
 		unsigned int cell_offset = (VDP_m5_GetLineNumber<interlaced>() - Sprite_Struct[spr_num].Pos_Y);

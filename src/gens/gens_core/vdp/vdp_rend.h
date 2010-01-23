@@ -45,6 +45,7 @@ extern uint16_t MD_Palette[256];
 extern uint32_t MD_Screen32[336 * 240];
 extern uint32_t MD_Palette32[256];
 
+// Sprite structs.
 typedef struct
 {
 	int Pos_X;
@@ -53,12 +54,10 @@ typedef struct
 	unsigned int Size_Y;
 	int Pos_X_Max;
 	int Pos_Y_Max;
-	unsigned int Num_Tile;	// Inclues palette, priority, and flip bits.
-	int dirt;
+	unsigned int Num_Tile;	// Includes palette, priority, and flip bits.
+	int reserved;
 } Sprite_Struct_t;
-extern Sprite_Struct_t Sprite_Struct[256];
-
-extern int Sprite_Visible[256];
+extern Sprite_Struct_t Sprite_Struct[128];
 
 extern int Sprite_Over;
 

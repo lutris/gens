@@ -47,10 +47,9 @@ uint32_t MD_Screen32[336*240];
 uint16_t MD_Palette[0x100];
 uint32_t MD_Palette32[0x100];
 
-// Sprite structures.
-// TODO: Move these to vdp_rend_m5.cpp.
-Sprite_Struct_t Sprite_Struct[0x100];
-int Sprite_Visible[0x100];
+// Sprite structs.
+Sprite_Struct_t Sprite_Struct[128];
+unsigned int Sprite_Visible[128];
 
 // Sprite Limit toggle.
 int Sprite_Over;
