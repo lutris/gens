@@ -1329,22 +1329,25 @@ static VDP_INLINE void T_Render_LineBuf(pixel *dest)
 	// Draw the borders.
 	// NOTE: S/H is ignored if we're in the border region.
 	
+	// Get the border color.
+	register const pixel border_color = (Video.borderColorEmulation ? md_palette[0] : 0);
+	
 	// Left border.
 	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
 	{
-		*dest     = md_palette[0];
-		*(dest+1) = md_palette[0];
-		*(dest+2) = md_palette[0];
-		*(dest+3) = md_palette[0];
+		*dest     = border_color;
+		*(dest+1) = border_color;
+		*(dest+2) = border_color;
+		*(dest+3) = border_color;
 	}
 	
 	// Right border.
 	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest_v += 4)
 	{
-		*dest_v     = md_palette[0];
-		*(dest_v+1) = md_palette[0];
-		*(dest_v+2) = md_palette[0];
-		*(dest_v+3) = md_palette[0];
+		*dest_v     = border_color;
+		*(dest_v+1) = border_color;
+		*(dest_v+2) = border_color;
+		*(dest_v+3) = border_color;
 	}
 }
 
@@ -1394,9 +1397,9 @@ void VDP_Render_Line_m5(void)
 		// Clear the border area.
 		// TODO: Only clear this if the option changes or V/H mode changes.
 		if (bppMD == 32)
-			memset(&MD_Screen.u32[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint32_t));
+			memset(&MD_Screen.u32[LineStart], 0x00, 320*sizeof(uint32_t));
 		else
-			memset(&MD_Screen.u16[LineStart], 0x00, VDP_Reg.H_Pix*sizeof(uint16_t));
+			memset(&MD_Screen.u16[LineStart], 0x00, 320*sizeof(uint16_t));
 		
 		// ...and we're done here.
 		return;
