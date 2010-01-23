@@ -309,33 +309,6 @@ void Debug_Event(int key, int mod)
 			
 			break;
 		
-		case GENS_KEY_NUM_DIVIDE:
-			// What does this do?
-			VDP_Status &= ~2;
-			for (i = 0; i < 16; i++)
-			{
-				// NOTE: Gens Rerecording uses [12 * 16 * i].
-				// Original Gens uses [7 * 16 * i].
-				// Which is it?!
-				if (bppMD == 15)
-				{
-					MD_Palette.u16[7 * 16 + i] =
-						((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
-				}
-				else if (bppMD == 16)
-				{
-					MD_Palette.u16[7 * 16 + i] =
-						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
-				}
-				else //if (bppMD == 32)
-				{
-					MD_Palette.u32[7 * 16 * i] =
-						((16 * i) << 16) + ((16 * i) << 8) + (16 * i);
-				}
-			}
-			
-			break;
-		
 		case GENS_KEY_NUM_MULTIPLY:
 			if (mod & GENS_KMOD_SHIFT)
 				pattern_pal--;
