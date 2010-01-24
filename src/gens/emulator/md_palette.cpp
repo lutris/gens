@@ -294,20 +294,20 @@ void Recalculate_Palettes(void)
 		case 15:
 			T_Recalculate_Palette_MD<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>
-					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
+					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted.u16);
 			break;
 		
 		case 16:
 			T_Recalculate_Palette_MD<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>
-					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
+					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted.u16);
 			break;
 		
 		case 32:
 		default:
 			T_Recalculate_Palette_MD<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>(Palette.u32);
 			T_Recalculate_Palette_32X<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>
-					(_32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
+					(_32X_Palette.u32, _32X_VDP_CRam_Adjusted.u32);
 			break;
 	}
 	
@@ -327,7 +327,7 @@ void Recalculate_Palettes(void)
 void Adjust_CRam_32X(void)
 {
 	if (bppMD != 32)
-		T_Adjust_CRam_32X<uint16_t>(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
+		T_Adjust_CRam_32X<uint16_t>(_32X_Palette.u16, _32X_VDP_CRam_Adjusted.u16);
 	else
-		T_Adjust_CRam_32X<uint32_t>(_32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
+		T_Adjust_CRam_32X<uint32_t>(_32X_Palette.u32, _32X_VDP_CRam_Adjusted.u32);
 }

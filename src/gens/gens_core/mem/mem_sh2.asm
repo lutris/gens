@@ -152,13 +152,11 @@ section .bss align=64
 	extern M_SH2
 	extern S_SH2
 	
-	; 32B and Adjusted32 ported from Gens Rerecording.
 	extern SYM(bppMD)
 	extern SYM(_32X_Palette)
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP_CRam)
 	extern SYM(_32X_VDP_CRam_Adjusted)
-	extern SYM(_32X_VDP_CRam_Adjusted32)
 	extern SYM(_32X_VDP)
 	
 	extern SYM(PWM_FIFO_R)
@@ -767,7 +765,7 @@ section .text align=64
 		
 	._32X_CRAM_32BPP:
 		mov	ebx, [SYM(_32X_Palette) + edx * 4]
-		mov	[SYM(_32X_VDP_CRam_Adjusted32) + ecx * 2], ebx
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx * 2], ebx
 		
 	._32X_CRAM_END:
 		pop	ebx
@@ -937,7 +935,7 @@ section .text align=64
 		mov	edx, [SYM(_32X_Palette) + edx * 4]
 		shl	ecx, 1
 		and	eax, 0xFFFF
-		mov	[SYM(_32X_VDP_CRam_Adjusted32) + ecx + 4], edx
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 4], edx
 		mov	eax, [SYM(_32X_Palette) + eax * 4]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 0], eax
 		

@@ -60,7 +60,6 @@ section .bss align=64
 	extern SYM(bppMD)
 	extern SYM(_32X_Palette)
 	extern SYM(_32X_VDP_CRam_Adjusted)
-	extern SYM(_32X_VDP_CRam_Adjusted32)
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP_CRam)
 	extern SYM(_32X_VDP)
@@ -2526,7 +2525,7 @@ section .text align=64
 		
 	._32X_CRAM_32BPP:
 		mov	edx, [SYM(_32X_Palette) + eax * 4]
-		mov	[SYM(_32X_VDP_CRam_Adjusted32) + (ebx - 0xA15200) * 2], edx
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + (ebx - 0xA15200) * 2], edx
 		
 	._32X_CRAM_END:
 		pop	edx

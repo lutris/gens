@@ -59,8 +59,12 @@ typedef union
 extern _32X_Palette_t _32X_Palette;
 
 // Adjusted CRam.
-extern uint16_t _32X_VDP_CRam_Adjusted[0x100];
-extern uint32_t _32X_VDP_CRam_Adjusted32[0x100];
+typedef union
+{
+	uint16_t u16[0x100];
+	uint32_t u32[0x100];
+} _32X_VDP_CRam_Adjusted_t;
+extern _32X_VDP_CRam_Adjusted_t _32X_VDP_CRam_Adjusted;
 
 void _32X_VDP_Reset(void);
 void _32X_VDP_Draw(int FB_Num);

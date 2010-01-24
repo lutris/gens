@@ -38,7 +38,6 @@ section .bss align=64
 	
 	; Adjusted CRam.
 	extern SYM(_32X_VDP_CRam_Adjusted)
-	extern SYM(_32X_VDP_CRam_Adjusted32)
 	
 	alignb 32
 	
@@ -225,8 +224,8 @@ section .text align=64
 	._32X_Draw_M01_P32:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	edx, byte [esi + ebx * 2 + 1]
-			mov	eax, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
-			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + edx * 4]
+			mov	eax, [SYM(_32X_VDP_CRam_Adjusted) + eax * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted) + edx * 4]
 			mov	[edi + 4], eax
 			mov	[edi + 0], edx
 			inc	bx
@@ -247,7 +246,7 @@ section .text align=64
 	._32X_Draw_M11_Loop32:
 			movzx	eax, byte [esi + ebx * 2 + 0]
 			movzx	ecx, byte [esi + ebx * 2 + 1]
-			mov	eax, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
+			mov	eax, [SYM(_32X_VDP_CRam_Adjusted) + eax * 4]
 			inc	ecx
 			inc	bx
 			sub	edx, ecx
@@ -272,12 +271,12 @@ section .text align=64
 		mov	ecx, 128
 	
 	.Palette_Loop32:
-			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted) + eax * 4]
 			mov	[edi + 0], edx
 			mov	[edi + 4], edx
 			mov	[edi + 336 * 4 + 0], edx
 			mov	[edi + 336 * 4 + 4], edx
-			mov	edx, [SYM(_32X_VDP_CRam_Adjusted32) + eax * 4 + 128 * 4]
+			mov	edx, [SYM(_32X_VDP_CRam_Adjusted) + eax * 4 + 128 * 4]
 			mov	[edi + 336 * 8 + 0], edx
 			mov	[edi + 336 * 8 + 4], edx
 			mov	[edi + 336 * 12 + 0], edx

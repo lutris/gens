@@ -1800,13 +1800,13 @@ void VDP_Render_Line_m5_32X(void)
 		{
 			T_Render_LineBuf_32X<uint16_t>
 						(&MD_Screen.u16[LineStart], MD_Palette.u16,
-						_32X_Rend_Mode, _32X_Palette.u16, _32X_VDP_CRam_Adjusted);
+						_32X_Rend_Mode, _32X_Palette.u16, _32X_VDP_CRam_Adjusted.u16);
 		}
 		else
 		{
 			T_Render_LineBuf_32X<uint32_t>
 						(&MD_Screen.u32[LineStart], MD_Palette.u32,
-						_32X_Rend_Mode, _32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
+						_32X_Rend_Mode, _32X_Palette.u32, _32X_VDP_CRam_Adjusted.u32);
 		}
 	}
 	else

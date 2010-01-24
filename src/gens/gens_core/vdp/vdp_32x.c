@@ -26,7 +26,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
 // VDP RAM and CRam.
 _32X_VDP_Ram_t _32X_VDP_Ram;
 uint16_t _32X_VDP_CRam[0x100];
@@ -35,8 +34,7 @@ uint16_t _32X_VDP_CRam[0x100];
 _32X_Palette_t _32X_Palette;
 
 // Adjusted CRam.
-uint16_t _32X_VDP_CRam_Adjusted[0x100];
-uint32_t _32X_VDP_CRam_Adjusted32[0x100];
+_32X_VDP_CRam_Adjusted_t _32X_VDP_CRam_Adjusted;
 
 
 /**
