@@ -233,6 +233,12 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// A file was dragged onto the Gens window.
 			dragDropFile((HDROP)wParam);
 			break;
+		
+		case WM_SETTINGCHANGE:
+			// System settings were changed.
+			// TODO: Redo fonts.
+			vdraw_init_display_size();
+			break;
 	}
 	
 	return pDefWindowProcU(hWnd, message, wParam, lParam);

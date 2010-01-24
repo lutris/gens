@@ -112,6 +112,11 @@ int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
+#ifdef GENS_OS_WIN32
+extern RECT vdraw_rectDisplay;
+void WINAPI vdraw_init_display_size(void);
+#endif
+
 // Current backend.
 extern const vdraw_backend_t *vdraw_cur_backend;
 extern VDRAW_BACKEND vdraw_cur_backend_id;

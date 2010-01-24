@@ -248,6 +248,11 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		return -1;
 	}
 	
+#ifdef GENS_OS_WIN32
+	// Initialize the display size.
+	vdraw_init_display_size();
+#endif
+	
 	// Initialize the backend.
 	if (vdraw_backends_broken[backend] != 0 ||
 	    vdraw_backends[backend]->init() != 0)
@@ -321,6 +326,43 @@ int vdraw_backend_end(void)
 	vdraw_cur_backend = NULL;
 	return 0;
 }
+
+
+#ifdef GENS_OS_WIN32
+RECT vdraw_rectDisplay;
+/**
+ * vdraw_init_display_size(): Initialize the Win32 display size variables.
+ */
+void WINAPI vdraw_init_display_size(void)
+{
+	// Check if the system supports multiple monitors.
+	const int scrn_width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	const int scrn_height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	
+	if (scrn_width == 0 || scrn_height == 0)
+	{
+		// System does not support multiple monitors.
+		vdraw_rectDisplay.left = 0;
+		vdraw_rectDisplay.top = 0;
+		
+		// Get the single-monitor size.
+		vdraw_rectDisplay.right = GetSystemMetrics(SM_CXSCREEN);
+		vdraw_rectDisplay.bottom = GetSystemMetrics(SM_CYSCREEN);
+	}
+	else
+	{
+		// System supports multiple monitors.
+		
+		// Get the left/top.
+		vdraw_rectDisplay.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+		vdraw_rectDisplay.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+		
+		// Calculate the right/bottom.
+		vdraw_rectDisplay.right = vdraw_rectDisplay.left + scrn_width;
+		vdraw_rectDisplay.bottom = vdraw_rectDisplay.top + scrn_height;
+	}
+}
+#endif
 
 
 /**

@@ -592,6 +592,16 @@ int WINAPI vdraw_ddraw_clear_primary_screen(void)
 		rd.right += p.x;
 		rd.bottom += p.y;
 		
+		// Clip the destination rectangle to the screen.
+		if (rd.bottom > vdraw_rectDisplay.bottom)
+			rd.bottom += (vdraw_rectDisplay.bottom - rd.bottom);
+		if (rd.top < vdraw_rectDisplay.top)
+			rd.top += (vdraw_rectDisplay.top - rd.top);
+		if (rd.left < vdraw_rectDisplay.left)
+			rd.left += (vdraw_rectDisplay.left - rd.left);
+		if (rd.right > vdraw_rectDisplay.right)
+			rd.right += (vdraw_rectDisplay.right - rd.right);
+		
 		if (rd.top < rd.bottom)
 			lpDDS_Primary->Blt(&rd, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 	}
@@ -696,6 +706,38 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int
 		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
 		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
 		RectDest.right += p.x;  //Upth-Modif - that I use to find the center
+		
+		// Clip the destination rectangle to the screen.
+		// TODO: Update for 2x hardware rendering (if we do that eventually).
+		int diff;
+		if (RectDest.bottom > vdraw_rectDisplay.bottom)
+		{
+			// Off the bottom of the screen.
+			diff = (vdraw_rectDisplay.bottom - RectDest.bottom);
+			RectDest.bottom += diff;
+			RectSrc.bottom += diff;
+		}
+		if (RectDest.top < vdraw_rectDisplay.top)
+		{
+			// Off the top of the screen.
+			diff = (vdraw_rectDisplay.top - RectDest.top);
+			RectDest.top += diff;
+			RectSrc.top += diff;
+		}
+		if (RectDest.left <= vdraw_rectDisplay.left)
+		{
+			// Off the left side of the screen.
+			diff = (vdraw_rectDisplay.left - RectDest.left);
+			RectDest.left += diff;
+			RectSrc.left += diff;
+		}
+		if (RectDest.right > vdraw_rectDisplay.right)
+		{
+			// Off the right side of the screen.
+			diff = (vdraw_rectDisplay.right - RectDest.right);
+			RectDest.right += diff;
+			RectSrc.right += diff;
+		}
 	}
 }
 
