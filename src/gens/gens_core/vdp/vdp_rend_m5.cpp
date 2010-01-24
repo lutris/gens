@@ -1533,7 +1533,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 8:
 		case 12:
 			//POST_LINE_32X_M00;
-			for (unsigned int px = (320/4)-1; px != 0; px--, dest += 4, lbptr += 4)
+			for (unsigned int px = (320/4); px != 0; px--, dest += 4, lbptr += 4)
 			{
 				*dest = md_palette[(lbptr)->pixel];
 				*(dest+1) = md_palette[(lbptr+1)->pixel];
@@ -1546,7 +1546,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 1:
 			//POST_LINE_32X_M01;
 			VRam_Ind *= 2;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -1562,7 +1562,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 2:
 		case 10:
 			//POST_LINE_32X_M10;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				
@@ -1595,7 +1595,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 5:
 			//POST_LINE_32X_M01_P;
 			VRam_Ind *= 2;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -1610,7 +1610,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 6:
 		case 14:
 			//POST_LINE_32X_M10_P;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				
@@ -1624,7 +1624,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 9:
 			//POST_LINE_32X_SM01;
 			VRam_Ind *= 2;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
@@ -1639,7 +1639,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 13:
 			//POST_LINE_32X_SM01_P;
 			VRam_Ind *= 2;
-			for (unsigned int px = 320-1; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
