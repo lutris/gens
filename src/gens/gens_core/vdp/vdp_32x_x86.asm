@@ -33,9 +33,8 @@ section .bss align=64
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP_CRam)
 	
-	; Full 32X palettes.
-	extern SYM(_32X_Palette_16B)
-	extern SYM(_32X_Palette_32B)
+	; Full 32X palette.
+	extern SYM(_32X_Palette)
 	
 	; Adjusted CRam.
 	extern SYM(_32X_VDP_CRam_Adjusted)
@@ -97,8 +96,8 @@ section .text align=64
 	._32X_Draw_M10_P:
 			movzx	eax, word [esi + ebx * 2 + 0]
 			movzx	edx, word [esi + ebx * 2 + 2]
-			mov	ax, [SYM(_32X_Palette_16B) + eax * 2]
-			mov	dx, [SYM(_32X_Palette_16B) + edx * 2]
+			mov	ax, [SYM(_32X_Palette) + eax * 2]
+			mov	dx, [SYM(_32X_Palette) + edx * 2]
 			mov	[edi + 0], ax
 			mov	[edi + 2], dx
 			add	bx, byte 2
@@ -205,8 +204,8 @@ section .text align=64
 	._32X_Draw_M10_P32:
 			movzx	eax, word [esi + ebx * 2 + 0]
 			movzx	edx, word [esi + ebx * 2 + 2]
-			mov	eax, [SYM(_32X_Palette_32B) + eax * 4]
-			mov	edx, [SYM(_32X_Palette_32B) + edx * 4]
+			mov	eax, [SYM(_32X_Palette) + eax * 4]
+			mov	edx, [SYM(_32X_Palette) + edx * 4]
 			mov	[edi + 0], eax
 			mov	[edi + 4], edx
 			add	bx, byte 2

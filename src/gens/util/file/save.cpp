@@ -33,6 +33,7 @@
 #include "save.hpp"
 
 #include "emulator/g_main.hpp"
+#include "emulator/md_palette.hpp"
 
 // CPU
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -1943,12 +1944,8 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	_32X_Set_FB();
 	M68K_Set_32X_Rom_Bank();
 
-	//Recalculate_Palettes();
-	for (int i = 0; i < 0x100; i++)
-	{
-		_32X_VDP_CRam_Adjusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
-		_32X_VDP_CRam_Adjusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
-	}
+	// Readjust the 32X CRam.
+	Adjust_CRam_32X();
 
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(sizeof(gsx_v7_32X) == G32X_LENGTH_EX);

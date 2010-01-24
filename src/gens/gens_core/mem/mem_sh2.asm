@@ -153,9 +153,8 @@ section .bss align=64
 	extern S_SH2
 	
 	; 32B and Adjusted32 ported from Gens Rerecording.
-	
-	extern SYM(_32X_Palette_16B)
-	extern SYM(_32X_Palette_32B)
+	extern SYM(bppMD)
+	extern SYM(_32X_Palette)
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP_CRam)
 	extern SYM(_32X_VDP_CRam_Adjusted)
@@ -732,7 +731,7 @@ section .text align=64
 	
 	DECLF MSH2_Write_Word_00, 8
 		test	ecx, 0xFFC000
-		jz	short SH2_WW_Bad
+		jz	near SH2_WW_Bad
 		test	ecx, 0xFFBF00
 		jnz	short SH2_Write_Word_VDP
 		
@@ -757,11 +756,20 @@ section .text align=64
 		push	ebx
 		and	edx, 0xFFFF
 		and	ecx, 0x1FE
-		mov	ax, [SYM(_32X_Palette_16B + edx *)2]
-		mov	ebx, [SYM(_32X_Palette_32B + edx *)4]
 		mov	[SYM(_32X_VDP_CRam) + ecx], dx
+		
+		; Adjust 32X CRam.
+		cmp	[SYM(bppMD)], byte 32
+		je	._32X_CRAM_32BPP
+		mov	ax, [SYM(_32X_Palette) + edx * 2]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx], ax
+		jmp	._32X_CRAM_END
+		
+	._32X_CRAM_32BPP:
+		mov	ebx, [SYM(_32X_Palette) + edx * 4]
 		mov	[SYM(_32X_VDP_CRam_Adjusted32) + ecx * 2], ebx
+		
+	._32X_CRAM_END:
 		pop	ebx
 		ret
 	
@@ -913,24 +921,27 @@ section .text align=64
 		rol	eax, 16
 		and	edx, 0xFFFF
 		mov	[SYM(_32X_VDP_CRam) + ecx], eax
-		mov	dx, [SYM(_32X_Palette_16B) + edx * 2]
+		
+		; Adjust 32X CRam.
+		cmp	[SYM(bppMD)], byte 32
+		je	._32X_CRAM_32BPP
+		
+		mov	dx, [SYM(_32X_Palette) + edx * 2]
 		and	eax, 0xFFFF
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 2], dx
-		mov	ax, [SYM(_32X_Palette_16B) + eax * 2]
+		mov	ax, [SYM(_32X_Palette) + eax * 2]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 0], ax
+		jmp	._32X_CRAM_END
 		
-		; 32-bit color code ported from Gens Re-Recording.
-		mov	eax, [SYM(_32X_VDP_CRam) + ecx]
-		mov	edx, eax
+	._32X_CRAM_32BPP:
+		mov	edx, [SYM(_32X_Palette) + edx * 4]
 		shl	ecx, 1
-		rol	edx, 16
 		and	eax, 0xFFFF
-		and	edx, 0xFFFF
-		mov	eax, [SYM(_32X_Palette_32B) + eax * 4]
-		mov	edx, [SYM(_32X_Palette_32B) + edx * 4]
-		mov	[SYM(_32X_VDP_CRam_Adjusted32) + ecx + 0], eax
 		mov	[SYM(_32X_VDP_CRam_Adjusted32) + ecx + 4], edx
+		mov	eax, [SYM(_32X_Palette) + eax * 4]
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 0], eax
 		
+	._32X_CRAM_END:
 		ret
 	
 	align 32

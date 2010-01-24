@@ -27,6 +27,7 @@
 
 #include "g_main.hpp"
 #include "ui/gens_ui.hpp"
+#include "macros/force_inline.h"
 
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
@@ -182,6 +183,24 @@ static inline void T_Recalculate_Palette_MD(pixel *palMD)
 
 
 /**
+ * T_Adjust_CRam_32X(): Adjust the 32X CRam.
+ */
+template<typename pixel>
+static FORCE_INLINE void T_Adjust_CRam_32X(pixel *pal32X, pixel *cramAdjusted32X)
+{
+	uint16_t *cram_ptr = &_32X_VDP_CRam[0];
+	
+	for (int i = 0; i < 0x100; i += 4)
+	{
+		cramAdjusted32X[i] = pal32X[_32X_VDP_CRam[i]];
+		cramAdjusted32X[i+1] = pal32X[_32X_VDP_CRam[i+1]];
+		cramAdjusted32X[i+2] = pal32X[_32X_VDP_CRam[i+2]];
+		cramAdjusted32X[i+3] = pal32X[_32X_VDP_CRam[i+3]];
+	}
+}
+
+
+/**
  * T_Recalculate_Palette_32X(): Recalculates the 32X palette for brightness, contrast, and various effects.
  */
 template<typename pixel,
@@ -263,11 +282,8 @@ static inline void T_Recalculate_Palette_32X(pixel *pal32X, pixel *cramAdjusted3
 			    (b);
 	}
 	
-	// Adjust the 32X VDP CRAM.
-	for (unsigned int i = 0; i < 0x100; i++)
-	{
-		cramAdjusted32X[i] = pal32X[_32X_VDP_CRam[i]];
-	}
+	// Adjust the 32X VDP CRam.
+	T_Adjust_CRam_32X<pixel>(pal32X, cramAdjusted32X);
 }
 
 
@@ -278,20 +294,20 @@ void Recalculate_Palettes(void)
 		case 15:
 			T_Recalculate_Palette_MD<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 5, 5, 0x1F, 0x1F, 0x1F>
-					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
+					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
 			break;
 		
 		case 16:
 			T_Recalculate_Palette_MD<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>(Palette.u16);
 			T_Recalculate_Palette_32X<uint16_t, 5, 6, 5, 0x1F, 0x3F, 0x1F>
-					(_32X_Palette_16B, _32X_VDP_CRam_Adjusted);
+					(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
 			break;
 		
 		case 32:
 		default:
 			T_Recalculate_Palette_MD<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>(Palette.u32);
 			T_Recalculate_Palette_32X<uint32_t, 8, 8, 8, 0xFF, 0xFF, 0xFF>
-					(_32X_Palette_32B, _32X_VDP_CRam_Adjusted32);
+					(_32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
 			break;
 	}
 	
@@ -302,4 +318,16 @@ void Recalculate_Palettes(void)
 	
 	// Force a wakeup.
 	GensUI::wakeup();
+}
+
+
+/**
+ * Adjust_CRam_32X(): Adjust the 32X CRam.
+ */
+void Adjust_CRam_32X(void)
+{
+	if (bppMD != 32)
+		T_Adjust_CRam_32X<uint16_t>(_32X_Palette.u16, _32X_VDP_CRam_Adjusted);
+	else
+		T_Adjust_CRam_32X<uint32_t>(_32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
 }

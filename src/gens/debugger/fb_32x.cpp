@@ -114,7 +114,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 void VDP_32X_Draw_FB(int fb_num)
 {
 	if (bppMD != 32)
-		T_VDP_32X_Draw_FB<uint16_t>(fb_num, MD_Screen.u16, _32X_Palette_16B, _32X_VDP_CRam_Adjusted);
+		T_VDP_32X_Draw_FB<uint16_t>(fb_num, MD_Screen.u16, _32X_Palette.u16, _32X_VDP_CRam_Adjusted);
 	else
-		T_VDP_32X_Draw_FB<uint32_t>(fb_num, MD_Screen.u32, _32X_Palette_32B, _32X_VDP_CRam_Adjusted32);
+		T_VDP_32X_Draw_FB<uint32_t>(fb_num, MD_Screen.u32, _32X_Palette.u32, _32X_VDP_CRam_Adjusted32);
 }

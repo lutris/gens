@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -31,9 +31,8 @@
 _32X_VDP_Ram_t _32X_VDP_Ram;
 uint16_t _32X_VDP_CRam[0x100];
 
-// Full 32X palettes.
-uint16_t _32X_Palette_16B[0x10000];
-uint32_t _32X_Palette_32B[0x10000];
+// Full 32X palette.
+_32X_Palette_t _32X_Palette;
 
 // Adjusted CRam.
 uint16_t _32X_VDP_CRam_Adjusted[0x100];

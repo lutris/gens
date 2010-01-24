@@ -528,6 +528,10 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	// Recalculate palettes.
 	Recalculate_Palettes();
 	
+	// Readjust the 32X CRam, if necessary.
+	if (_32X_Started)
+		Adjust_CRam_32X();
+	
 	// Recalculate the text styles.
 	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
