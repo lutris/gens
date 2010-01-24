@@ -23,6 +23,8 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 
+#include "emulator/g_main.hpp"
+
 // Message logging.
 #include "macros/log_msg.h"
 
@@ -296,6 +298,13 @@ void VDP_Set_Visible_Lines(void)
 	// Check interlaced mode.
 	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
 	VDP_Reg.Interlaced = ((VDP_Reg.m5.Set4 & 0x04) ? 1 : 0);
+	
+	// HACK: There's a minor issue with the SegaCD firmware.
+	// The firmware turns off the VDP after the last line,
+	// which causes the entire screen to disappear if paused.
+	// TODO: Don't rerun the VDP drawing functions when paused!
+	if (Settings.Active && !Settings.Paused)
+		VDP_Reg.HasVisibleLines = 0;
 }
 
 

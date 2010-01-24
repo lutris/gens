@@ -1403,7 +1403,21 @@ void VDP_Render_Line_m5(void)
 	}
 	
 	// Check if the VDP is enabled.
-	if (!(VDP_Reg.m5.Set2 & 0x40) || in_border)
+	bool VDP_Enabled = false;
+	if (!in_border)
+	{
+		// HACK: There's a minor issue with the SegaCD firmware.
+		// The firmware turns off the VDP after the last line,
+		// which causes the entire screen to disappear if paused.
+		// TODO: Don't rerun the VDP drawing functions when paused!
+		
+		if (VDP_Reg.m5.Set2 & 0x40)
+			VDP_Enabled = true;
+		else if ((!Settings.Active || Settings.Paused) && VDP_Reg.HasVisibleLines)
+			VDP_Enabled = true;
+	}
+	
+	if (!VDP_Enabled)
 	{
 		// VDP is disabled, or this is the border region.
 		// Clear the line buffer.
@@ -1415,6 +1429,12 @@ void VDP_Render_Line_m5(void)
 	else
 	{
 		// VDP is enabled.
+		
+		// HACK: There's a minor issue with the SegaCD firmware.
+		// The firmware turns off the VDP after the last line,
+		// which causes the entire screen to disappear if paused.
+		// TODO: Don't rerun the VDP drawing functions when paused!
+		VDP_Reg.HasVisibleLines = 1;
 		
 		// Check if sprite structures need to be updated.
 		if (VDP_Reg.Interlaced)

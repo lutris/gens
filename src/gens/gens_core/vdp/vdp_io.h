@@ -163,6 +163,12 @@ typedef struct
 	
 	// Interlaced mode. (0 == off; 1 == on)
 	int Interlaced;
+	
+	// HACK: There's a minor issue with the SegaCD firmware.
+	// The firmware turns off the VDP after the last line,
+	// which causes the entire screen to disappear if paused.
+	// TODO: Don't rerun the VDP drawing functions when paused!
+	int HasVisibleLines;	// 0 if VDP was off for the whole frame.
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 
