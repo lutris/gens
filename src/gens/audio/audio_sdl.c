@@ -42,7 +42,7 @@
 
 // C includes.
 #include <string.h>
-#include <time.h>
+#include <unistd.h>
 
 // Function prototypes.
 static int	audio_sdl_init(void);
@@ -204,10 +204,9 @@ static int audio_sdl_write_sound_buffer(short *dump_buf)
 	SDL_UnlockAudio();
 	
 	// TODO: Figure out if there's a way to get rid of this.
-	struct timespec rqtp = {0, 1000000};
 	while (audio_sdl_len > 1024 * 2 * 2 * 4)
 	{
-		nanosleep(&rqtp, NULL);	
+		usleep(500);
 		if (fast_forward)
 			audio_sdl_len = 1024;
 	} //SDL_Delay(1); 
