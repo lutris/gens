@@ -582,6 +582,12 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 			VDP_Update_IRQ_Line();
 			mdZ80_interrupt(&M_Z80, 0xFF);
 			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				VDP_Render_Line();
+			}
+			
 			if (perfect_sync)
 			{
 				// Perfect sync is enabled.
@@ -604,6 +610,12 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 			// Not visible area.
 			// TODO: We're processing HBlank here, but we don't for MD...
 			VDP_Status |= 0x0004;	// HBlank = 1
+			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				VDP_Render_Line();
+			}
 			
 			if (!perfect_sync)
 			{
