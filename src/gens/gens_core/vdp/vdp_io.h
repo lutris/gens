@@ -330,6 +330,34 @@ static inline int vdp_getHPix(void)
 
 
 /**
+ * vdp_getHPixBegin(): Get the first horizontal pixel number..
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.H_Pix_Begin directly.
+ * @return First horizontal pixel number.
+ */
+static inline int vdp_getHPixBegin(void)
+{
+	// Default when no game is loaded is 0. (320x224)
+#ifdef GENS_DEBUGGER
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 0;
+#else
+	if (!Game)
+		return 0;
+#endif
+	
+#if 0
+	if (!FrameCount)
+	rval = 1;
+#endif
+	
+	// Game is running. Return VDP_Reg.H_Pix_Begin.
+	// TODO: Force 32px for SMS or SG-1000 mode.
+	return VDP_Reg.H_Pix_Begin;
+}
+
+
+/**
  * vdp_getVPix(): Get the current vertical resolution.
  * This should only be used for non-VDP code.
  * VDP code should access VDP_Reg.Set2 directly.

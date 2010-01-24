@@ -137,12 +137,9 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		// Hardware rendering uses 1x internally.
 		msg_height = VDP_Lines.Visible.Total;
 		msg_width = curHPix;
-		start += pddsd->lPitch * VDP_Lines.Visible.Border_Size;
+		start += (pddsd->lPitch * VDP_Lines.Visible.Border_Size);
 		if (curHPix < 320)
-		{
-			// Starting position needs to be adjusted for H32.
-			start += ((320 - curHPix) / 2) * bytespp;
-		}
+			start += (vdp_getHPixBegin() * bytespp);
 		
 		// DirectDraw's hardware rendering uses MD_Screen / MD_Screen32 directly.
 		// Thus, it has an invisible 8px column at the beginning.
@@ -153,12 +150,9 @@ static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTD
 		// Software rendering.
 		msg_height = VDP_Lines.Visible.Total * vdraw_scale;
 		msg_width = curHPix * vdraw_scale;
-		start += pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale);
+		start += (pddsd->lPitch * (VDP_Lines.Visible.Border_Size * vdraw_scale));
 		if (curHPix < 320)
-		{
-			// Starting position needs to be adjusted for H32.
-			start += (((320 - curHPix) / 2) * vdraw_scale) * bytespp;
-		}
+			start += (vdp_getHPixBegin() * vdraw_scale * bytespp);
 	}
 	
 	if (vdraw_msg_visible)

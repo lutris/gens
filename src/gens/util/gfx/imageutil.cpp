@@ -487,9 +487,7 @@ int ImageUtil::ScreenShot(void)
 	// TODO: Use macros in video/v_inline.h
 	const int w = vdp_getHPix();
 	const int h = VDP_Lines.Visible.Total;
-	int start = TAB336[VDP_Lines.Visible.Border_Size] + 8;
-	if (w < 320)
-		start += ((320 - w) / 2);
+	const int start = TAB336[VDP_Lines.Visible.Border_Size] + 8 + vdp_getHPixBegin();
 	
 	// Build the filename.
 	int num = -1;

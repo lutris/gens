@@ -439,7 +439,7 @@ int vdraw_flip(int md_screen_updated)
 	// Check if the display width changed.
 	// TODO: Eliminate this.
 	vdraw_border_h_old = vdraw_border_h;
-	vdraw_border_h = (320 - vdp_getHPix());	// TODO: Add vdp_getHPixBegin().
+	vdraw_border_h = vdp_getHPixBegin() * 2;
 	
 	if (vdraw_border_h != vdraw_border_h_old)
 	{
