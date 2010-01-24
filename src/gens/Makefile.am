@@ -171,7 +171,8 @@ gens_SOURCES += \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c \
-		debugger/mcd_cell_dump.asm
+		debugger/mcd_cell_dump.asm \
+		debugger/fb_32x.cpp
 ASMFILES += \
 		debugger/mcd_cell_dump.o
 endif
@@ -298,7 +299,8 @@ noinst_HEADERS += \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h \
-		debugger/mcd_cell_dump.h
+		debugger/mcd_cell_dump.h \
+		debugger/fb_32x.hpp
 endif
 
 if GENS_CDROM

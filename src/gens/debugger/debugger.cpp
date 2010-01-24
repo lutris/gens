@@ -35,6 +35,7 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
+#include "fb_32x.hpp"
 
 // SegaCD
 #include "segacd/lc89510.h"
@@ -1252,7 +1253,8 @@ void Update_Debug_Screen(void)
 			
 			case DEBUG_32X_VDP:
 				// 32X VDP
-				_32X_VDP_Draw(Current_32X_FB);
+				//_32X_VDP_Draw(Current_32X_FB);
+				VDP_32X_Draw_FB(Current_32X_FB);
 				break;
 		}
 	}
