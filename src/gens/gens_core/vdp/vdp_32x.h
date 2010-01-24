@@ -16,6 +16,7 @@ typedef struct _VDP_32X_t
 	unsigned int AF_Len;
 	unsigned int AF_Line;
 } VDP_32X_t;
+extern VDP_32X_t _32X_VDP;
 
 // VDP RAM and CRam.
 typedef union
@@ -34,8 +35,6 @@ extern uint32_t _32X_Palette_32B[0x10000];
 // Adjusted CRam.
 extern uint16_t _32X_VDP_CRam_Adjusted[0x100];
 extern uint32_t _32X_VDP_CRam_Adjusted32[0x100];
-
-extern VDP_32X_t _32X_VDP;
 
 void _32X_VDP_Reset(void);
 void _32X_VDP_Draw(int FB_Num);
