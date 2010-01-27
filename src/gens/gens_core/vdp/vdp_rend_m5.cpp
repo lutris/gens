@@ -124,23 +124,23 @@ static FORCE_INLINE void T_Make_Sprite_Struct(void)
 	do
 	{
 		// Sprite position.
-		Sprite_Struct[spr_num].Pos_X = (*(CurSpr + 3) & 0x1FF) - 128;
+		Sprite_Struct[spr_num].Pos_X = (CurSpr[3] & 0x1FF) - 128;
 		if (!partial)
 		{
 			if (interlaced)
 			{
 				// Interlaced mode. Y position is 11-bit.
-				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x3FF) - 256;
+				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x3FF) - 256;
 			}
 			else
 			{
 				// Non-Interlaced mode. Y position is 10-bit.
-				Sprite_Struct[spr_num].Pos_Y = (*CurSpr & 0x1FF) - 128;
+				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x1FF) - 128;
 			}
 		}
 		
 		// Sprite size.
-		uint8_t sz = (*(CurSpr + 1) >> 8);
+		uint8_t sz = (CurSpr[1] >> 8);
 		Sprite_Struct[spr_num].Size_X = ((sz >> 2) & 3) + 1;	// 1 more than the original value.
 		if (!partial)
 			Sprite_Struct[spr_num].Size_Y = sz & 3;		// Exactly the original value.
@@ -168,15 +168,14 @@ static FORCE_INLINE void T_Make_Sprite_Struct(void)
 			}
 			
 			// Tile number. (Also includes palette, priority, and flip bits.)
-			Sprite_Struct[spr_num].Num_Tile = *(CurSpr + 2);
+			Sprite_Struct[spr_num].Num_Tile = CurSpr[2];
 		}
 		
 		// Link number.
-		link = (*(CurSpr + 1) & 0x7F);
+		link = (CurSpr[1] & 0xFF);
 		
 		// Increment the sprite number.
 		spr_num++;
-		
 		if (link == 0)
 			break;
 		
@@ -219,7 +218,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
 	
 	// Get the current line number.
-	int vdp_line = VDP_m5_GetLineNumber<interlaced>();
+	const int vdp_line = VDP_m5_GetLineNumber<interlaced>();
 	
 	// Search for all sprites visible on the current scanline.
 	for (; spr_num < TotalSprites; spr_num++)
@@ -241,6 +240,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 		// This mode only works if at least one non-masking sprite
 		// is present on the scanline, regardless of whether it's
 		// visible or not.
+		
 		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
 			break;
 		
@@ -1015,7 +1015,7 @@ static FORCE_INLINE void T_Render_Line_ScrollA(void)
 		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
 		// Calculate the fine offsets.
-		int vdp_line = VDP_m5_GetLineNumber<interlaced>();
+		const int vdp_line = VDP_m5_GetLineNumber<interlaced>();
 		if (interlaced)
 			Y_FineOffset = (vdp_line & 15);
 		else
@@ -1183,8 +1183,8 @@ static FORCE_INLINE void T_Render_Line_Sprite(void)
 		}
 		
 		// Check for H Flip.
-		int H_Pos_Min;
-		int H_Pos_Max;
+		register int H_Pos_Min;
+		register int H_Pos_Max;
 		
 		if (spr_info & 0x800)
 		{
