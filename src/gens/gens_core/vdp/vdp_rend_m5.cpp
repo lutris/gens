@@ -105,371 +105,6 @@ static FORCE_INLINE int T_VDP_m5_GetLineNumber(void)
 }
 
 
-/**
- * T_Make_Sprite_Struct(): Fill Sprite_Struct[] with information from the Sprite Attribute Table.
- * @param interlaced If true, using Interlaced Mode 2. (2x res)
- * @param partial If true, only do a partial update. (X pos, X size)
- */
-template<bool interlaced, bool partial>
-static FORCE_INLINE void T_Make_Sprite_Struct(void)
-{
-	uint16_t *CurSpr = VDP_Reg.Spr_Addr;
-	unsigned int spr_num = 0;
-	unsigned int link;
-	
-	// H40 allows 80 sprites; H32 allows 64 sprites.
-	// Essentially, it's (H_Cell * 2).
-	// [Nemesis' Sprite Masking and Overflow Test ROM: Test #9]
-	const unsigned int max_spr = (VDP_Reg.H_Cell * 2);
-	
-	do
-	{
-		// Sprite position.
-		Sprite_Struct[spr_num].Pos_X = (CurSpr[3] & 0x1FF) - 128;
-		if (!partial)
-		{
-			if (interlaced)
-			{
-				// Interlaced mode. Y position is 11-bit.
-				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x3FF) - 256;
-			}
-			else
-			{
-				// Non-Interlaced mode. Y position is 10-bit.
-				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x1FF) - 128;
-			}
-		}
-		
-		// Sprite size.
-		uint8_t sz = (CurSpr[1] >> 8);
-		Sprite_Struct[spr_num].Size_X = ((sz >> 2) & 3) + 1;	// 1 more than the original value.
-		if (!partial)
-			Sprite_Struct[spr_num].Size_Y = sz & 3;		// Exactly the original value.
-		
-		// Determine the maximum positions.
-		Sprite_Struct[spr_num].Pos_X_Max =
-				Sprite_Struct[spr_num].Pos_X +
-				((Sprite_Struct[spr_num].Size_X * 8) - 1);
-		
-		if (!partial)
-		{
-			if (interlaced)
-			{
-				// Interlaced mode. Cells are 8x16.
-				Sprite_Struct[spr_num].Pos_Y_Max =
-						Sprite_Struct[spr_num].Pos_Y +
-						((Sprite_Struct[spr_num].Size_Y * 16) + 15);
-			}
-			else
-			{
-				// Non-Interlaced mode. Cells are 8x8.
-				Sprite_Struct[spr_num].Pos_Y_Max =
-						Sprite_Struct[spr_num].Pos_Y +
-						((Sprite_Struct[spr_num].Size_Y * 8) + 7);
-			}
-			
-			// Tile number. (Also includes palette, priority, and flip bits.)
-			Sprite_Struct[spr_num].Num_Tile = CurSpr[2];
-		}
-		
-		// Link number.
-		link = (CurSpr[1] & 0xFF);
-		
-		// Increment the sprite number.
-		spr_num++;
-		if (link == 0)
-			break;
-		
-		// Go to the next sprite.
-		CurSpr = VDP_Reg.Spr_Addr + (link * (8>>1));
-		
-		// Stop processing after:
-		// - Link number is 0. (checked above)
-		// - Link number exceeds maximum number of sprites.
-		// - We've processed the maximum number of sprites.
-	} while (link < max_spr && spr_num < max_spr);
-	
-	// Store the total number of sprite.s
-	if (!partial)
-		TotalSprites = spr_num;
-}
-
-
-/**
- * T_Update_Mask_Sprite(): Update Sprite_Visible[] using sprite masking.
- * @param sprite_limit If true, emulates sprite limits.
- * @param interlaced If true, uses interlaced mode.
- * @return Number of visible sprites.
- */
-template<bool sprite_limit, bool interlaced>
-static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
-{
-	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
-	// - Maximum sprite dots per line: 256/320
-	// - Maximum sprites per line: 16/20
-	int max_cells = VDP_Reg.H_Cell;
-	int max_sprites = (VDP_Reg.H_Cell / 2);
-	
-	bool overflow = false;
-	
-	// Sprite masking variables.
-	bool sprite_on_line = false;	// True if at least one sprite is on the scanline.
-	
-	unsigned int spr_num = 0;	// Current sprite number in Sprite_Struct[].
-	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
-	
-	// Get the current line number.
-	const int vdp_line = T_VDP_m5_GetLineNumber<interlaced>();
-	
-	// Search for all sprites visible on the current scanline.
-	for (; spr_num < TotalSprites; spr_num++)
-	{
-		if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
-		    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
-		{
-			// Sprite is not on the current line.
-			continue;
-		}
-		
-		if (sprite_limit)
-		{
-			// Sprite limit is enabled.
-			// Decrement the maximum cell and sprite counters.
-			max_cells -= Sprite_Struct[spr_num].Size_X;
-			max_sprites--;
-		}
-		
-		// Check sprite masking, mode 1.
-		// This mode only works if at least one non-masking sprite
-		// is present on the scanline, regardless of whether it's
-		// visible or not.
-		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
-			break;
-		
-		// Sprite is on the current scanline.
-		sprite_on_line = true;
-		
-		// Check if the sprite is onscreen.
-		if (Sprite_Struct[spr_num].Pos_X < VDP_Reg.H_Pix &&
-		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
-		{
-			// Sprite is onscreen.
-			Sprite_Visible[spr_vis] = spr_num;
-			spr_vis++;
-		}
-		
-		// Set the visible X max.
-		Sprite_Struct[spr_num].Pos_X_Max_Vis = Sprite_Struct[spr_num].Pos_X_Max;
-		
-		if (sprite_limit)
-		{
-			// Check for cell or sprite overflow.
-			if (max_cells <= 0)
-			{
-				// Cell overflow!
-				// Remove the extra cells from the sprite.
-				// [Nemesis' Sprite Masking and Overflow Test ROM: Tests #2 and #3]
-				// #2 == total sprite dot count; #3 == per-cell dot count.
-				overflow = true;
-				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
-				spr_num++;
-				break;
-			}
-			else if (max_sprites == 0)
-			{
-				// Sprite overflow!
-				// [Nemesis' Sprite Masking and Overflow Test ROM: Test #1]
-				overflow = true;
-				spr_num++;
-				break;
-			}
-		}
-	}
-	
-	if (sprite_limit && overflow)
-	{
-		// Sprite overflow. Check if there are any more sprites.
-		for (; spr_num < TotalSprites; spr_num++)
-		{
-			// Check if the sprite is on the current line.
-			if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
-			    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
-			{
-				// Sprite is not on the current line.
-				continue;
-			}
-			
-			// Sprite is on the current line.
-			if (--max_sprites < 0)
-			{
-				// Sprite overflow!
-				// Set the SOVR flag.
-				VDP_Status |= 0x40;
-				break;
-			}
-		}
-	}
-	
-	// Return the number of visible sprites.
-	return spr_vis;
-}
-
-
-/**
- * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
- * @param plane True for Scroll A; false for Scroll B.
- * @return X offset.
- */
-template<bool plane>
-static FORCE_INLINE uint16_t T_Get_X_Offset(void)
-{
-	const unsigned int H_Scroll_Offset = (VDP_Lines.Visible.Current & VDP_Reg.H_Scroll_Mask) * 2;
-	
-	if (plane)
-	{
-		// Scroll A.
-		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset];
-	}
-	else
-	{
-		// Scroll B.
-		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset + 1];
-	}
-}
-
-
-/**
- * T_Update_Y_Offset(): Update the Y offset.
- * @param plane True for Scroll A; false for Scroll B.
- * @param interlaced True for interlaced; false for non-interlaced.
- * @param cell_cur Current X cell number.
- * @return Y offset.
- */
-template<bool plane, bool interlaced>
-static FORCE_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
-{
-	if ((cell_cur & 0xFF80) || (cell_cur < 0))
-	{
-		// Cell number is invalid.
-		return 0;
-	}
-	
-	// Mask off odd columns.
-	cell_cur &= ~1;
-	
-	// Get the vertical scroll offset.
-	unsigned int VScroll_Offset;
-	if (plane)
-	{
-		// Scroll A.
-		VScroll_Offset = VSRam.u16[cell_cur];
-	}
-	else
-	{
-		// Scroll B.
-		VScroll_Offset = VSRam.u16[cell_cur + 1];
-	}
-	
-	// Add the current line number to the VScroll offset.
-	VScroll_Offset += T_VDP_m5_GetLineNumber<interlaced>();
-	
-	if (interlaced)
-	{
-		// Interlaced mode.
-		Y_FineOffset = (VScroll_Offset & 15);
-		
-		// Get the V Cell offset and prevent it from overflowing.
-		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
-	}
-	else
-	{
-		// Non-Interlaced mode.
-		Y_FineOffset = (VScroll_Offset & 7);
-		
-		// Get the V Cell offset and prevent it from overflowing.
-		VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
-	}
-	
-	return VScroll_Offset;
-}
-
-
-/**
- * T_Get_Pattern_Info(): Get pattern info from a scroll plane.
- * H_Scroll_CMul must be initialized correctly.
- * @param plane True for Scroll A; false for Scroll B.
- * @param x X tile number.
- * @param y Y tile number.
- * @return Pattern info.
- */
-template<bool plane>
-static FORCE_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
-{
-	// Get the offset.
-	// H_Scroll_CMul is the shift value required for the proper vertical offset.
-	unsigned int offset = (y << VDP_Reg.H_Scroll_CMul) + x;
-	
-	// Return the pattern information.
-	return (plane ? VDP_Reg.ScrA_Addr[offset] : VDP_Reg.ScrB_Addr[offset]);
-}
-
-
-/**
- * Get_Pattern_Info(): Get pattern info for the window.
- * H_Scroll_CMul must be initialized correctly.
- * @param x X tile number.
- * @param y Y tile number.
- * @return Pattern info.
- */
-static FORCE_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
-{
-	// Get the offset.
-	// Window size is dependent on display resolution, not scroll size.
-	// H40 == 64 cells horizontally; H32 == 32 cells horizontally.
-	unsigned int offset = x;
-	if (VDP_Reg.H_Cell == 32)
-		offset += (y << 5);
-	else //if (VDP_Reg.H_Cell == 40)
-		offset += (y << 6);
-	
-	// Return the pattern information.
-	return VDP_Reg.Win_Addr[offset];
-}
-
-
-/**
- * T_Get_Pattern_Data(): Get pattern data for a given tile for the current line.
- * @param interlaced True for interlaced; false for non-interlaced.
- * @param pattern Pattern info.
- * @return Pattern data.
- */
-template<bool interlaced>
-static FORCE_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
-{
-	// Vertical offset.
-	unsigned int V_Offset = Y_FineOffset;
-	
-	// Get the tile address.
-	unsigned int TileAddr;
-	if (interlaced)
-		TileAddr = (pattern & 0x3FF) << 6;
-	else
-		TileAddr = (pattern & 0x7FF) << 5;
-	
-	if (pattern & 0x1000)
-	{
-		// V Flip enabled. Flip the tile vertically.
-		if (interlaced)
-			V_Offset ^= 15;
-		else
-			V_Offset ^= 7;
-	}
-	
-	// Return the pattern data.
-	return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
-}
-
-
 #define LINEBUF_HIGH_B	0x80
 #define LINEBUF_SHAD_B	0x40
 #define LINEBUF_PRIO_B	0x01
@@ -839,6 +474,138 @@ static FORCE_INLINE void T_PutLine_Sprite(int disp_pixnum, uint32_t pattern, int
 
 
 /**
+ * T_Get_X_Offset(): Get the X offset for the line. (Horizontal Scroll Table)
+ * @param plane True for Scroll A; false for Scroll B.
+ * @return X offset.
+ */
+template<bool plane>
+static FORCE_INLINE uint16_t T_Get_X_Offset(void)
+{
+	const unsigned int H_Scroll_Offset = (VDP_Lines.Visible.Current & VDP_Reg.H_Scroll_Mask) * 2;
+	
+	if (plane)
+	{
+		// Scroll A.
+		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset];
+	}
+	else
+	{
+		// Scroll B.
+		return VDP_Reg.H_Scroll_Addr[H_Scroll_Offset + 1];
+	}
+}
+
+
+/**
+ * T_Update_Y_Offset(): Update the Y offset.
+ * @param plane True for Scroll A; false for Scroll B.
+ * @param interlaced True for interlaced; false for non-interlaced.
+ * @param cell_cur Current X cell number.
+ * @return Y offset.
+ */
+template<bool plane, bool interlaced>
+static FORCE_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
+{
+	if ((cell_cur & 0xFF80) || (cell_cur < 0))
+	{
+		// Cell number is invalid.
+		return 0;
+	}
+	
+	// Mask off odd columns.
+	cell_cur &= ~1;
+	
+	// Get the vertical scroll offset.
+	unsigned int VScroll_Offset;
+	if (plane)
+	{
+		// Scroll A.
+		VScroll_Offset = VSRam.u16[cell_cur];
+	}
+	else
+	{
+		// Scroll B.
+		VScroll_Offset = VSRam.u16[cell_cur + 1];
+	}
+	
+	// Add the current line number to the VScroll offset.
+	VScroll_Offset += T_VDP_m5_GetLineNumber<interlaced>();
+	
+	if (interlaced)
+	{
+		// Interlaced mode.
+		Y_FineOffset = (VScroll_Offset & 15);
+		
+		// Get the V Cell offset and prevent it from overflowing.
+		VScroll_Offset = (VScroll_Offset >> 4) & VDP_Reg.V_Scroll_CMask;
+	}
+	else
+	{
+		// Non-Interlaced mode.
+		Y_FineOffset = (VScroll_Offset & 7);
+		
+		// Get the V Cell offset and prevent it from overflowing.
+		VScroll_Offset = (VScroll_Offset >> 3) & VDP_Reg.V_Scroll_CMask;
+	}
+	
+	return VScroll_Offset;
+}
+
+
+/**
+ * T_Get_Pattern_Info(): Get pattern info from a scroll plane.
+ * H_Scroll_CMul must be initialized correctly.
+ * @param plane True for Scroll A; false for Scroll B.
+ * @param x X tile number.
+ * @param y Y tile number.
+ * @return Pattern info.
+ */
+template<bool plane>
+static FORCE_INLINE uint16_t T_Get_Pattern_Info(unsigned int x, unsigned int y)
+{
+	// Get the offset.
+	// H_Scroll_CMul is the shift value required for the proper vertical offset.
+	unsigned int offset = (y << VDP_Reg.H_Scroll_CMul) + x;
+	
+	// Return the pattern information.
+	return (plane ? VDP_Reg.ScrA_Addr[offset] : VDP_Reg.ScrB_Addr[offset]);
+}
+
+
+/**
+ * T_Get_Pattern_Data(): Get pattern data for a given tile for the current line.
+ * @param interlaced True for interlaced; false for non-interlaced.
+ * @param pattern Pattern info.
+ * @return Pattern data.
+ */
+template<bool interlaced>
+static FORCE_INLINE unsigned int T_Get_Pattern_Data(uint16_t pattern)
+{
+	// Vertical offset.
+	unsigned int V_Offset = Y_FineOffset;
+	
+	// Get the tile address.
+	unsigned int TileAddr;
+	if (interlaced)
+		TileAddr = (pattern & 0x3FF) << 6;
+	else
+		TileAddr = (pattern & 0x7FF) << 5;
+	
+	if (pattern & 0x1000)
+	{
+		// V Flip enabled. Flip the tile vertically.
+		if (interlaced)
+			V_Offset ^= 15;
+		else
+			V_Offset ^= 7;
+	}
+	
+	// Return the pattern data.
+	return VRam.u32[(TileAddr + (V_Offset * 4)) >> 2];
+}
+
+
+/**
  * T_Render_Line_Scroll(): Render a scroll line.
  * @param plane		[in] True for Scroll A / Window; false for Scroll B.
  * @param interlaced	[in] True for interlaced; false for non-interlaced.
@@ -963,6 +730,29 @@ static FORCE_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
 		// Go to the next pattern.
 		disp_pixnum += 8;
 	}
+}
+
+
+/**
+ * Get_Pattern_Info_Window(): Get pattern info for the window.
+ * H_Scroll_CMul must be initialized correctly.
+ * @param x X tile number.
+ * @param y Y tile number.
+ * @return Pattern info.
+ */
+static FORCE_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
+{
+	// Get the offset.
+	// Window size is dependent on display resolution, not scroll size.
+	// H40 == 64 cells horizontally; H32 == 32 cells horizontally.
+	unsigned int offset = x;
+	if (VDP_Reg.H_Cell == 32)
+		offset += (y << 5);
+	else //if (VDP_Reg.H_Cell == 40)
+		offset += (y << 6);
+	
+	// Return the pattern information.
+	return VDP_Reg.Win_Addr[offset];
 }
 
 
@@ -1103,6 +893,216 @@ static FORCE_INLINE void T_Render_Line_ScrollA(void)
 		// Draw the scroll area.
 		T_Render_Line_Scroll<true, interlaced, vscroll, h_s>(ScrA_Start, ScrA_Length);
 	}
+}
+
+
+/**
+ * T_Make_Sprite_Struct(): Fill Sprite_Struct[] with information from the Sprite Attribute Table.
+ * @param interlaced If true, using Interlaced Mode 2. (2x res)
+ * @param partial If true, only do a partial update. (X pos, X size)
+ */
+template<bool interlaced, bool partial>
+static FORCE_INLINE void T_Make_Sprite_Struct(void)
+{
+	uint16_t *CurSpr = VDP_Reg.Spr_Addr;
+	unsigned int spr_num = 0;
+	unsigned int link;
+	
+	// H40 allows 80 sprites; H32 allows 64 sprites.
+	// Essentially, it's (H_Cell * 2).
+	// [Nemesis' Sprite Masking and Overflow Test ROM: Test #9]
+	const unsigned int max_spr = (VDP_Reg.H_Cell * 2);
+	
+	do
+	{
+		// Sprite position.
+		Sprite_Struct[spr_num].Pos_X = (CurSpr[3] & 0x1FF) - 128;
+		if (!partial)
+		{
+			if (interlaced)
+			{
+				// Interlaced mode. Y position is 11-bit.
+				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x3FF) - 256;
+			}
+			else
+			{
+				// Non-Interlaced mode. Y position is 10-bit.
+				Sprite_Struct[spr_num].Pos_Y = (CurSpr[0] & 0x1FF) - 128;
+			}
+		}
+		
+		// Sprite size.
+		uint8_t sz = (CurSpr[1] >> 8);
+		Sprite_Struct[spr_num].Size_X = ((sz >> 2) & 3) + 1;	// 1 more than the original value.
+		if (!partial)
+			Sprite_Struct[spr_num].Size_Y = sz & 3;		// Exactly the original value.
+		
+		// Determine the maximum positions.
+		Sprite_Struct[spr_num].Pos_X_Max =
+				Sprite_Struct[spr_num].Pos_X +
+				((Sprite_Struct[spr_num].Size_X * 8) - 1);
+		
+		if (!partial)
+		{
+			if (interlaced)
+			{
+				// Interlaced mode. Cells are 8x16.
+				Sprite_Struct[spr_num].Pos_Y_Max =
+						Sprite_Struct[spr_num].Pos_Y +
+						((Sprite_Struct[spr_num].Size_Y * 16) + 15);
+			}
+			else
+			{
+				// Non-Interlaced mode. Cells are 8x8.
+				Sprite_Struct[spr_num].Pos_Y_Max =
+						Sprite_Struct[spr_num].Pos_Y +
+						((Sprite_Struct[spr_num].Size_Y * 8) + 7);
+			}
+			
+			// Tile number. (Also includes palette, priority, and flip bits.)
+			Sprite_Struct[spr_num].Num_Tile = CurSpr[2];
+		}
+		
+		// Link number.
+		link = (CurSpr[1] & 0xFF);
+		
+		// Increment the sprite number.
+		spr_num++;
+		if (link == 0)
+			break;
+		
+		// Go to the next sprite.
+		CurSpr = VDP_Reg.Spr_Addr + (link * (8>>1));
+		
+		// Stop processing after:
+		// - Link number is 0. (checked above)
+		// - Link number exceeds maximum number of sprites.
+		// - We've processed the maximum number of sprites.
+	} while (link < max_spr && spr_num < max_spr);
+	
+	// Store the total number of sprite.s
+	if (!partial)
+		TotalSprites = spr_num;
+}
+
+
+/**
+ * T_Update_Mask_Sprite(): Update Sprite_Visible[] using sprite masking.
+ * @param sprite_limit If true, emulates sprite limits.
+ * @param interlaced If true, uses interlaced mode.
+ * @return Number of visible sprites.
+ */
+template<bool sprite_limit, bool interlaced>
+static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
+{
+	// If Sprite Limit is on, the following limits are enforced: (H32/H40)
+	// - Maximum sprite dots per line: 256/320
+	// - Maximum sprites per line: 16/20
+	int max_cells = VDP_Reg.H_Cell;
+	int max_sprites = (VDP_Reg.H_Cell / 2);
+	
+	bool overflow = false;
+	
+	// Sprite masking variables.
+	bool sprite_on_line = false;	// True if at least one sprite is on the scanline.
+	
+	unsigned int spr_num = 0;	// Current sprite number in Sprite_Struct[].
+	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
+	
+	// Get the current line number.
+	const int vdp_line = T_VDP_m5_GetLineNumber<interlaced>();
+	
+	// Search for all sprites visible on the current scanline.
+	for (; spr_num < TotalSprites; spr_num++)
+	{
+		if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
+		    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
+		{
+			// Sprite is not on the current line.
+			continue;
+		}
+		
+		if (sprite_limit)
+		{
+			// Sprite limit is enabled.
+			// Decrement the maximum cell and sprite counters.
+			max_cells -= Sprite_Struct[spr_num].Size_X;
+			max_sprites--;
+		}
+		
+		// Check sprite masking, mode 1.
+		// This mode only works if at least one non-masking sprite
+		// is present on the scanline, regardless of whether it's
+		// visible or not.
+		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
+			break;
+		
+		// Sprite is on the current scanline.
+		sprite_on_line = true;
+		
+		// Check if the sprite is onscreen.
+		if (Sprite_Struct[spr_num].Pos_X < VDP_Reg.H_Pix &&
+		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
+		{
+			// Sprite is onscreen.
+			Sprite_Visible[spr_vis] = spr_num;
+			spr_vis++;
+		}
+		
+		// Set the visible X max.
+		Sprite_Struct[spr_num].Pos_X_Max_Vis = Sprite_Struct[spr_num].Pos_X_Max;
+		
+		if (sprite_limit)
+		{
+			// Check for cell or sprite overflow.
+			if (max_cells <= 0)
+			{
+				// Cell overflow!
+				// Remove the extra cells from the sprite.
+				// [Nemesis' Sprite Masking and Overflow Test ROM: Tests #2 and #3]
+				// #2 == total sprite dot count; #3 == per-cell dot count.
+				overflow = true;
+				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
+				spr_num++;
+				break;
+			}
+			else if (max_sprites == 0)
+			{
+				// Sprite overflow!
+				// [Nemesis' Sprite Masking and Overflow Test ROM: Test #1]
+				overflow = true;
+				spr_num++;
+				break;
+			}
+		}
+	}
+	
+	if (sprite_limit && overflow)
+	{
+		// Sprite overflow. Check if there are any more sprites.
+		for (; spr_num < TotalSprites; spr_num++)
+		{
+			// Check if the sprite is on the current line.
+			if (Sprite_Struct[spr_num].Pos_Y > vdp_line ||
+			    Sprite_Struct[spr_num].Pos_Y_Max < vdp_line)
+			{
+				// Sprite is not on the current line.
+				continue;
+			}
+			
+			// Sprite is on the current line.
+			if (--max_sprites < 0)
+			{
+				// Sprite overflow!
+				// Set the SOVR flag.
+				VDP_Status |= 0x40;
+				break;
+			}
+		}
+	}
+	
+	// Return the number of visible sprites.
+	return spr_vis;
 }
 
 
