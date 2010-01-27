@@ -65,12 +65,12 @@ static unsigned int TotalSprites;
 
 
 /**
- * VDP_m5_GetLineNumber(): Get the current line number, adjusted for interlaced display.
+ * T_VDP_m5_GetLineNumber(): Get the current line number, adjusted for interlaced display.
  * @param interlaced True for interlaced; false for non-interlaced.
  * @return Line number.
  */
 template<bool interlaced>
-static FORCE_INLINE int VDP_m5_GetLineNumber(void)
+static FORCE_INLINE int T_VDP_m5_GetLineNumber(void)
 {
 	// Get the current line number.
 	int vdp_line = VDP_Lines.Visible.Current;
@@ -218,7 +218,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
 	
 	// Get the current line number.
-	const int vdp_line = VDP_m5_GetLineNumber<interlaced>();
+	const int vdp_line = T_VDP_m5_GetLineNumber<interlaced>();
 	
 	// Search for all sprites visible on the current scanline.
 	for (; spr_num < TotalSprites; spr_num++)
@@ -346,7 +346,7 @@ static FORCE_INLINE unsigned int T_Update_Y_Offset(int cell_cur)
 	}
 	
 	// Add the current line number to the VScroll offset.
-	VScroll_Offset += VDP_m5_GetLineNumber<interlaced>();
+	VScroll_Offset += T_VDP_m5_GetLineNumber<interlaced>();
 	
 	if (interlaced)
 	{
@@ -1015,7 +1015,7 @@ static FORCE_INLINE void T_Render_Line_ScrollA(void)
 		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
 		// Calculate the fine offsets.
-		const int vdp_line = VDP_m5_GetLineNumber<interlaced>();
+		const int vdp_line = T_VDP_m5_GetLineNumber<interlaced>();
 		if (interlaced)
 			Y_FineOffset = (vdp_line & 15);
 		else
@@ -1102,7 +1102,7 @@ static FORCE_INLINE void T_Render_Line_Sprite(void)
 		unsigned int spr_num = Sprite_Visible[spr_vis];
 		
 		// Determine the cell and line offsets.
-		unsigned int cell_offset = (VDP_m5_GetLineNumber<interlaced>() - Sprite_Struct[spr_num].Pos_Y);
+		unsigned int cell_offset = (T_VDP_m5_GetLineNumber<interlaced>() - Sprite_Struct[spr_num].Pos_Y);
 		unsigned int line_offset;
 		
 		if (interlaced)
