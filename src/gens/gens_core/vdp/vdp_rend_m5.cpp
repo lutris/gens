@@ -119,6 +119,7 @@ static FORCE_INLINE void T_Make_Sprite_Struct(void)
 	
 	// H40 allows 80 sprites; H32 allows 64 sprites.
 	// Essentially, it's (H_Cell * 2).
+	// [Nemesis' Sprite Masking and Overflow Test ROM: Test #9]
 	const unsigned int max_spr = (VDP_Reg.H_Cell * 2);
 	
 	do
@@ -267,6 +268,8 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			{
 				// Cell overflow!
 				// Remove the extra cells from the sprite.
+				// [Nemesis' Sprite Masking and Overflow Test ROM: Tests #2 and #3]
+				// #2 == total sprite dot count; #3 == per-cell dot count.
 				overflow = true;
 				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
 				spr_num++;
@@ -275,6 +278,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			else if (max_sprites == 0)
 			{
 				// Sprite overflow!
+				// [Nemesis' Sprite Masking and Overflow Test ROM: Test #1]
 				overflow = true;
 				spr_num++;
 				break;
