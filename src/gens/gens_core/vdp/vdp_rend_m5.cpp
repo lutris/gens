@@ -207,7 +207,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 	// - Maximum sprite dots per line: 256/320
 	// - Maximum sprites per line: 16/20
 	int max_cells = VDP_Reg.H_Cell;
-	int max_sprites = max_cells / 2;
+	int max_sprites = (VDP_Reg.H_Cell / 2);
 	
 	bool overflow = false;
 	
@@ -232,6 +232,8 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 		
 		if (sprite_limit)
 		{
+			// Sprite limit is enabled.
+			// Decrement the maximum cell and sprite counters.
 			max_cells -= Sprite_Struct[spr_num].Size_X;
 			max_sprites--;
 		}
@@ -240,7 +242,6 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 		// This mode only works if at least one non-masking sprite
 		// is present on the scanline, regardless of whether it's
 		// visible or not.
-		
 		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
 			break;
 		
@@ -256,12 +257,28 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			spr_vis++;
 		}
 		
-		if (sprite_limit && (max_cells <= 0 || max_sprites == 0))
+		// Set the visible X max.
+		Sprite_Struct[spr_num].Pos_X_Max_Vis = Sprite_Struct[spr_num].Pos_X_Max;
+		
+		if (sprite_limit)
 		{
-			// Sprite overflow!
-			overflow = true;
-			spr_num++;
-			break;
+			// Check for cell or sprite overflow.
+			if (max_cells <= 0)
+			{
+				// Cell overflow!
+				// Remove the extra cells from the sprite.
+				overflow = true;
+				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
+				spr_num++;
+				break;
+			}
+			else if (max_sprites == 0)
+			{
+				// Sprite overflow!
+				overflow = true;
+				spr_num++;
+				break;
+			}
 		}
 	}
 	
@@ -279,9 +296,13 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			}
 			
 			// Sprite is on the current line.
-			// Set the SOVR flag.
-			VDP_Status |= 0x40;
-			break;
+			if (--max_sprites < 0)
+			{
+				// Sprite overflow!
+				// Set the SOVR flag.
+				VDP_Status |= 0x40;
+				break;
+			}
 		}
 	}
 	
@@ -1194,7 +1215,7 @@ static FORCE_INLINE void T_Render_Line_Sprite(void)
 			if (H_Pos_Min < -7)
 				H_Pos_Min = -7;	// minimum edge = clip screen
 			
-			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max;
+			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max_Vis;
 			
 			H_Pos_Max -= 7;				// to post the last pattern in first
 			while (H_Pos_Max >= VDP_Reg.H_Pix)
@@ -1230,7 +1251,7 @@ static FORCE_INLINE void T_Render_Line_Sprite(void)
 			// H Flip disabled.
 			// Check the minimum edge of the sprite.
 			H_Pos_Min = Sprite_Struct[spr_num].Pos_X;
-			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max;
+			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max_Vis;
 			if (H_Pos_Max >= VDP_Reg.H_Pix)
 				H_Pos_Max = VDP_Reg.H_Pix;
 			

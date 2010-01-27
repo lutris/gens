@@ -63,7 +63,7 @@ typedef struct
 	int Pos_X_Max;
 	int Pos_Y_Max;
 	unsigned int Num_Tile;	// Includes palette, priority, and flip bits.
-	int reserved;
+	int Pos_X_Max_Vis;	// Number of visible horizontal pixels. (Used for Sprite Limit.)
 } Sprite_Struct_t;
 extern Sprite_Struct_t Sprite_Struct[128];
 extern unsigned int Sprite_Visible[128];
