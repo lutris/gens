@@ -672,7 +672,7 @@ static FORCE_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
 		}
 		
 		// Get the pattern info for the current tile.
-		uint32_t pattern_info;
+		uint16_t pattern_info;
 		if (!plane)
 		{
 			// Scroll B.
@@ -730,29 +730,6 @@ static FORCE_INLINE void T_Render_Line_Scroll(int cell_start, int cell_length)
 		// Go to the next pattern.
 		disp_pixnum += 8;
 	}
-}
-
-
-/**
- * Get_Pattern_Info_Window(): Get pattern info for the window.
- * H_Scroll_CMul must be initialized correctly.
- * @param x X tile number.
- * @param y Y tile number.
- * @return Pattern info.
- */
-static FORCE_INLINE uint16_t Get_Pattern_Info_Window(unsigned int x, unsigned int y)
-{
-	// Get the offset.
-	// Window size is dependent on display resolution, not scroll size.
-	// H40 == 64 cells horizontally; H32 == 32 cells horizontally.
-	unsigned int offset = x;
-	if (VDP_Reg.H_Cell == 32)
-		offset += (y << 5);
-	else //if (VDP_Reg.H_Cell == 40)
-		offset += (y << 6);
-	
-	// Return the pattern information.
-	return VDP_Reg.Win_Addr[offset];
 }
 
 
@@ -827,7 +804,6 @@ static FORCE_INLINE void T_Render_Line_ScrollA(void)
 		// Get the cell offsets.
 		// TODO: Is this affected by interlaced mode?
 		unsigned int X_offset_cell = Win_Start;
-		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
 		
 		// Calculate the fine offsets.
 		const int vdp_line = T_VDP_m5_GetLineNumber<interlaced>();
@@ -836,11 +812,15 @@ static FORCE_INLINE void T_Render_Line_ScrollA(void)
 		else
 			Y_FineOffset = (vdp_line & 7);
 		
+		// Window row start address.
+		const unsigned int Y_offset_cell = (VDP_Lines.Visible.Current / 8);
+		const uint16_t *Win_Row_Addr = &VDP_Reg.Win_Addr[Y_offset_cell << VDP_Reg.H_Win_Shift];
+		
 		// Loop through the cells.
 		for (int x = Win_Length; x > 0; x--)
 		{
 			// Get the pattern info and data for the current tile.
-			uint32_t pattern_info = Get_Pattern_Info_Window(X_offset_cell, Y_offset_cell);
+			register uint16_t pattern_info = *Win_Row_Addr++;
 			uint32_t pattern_data = T_Get_Pattern_Data<interlaced>(pattern_info);
 			
 			// Extract the palette number.

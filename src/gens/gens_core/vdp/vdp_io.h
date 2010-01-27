@@ -145,9 +145,13 @@ typedef struct
 	// VDP convenience values: Horizontal.
 	// NOTE: These must be signed for VDP arithmetic to work properly!
 	int H_Cell;
-	int H_Win_Mul;
 	int H_Pix;
 	int H_Pix_Begin;
+	
+	// Window row shift.
+	// H40: 6. (64x32 window)
+	// H32: 5. (32x32 window)
+	unsigned int H_Win_Shift;
 	
 	// VDP convenience values: Scroll.
 	unsigned int V_Scroll_MMask;

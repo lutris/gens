@@ -451,7 +451,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			{
 				// H40 mode.
 				VDP_Reg.H_Cell = 40;
-				VDP_Reg.H_Win_Mul = 6;
+				VDP_Reg.H_Win_Shift = 6;
 				VDP_Reg.H_Pix = 320;
 				VDP_Reg.H_Pix_Begin = 0;
 				
@@ -472,7 +472,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			{
 				// H32 mode.
 				VDP_Reg.H_Cell = 32;
-				VDP_Reg.H_Win_Mul = 5;
+				VDP_Reg.H_Win_Shift = 5;
 				VDP_Reg.H_Pix = 256;
 				VDP_Reg.H_Pix_Begin = 32;
 				
