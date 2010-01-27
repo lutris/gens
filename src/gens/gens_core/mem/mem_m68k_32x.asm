@@ -2518,10 +2518,10 @@ section .text align=64
 		
 		; Adjust 32X CRam.
 		cmp	[SYM(bppMD)], byte 32
-		je	._32X_CRAM_32BPP
-		mov	cx, [SYM(_32X_Palette) + eax * 2]
+		je	short ._32X_CRAM_32BPP
+		movzx	ecx, word [SYM(_32X_Palette) + eax * 2]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ebx - 0xA15200], cx
-		jmp	._32X_CRAM_END
+		jmp	short ._32X_CRAM_END
 		
 	._32X_CRAM_32BPP:
 		mov	edx, [SYM(_32X_Palette) + eax * 4]

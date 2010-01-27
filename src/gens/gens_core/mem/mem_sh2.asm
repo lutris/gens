@@ -758,10 +758,10 @@ section .text align=64
 		
 		; Adjust 32X CRam.
 		cmp	[SYM(bppMD)], byte 32
-		je	._32X_CRAM_32BPP
-		mov	ax, [SYM(_32X_Palette) + edx * 2]
+		je	short ._32X_CRAM_32BPP
+		movzx	eax, word [SYM(_32X_Palette) + edx * 2]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx], ax
-		jmp	._32X_CRAM_END
+		jmp	short ._32X_CRAM_END
 		
 	._32X_CRAM_32BPP:
 		mov	ebx, [SYM(_32X_Palette) + edx * 4]
@@ -922,14 +922,14 @@ section .text align=64
 		
 		; Adjust 32X CRam.
 		cmp	[SYM(bppMD)], byte 32
-		je	._32X_CRAM_32BPP
+		je	short ._32X_CRAM_32BPP
 		
-		mov	dx, [SYM(_32X_Palette) + edx * 2]
+		movzx	edx, word [SYM(_32X_Palette) + edx * 2]
 		and	eax, 0xFFFF
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 2], dx
-		mov	ax, [SYM(_32X_Palette) + eax * 2]
+		movzx	eax, word [SYM(_32X_Palette) + eax * 2]
 		mov	[SYM(_32X_VDP_CRam_Adjusted) + ecx + 0], ax
-		jmp	._32X_CRAM_END
+		jmp	short ._32X_CRAM_END
 		
 	._32X_CRAM_32BPP:
 		mov	edx, [SYM(_32X_Palette) + edx * 4]
