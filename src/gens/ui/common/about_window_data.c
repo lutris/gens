@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -55,7 +55,7 @@ const char* const about_window_description =
 const char* const about_window_copyright =
 			"(c) 1999-2002 by Stéphane Dallongeville\n"
 			"(c) 2003-2004 by Stéphane Akhoun\n\n"
-			"Gens/GS (c) 2008-2009 by David Korth\n\n"
+			"Gens/GS (c) 2008-2010 by David Korth\n\n"
 			"Visit the Gens homepage:\n"
 			"http://gens.consolemul.com\n\n"
 			"For news on Gens/GS, visit Sonic Retro:\n"
