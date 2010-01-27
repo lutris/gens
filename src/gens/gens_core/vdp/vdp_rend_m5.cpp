@@ -1041,6 +1041,7 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 				// Remove the extra cells from the sprite.
 				// [Nemesis' Sprite Masking and Overflow Test ROM: Tests #2 and #3]
 				// #2 == total sprite dot count; #3 == per-cell dot count.
+				// TODO: Verify how Pos_X_Max_Vis should work with regards to H Flip.
 				overflow = true;
 				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
 				spr_num++;
@@ -1199,6 +1200,7 @@ static FORCE_INLINE void T_Render_Line_Sprite(void)
 			if (H_Pos_Min < -7)
 				H_Pos_Min = -7;	// minimum edge = clip screen
 			
+			// TODO: Verify how Pos_X_Max_Vis should work with regards to H Flip.
 			H_Pos_Max = Sprite_Struct[spr_num].Pos_X_Max_Vis;
 			
 			H_Pos_Max -= 7;				// to post the last pattern in first
