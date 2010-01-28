@@ -1552,6 +1552,7 @@ void VDP_Render_Line_m5(void)
  * @param _32X_palette 32X palette buffer.
  * @param _32X_vdp_cram_adjusted 32X adjusted CRam.
  */
+#include "port/timer.h"
 template<typename pixel>
 static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			int _32X_Rend_Mode, pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted)
@@ -1563,9 +1564,18 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 	unsigned short pixS; 
 	
 	LineBuf_px_t *lbptr = &LineBuf.px[8];
+	register unsigned int px1, px2;
 	
 	// NOTE: We're always assuming H40 mode for 32X.
 	// If that's not the case, replace (320-1) with (VDP_Reg.H_Pix - 1).
+	
+	// The following 32X games use H32 for the SEGA screen:
+	// - Mortal Kombat II
+	// - Primal Rage
+	// - Sangokushi IV
+	
+	if (_32X_Rend_Mode >= 3 && (_32X_Rend_Mode & 3) && _32X_Rend_Mode != 5)
+		printf("REND MODE: %d\n", _32X_Rend_Mode);
 	
 	switch (_32X_Rend_Mode)
 	{
@@ -1584,41 +1594,59 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			
 			break;
 		
-		case 1:
-			//POST_LINE_32X_M01;
-			VRam_Ind *= 2;
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
+		case 1:	// POST_LINE_32X_M01
+		case 9: // POST_LINE_32X_SM01
+		{
+			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
+			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
-				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
-				pixS = _32X_VDP_CRam[pixC];
+				// NOTE: Destination pixels are swapped.
+				px1 = *src;
+				px2 = *(src+1);
 				
-				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
-					*dest = _32X_vdp_cram_adjusted[pixC];
+				if ((_32X_VDP_CRam[px2] & 0x8000) || !(lbptr->pixel & 0x0F))
+					*dest = _32X_vdp_cram_adjusted[px2];
 				else
 					*dest = md_palette[lbptr->pixel];
+				
+				if ((_32X_VDP_CRam[px1] & 0x8000) || !((lbptr+1)->pixel & 0x0F))
+					*(dest+1) = _32X_vdp_cram_adjusted[px1];
+				else
+					*(dest+1) = md_palette[(lbptr+1)->pixel];
 			}
-			
 			break;
+		}
 		
 		case 2:
 		case 10:
-			//POST_LINE_32X_M10;
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
+		{
+			//POST_LINE_32X_M01;
+			const uint16_t *src = &_32X_VDP_Ram.u16[VRam_Ind];
+			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
-				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
+				// NOTE: Destination pixels are NOT swapped.
+				px1 = *src;
+				px2 = *(src+1);
 				
-				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
-					*dest = _32X_palette[pixS];
+				if ((px1 & 0x8000) || !(lbptr->pixel & 0x0F))
+					*dest = _32X_palette[px1];
 				else
 					*dest = md_palette[lbptr->pixel];
+				
+				if ((px2 & 0x8000) || !((lbptr+1)->pixel & 0x0F))
+					*(dest+1) = _32X_palette[px2];
+				else
+					*(dest+1) = md_palette[(lbptr+1)->pixel];
 			}
 			break;
+		}
 		
 		case 3:
 		case 7:
 		case 11:
 		case 15:
 			//POST_LINE_32X_M11;
+			// TODO: Optimize this!
 			// TODO: Convert this to use decrementing px and pointer arithmetic.
 			for (int px = 0; px < 320; px--)
 			{
@@ -1634,23 +1662,32 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			break;
 		
 		case 5:
+		{
 			//POST_LINE_32X_M01_P;
-			VRam_Ind *= 2;
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
+			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
+			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
-				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
-				pixS = _32X_VDP_CRam[pixC];
+				// NOTE: Destination pixels are swapped.
+				px1 = *src;
+				px2 = *(src+1);
 				
-				if ((pixS & 0x8000) && (lbptr->pixel & 0x0F))
+				if ((_32X_VDP_CRam[px2] & 0x8000) && (lbptr->pixel & 0x0F))
 					*dest = md_palette[lbptr->pixel];
 				else
-					*dest = _32X_vdp_cram_adjusted[pixC];
+					*dest = _32X_vdp_cram_adjusted[px2];
+				
+				if ((_32X_VDP_CRam[px1] & 0x8000) && ((lbptr+1)->pixel & 0x0F))
+					*(dest+1) = md_palette[(lbptr+1)->pixel];
+				else
+					*(dest+1) = _32X_vdp_cram_adjusted[px1];
 			}
 			break;
-		
+		}
+			
 		case 6:
 		case 14:
 			//POST_LINE_32X_M10_P;
+			// TODO: Optimize this!
 			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
@@ -1662,23 +1699,9 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			}
 			break;
 		
-		case 9:
-			//POST_LINE_32X_SM01;
-			VRam_Ind *= 2;
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
-			{
-				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
-				pixS = _32X_VDP_CRam[pixC];
-				
-				if ((pixS & 0x8000) || !(lbptr->pixel & 0x0F))
-					*dest = _32X_vdp_cram_adjusted[pixC];
-				else
-					*dest = md_palette[lbptr->pixel];
-			}
-			break;
-		
 		case 13:
 			//POST_LINE_32X_SM01_P;
+			// TODO: Optimize this!
 			VRam_Ind *= 2;
 			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
 			{
