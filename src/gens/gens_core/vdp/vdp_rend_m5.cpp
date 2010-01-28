@@ -1589,7 +1589,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			//POST_LINE_32X_M00;
 			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px -= 4, dest += 4, lbptr += 4)
 			{
-				*dest = md_palette[(lbptr)->pixel];
+				*dest = md_palette[lbptr->pixel];
 				*(dest+1) = md_palette[(lbptr+1)->pixel];
 				*(dest+2) = md_palette[(lbptr+2)->pixel];
 				*(dest+3) = md_palette[(lbptr+3)->pixel];
