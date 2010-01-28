@@ -1560,14 +1560,20 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 	int VRam_Ind = ((_32X_VDP.State & 1) << 16);
 	VRam_Ind += _32X_VDP_Ram.u16[VRam_Ind + VDP_Lines.Visible.Current];
 	
-	unsigned char pixC; 
-	unsigned short pixS; 
-	
+	// Get the line buffer pointer.
 	LineBuf_px_t *lbptr = &LineBuf.px[8];
+	
+	// Adjust the destination pointer for the horizontal resolution.
+	// TODO: Draw horizontal borders, if necessary.
+	dest += VDP_Reg.H_Pix_Begin;
+	
+	// Pixel registers.
 	register unsigned int px1, px2;
 	
-	// NOTE: We're always assuming H40 mode for 32X.
-	// If that's not the case, replace (320-1) with (VDP_Reg.H_Pix - 1).
+	// Old pixel registers.
+	// TODO: Eliminate these!
+	unsigned char pixC;
+	unsigned short pixS;
 	
 	// The following 32X games use H32 for the SEGA screen:
 	// - Mortal Kombat II
@@ -1581,7 +1587,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 8:
 		case 12:
 			//POST_LINE_32X_M00;
-			for (unsigned int px = (320/4); px != 0; px--, dest += 4, lbptr += 4)
+			for (unsigned int px = (VDP_Reg.H_Pix/4); px != 0; px--, dest += 4, lbptr += 4)
 			{
 				*dest = md_palette[(lbptr)->pixel];
 				*(dest+1) = md_palette[(lbptr+1)->pixel];
@@ -1595,7 +1601,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 9: // POST_LINE_32X_SM01
 		{
 			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
-			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
+			for (unsigned int px = (VDP_Reg.H_Pix/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
 				// NOTE: Destination pixels are swapped.
 				px1 = *src;
@@ -1619,7 +1625,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		{
 			//POST_LINE_32X_M01;
 			const uint16_t *src = &_32X_VDP_Ram.u16[VRam_Ind];
-			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
+			for (unsigned int px = (VDP_Reg.H_Pix/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
 				// NOTE: Destination pixels are NOT swapped.
 				px1 = *src;
@@ -1647,7 +1653,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			// TODO: Optimize this!
 			// TODO: Convert this to use decrementing px and pointer arithmetic.
 			int px = 0;
-			while (px < 320)
+			while (px < VDP_Reg.H_Pix)
 			{
 				pixC = (_32X_VDP_Ram.u16[VRam_Ind] & 0xFF);
 				uint8_t Num = (_32X_VDP_Ram.u16[VRam_Ind++] >> 8);
@@ -1665,7 +1671,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		{
 			//POST_LINE_32X_M01_P;
 			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
-			for (unsigned int px = (320/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
+			for (unsigned int px = (VDP_Reg.H_Pix/2); px != 0; px--, src += 2, dest += 2, lbptr += 2)
 			{
 				// NOTE: Destination pixels are swapped.
 				px1 = *src;
@@ -1688,7 +1694,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 14:
 			//POST_LINE_32X_M10_P;
 			// TODO: Optimize this!
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px--, dest++, lbptr++)
 			{
 				pixS = _32X_VDP_Ram.u16[VRam_Ind++];
 				
@@ -1703,7 +1709,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			//POST_LINE_32X_SM01_P;
 			// TODO: Optimize this!
 			VRam_Ind *= 2;
-			for (unsigned int px = 320; px != 0; px--, dest++, lbptr++)
+			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px--, dest++, lbptr++)
 			{
 				pixC = _32X_VDP_Ram.u8[VRam_Ind++ ^ 1];
 				pixS = _32X_VDP_CRam[pixC];
