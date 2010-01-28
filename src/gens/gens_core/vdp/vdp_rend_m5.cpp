@@ -1574,9 +1574,6 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 	// - Primal Rage
 	// - Sangokushi IV
 	
-	if (_32X_Rend_Mode >= 3 && (_32X_Rend_Mode & 3) && _32X_Rend_Mode != 5)
-		printf("REND MODE: %d\n", _32X_Rend_Mode);
-	
 	switch (_32X_Rend_Mode)
 	{
 		case 0:
