@@ -505,7 +505,17 @@ static void WINAPI about_window_buildDebugInfoString(void)
 			continue;
 		}
 		
-		ss << cpix.CodePage << " (";
+		ss << cpix.CodePage;
+		
+		// If the code page name is blank, don't add extra parentheses.
+		if (cpix.CodePageName[0] == 0x00)
+		{
+			ss << "\n";
+			continue;
+		}
+		
+		// Add the code page name.
+		ss << " (";
 		
 		// Windows XP has the code page number in cpix.CodePageName,
 		// followed by two spaces, and then the code page name in parentheses.
