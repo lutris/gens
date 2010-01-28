@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: iconv wrapper functions.                                           *
+ * libgsft: Common functions.                                              *
+ * gsft_iconv.c: iconv() wrapper.                                          *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,20 +19,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_ICONV_STRING_HPP
-#define GENS_ICONV_STRING_HPP
+#ifndef GSFT_ICONV_H
+#define GSFT_ICONV_H
+
+#include <string.h>
 
 #ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <string>
+char *gsft_iconv(const char *src, size_t src_bytes_len,
+		 const char *src_charset, const char *dest_charset);
 
-std::string gens_iconv(const char *src, size_t src_bytes_len,
-		       const char *src_charset, const char *dest_charset);
-
-#else /* ! __cplusplus */
-
-#error iconv_string.hpp should only be #included in C++ files.
-
-#endif /* __cplusplus */
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GENS_CHARSET_HPP */

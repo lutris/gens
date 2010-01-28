@@ -359,6 +359,12 @@ if GENS_LZMA
 gens_LDADD += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
 
+if !GENS_OS_WIN32
+if HAVE_ICONV
+gens_LDADD += $(top_builddir)/src/libgsft/libgsft_iconv.la
+endif # HAVE_ICONV
+endif # !GENS_OS_WIN32
+
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
@@ -392,6 +398,12 @@ endif # GENS_PNG
 if GENS_LZMA
 gens_DEPENDENCIES += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
+
+if !GENS_OS_WIN32
+if HAVE_ICONV
+gens_DEPENDENCIES += $(top_builddir)/src/libgsft/libgsft_iconv.la
+endif # HAVE_ICONV
+endif # !GENS_OS_WIN32
 
 CLEANFILES = ${ASMFILES}
 

@@ -86,6 +86,22 @@ endif
 
 endif
 
+# iconv-specific code.
+if HAVE_ICONV
+
+noinst_LTLIBRARIES += libgsft_iconv.la
+
+libgsft_iconv_la_CFLAGS		= $(libgsft_la_CFLAGS)
+libgsft_iconv_la_CXXFLAGS	= $(libgsft_la_CXXFLAGS)
+libgsft_iconv_la_LDFLAGS	= $(libgsft_la_LDFLAGS)
+libgsft_iconv_la_LIBADD		= @ICONV_LIBS@
+libgsft_iconv_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)
+
+libgsft_iconv_la_SOURCES	= gsft_iconv.c
+noinst_HEADERS			= gsft_iconv.h
+
+endif # HAVE_ICONV
+
 # Win32-specific code.
 if GENS_OS_WIN32
 

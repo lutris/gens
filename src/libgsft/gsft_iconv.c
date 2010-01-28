@@ -1,9 +1,8 @@
 /***************************************************************************
- * Gens: iconv wrapper functions.                                           *
+ * libgsft: Common functions.                                              *
+ * gsft_iconv.c: iconv() wrapper.                                          *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,14 +19,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "iconv_string.hpp"
+#include "gsft_iconv.h"
+#include "gsft_bool.h"
 
 // C includes.
 #include <stdlib.h>
-
-// C++ includes.
-#include <string>
-using std::string;
 
 // iconv includes.
 #include <iconv.h>
@@ -35,14 +31,15 @@ using std::string;
 
 
 /**
- * gens_iconv_to_utf8(): Convert a string from any character set to UTF-8.
+ * gsft_iconv(): Convert a string from one character set to another.
  * @param src 		[in] Source string.
  * @param src_bytes_len [in] Source length, in bytes.
  * @param src_charset	[in] Source character set.
  * @param dest_charset	[in] Destination character set.
- * @return UTF-8 C++ string, or "" on error.
+ * @return malloc()'d UTF-8 string, or NULL on error.
  */
-string gens_iconv(const char *src, size_t src_bytes_len, const char *src_charset, const char *dest_charset)
+char *gsft_iconv(const char *src, size_t src_bytes_len,
+		 const char *src_charset, const char *dest_charset)
 {
 	if (!src || src_bytes_len == 0)
 		return "";
@@ -62,7 +59,7 @@ string gens_iconv(const char *src, size_t src_bytes_len, const char *src_charset
 	if (cd == (iconv_t)(-1))
 	{
 		// Error opening iconv.
-		return "";
+		return NULL;
 	}
 	
 	// Allocate the output buffer.
@@ -72,17 +69,17 @@ string gens_iconv(const char *src, size_t src_bytes_len, const char *src_charset
 	char *outbuf = (char*)malloc(out_bytes_len);
 	
 	// Input and output pointers.
-	char *inptr = const_cast<char*>(src);	// Input pointer.
-	char *outptr = &outbuf[0];		// Output pointer.
+	char *inptr = (char*)(src);	// Input pointer.
+	char *outptr = &outbuf[0];	// Output pointer.
 	
-	bool success = true;
+	BOOL success = TRUE;
 	
 	while (src_bytes_len > 0)
 	{
 		if (iconv(cd, &inptr, &src_bytes_len, &outptr, &out_bytes_remaining) == (size_t)(-1))
 		{
 			// An error occurred while converting the string.
-			success = false;
+			success = FALSE;
 			break;
 		}
 	}
@@ -98,12 +95,11 @@ string gens_iconv(const char *src, size_t src_bytes_len, const char *src_charset
 		if (out_bytes_remaining > 0)
 			*outptr = 0x00;
 		
-		string rstr = string(outbuf);
-		free(outbuf);
-		return rstr;
+		// Return the output buffer.
+		return outbuf;
 	}
 	
 	// The string was not converted successfully.
 	free(outbuf);
-	return "";
+	return NULL;
 }

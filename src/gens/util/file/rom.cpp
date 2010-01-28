@@ -114,7 +114,7 @@ using std::deque;
 
 // String conversion.
 #if defined(HAVE_ICONV)
-#include "charset/iconv_string.hpp"
+#include "libgsft/gsft_iconv.h"
 #elif defined(_WIN32)
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_charset.h"
@@ -1162,7 +1162,13 @@ string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
 {
 #if defined(HAVE_ICONV)
 	// libiconv-based Shift-JIS to UTF-8 conversion code.
-	return gens_iconv(sjis, len, "SHIFT-JIS", "");
+	char *mbs = gsft_iconv(sjis, len, "SHIFT-JIS", "");
+	if (!mbs)
+		return "";
+	
+	string s_utf8 = string(mbs);
+	free(mbs);
+	return s_utf8;
 #elif defined(_WIN32)
 	// Win32-based Shift-JIS to UTF-8 conversion code.
 	// NOTE: w32u_mbstombs_alloc() requires a NULL-terminated string;

@@ -10,7 +10,6 @@ gens_SOURCES += \
 		port/timer.c \
 		util/file/decompressor/md_rar.cpp \
 		util/file/decompressor/md_rar_t.c \
-		charset/iconv_string.cpp \
 		video/vdraw_sdl_common.c \
 		video/vdraw_sdl.c \
 		input/input_sdl.c \
@@ -70,7 +69,6 @@ noinst_HEADERS += \
 		port/timer.h \
 		util/file/decompressor/md_rar.hpp \
 		util/file/decompressor/md_rar_t.h \
-		charset/iconv_string.hpp \
 		video/vdraw_sdl_common.h \
 		video/vdraw_sdl.h \
 		input/input_sdl.h \
