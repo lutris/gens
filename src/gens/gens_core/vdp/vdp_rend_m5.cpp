@@ -1645,21 +1645,24 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 7:
 		case 11:
 		case 15:
+		{
 			//POST_LINE_32X_M11;
 			// TODO: Optimize this!
 			// TODO: Convert this to use decrementing px and pointer arithmetic.
-			for (int px = 0; px < 320; px--)
+			int px = 0;
+			while (px < 320)
 			{
 				pixC = (_32X_VDP_Ram.u16[VRam_Ind] & 0xFF);
 				uint8_t Num = (_32X_VDP_Ram.u16[VRam_Ind++] >> 8);
 				
 				int px_end = px + Num;
-				for (; px < px_end; px++)
+				for (; px <= px_end; px++)
 				{
 					dest[px] = _32X_vdp_cram_adjusted[pixC];
 				}
 			}
 			break;
+		}
 		
 		case 5:
 		{
