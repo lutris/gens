@@ -11,6 +11,7 @@ mdp_misc_irc_reporter_la_CFLAGS		= $(AM_CFLAGS) $(DBUS_CFLAGS) $(DBUS_GLIB_CFLAG
 mdp_misc_irc_reporter_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 mdp_misc_irc_reporter_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 mdp_misc_irc_reporter_la_LIBADD		= $(top_builddir)/src/libgsft/libgsft.la $(DBUS_LIBS) $(DBUS_GLIB_LIBS)
+mdp_misc_irc_reporter_la_DEPENDENCIES	= $(top_builddir)/src/libgsft/libgsft.la
 
 BUILT_SOURCES = @abs_builddir@/dbus-service-glue.h
 
@@ -33,3 +34,10 @@ noinst_HEADERS = \
 		dbus-service.h	\
 		irc_format.hpp	\
 		$(BUILT_SOURCES)
+
+if !GENS_OS_WIN32
+if HAVE_ICONV
+mdp_misc_irc_reporter_la_LIBADD		+= $(top_builddir)/src/libgsft/libgsft_iconv.la
+mdp_misc_irc_reporter_la_DEPENDENCIES	+= $(top_builddir)/src/libgsft/libgsft_iconv.la
+endif # HAVE_ICONV
+endif # !GENS_OS_WIN32

@@ -18,8 +18,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "irc_format.hpp"
 #include "irc.hpp"
+
+// C includes.
+#include <stdlib.h>
 
 // C++ includes.
 #include <string>
@@ -36,22 +43,72 @@ using std::stringstream;
 // libgsft includes.
 #include "libgsft/gsft_space_elim.h"
 
+#if defined(HAVE_ICONV)
+#include "libgsft/gsft_iconv.h"
+#elif defined(_WIN32)
+#error Win32 is not currently supported by the IRC Reporter plugin.
+#include "libgsft/w32u/w32u_windows.h"
+#include "libgsft/w32u/w32u_charset.h"
+#endif
 
-/** 
- * REPLACE_HIGH_CHRS(): Replace characters with high bit set with '?'.
- * This is a temporary workaround to prevent D-Bus from crashing on Shift-JIS text.
- * TODO: Properly handle Shift-JIS text, and check for other invalid UTF-8 text.
- * @param buf Character buffer.
- * @param len Length of the buffer.
+
+/**
+ * ProcessRomString(): Process a ROM string. (Convert from Shift-JIS to UTF-8, etc.)
+ * @param str ROM string. (may not be NULL-terminated)
+ * @param len Length of the ROM string.
+ * @return Processed ROM string.
  */
-static inline void REPLACE_HIGH_CHRS(char *buf, int len)
+#if defined(HAVE_ICONV)
+static inline string ProcessRomString(const char *str, size_t len)
 {
-	for (; len > 0; len--, buf++)
+	// Attempt to convert the string from various different encodings.
+	static const char *str_encodings[] =
 	{
-		if (*buf & 0x80)
-			*buf = '?';
+		"SHIFT-JIS",
+		"CP1252",
+		NULL
+	};
+	
+	for (int i = 0; str_encodings[i] != NULL; i++)
+	{
+		char *mbs = gsft_iconv(str, len, str_encodings[i], "UTF-8");
+		if (mbs != NULL)
+		{
+			// String converted successfully.
+			string s_utf8 = string(mbs);
+			free(mbs);
+			return s_utf8;
+		}
 	}
+	
+	// TODO: Check if the string is valid UTF-8.
+	
+	// Could not convert the string from any encoding.
+	// Strip out all high characters so the string at least shows up.
+	stringstream ss;
+	for (; len != 0; len--)
+	{
+		ss << ((*str & 0x80) ? '?' : *str);
+		str++;
+	}
+	return ss.str();
 }
+#elif defined(_WIN32)
+#error Win32 is not currently supported by the IRC Reporter plugin.
+#else
+static inline string ProcessRomString(const char *str, size_t len)
+{
+	// Generic non-converting function.
+	// Simply strip out all high characters.
+	stringstream ss;
+	for (; len != 0; len--)
+	{
+		ss << ((*str & 0x80) ? '?' : *str);
+		buf++;
+	}
+	return ss.str();
+}
+#endif
 
 
 // Current format status.
@@ -208,14 +265,20 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 			// Attempt to get the ROM name.
 			char rom_name_raw[48];
 			char rom_name[49];
+			string s_RomName;
 			
+			// Get the ROM name, process it, then eliminate spaces.
 			irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, cc_prio[0], (uint8_t*)rom_name_raw, 0x30);
-			gsft_space_elim(rom_name_raw, 0x30, rom_name);
+			s_RomName = ProcessRomString(rom_name_raw, sizeof(rom_name_raw));
+			gsft_space_elim(s_RomName.c_str(), sizeof(rom_name)-1, rom_name);
+			
 			if (rom_name[0] == 0x00)
 			{
 				// Name at first address is blank. Try second address.
 				irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, cc_prio[1], (uint8_t*)rom_name_raw, 0x30);
-				gsft_space_elim(rom_name_raw, 0x30, rom_name);
+				s_RomName = ProcessRomString(rom_name_raw, sizeof(rom_name_raw));
+				gsft_space_elim(s_RomName.c_str(), sizeof(rom_name)-1, rom_name);
+				
 				if (rom_name[0] == 0x00)
 				{
 					// Domestic name is blank.
@@ -225,7 +288,7 @@ static inline string irc_format_T(int system_id, uint32_t modifier)
 			}
 			
 			// Return the ROM name.
-			REPLACE_HIGH_CHRS(rom_name, sizeof(rom_name)-1);
+			rom_name[sizeof(rom_name)-1] = 0x00;
 			return string(rom_name);
 		}
 		
@@ -269,14 +332,12 @@ static inline string irc_format_N(int system_id, uint32_t modifier)
 				sn_addr |= 0x200000;
 			}
 			
-			char serial_number[15];
+			char serial_number[14];
 			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, sn_addr, (uint8_t*)serial_number, 14) != MDP_ERR_OK)
 				return "unknown";
-			serial_number[sizeof(serial_number)-1] = 0;
 			
 			// Return the ROM serial number.
-			REPLACE_HIGH_CHRS(serial_number, sizeof(serial_number)-1);
-			return string(serial_number);
+			return ProcessRomString(serial_number, sizeof(serial_number));
 		}
 		
 		default:
@@ -415,14 +476,12 @@ static inline string irc_format_D(int system_id, uint32_t modifier)
 				date_addr |= 0x200000;
 			}
 			
-			char build_date[9];
+			char build_date[8];
 			if (irc_host_srv->mem_read_block_8(MDP_MEM_MD_ROM, date_addr, (uint8_t*)build_date, 8) != MDP_ERR_OK)
 				return "unknown";
-			build_date[sizeof(build_date)-1] = 0;
 			
 			// Return the ROM build date.
-			REPLACE_HIGH_CHRS(build_date, sizeof(build_date)-1);
-			return string(build_date);
+			return ProcessRomString(build_date, sizeof(build_date));
 		}
 		
 		default:
@@ -541,6 +600,7 @@ string irc_format(int system_id, const char *str)
 						}
 						status = FMT_NORMAL;
 						break;
+					
 					case ESC_HEX_BYTE:
 						// Check the character.
 						if (chr >= '0' && chr <= '9')
@@ -579,6 +639,11 @@ string irc_format(int system_id, const char *str)
 							esc_status = ESC_NONE;
 						}
 						
+						break;
+					
+					default:
+						// NOTE: This is probably an error...
+						status = FMT_NORMAL;
 						break;
 				}
 				break;
