@@ -28,10 +28,12 @@
 #endif
 #include <windows.h>
 
-#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
-#define MAKE_EXTFUNCPTR2(f1, f2) extern typeof(f1) * p##f2
 #define MAKE_FUNCPTR(f) typeof(f) * p##f = NULL
 #define MAKE_FUNCPTR2(f1, f2) typeof(f1) * p##f2 = NULL
+#define MAKE_EXTFUNCPTR(f) extern typeof(f) * p##f
+#define MAKE_EXTFUNCPTR2(f1, f2) extern typeof(f1) * p##f2
+#define MAKE_STFUNCPTR(f) static typeof(f) * p##f = NULL
+#define MAKE_STFUNCPTR2(f1, f2) static typeof(f1) * p##f2 = NULL
 
 #ifdef __cplusplus
 extern "C" {

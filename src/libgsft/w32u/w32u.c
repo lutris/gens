@@ -151,6 +151,9 @@ int WINAPI w32u_end(void)
 	// Clear the DLL versions.
 	shell32_dll_version = 0;
 	
+	// Shut down components that need manual shutdowns.
+	w32u_winnls_end();
+	
 	// TODO: Should function pointers be NULL'd?
 	return 0;
 }

@@ -34,3 +34,12 @@ void WINAPI w32u_winnls_init(void)
 	else
 		w32u_winnlsA_init();
 }
+
+
+void WINAPI w32u_winnls_end(void)
+{
+	if (w32u_is_unicode)
+		w32u_winnlsW_end();
+	else
+		w32u_winnlsA_end();
+}
