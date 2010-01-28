@@ -48,6 +48,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 	// Temporary pixels.
 	register pixel px1, px2;
 	
+	// TODO: Draw the entire visible area instead of just 220 lines.
 	switch (_32X_VDP.Mode & 3)
 	{
 		case 0:
@@ -107,6 +108,22 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		default:
 			// to make gcc shut up
 			break;
+	}
+	
+	// Draw the palette.
+	dest = &screen[TAB336[VDP_Lines.Visible.Border_Size + 220] + 8];
+	for (unsigned int i = (256/2); i != 0; i--, dest += 2, _32X_vdp_cram_adjusted += 2)
+	{
+		px1 = *_32X_vdp_cram_adjusted;
+		px2 = *(_32X_vdp_cram_adjusted+1);
+		
+		// Line 1.
+		*dest = px1;
+		*(dest+1) = px2;
+		
+		// Line 2.
+		*(dest+336) = px1;
+		*(dest+336+1) = px2;
 	}
 }
 
