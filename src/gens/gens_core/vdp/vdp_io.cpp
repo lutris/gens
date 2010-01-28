@@ -689,8 +689,7 @@ uint8_t VDP_Read_V_Counter(void)
 	}
 	
 	// Check for interlaced mode.
-	// NOTE: Bit 1 is LSM0. Should check both LSM1 and LSM0!
-	if (VDP_Reg.m5.Set4 & 2)
+	if (VDP_Reg.Interlaced)
 	{
 		// Interlaced mode is enabled.
 		uint8_t vc_tmp = (V_Counter & 0xFF);
