@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -38,11 +38,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Window.
 HWND ccode_window = NULL;
@@ -51,19 +51,18 @@ static BOOL	ccode_window_child_windows_created = FALSE;
 // Window class.
 static WNDCLASS	ccode_wndclass;
 
-// Window size.
-#define CCODE_WINDOW_WIDTH  256
-#define CCODE_WINDOW_DEF_HEIGHT 144
-static int ccode_window_height;
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define CCODE_WINDOW_WIDTH  170
+#define CCODE_WINDOW_DEF_HEIGHT 80
+static int ccode_window_height;	// in pixels, not DLU
 
-#define CCODE_WINDOW_BTN_SIZE      24
-#define CCODE_WINDOW_BTN_ICON_SIZE 16
+#define CCODE_WINDOW_BTN_SIZE      15
 
-#define CCODE_WINDOW_FRACOUNTRY_WIDTH  (CCODE_WINDOW_WIDTH-16)
-#define CCODE_WINDOW_FRACOUNTRY_HEIGHT (CCODE_WINDOW_DEF_HEIGHT-16-24-8)
+#define CCODE_WINDOW_FRACOUNTRY_WIDTH  (CCODE_WINDOW_WIDTH-10)
+#define CCODE_WINDOW_FRACOUNTRY_HEIGHT (CCODE_WINDOW_DEF_HEIGHT-10-15-5)
 
-#define CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH  (CCODE_WINDOW_FRACOUNTRY_WIDTH-8-16-CCODE_WINDOW_BTN_SIZE)
-#define CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT (CCODE_WINDOW_DEF_HEIGHT-16-24-8-16-8)
+#define CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH  (CCODE_WINDOW_FRACOUNTRY_WIDTH-5-10-CCODE_WINDOW_BTN_SIZE)
+#define CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT (CCODE_WINDOW_FRACOUNTRY_HEIGHT-10-5)
 
 // Window procedure.
 static LRESULT CALLBACK ccode_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -96,6 +95,8 @@ typedef struct
 	UINT uAlign;
 } BUTTON_IMAGELIST, *PBUTTON_IMAGELIST;
 #define BUTTON_IMAGELIST_ALIGN_LEFT 0
+#define BUTTON_IMAGELIST_ALIGN_CENTER 4
+#define BUTTON_IMAGELIST_ALIGN_RIGHT 1
 #define BCM_FIRST 0x1600
 #define BCM_SETIMAGELIST (BCM_FIRST + 0x0002)
 #define Button_SetImageList(hWnd, pbuttonImageList) \
@@ -145,15 +146,15 @@ void ccode_window_show(void)
 	ccode_window = pCreateWindowU("ccode_window", "Country Code Order",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT,
+					DLU_X(CCODE_WINDOW_WIDTH), DLU_Y(CCODE_WINDOW_DEF_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.
-	//Win32_setActualWindowSize(ccode_window, CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT);
+	// NOTE: This is done in ccode_window_create_child_windows() to compensate for listbox variations.
+	//Win32_setActualWindowSize(ccode_window, DLU_X(CCODE_WINDOW_WIDTH), DLU_Y(CCODE_WINDOW_DEF_HEIGHT);
 	
 	// Center the window on the parent window.
-	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.
+	// NOTE: This is done in ccode_window_create_child_windows() to compensate for listbox variations.
 	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
 	//Win32_centerOnGensWindow(ccode_window);
 	
@@ -171,23 +172,23 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 	// Add a frame for country code selection.
 	HWND fraCountry = pCreateWindowU(WC_BUTTON, "Country Code Order",
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 8,
-					CCODE_WINDOW_FRACOUNTRY_WIDTH,
-					CCODE_WINDOW_FRACOUNTRY_HEIGHT,
+					DLU_X(5), DLU_Y(5),
+					DLU_X(CCODE_WINDOW_FRACOUNTRY_WIDTH),
+					DLU_Y(CCODE_WINDOW_FRACOUNTRY_HEIGHT),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(fraCountry, fntMain, TRUE);
+	SetWindowFontU(fraCountry, w32_fntMessage, TRUE);
 	
 	// Create the Country Code treeview.
 	ccode_window_create_lstCountryCodes(hWnd);
 	
 	// Adjust the window height based on the listbox's actual height.
-	gsft_win32_set_actual_window_size(hWnd, CCODE_WINDOW_WIDTH, ccode_window_height);
+	gsft_win32_set_actual_window_size(hWnd, DLU_X(CCODE_WINDOW_WIDTH), ccode_window_height);
 	gsft_win32_center_on_window(hWnd, gens_window);
 	
 	// Adjust the frame's height.
 	SetWindowPos(fraCountry, 0, 0, 0,
-			CCODE_WINDOW_FRACOUNTRY_WIDTH,
-			CCODE_WINDOW_FRACOUNTRY_HEIGHT + (ccode_window_height - CCODE_WINDOW_DEF_HEIGHT),
+			DLU_X(CCODE_WINDOW_FRACOUNTRY_WIDTH),
+			DLU_Y(CCODE_WINDOW_FRACOUNTRY_HEIGHT - CCODE_WINDOW_DEF_HEIGHT) + ccode_window_height,
 			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
 	
 	// Create the Up/Down buttons.
@@ -197,31 +198,34 @@ static void WINAPI ccode_window_create_child_windows(HWND hWnd)
 	
 	// TODO: Center the buttons, or right-align them?
 	// They look better center-aligned in this window...
-	static const int btnLeft = (CCODE_WINDOW_WIDTH-75-8-75-8-75)/2;
+	int btnLeft = DLU_X((CCODE_WINDOW_WIDTH-50-5-50-5-50)/2);
+	const int btnInc = DLU_X(5+50);
 	
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					btnLeft, ccode_window_height-8-24,
-					75, 23,
+					btnLeft, ccode_window_height-DLU_Y(5+14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, TRUE);
 	
 	// Cancel button.
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft+8+75, ccode_window_height-8-24,
-					75, 23,
+					btnLeft, ccode_window_height-DLU_Y(5+14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, w32_fntMessage, TRUE);
 	
 	// Apply button.
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft+8+75+8+75, ccode_window_height-8-24,
-					75, 23,
+					btnLeft, ccode_window_height-DLU_Y(5+14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, w32_fntMessage, TRUE);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, FALSE);
@@ -243,19 +247,19 @@ static void WINAPI ccode_window_create_lstCountryCodes(HWND container)
 	// Create the listbox.
 	lstCountryCodes = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						8+8, 8+16,
-						CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH,
-						CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT,
+						DLU_X(5+5), DLU_Y(5+10),
+						DLU_X(CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH),
+						DLU_Y(CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lstCountryCodes, fntMain, TRUE);
+	SetWindowFontU(lstCountryCodes, w32_fntMessage, TRUE);
 	
 	// Check what the listbox's actual height is.
 	RECT r;
 	GetWindowRect(lstCountryCodes, &r);
 	
 	// Determine the window height based on the listbox's adjusted size.
-	ccode_window_height = CCODE_WINDOW_DEF_HEIGHT + ((r.bottom - r.top)
-				- CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT);
+	ccode_window_height = DLU_Y(CCODE_WINDOW_DEF_HEIGHT) + (r.bottom - r.top)
+				- DLU_Y(CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT);
 }
 
 
@@ -271,33 +275,30 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 	
 	// Load the icons.
 	HICON icoUp   = (HICON)LoadImageA(ghInstance, MAKEINTRESOURCE(IDI_ARROW_UP),
-						IMAGE_ICON,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+						IMAGE_ICON, 16, 16, LR_SHARED);
 	HICON icoDown = (HICON)LoadImageA(ghInstance, MAKEINTRESOURCE(IDI_ARROW_DOWN),
-						IMAGE_ICON,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE, LR_SHARED);
+						IMAGE_ICON, 16, 16, LR_SHARED);
 	
 	// Create the buttons.
 	
 	// "Up" button.
 	HWND btnUp = pCreateWindowU(WC_BUTTON, NULL,
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
-					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
-					8+16,
-					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON | BS_CENTER,
+					DLU_X(5+5+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+5),
+					DLU_Y(5+10),
+					DLU_X(CCODE_WINDOW_BTN_SIZE), DLU_Y(CCODE_WINDOW_BTN_SIZE),
 					container, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
-	SetWindowFontU(btnUp, fntMain, TRUE);
+	SetWindowFontU(btnUp, w32_fntMessage, TRUE);
 	
 	// "Down" button.
 	HWND btnDown = pCreateWindowU(WC_BUTTON, NULL,
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
-					8+8+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+8,
-					8+16+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT+(ccode_window_height-CCODE_WINDOW_DEF_HEIGHT)-CCODE_WINDOW_BTN_SIZE,
-					CCODE_WINDOW_BTN_SIZE, CCODE_WINDOW_BTN_SIZE,
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON | BS_CENTER,
+					DLU_X(5+5+CCODE_WINDOW_LSTCOUNTRYCODES_WIDTH+5),
+					DLU_Y(5+10+CCODE_WINDOW_LSTCOUNTRYCODES_HEIGHT) +
+						(ccode_window_height-DLU_Y(CCODE_WINDOW_DEF_HEIGHT))-DLU_Y(CCODE_WINDOW_BTN_SIZE),
+					DLU_X(CCODE_WINDOW_BTN_SIZE), DLU_Y(CCODE_WINDOW_BTN_SIZE),
 					container, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
-	SetWindowFontU(btnDown, fntMain, TRUE);
+	SetWindowFontU(btnDown, w32_fntMessage, TRUE);
 	
 	// Set the button icons.
 	if (comctl32_dll_version >= 0x05520000)
@@ -307,22 +308,18 @@ static void WINAPI ccode_window_create_up_down_buttons(HWND container)
 		// This ensures that visual styles are applied correctly.
 		
 		// "Up" button image list.
-		imglArrowUp = ImageList_Create(CCODE_WINDOW_BTN_ICON_SIZE,
-						CCODE_WINDOW_BTN_ICON_SIZE,
-						ILC_MASK | ILC_COLOR4, 1, 1);
+		imglArrowUp = ImageList_Create(16, 16, ILC_MASK | ILC_COLOR4, 1, 1);
 		ImageList_SetBkColor(imglArrowUp, CLR_NONE);
 		ImageList_AddIcon(imglArrowUp, icoUp);
 		
 		// "Down" button image list.
-		imglArrowDown = ImageList_Create(CCODE_WINDOW_BTN_ICON_SIZE,
-							CCODE_WINDOW_BTN_ICON_SIZE,
-							ILC_MASK | ILC_COLOR4, 1, 1);
+		imglArrowDown = ImageList_Create(16, 16, ILC_MASK | ILC_COLOR4, 1, 1);
 		ImageList_SetBkColor(imglArrowDown, CLR_NONE);
 		ImageList_AddIcon(imglArrowDown, icoDown);
 		
 		// BUTTON_IMAGELIST struct.
 		BUTTON_IMAGELIST bimglBtn;
-		bimglBtn.uAlign = BUTTON_IMAGELIST_ALIGN_LEFT;
+		bimglBtn.uAlign = BUTTON_IMAGELIST_ALIGN_CENTER;
 		bimglBtn.margin.top = 0;
 		bimglBtn.margin.bottom = 0;
 		bimglBtn.margin.left = 1;

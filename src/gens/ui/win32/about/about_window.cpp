@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -47,11 +47,11 @@ using std::stringstream;
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_winnls.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // git version
 #include "macros/git.h"
@@ -70,28 +70,28 @@ HWND about_window = NULL;
 static WNDCLASS about_wndclass;
 
 #ifdef GENS_GIT_VERSION
-#define ABOUT_WINDOW_GIT_HEIGHT 16
+#define ABOUT_WINDOW_GIT_HEIGHT 10
 #else
 #define ABOUT_WINDOW_GIT_HEIGHT 0
 #endif
 
-// Window size.
-#define ABOUT_WINDOW_WIDTH  344
-#define ABOUT_WINDOW_HEIGHT (396+ABOUT_WINDOW_GIT_HEIGHT)
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define ABOUT_WINDOW_WIDTH  210
+#define ABOUT_WINDOW_HEIGHT (220+ABOUT_WINDOW_GIT_HEIGHT)
 
 // Logo/Verison Height.
 
 // Tab content size.
-#define TAB_TOP    (96+ABOUT_WINDOW_GIT_HEIGHT)
-#define TAB_WIDTH  (ABOUT_WINDOW_WIDTH-16)
-#define TAB_HEIGHT (ABOUT_WINDOW_HEIGHT-TAB_TOP-16-24)
+#define TAB_TOP    (60+ABOUT_WINDOW_GIT_HEIGHT)
+#define TAB_WIDTH  (ABOUT_WINDOW_WIDTH-10)
+#define TAB_HEIGHT (ABOUT_WINDOW_HEIGHT-TAB_TOP-10-15)
 
 // Timer ID.
 #define IDT_ICETIMER 0x1234
 
 // ice offsets.
-#define ICE_OFFSET_X 32
-#define ICE_OFFSET_Y 8
+static int ice_offset_x;
+static int ice_offset_y;
 
 // Window procedure.
 static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -164,11 +164,11 @@ void about_window_show(void)
 	about_window = pCreateWindowU("about_window", "About " GENS_APPNAME,
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
+					DLU_X(ABOUT_WINDOW_WIDTH), DLU_Y(ABOUT_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(about_window, ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(about_window, DLU_X(ABOUT_WINDOW_WIDTH), DLU_Y(ABOUT_WINDOW_HEIGHT));
 	
 	// Center the window on the Gens window.
 	gsft_win32_center_on_window(about_window, gens_window);
@@ -185,11 +185,16 @@ void about_window_show(void)
 static void WINAPI about_window_create_child_windows(HWND hWnd)
 {
 	cx = 0; iceLastTicks = 0;
+	
 	if (ice != 3)
 	{
-		// Gens logo
+		// Gens logo. (Approximate area: 80 DLU_X, 58 DLU Y.)
+		const int pos_x = ((DLU_X(80) - 128) / 2) + DLU_X(8);
+		const int pos_y = ((DLU_Y(60) - 96) / 2);
 		imgGensLogo = pCreateWindowU(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
-						12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
+						pos_x, pos_y,
+						128, 96,
+						hWnd, NULL, ghInstance, NULL);
 		hbmpGensLogo = (HBITMAP)LoadImageA(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 							IMAGE_BITMAP, 0, 0,
 							LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
@@ -211,6 +216,9 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 		hbmpGensLogo = CreateDIBSection(hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
 		SelectBitmap(hdcComp, hbmpGensLogo);
 		
+		ice_offset_x = ((DLU_X(80) - 80) / 2) + 8;
+		ice_offset_y = ((DLU_Y(60) - 80) / 2) + 8;
+		
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, IDT_ICETIMER, 10, about_window_callback_iceTimer);
 		
@@ -219,24 +227,26 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	
 	// Title and version information.
 	lblGensTitle = pCreateWindowU(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
-					128, 8, (ABOUT_WINDOW_WIDTH-128), 32+ABOUT_WINDOW_GIT_HEIGHT,
+					DLU_X(80), DLU_Y(5),
+					DLU_X(ABOUT_WINDOW_WIDTH-80), DLU_Y(20+ABOUT_WINDOW_GIT_HEIGHT),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblGensTitle, fntTitle, true);
+	SetWindowFontU(lblGensTitle, w32_fntTitle, true);
 	
 	lblGensDesc = pCreateWindowU(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
-					128, 42+ABOUT_WINDOW_GIT_HEIGHT,
-					(ABOUT_WINDOW_WIDTH-128), 100,
+					DLU_X(80), DLU_Y(26+ABOUT_WINDOW_GIT_HEIGHT),
+					DLU_X(ABOUT_WINDOW_WIDTH-80), DLU_Y(65),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblGensDesc, fntMain, true);
+	SetWindowFontU(lblGensDesc, w32_fntMessage, true);
 	
 	// Build the debug information string.
 	about_window_buildDebugInfoString();
 	
 	// Tab control.
 	tabInfo = pCreateWindowU(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-				8, TAB_TOP, TAB_WIDTH, TAB_HEIGHT,
+				DLU_X(5), DLU_Y(TAB_TOP),
+				DLU_X(TAB_WIDTH), DLU_Y(TAB_HEIGHT),
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(tabInfo, fntMain, true);
+	SetWindowFontU(tabInfo, w32_fntMessage, true);
 	
 	// Make sure the tab control is in front of all other windows.
 	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
@@ -256,8 +266,8 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	RECT rectTab;
 	rectTab.left = 0;
 	rectTab.top = 0;
-	rectTab.right = TAB_WIDTH;
-	rectTab.bottom = TAB_HEIGHT;
+	rectTab.right = DLU_X(TAB_WIDTH);
+	rectTab.bottom = DLU_Y(TAB_HEIGHT);
 	TabCtrl_AdjustRectU(tabInfo, false, &rectTab);
 	
 	// Box for the tab contents.
@@ -267,7 +277,7 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 					rectTab.right - rectTab.left - 8,
 					rectTab.bottom - rectTab.top - 4,
 					tabInfo, NULL, ghInstance, NULL);
-	SetWindowFontU(grpTabContents, fntMain, true);
+	SetWindowFontU(grpTabContents, w32_fntMessage, true);
 	
 	// Subclass the tab box.
 	grpTabContents_old_wndproc = (WNDPROC)pSetWindowLongPtrU(grpTabContents, GWL_WNDPROC,
@@ -275,19 +285,19 @@ static void WINAPI about_window_create_child_windows(HWND hWnd)
 	
 	// Tab contents.
 	lblTabContents = pCreateWindowU(WC_STATIC, about_window_copyright, WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 16,
+					DLU_X(5), DLU_Y(10),
 					rectTab.right - rectTab.left - 24,
 					rectTab.bottom - rectTab.top - 32,
 					grpTabContents, NULL, ghInstance, NULL);
-	SetWindowFontU(lblTabContents, fntMain, true);
+	SetWindowFontU(lblTabContents, w32_fntMessage, true);
 	
 	// Create the OK button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
-					75, 23,
+					DLU_X(ABOUT_WINDOW_WIDTH-5-50), DLU_Y(ABOUT_WINDOW_HEIGHT-5-14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);
@@ -588,7 +598,7 @@ static void about_window_update_ice(void)
 	PAINTSTRUCT ps;
 	
 	hDC = BeginPaint(about_window, &ps);
-	BitBlt(hDC, ICE_OFFSET_X, ICE_OFFSET_Y, 0120, 0120, hdcComp, 0, 0, SRCCOPY);
+	BitBlt(hDC, ice_offset_x, ice_offset_y, 0120, 0120, hdcComp, 0, 0, SRCCOPY);
 	EndPaint(about_window, &ps);
 }
 
@@ -613,10 +623,10 @@ static void CALLBACK about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_P
 	
 	// Force a repaint.
 	RECT rIce;
-	rIce.left = ICE_OFFSET_X;
-	rIce.top = ICE_OFFSET_Y;
-	rIce.right = ICE_OFFSET_X + 80 - 1;
-	rIce.bottom = ICE_OFFSET_Y + 80 - 1;
+	rIce.left = ice_offset_x;
+	rIce.top = ice_offset_y;
+	rIce.right = ice_offset_x + 80 - 1;
+	rIce.bottom = ice_offset_y + 80 - 1;
 	InvalidateRect(about_window, &rIce, false);
 	pSendMessageU(about_window, WM_PAINT, 0, 0);
 	

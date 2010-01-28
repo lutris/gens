@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -39,11 +39,11 @@
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
 #include "libgsft/w32u/w32u_commdlg.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -74,12 +74,12 @@ HWND genopt_window;
 // Window class.
 static WNDCLASS genopt_wndclass;
 
-// Window size.
-#define GENOPT_WINDOW_WIDTH  360
-#define GENOPT_WINDOW_HEIGHT 300
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define GENOPT_WINDOW_WIDTH  225
+#define GENOPT_WINDOW_HEIGHT 180
 
-#define GENOPT_FRAME_WIDTH  168
-#define GENOPT_FRAME_HEIGHT 252
+#define GENOPT_OSD_FRAME_WIDTH  95
+#define GENOPT_OSD_FRAME_HEIGHT 65
 
 // Window procedure.
 static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -118,8 +118,7 @@ static HPEN	penIntroEffect[8][2];
 // Widget creation functions.
 static void WINAPI genopt_window_create_child_windows(HWND hWnd);
 static void WINAPI genopt_window_create_osd_frame(HWND container, const char* title, const int index,
-							const int x, const int y,
-							const int w, const int h);
+							int x, int y, const int w, const int h);
 
 // Configuration load/save functions.
 static void WINAPI genopt_window_init(void);
@@ -166,11 +165,11 @@ void genopt_window_show(void)
 	genopt_window = pCreateWindowU("genopt_window", "General Options",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT,
+					DLU_X(GENOPT_WINDOW_WIDTH), DLU_Y(GENOPT_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(genopt_window, GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(genopt_window, DLU_X(GENOPT_WINDOW_WIDTH), DLU_Y(GENOPT_WINDOW_HEIGHT));
 	
 	// Center the window on the Gens window.
 	gsft_win32_center_on_window(genopt_window, gens_window);
@@ -187,9 +186,6 @@ void genopt_window_show(void)
 static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 {
 	HWND grpBox;
-	
-	int frameLeft = 8;
-	int frameTop = 8;
 	
 	// Create intro effect color brushes and pens.
 	for (int i = 0; i < 8; i++)
@@ -209,148 +205,157 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	// On-Screen Display frame
 	HWND fraOSD = pCreateWindowU(WC_BUTTON, "On-Screen Display",
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
+					DLU_X(5), DLU_Y(5),
+					DLU_X(GENOPT_OSD_FRAME_WIDTH+10), DLU_Y((GENOPT_OSD_FRAME_HEIGHT*2)+5+5+5),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(fraOSD, fntMain, true);
+	SetWindowFontU(fraOSD, w32_fntMessage, true);
 	
 	// FPS counter frame
-	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, 16, 24,
-				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
+	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, DLU_X(10), DLU_Y(15),
+					DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(GENOPT_OSD_FRAME_HEIGHT));
 	
 	// Message counter frame
-	genopt_window_create_osd_frame(hWnd, "Message", 1, 16, (GENOPT_FRAME_HEIGHT/2)+16,
-				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
+	genopt_window_create_osd_frame(hWnd, "Message", 1, DLU_X(10), DLU_Y(5+GENOPT_OSD_FRAME_HEIGHT+10),
+					DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(GENOPT_OSD_FRAME_HEIGHT));
 	
 	// Miscellaneous frame
-	frameLeft += GENOPT_FRAME_WIDTH + 8;
+	int frameLeft = DLU_X(5+GENOPT_OSD_FRAME_WIDTH+10+5);
+	int frameTop = DLU_Y(5);
 	
 	grpBox = pCreateWindowU(WC_BUTTON, "Miscellaneous",
 				WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
+				frameLeft, frameTop,
+				DLU_X(GENOPT_OSD_FRAME_WIDTH+10), DLU_Y(GENOPT_WINDOW_HEIGHT-5-14-10),
 				hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, w32_fntMessage, true);
 	
 	// Auto Fix Checksum
-	frameTop += 16;
+	frameLeft += DLU_X(5);
+	frameTop += DLU_Y(10);
 	chkMisc_AutoFixChecksum = pCreateWindowU(WC_BUTTON, "Auto Fix Checksum",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							frameLeft+8, frameTop,
-							(GENOPT_FRAME_WIDTH-16), 20,
+							frameLeft, frameTop,
+							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_AutoFixChecksum, fntMain, true);
+	SetWindowFontU(chkMisc_AutoFixChecksum, w32_fntMessage, true);
 	
 	// Auto Pause
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_AutoPause = pCreateWindowU(WC_BUTTON, "Auto Pause",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_AutoPause, fntMain, true);
+	SetWindowFontU(chkMisc_AutoPause, w32_fntMessage, true);
 	
 	// Fast Blur
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_FastBlur = pCreateWindowU(WC_BUTTON, "Fast Blur",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_FastBlur, fntMain, true);
+	SetWindowFontU(chkMisc_FastBlur, w32_fntMessage, true);
 	
 	// Show SegaCD LEDs
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_SegaCDLEDs = pCreateWindowU(WC_BUTTON, "Show SegaCD LEDs",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_SegaCDLEDs, fntMain, true);
+	SetWindowFontU(chkMisc_SegaCDLEDs, w32_fntMessage, true);
 	
 	// Border Color Emulation
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_BorderColorEmulation = pCreateWindowU(WC_BUTTON, "Border Color Emulation",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							frameLeft+8, frameTop,
-							(GENOPT_FRAME_WIDTH-16), 20,
+							frameLeft, frameTop,
+							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_BorderColorEmulation, fntMain, true);
+	SetWindowFontU(chkMisc_BorderColorEmulation, w32_fntMessage, true);
 	
 	// Pause Tint
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_PauseTint = pCreateWindowU(WC_BUTTON, "Pause Tint",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_PauseTint, fntMain, true);
+	SetWindowFontU(chkMisc_PauseTint, w32_fntMessage, true);
 	
 	// Intro Effect label.
-	frameTop += 16+8;
+	frameTop += DLU_Y(10+5);
 	HWND lblIntroEffect = pCreateWindowU(WC_STATIC, "Intro Effect:",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
-						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblIntroEffect, fntMain, true);
+	SetWindowFontU(lblIntroEffect, w32_fntMessage, true);
 	
 	// Dropdown for intro effect.
-	frameTop += 16;
+	frameTop += DLU_Y(10);
 	cboIntroEffect = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					frameLeft+8, frameTop,
-					(GENOPT_FRAME_WIDTH-16), 23*3,
+					frameLeft, frameTop,
+					DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(14*3),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(cboIntroEffect, fntMain, true);
+	SetWindowFontU(cboIntroEffect, w32_fntMessage, true);
 	ComboBox_AddStringU(cboIntroEffect, "None");
 	ComboBox_AddStringU(cboIntroEffect, "Gens Logo Effect");
 	ComboBox_AddStringU(cboIntroEffect, "\"Crazy\" Effect");
 	//ComboBox_AddStringU(cboIntroEffect, "Genesis TMSS"); // TODO: Broken.
 	
 	// Intro effect color label
-	frameTop += 24+4;
+	frameTop += DLU_Y(15+2);
 	HWND lblIntroEffectColor = pCreateWindowU(WC_STATIC, "Intro Effect Color:",
 							WS_CHILD | WS_VISIBLE | SS_CENTER,
-							frameLeft+8, frameTop,
-							(GENOPT_FRAME_WIDTH-16), 20,
+							frameLeft, frameTop,
+							DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblIntroEffectColor, fntMain, true);
+	SetWindowFontU(lblIntroEffectColor, w32_fntMessage, true);
 	
 	// Intro effect color buttons.
-	frameLeft += 8+4 + (((GENOPT_FRAME_WIDTH-16) - (4*(16+8))) / 2);
-	frameTop += 20;
+	frameLeft += ((DLU_X(GENOPT_OSD_FRAME_WIDTH) - (4*(16+8)-8)) / 2);
+	frameTop += DLU_Y(12);
 	for (int i = 0; i < 8; i++)
 	{
 		optIntroEffectColor[i] = pCreateWindowU(
 				WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft + ((i%4)*(16+8)), frameTop + ((i / 4) * (16+4)), 16, 16,
+				frameLeft + ((i%4)*(16+7)), frameTop + ((i / 4) * (16+4)), 16, 16,
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
 	}
 	
 	// Create the dialog buttons.
+	const int btnTop = DLU_Y(GENOPT_WINDOW_HEIGHT-5-14);
+	int btnLeft = DLU_X(GENOPT_WINDOW_WIDTH-5-50-5-50-5-50);
+	const int btnInc = DLU_X(5+50);
 	
 	// OK button.
 	btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				GENOPT_WINDOW_WIDTH-8-75-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-				75, 23,
+				btnLeft, btnTop,
+				DLU_X(50), DLU_Y(14),
 				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Cancel button.
+	btnLeft += btnInc;
 	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					GENOPT_WINDOW_WIDTH-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-					75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	// Apply button.
+	btnLeft += btnInc;
 	btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					GENOPT_WINDOW_WIDTH-8-75, GENOPT_WINDOW_HEIGHT-8-24,
-					75, 23,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Initialize the internal data variables.
 	genopt_window_init();
@@ -361,8 +366,7 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 
 
 static void WINAPI genopt_window_create_osd_frame(HWND container, const char* title, const int index,
-							const int x, const int y,
-							const int w, const int h)
+							int x, int y, const int w, const int h)
 {
 	// Message frame
 	HWND grpBox, lblColor;
@@ -371,46 +375,54 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
 				x, y, w, h,
 				container, NULL, ghInstance, NULL);
-	SetWindowFontU(grpBox, fntMain, true);
+	SetWindowFontU(grpBox, w32_fntMessage, true);
+	
+	x += DLU_X(5);
+	y += DLU_Y(10);
+	const int rowInc = DLU_Y(12);
 	
 	// Enable
 	chkOSD_Enable[index] = pCreateWindowU(WC_BUTTON, "Enable",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						x+8, y+16,
-						GENOPT_FRAME_WIDTH-32, 20,
+						x, y,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_Enable[index], fntMain, true);
+	SetWindowFontU(chkOSD_Enable[index], w32_fntMessage, true);
 	
 	// Double Sized
+	y += rowInc;
 	chkOSD_DoubleSized[index] = pCreateWindowU(WC_BUTTON, "Double Sized",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							x+8, y+16+20,
-							GENOPT_FRAME_WIDTH-32, 20,
+							x, y,
+							DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_DoubleSized[index], fntMain, true);
+	SetWindowFontU(chkOSD_DoubleSized[index], w32_fntMessage, true);
 	
 	// Transparency
+	y += rowInc;
 	chkOSD_Transparency[index] = pCreateWindowU(WC_BUTTON, "Transparency",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							x+8, y+16+20+20,
-							GENOPT_FRAME_WIDTH-32, 20,
+							x, y,
+							DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
 							container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_Transparency[index], fntMain, true);
+	SetWindowFontU(chkOSD_Transparency[index], w32_fntMessage, true);
 	
 	// Color label.
+	y += rowInc;
 	lblColor = pCreateWindowU(WC_STATIC, "Color:",
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					x+8, y+16+20+20+20+4, 36, 20,
+					x, y+DLU_Y(2),
+					DLU_X(22), DLU_Y(10),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblColor, fntMain, true);
+	SetWindowFontU(lblColor, w32_fntMessage, true);
 	
 	// Color button.
 	btnColor[index] = pCreateWindowU(WC_BUTTON, "Change...",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						x+8+36+4, y+16+20+20+20+2,
-						(GENOPT_FRAME_WIDTH-32-36-4), 23,
+						x+DLU_X(5+22), y,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH-10-22-5), DLU_Y(14),
 						container, (HMENU)(0xB000 + index), ghInstance, NULL);
-	SetWindowFontU(btnColor[index], fntMain, true);
+	SetWindowFontU(btnColor[index], w32_fntMessage, true);
 	
 	// Color button C++ wrapper.
 	btnColor_cpp[index] = new BtnColor(btnColor[index]);

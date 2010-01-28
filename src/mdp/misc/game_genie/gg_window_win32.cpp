@@ -61,9 +61,9 @@ static HWND gg_window = NULL;
 static WNDCLASS gg_window_wndclass;
 static bool gg_window_child_windows_created = false;
 
-// Window size.
-#define GG_WINDOW_WIDTH  508
-#define GG_WINDOW_HEIGHT 316
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define GG_WINDOW_WIDTH  315
+#define GG_WINDOW_HEIGHT 180
 
 // Window procedure.
 static LRESULT CALLBACK gg_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -86,10 +86,6 @@ static void	gg_window_create_lstCodes(HWND container);
 #define IDC_BTNADDCODE		0x0010
 #define IDC_BTNDELETE		0x0011
 #define IDC_BTNDEACTIVATEALL	0x0012
-
-// Win32 instance and font.
-static HFONT gg_hFont = NULL;
-static HFONT gg_hFont_title = NULL;
 
 // Code load/save functions.
 static void	gg_window_init(void);
@@ -145,19 +141,15 @@ void gg_window_show(void *parent)
 		pRegisterClassU(&gg_window_wndclass);
 	}
 	
-	// Create the fonts.
-	gg_hFont = gsft_win32_gdi_get_message_font();
-	gg_hFont_title = gsft_win32_gdi_get_title_font();
-	
 	// Create the window.
 	gg_window = pCreateWindowU("gg_window_wndclass", "Game Genie",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT,
+					DLU_X(GG_WINDOW_WIDTH), DLU_Y(GG_WINDOW_HEIGHT),
 					(HWND)parent, NULL, gg_hInstance, NULL);
 	
 	// Window adjustment.
-	gsft_win32_set_actual_window_size(gg_window, GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(gg_window, DLU_X(GG_WINDOW_WIDTH), DLU_Y(GG_WINDOW_HEIGHT));
 	gsft_win32_center_on_window(gg_window, (HWND)parent);
 	
 	UpdateWindow(gg_window);
@@ -176,6 +168,9 @@ static void gg_window_create_child_windows(HWND hWnd)
 	if (gg_window_child_windows_created)
 		return;
 	
+	// Initialize libgsft_win32_gdi.
+	gsft_win32_gdi_init(hWnd);
+	
 	// Strings.
 	static const char strInfoTitle[] = "Information about Game Genie / Patch codes";
 	static const char strInfo[] =
@@ -187,33 +182,34 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// Header label.
 	HWND lblInfoTitle = pCreateWindowU(WC_STATIC, strInfoTitle,
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8, 8,
-						GG_WINDOW_WIDTH-16, 16,
+						DLU_X(5), DLU_Y(5),
+						DLU_X(GG_WINDOW_WIDTH-10), DLU_Y(10),
 						hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(lblInfoTitle, gg_hFont_title, true);
+	SetWindowFontU(lblInfoTitle, w32_fntTitle, true);
 	
 	// Description label.
 	HWND lblInfo = pCreateWindowU(WC_STATIC, strInfo,
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 8+16,
-					GG_WINDOW_WIDTH-16, 68,
+					DLU_X(5), DLU_Y(5+10),
+					DLU_X(GG_WINDOW_WIDTH-10), DLU_Y(35),
 					hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(lblInfo, gg_hFont, true);
+	SetWindowFontU(lblInfo, w32_fntMessage, true);
 	
 	// "Code" label.
 	HWND lblCode = pCreateWindowU(WC_STATIC, "Code",
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 8+16+68+8, 32, 16,
+					DLU_X(5), DLU_Y(5+10+35+5),
+					DLU_X(20), DLU_Y(10),
 					hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(lblCode, gg_hFont, true);
+	SetWindowFontU(lblCode, w32_fntMessage, true);
 	
 	// "Code" textbox.
 	txtCode = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-					8+32+8, 8+16+68+8,
-					GG_WINDOW_WIDTH-(8+32+8+64+8+8+16), 20,
+					DLU_X(5+20+5), DLU_Y(5+10+35+5),
+					DLU_X(GG_WINDOW_WIDTH-(5+20+5+40+5+5+10)), DLU_Y(12),
 					hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(txtCode, gg_hFont, true);
+	SetWindowFontU(txtCode, w32_fntMessage, true);
 	Edit_LimitTextU(txtCode, 17);
 	txtCode_old_wndproc = (WNDPROC)pSetWindowLongPtrU(
 						txtCode, GWL_WNDPROC,
@@ -222,17 +218,18 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// "Name" label.
 	HWND lblName = pCreateWindowU(WC_STATIC, "Name",
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 8+16+68+8+24, 32, 16,
+					DLU_X(5), DLU_Y(5+10+35+5+15),
+					DLU_X(20), DLU_Y(10),
 					hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(lblName, gg_hFont, true);
+	SetWindowFontU(lblName, w32_fntMessage, true);
 	
 	// "Name" textbox.
 	txtName = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-					8+32+8, 8+16+68+8+24,
-					GG_WINDOW_WIDTH-(8+32+8+64+8+8+16), 20,
+					DLU_X(5+20+5), DLU_Y(5+10+35+5+15),
+					DLU_X(GG_WINDOW_WIDTH-(5+20+5+40+5+5+10)), DLU_Y(12),
 					hWnd, NULL, gg_hInstance, NULL);
-	SetWindowFontU(txtName, gg_hFont, true);
+	SetWindowFontU(txtName, w32_fntMessage, true);
 	txtName_old_wndproc = (WNDPROC)pSetWindowLongPtrU(
 						txtName, GWL_WNDPROC,
 						(LONG_PTR)gg_window_wndproc_textbox);
@@ -240,56 +237,63 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// "Add Code" button.
 	HWND btnAddCode = pCreateWindowU(WC_BUTTON, "Add C&ode",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						GG_WINDOW_WIDTH-(64+8+16), 8+16+68+8,
-						63+16, 20,
+						DLU_X(GG_WINDOW_WIDTH-(40+5+10)), DLU_Y(5+10+35+5),
+						DLU_X(40+10), DLU_Y(12),
 						hWnd, (HMENU)IDC_BTNADDCODE, gg_hInstance, NULL);
-	SetWindowFontU(btnAddCode, gg_hFont, true);
+	SetWindowFontU(btnAddCode, w32_fntMessage, true);
 	
 	// Create the ListView for the Game Genie codes.
 	gg_window_create_lstCodes(hWnd);
 	
 	// Create the dialog buttons.
-	static const int btnTop = GG_WINDOW_HEIGHT-24-8;
+	static const int btnTop = DLU_Y(GG_WINDOW_HEIGHT-5-14);
+	int btnLeft = DLU_X(5);
+	int btnInc = DLU_X(50+5);
 	
 	// "Deactivate All" button.
 	HWND btnDeactivateAll = pCreateWindowU(WC_BUTTON, "Deac&tivate All",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						8, btnTop,
-						91, 24,
+						btnLeft, btnTop,
+						DLU_X(56), DLU_Y(14),
 						hWnd, (HMENU)IDC_BTNDEACTIVATEALL, gg_hInstance, NULL);
-	SetWindowFontU(btnDeactivateAll, gg_hFont, true);
+	SetWindowFontU(btnDeactivateAll, w32_fntMessage, true);
 	
 	// "Delete" button.
+	btnLeft += DLU_X(56+5);
 	HWND btnDelete = pCreateWindowU(WC_BUTTON, "&Delete",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					8+91+8, btnTop,
-					75, 24,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDC_BTNDELETE, gg_hInstance, NULL);
-	SetWindowFontU(btnDelete, gg_hFont, true);
+	SetWindowFontU(btnDelete, w32_fntMessage, true);
 	
 	// "OK" button.
+	btnLeft = DLU_X(GG_WINDOW_WIDTH) - (btnInc*3);
+	
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					GG_WINDOW_WIDTH-(8+75+8+75+8+75), btnTop,
-					75, 24,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, gg_hInstance, NULL);
-	SetWindowFontU(btnOK, gg_hFont, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// "Cancel" button.
+	btnLeft += btnInc;
 	HWND btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					GG_WINDOW_WIDTH-(8+75+8+75), btnTop,
-					75, 24,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, gg_hInstance, NULL);
-	SetWindowFontU(btnCancel, gg_hFont, true);
+	SetWindowFontU(btnCancel, w32_fntMessage, true);
 	
 	// "Apply" button.
+	btnLeft += btnInc;
 	HWND btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					GG_WINDOW_WIDTH-(8+75), btnTop,
-					75, 24,
+					btnLeft, btnTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
-	SetWindowFontU(btnApply, gg_hFont, true);
+	SetWindowFontU(btnApply, w32_fntMessage, true);
 	
 	// Initialize the Game Genie code ListView.
 	gg_window_init();
@@ -308,10 +312,11 @@ static void gg_window_create_lstCodes(HWND container)
 	// ListView containing the Game Genie codes.
 	lstCodes = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_SHOWSELALWAYS,
-					8, 8+16+68+8+24+24,
-					GG_WINDOW_WIDTH-(8+8), 128,
+					DLU_X(5), DLU_Y(5+10+35+5+15+15),
+					DLU_X(GG_WINDOW_WIDTH-5-5),
+					DLU_Y(GG_WINDOW_HEIGHT-5-10-35-5-15-15-5-14-5),
 					container, NULL, gg_hInstance, NULL);
-	SetWindowFontU(lstCodes, gg_hFont, true);
+	SetWindowFontU(lstCodes, w32_fntMessage, true);
 	ListView_SetExtendedListViewStyleU(lstCodes, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	
 	// Create the ListView columns.
@@ -319,24 +324,30 @@ static void gg_window_create_lstCodes(HWND container)
 	memset(&lvCol, 0, sizeof(lvCol));
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 	
+	// Calculate the width of the Name column.
+	int lvColNameWidth = DLU_X(GG_WINDOW_WIDTH-5-5) - 4;
+	
 	// Code (Hex)
 	lvCol.pszText = "Code (Hex)";
-	lvCol.cx = 144;
+	lvCol.cx = DLU_X(90);
+	lvColNameWidth -= lvCol.cx;
 	pListView_InsertColumnU(lstCodes, 0, &lvCol);
 	
 	// Code (GG)
 	lvCol.pszText = "Code (GG)";
-	lvCol.cx = 104;
+	lvCol.cx = DLU_X(68);
+	lvColNameWidth -= lvCol.cx;
 	pListView_InsertColumnU(lstCodes, 1, &lvCol);
 	
 	// CPU
 	lvCol.pszText = "CPU";
-	lvCol.cx = 48;
+	lvCol.cx = DLU_X(30);
+	lvColNameWidth -= lvCol.cx;
 	pListView_InsertColumnU(lstCodes, 2, &lvCol);
 	
 	// Name
 	lvCol.pszText = "Name";
-	lvCol.cx = 192;
+	lvCol.cx = lvColNameWidth;
 	pListView_InsertColumnU(lstCodes, 3, &lvCol);
 }
 
@@ -374,11 +385,8 @@ void gg_window_close(void)
 	gg_window = NULL;
 	DestroyWindow(tmp);
 	
-	// Delete the fonts.
-	DeleteFont(gg_hFont);
-	DeleteFont(gg_hFont_title);
-	gg_hFont = NULL;
-	gg_hFont_title = NULL;
+	// Shut down libgsft_win32_gdi.
+	gsft_win32_gdi_end();
 	
 	// Shut down the Win32 Unicode Translation Layer.
 	w32u_end();

@@ -2,7 +2,7 @@
  * MDP: Blargg's NTSC Filter. (Window Code) (Win32)                        *
  *                                                                         *
  * Copyright (c) 2006 by Shay Green                                        *
- * MDP version Copyright (c) 2008-2009 by David Korth                      *
+ * MDP version Copyright (c) 2008-2010 by David Korth                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -69,18 +69,15 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 // Create Child Windows function.
 static void ntsc_window_create_child_windows(HWND hWnd);
 
-// Font.
-static HFONT ntsc_hFont = NULL;
-
 // Callbacks.
 static void	ntsc_window_callback_cboPresets_changed(void);
 static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting);
 
 static BOOL	ntsc_window_do_callbacks;
 
-// Window size.
-#define NTSC_WINDOW_WIDTH  360
-#define NTSC_WINDOW_HEIGHT 372
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define NTSC_WINDOW_WIDTH  235
+#define NTSC_WINDOW_HEIGHT 232
 
 // HINSTANCE.
 // TODO: Move to DllMain().
@@ -127,21 +124,18 @@ void ntsc_window_show(void *parent)
 		pRegisterClassU(&ntsc_window_wndclass);
 	}
 	
-	// Create the font.
-	ntsc_hFont = gsft_win32_gdi_get_message_font();
-	
 	// Create the window.
 	ntsc_window = pCreateWindowU("ntsc_window_wndclass", "Blargg's NTSC Filter",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT,
+					DLU_X(NTSC_WINDOW_WIDTH), DLU_Y(NTSC_WINDOW_HEIGHT),
 					(HWND)parent, NULL, ntsc_hInstance, NULL);
 	
 	// Load the current settings.
 	ntsc_window_load_settings();
 	
 	// Window adjustment.
-	gsft_win32_set_actual_window_size(ntsc_window, NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(ntsc_window, DLU_X(NTSC_WINDOW_WIDTH), DLU_Y(NTSC_WINDOW_HEIGHT));
 	gsft_win32_center_on_window(ntsc_window, (HWND)parent);
 	
 	UpdateWindow(ntsc_window);
@@ -152,13 +146,14 @@ void ntsc_window_show(void *parent)
 }
 
 
-#define NTSC_WIDGETNAME_WIDTH  88
-#define NTSC_WIDGETNAME_HEIGHT 16
-#define NTSC_VALUELABEL_WIDTH  32
-#define NTSC_VALUELABEL_HEIGHT 16
-#define NTSC_TRACKBAR_WIDTH  (NTSC_WINDOW_WIDTH-8-16-NTSC_WIDGETNAME_WIDTH-8-NTSC_VALUELABEL_WIDTH-8)
-#define NTSC_TRACKBAR_HEIGHT 24
-#define NTSC_TRACKBAR_STYLE  (WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM)
+// These are in Dialog Units.
+#define NTSC_WIDGETNAME_WIDTH  45
+#define NTSC_WIDGETNAME_HEIGHT 10
+#define NTSC_VALUELABEL_WIDTH  20
+#define NTSC_VALUELABEL_HEIGHT 10
+#define NTSC_TRACKBAR_WIDTH  (NTSC_WINDOW_WIDTH-5-10-NTSC_WIDGETNAME_WIDTH-5-NTSC_VALUELABEL_WIDTH-5-5)
+#define NTSC_TRACKBAR_HEIGHT 16
+#define NTSC_TRACKBAR_STYLE  (WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM | TBS_NOTICKS)
 /**
  * ntsc_window_create_child_windows(): Create child windows.
  * @param hWnd Parent window.
@@ -171,26 +166,32 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	// Don't do any callbacks yet.
 	ntsc_window_do_callbacks = FALSE;
 	
+	// Initialize libgsft_win32_gdi.
+	gsft_win32_gdi_init(hWnd);
+	
 	// Create the main frame.
 	HWND grpBox = pCreateWindowU(WC_BUTTON, "NTSC Configuration",
 					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 8, NTSC_WINDOW_WIDTH-16, NTSC_WINDOW_HEIGHT-8-16-24,
+					DLU_X(5), DLU_Y(5),
+					DLU_X(NTSC_WINDOW_WIDTH-10), DLU_Y(NTSC_WINDOW_HEIGHT-5-10-14),
 					hWnd, NULL, ntsc_hInstance, NULL);
-	SetWindowFontU(grpBox, ntsc_hFont, TRUE);
+	SetWindowFontU(grpBox, w32_fntMessage, TRUE);
 	
 	// Add a label for the presets dropdown.
 	HWND lblPresets = pCreateWindowU(WC_STATIC, "&Presets:",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8+8, 8+16+4, 64, 16,
+						DLU_X(5+5), DLU_Y(5+10+2),
+						DLU_X(40), DLU_Y(10),
 						hWnd, NULL, ntsc_hInstance, NULL);
-	SetWindowFontU(lblPresets, ntsc_hFont, TRUE);
+	SetWindowFontU(lblPresets, w32_fntMessage, TRUE);
 	
 	// Add the presets dropdown.
 	cboPresets = pCreateWindowU(WC_COMBOBOX, NULL,
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
-					8+64+8, 8+16, 96, 23*NTSC_PRESETS_COUNT,
+					DLU_X(5+40+5), DLU_Y(5+10),
+					DLU_X(60), DLU_Y(14*NTSC_PRESETS_COUNT),
 					hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
-	SetWindowFontU(cboPresets, ntsc_hFont, TRUE);
+	SetWindowFontU(cboPresets, w32_fntMessage, TRUE);
 	
 	// Add the presets to the dropdown.
 	int i;
@@ -202,48 +203,51 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	// Scanlines checkbox.
 	chkScanline = pCreateWindowU(WC_BUTTON, "S&canlines",
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-					8+64+8+96+8, 8+16+2, 64, 16,
+					DLU_X(5+40+5+60+5), DLU_Y(5+10+1),
+					DLU_X(45), DLU_Y(10),
 					hWnd, (HMENU)IDC_NTSC_SCANLINE, ntsc_hInstance, NULL);
-	SetWindowFontU(chkScanline, ntsc_hFont, TRUE);
+	SetWindowFontU(chkScanline, w32_fntMessage, TRUE);
 	
 	// Interpolation checkbox.
 	chkInterp = pCreateWindowU(WC_BUTTON, "&Interpolation",
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-					8+64+8+96+8+64+8, 8+16+2, 88, 16,
+					DLU_X(5+40+5+60+5+45+5), DLU_Y(5+10+1),
+					DLU_X(55), DLU_Y(10),
 					hWnd, (HMENU)IDC_NTSC_INTERP, ntsc_hInstance, NULL);
-	SetWindowFontU(chkInterp, ntsc_hFont, TRUE);
+	SetWindowFontU(chkInterp, w32_fntMessage, TRUE);
 	
 	// Interpolation checkbox.
 	chkCXA2025AS = pCreateWindowU(WC_BUTTON, "Use Sony C&X2025AS US decoder.",
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-					8+8, 8+16+24, 204, 16,
+					DLU_X(5+5), DLU_Y(5+10+15),
+					DLU_X(128), DLU_Y(10),
 					hWnd, (HMENU)IDC_NTSC_CXA2025AS, ntsc_hInstance, NULL);
-	SetWindowFontU(chkCXA2025AS, ntsc_hFont, TRUE);
+	SetWindowFontU(chkCXA2025AS, w32_fntMessage, TRUE);
 	
 	// Create the adjustment widgets.
-	int hscTop = 8+16+16+24;
+	int hscTop = DLU_Y(5+10+10+15);
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
 		// Label.
 		HWND lblWidgetName = pCreateWindowU(WC_STATIC, ntsc_controls[i].name_mnemonic,
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
-							8+8, hscTop+4,
-							NTSC_WIDGETNAME_WIDTH, NTSC_WIDGETNAME_HEIGHT,
+							DLU_X(5+5), hscTop+DLU_Y(2),
+							DLU_X(NTSC_WIDGETNAME_WIDTH), DLU_Y(NTSC_WIDGETNAME_HEIGHT),
 							hWnd, NULL, ntsc_hInstance, NULL);
-		SetWindowFontU(lblWidgetName, ntsc_hFont, TRUE);
+		SetWindowFontU(lblWidgetName, w32_fntMessage, TRUE);
 		
 		// Value Label.
 		lblCtrlValues[i] = pCreateWindowU(WC_STATIC, NULL,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
-							8+8+NTSC_WIDGETNAME_WIDTH+8, hscTop+4,
-							NTSC_VALUELABEL_WIDTH, NTSC_VALUELABEL_HEIGHT,
+							DLU_X(5+5+NTSC_WIDGETNAME_WIDTH+5), hscTop+DLU_Y(2),
+							DLU_X(NTSC_VALUELABEL_WIDTH), DLU_Y(NTSC_VALUELABEL_HEIGHT),
 							hWnd, NULL, ntsc_hInstance, NULL);
-		SetWindowFontU(lblCtrlValues[i], ntsc_hFont, TRUE);
+		SetWindowFontU(lblCtrlValues[i], w32_fntMessage, TRUE);
 		
 		// Trackbar.
 		hscCtrlValues[i] = pCreateWindowU(TRACKBAR_CLASS, NULL, NTSC_TRACKBAR_STYLE,
-							8+8+NTSC_WIDGETNAME_WIDTH+8+NTSC_VALUELABEL_WIDTH, hscTop,
-							NTSC_TRACKBAR_WIDTH, NTSC_TRACKBAR_HEIGHT,
+							DLU_X(5+5+NTSC_WIDGETNAME_WIDTH+5+NTSC_VALUELABEL_WIDTH+5), hscTop,
+							DLU_X(NTSC_TRACKBAR_WIDTH), DLU_Y(NTSC_TRACKBAR_HEIGHT),
 							hWnd, (HMENU)(IDC_NTSC_TRACKBAR + i), ntsc_hInstance, NULL);
 		pSendMessageU(hscCtrlValues[i], TBM_SETUNICODEFORMAT, w32u_is_unicode, 0);
 		pSendMessageU(hscCtrlValues[i], TBM_SETPAGESIZE, 0, ntsc_controls[i].step);
@@ -251,15 +255,16 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		pSendMessageU(hscCtrlValues[i], TBM_SETPOS, TRUE, 0);
 		
 		// Next widget.
-		hscTop += 26;
+		hscTop += DLU_Y(16);
 	}
 	
 	// Create the "Close" button.
 	HWND btnClose = pCreateWindowU(WC_BUTTON, "&Close",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					NTSC_WINDOW_WIDTH-75-8, NTSC_WINDOW_HEIGHT-24-8, 75, 23,
+					DLU_X(NTSC_WINDOW_WIDTH-50-5), DLU_Y(NTSC_WINDOW_HEIGHT-14-5),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCLOSE, ntsc_hInstance, NULL);
-	SetWindowFontU(btnClose, ntsc_hFont, TRUE);
+	SetWindowFontU(btnClose, w32_fntMessage, TRUE);
 	
 	// Child windows created.
 	ntsc_window_child_windows_created = TRUE;
@@ -368,9 +373,8 @@ void ntsc_window_close(void)
 	ntsc_window = NULL;
 	DestroyWindow(tmp);
 	
-	// Delete the font.
-	DeleteFont(ntsc_hFont);
-	ntsc_hFont = NULL;
+	// Shut down libgsft_win32_gdi.
+	gsft_win32_gdi_end();
 	
 	// Shut down the Win32 Unicode Translation Layer.
 	w32u_end();

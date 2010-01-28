@@ -30,6 +30,7 @@
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_strlcpy.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 // C++ includes.
 #include <string>
@@ -81,12 +82,6 @@ OSVERSIONINFOEX winVersion;
 
 // If extended Common Controls are enabled, this is set to a non-zero value.
 int win32_CommCtrlEx = 0;
-
-// Fonts.
-#include "ui/win32/fonts.h"
-
-// Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -157,11 +152,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Initialize the PRNG.
 	Init_PRNG();
 	
-	// Initialize fonts.
-	fonts_init();
-	
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
+	// (NOTE: Fonts are now initialized in gens_window_init_hWnd().)
 	gens_window_init_hWnd();
 	
 	// Initialize vdraw_ddraw.
@@ -315,8 +308,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	End_All();
 	DestroyWindow(gens_window);
 	
-	// Delete the fonts.
-	fonts_end();
+	// Shut down libgsft_win32_gdi. (Fonts)
+	gsft_win32_gdi_end();
 	
 	// Empty the message queue.
 	// NOTE: ANSI functions are used here, since the messages aren't actually processed.

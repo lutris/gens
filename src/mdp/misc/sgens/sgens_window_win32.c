@@ -70,9 +70,6 @@ static BOOL	sgens_window_child_windows_created;
 #define WIDGET_COL_SPACING 16
 #define WIDGET_ROW_HEIGHT 16
 
-// Font.
-static HFONT sgens_hFont = NULL;
-
 // Widgets.
 static HWND	lblLoadedGame;
 static HWND	lblLevelInfo_Zone;
@@ -133,9 +130,6 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		pRegisterClassU(&sgens_wndclass);
 	}
 	
-	// Create the font.
-	sgens_hFont = gsft_win32_gdi_get_message_font();
-	
 	// Create the window.
 	sgens_window = pCreateWindowU("mdp_misc_sgens_window", "Sonic Gens",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
@@ -168,12 +162,15 @@ static void sgens_window_create_child_windows(HWND hWnd)
 	if (sgens_window_child_windows_created)
 		return;
 	
+	// Initialize libgsft_win32_gdi.
+	gsft_win32_gdi_init(hWnd);
+	
 	// Create the label for the loaded game.
 	lblLoadedGame = pCreateWindowU(WC_STATIC, NULL,
 					WS_CHILD | WS_VISIBLE | SS_CENTER,
 					8, 8, SGENS_WINDOW_WIDTH-16, 16,
 					hWnd, NULL, sgens_hInstance, NULL);
-	SetWindowFontU(lblLoadedGame, sgens_hFont, TRUE);
+	SetWindowFontU(lblLoadedGame, w32_fntMessage, TRUE);
 	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(hWnd);
@@ -189,7 +186,7 @@ static void sgens_window_create_child_windows(HWND hWnd)
 					SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
 					75, 23,
 					hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
-	SetWindowFontU(btnClose, sgens_hFont, TRUE);
+	SetWindowFontU(btnClose, w32_fntMessage, TRUE);
 	
 	// Child windows created.
 	sgens_window_child_windows_created = TRUE;
@@ -208,21 +205,21 @@ static void sgens_window_create_level_info_frame(HWND container)
 						8, 8+16,
 						FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
 						container, NULL, sgens_hInstance, NULL);
-	SetWindowFontU(fraLevelInfo, sgens_hFont, TRUE);
+	SetWindowFontU(fraLevelInfo, w32_fntMessage, TRUE);
 	
 	// "Zone" information label.
 	lblLevelInfo_Zone = pCreateWindowU(WC_STATIC, "Zone",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
 						8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
 						fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFontU(lblLevelInfo_Zone, sgens_hFont, TRUE);
+	SetWindowFontU(lblLevelInfo_Zone, w32_fntMessage, TRUE);
 	
 	// "Act" information label.
 	lblLevelInfo_Act = pCreateWindowU(WC_STATIC, "Act",
 						WS_CHILD | WS_VISIBLE | SS_CENTER,
 						8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
 						fraLevelInfo, NULL, sgens_hInstance, NULL);
-	SetWindowFontU(lblLevelInfo_Act, sgens_hFont, TRUE);
+	SetWindowFontU(lblLevelInfo_Act, w32_fntMessage, TRUE);
 	
 	// Table for level information.
 	unsigned int i;
@@ -257,15 +254,15 @@ static void sgens_window_create_level_info_frame(HWND container)
 							widget_desc_left, widget_top,
 							widget_desc_width, WIDGET_ROW_HEIGHT,
 							fraLevelInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFontU(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
+		SetWindowFontU(lblLevelInfo_Desc[i], w32_fntMessage, TRUE);
 		
 		// Information label.
-		// TODO: Monospace font.
 		lblLevelInfo[i] = pCreateWindowU(WC_STATIC, level_info[i].initial,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
 							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
 							widget_info_width, WIDGET_ROW_HEIGHT,
 							fraLevelInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblLevelInfo[i], w32_fntMonospaced, TRUE);
 	}
 }
 
@@ -282,7 +279,7 @@ static void sgens_window_create_player_info_frame(HWND container)
 						8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
 						FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
 						container, NULL, sgens_hInstance, NULL);
-	SetWindowFontU(fraPlayerInfo, sgens_hFont, TRUE);
+	SetWindowFontU(fraPlayerInfo, w32_fntMessage, TRUE);
 	
 	// Table for player information.
 	unsigned int i;
@@ -317,15 +314,15 @@ static void sgens_window_create_player_info_frame(HWND container)
 							widget_desc_left, widget_top,
 							widget_desc_width, WIDGET_ROW_HEIGHT,
 							fraPlayerInfo, NULL, sgens_hInstance, NULL);
-		SetWindowFontU(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
+		SetWindowFontU(lblPlayerInfo_Desc[i], w32_fntMessage, TRUE);
 		
 		// Information label.
-		// TODO: Monospace font.
 		lblPlayerInfo[i] = pCreateWindowU(WC_STATIC, player_info[i].initial,
 							WS_CHILD | WS_VISIBLE | SS_RIGHT,
 							widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
 							widget_info_width, WIDGET_ROW_HEIGHT,
 							fraPlayerInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFontU(lblPlayerInfo[i], w32_fntMonospaced, TRUE);
 	}
 }
 
@@ -342,8 +339,12 @@ void MDP_FNCALL sgens_window_close(void)
 	sgens_host_srv->window_unregister(&mdp, sgens_window);
 	
 	// Destroy the window.
-	DestroyWindow(sgens_window);
+	HWND tmp = sgens_window;
 	sgens_window = NULL;
+	DestroyWindow(tmp);
+	
+	// Shut down libgsft_win32_gdi.
+	gsft_win32_gdi_end();
 	
 	// Shut down the Win32 Unicode Translation Layer.
 	w32u_end();
@@ -380,14 +381,11 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 		
 		case WM_DESTROY:
-			if (hWnd != sgens_window)
-				break;
-			
-			sgens_window = NULL;
+			sgens_window_close();
 			break;
 	}
 	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return pDefWindowProcU(hWnd, message, wParam, lParam);
 }
 
 

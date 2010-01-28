@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -40,6 +40,7 @@
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 
 
 // Window.
@@ -82,6 +83,9 @@ void gens_window_init_hWnd(void)
 					WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 					320 * 2, 240 * 2,
 					NULL, NULL, ghInstance, NULL);
+	
+	// Initialize libgsft_win32_gdi. (Fonts)
+	gsft_win32_gdi_init(gens_window);
 	
 	// Accept dragged files.
 	DragAcceptFiles(gens_window, TRUE);

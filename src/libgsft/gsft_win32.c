@@ -31,7 +31,7 @@
  * @param hWnd_top Window to center on top.
  * @param hWnd_bottom Window to be centered over.
  */
-void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
+void WINAPI gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 {
 	// TODO: This function doesn't take the taskbar into account.
 	// If the window is offscreen on the bottom of the screen,
@@ -107,7 +107,7 @@ void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
  * @param cx Requested width.
  * @param cy Requested height.
  */
-void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy)
+void WINAPI gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy)
 {
 	// Improved function from http://blogs.msdn.com/oldnewthing/archive/2003/09/11/54885.aspx
 	HMENU hMenu = GetMenu(hWnd);

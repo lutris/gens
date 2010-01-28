@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -38,11 +38,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Plugin Manager
@@ -75,15 +75,15 @@ HWND pmgr_window = NULL;
 // Window class.
 static WNDCLASS pmgr_wndclass;
 
-// Window size.
-#define PMGR_WINDOW_WIDTH  (320+8+8)
-#define PMGR_WINDOW_HEIGHT (8+196+8+248+8+24+8)
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define PMGR_WINDOW_WIDTH  (190+5+5)
+#define PMGR_WINDOW_HEIGHT (5+125+5+155+5+15+5)
 
-#define PMGR_FRAME_PLUGIN_LIST_WIDTH  (PMGR_WINDOW_WIDTH-8-8)
-#define PMGR_FRAME_PLUGIN_LIST_HEIGHT 196
+#define PMGR_FRAME_PLUGIN_LIST_WIDTH  (PMGR_WINDOW_WIDTH-5-5)
+#define PMGR_FRAME_PLUGIN_LIST_HEIGHT 125
 
-#define PMGR_FRAME_PLUGIN_INFO_WIDTH  (PMGR_WINDOW_WIDTH-8-8)
-#define PMGR_FRAME_PLUGIN_INFO_HEIGHT 248
+#define PMGR_FRAME_PLUGIN_INFO_WIDTH  (PMGR_WINDOW_WIDTH-5-5)
+#define PMGR_FRAME_PLUGIN_INFO_HEIGHT 155
 
 // Window procedure.
 static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -161,11 +161,11 @@ void pmgr_window_show(void)
 	pmgr_window = pCreateWindowU("pmgr_window", "Plugin Manager",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT,
+					DLU_X(PMGR_WINDOW_WIDTH), DLU_Y(PMGR_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(pmgr_window, PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(pmgr_window, DLU_X(PMGR_WINDOW_WIDTH), DLU_Y(PMGR_WINDOW_HEIGHT));
 	
 	// Center the window on the Gens window.
 	gsft_win32_center_on_window(pmgr_window, gens_window);
@@ -190,10 +190,10 @@ static void WINAPI pmgr_window_create_child_windows(HWND hWnd)
 	// Create the "OK" button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					PMGR_WINDOW_WIDTH-8-75, PMGR_WINDOW_HEIGHT-8-24,
-					75, 23,
+					DLU_X(PMGR_WINDOW_WIDTH-5-50), DLU_Y(PMGR_WINDOW_HEIGHT-5-14),
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, true);
+	SetWindowFontU(btnOK, w32_fntMessage, true);
 	
 	// Populate the plugin lists.
 	pmgr_window_populate_plugin_lists();
@@ -212,11 +212,11 @@ static void WINAPI pmgr_window_create_plugin_list_tab_control(HWND container)
 	// Create the plugin list tab control.
 	tabPluginList = pCreateWindowU(WC_TABCONTROL, NULL,
 					WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
-					8, 8,
-					PMGR_FRAME_PLUGIN_LIST_WIDTH,
-					PMGR_FRAME_PLUGIN_LIST_HEIGHT,
+					DLU_X(5), DLU_Y(5),
+					DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH),
+					DLU_Y(PMGR_FRAME_PLUGIN_LIST_HEIGHT),
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(tabPluginList, fntMain, true);
+	SetWindowFontU(tabPluginList, w32_fntMessage, true);
 	
 #ifdef GENS_PNG
 	// Create the ImageList.
@@ -252,11 +252,11 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 	lstPluginList[id] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
 						WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
 						LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS,
-						8, 16+8+4,
-						PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
-						PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
+						DLU_X(5), DLU_Y(10+5+2),
+						DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH-10),
+						DLU_Y(PMGR_FRAME_PLUGIN_LIST_HEIGHT-15-5-2),
 						container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
-	SetWindowFontU(lstPluginList[id], fntMain, true);
+	SetWindowFontU(lstPluginList[id], w32_fntMessage, true);
 	ListView_SetExtendedListViewStyleU(lstPluginList[id], LVS_EX_FULLROWSELECT);
 	
 	if (id == PMGR_INTERNAL)
@@ -289,9 +289,9 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
 	// Plugin name.
 	lvCol.pszText = "Plugin Name";
 #ifdef GENS_PNG
-	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-32-24;
+	lvCol.cx = DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH-10-15)-32;
 #else
-	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-24;
+	lvCol.cx = DLU_X(PMGR_FRAME_PLUGIN_LIST_WIDTH-10-15);
 #endif
 	pListView_InsertColumnU(lstPluginList[id], 1, &lvCol);
 }
@@ -303,14 +303,15 @@ static void WINAPI pmgr_window_create_plugin_list_tab(HWND container, const char
  */
 static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 {
-	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
+	const int top = DLU_Y(5+PMGR_FRAME_PLUGIN_LIST_HEIGHT+5);
 	
 	HWND fraPluginInfo = pCreateWindowU(WC_BUTTON, "Plugin Information",
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-						8, top,
-						PMGR_FRAME_PLUGIN_INFO_WIDTH, PMGR_FRAME_PLUGIN_INFO_HEIGHT,
+						DLU_X(5), top,
+						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH),
+						DLU_Y(PMGR_FRAME_PLUGIN_INFO_HEIGHT),
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(fraPluginInfo, fntMain, true);
+	SetWindowFontU(fraPluginInfo, w32_fntMessage, true);
 	
 #ifdef GENS_PNG
 	// Create the plugin icon widget.
@@ -319,41 +320,41 @@ static void WINAPI pmgr_window_create_plugin_info_frame(HWND container)
 	
 	// Label for the main plugin info.
 #ifdef GENS_PNG
-	const int lblPluginMainInfo_Left = 8+8+32+8;
+	const int lblPluginMainInfo_Left = DLU_X(5+5+5)+32;
 #else /* !GENS_PNG */
-	const int lblPluginMainInfo_Left = 8+8;
+	const int lblPluginMainInfo_Left = DLU_X(5+5);
 #endif /* GENS_PNG */
-	const int lblPluginMainInfo_Height = 96;
+	const int lblPluginMainInfo_Height = DLU_Y(60);
 	
 	lblPluginMainInfo = pCreateWindowU(WC_EDIT, NULL,
 						WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-						lblPluginMainInfo_Left, top+16,
-						PMGR_FRAME_PLUGIN_INFO_WIDTH - lblPluginMainInfo_Left,
+						lblPluginMainInfo_Left, top+DLU_Y(10),
+						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH) - lblPluginMainInfo_Left,
 						lblPluginMainInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginMainInfo, fntMain, true);
+	SetWindowFontU(lblPluginMainInfo, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginMainInfo, true);
 	
 	// Label for secondary plugin info.
-	const int lblPluginSecInfo_Height = 40;
+	const int lblPluginSecInfo_Height = DLU_Y(25);
 	lblPluginSecInfo = pCreateWindowU(WC_EDIT, NULL,
 						WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-						8+8, top+16+lblPluginMainInfo_Height+8,
-						PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
+						DLU_X(5+5), top+lblPluginMainInfo_Height+DLU_Y(10+5),
+						DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH-5-5),
 						lblPluginSecInfo_Height,
 						container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginSecInfo, fntMain, true);
+	SetWindowFontU(lblPluginSecInfo, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
-	const int lblPluginDesc_Height = 72;
+	const int lblPluginDesc_Height = DLU_Y(45);
 	lblPluginDesc = pCreateWindowU(WC_EDIT, NULL,
 					WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
-					8+8, top+16+lblPluginMainInfo_Height+8+lblPluginSecInfo_Height+8,
-					PMGR_FRAME_PLUGIN_INFO_WIDTH-8-8,
+					DLU_X(5+5), top+lblPluginMainInfo_Height+lblPluginSecInfo_Height+DLU_Y(10+5+5),
+					DLU_X(PMGR_FRAME_PLUGIN_INFO_WIDTH-5-5),
 					lblPluginDesc_Height,
 					container, NULL, ghInstance, NULL);
-	SetWindowFontU(lblPluginDesc, fntMain, true);
+	SetWindowFontU(lblPluginDesc, w32_fntMessage, true);
 	Edit_SetReadOnlyU(lblPluginDesc, true);
 }
 
@@ -790,10 +791,11 @@ static void WINAPI pmgr_window_callback_lstPluginList_cursor_changed(int id)
 static void WINAPI pmgr_window_create_plugin_icon_widget(HWND container)
 {
 	// Plugin icon widget.
-	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
+	const int top = DLU_Y(5+PMGR_FRAME_PLUGIN_LIST_HEIGHT+5);
 	imgPluginIcon = pCreateWindowU(WC_STATIC, NULL,
 					WS_CHILD | WS_VISIBLE | SS_BITMAP,
-					8+8, top+16, 32, 32,
+					DLU_X(5+5), top+DLU_Y(10),
+					32, 32,
 					container, NULL, ghInstance, NULL);
 	
 	// Clear the icon.

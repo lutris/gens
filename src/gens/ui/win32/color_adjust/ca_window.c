@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -34,11 +34,11 @@
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_windowsx.h"
 #include "libgsft/w32u/w32u_commctrl.h"
-#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
+#include "libgsft/gsft_win32_gdi.h"
 #include "libgsft/gsft_szprintf.h"
 
 // Gens includes.
@@ -59,12 +59,12 @@ HWND ca_window = NULL;
 // Window class.
 static WNDCLASS ca_wndclass;
 
-// Window size.
-#define CA_WINDOW_WIDTH  306
-#define CA_WINDOW_HEIGHT 164
+// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
+#define CA_WINDOW_WIDTH  192
+#define CA_WINDOW_HEIGHT 100
 
-#define CA_TRACKBAR_WIDTH  201
-#define CA_TRACKBAR_HEIGHT 24
+#define CA_TRACKBAR_WIDTH  125
+#define CA_TRACKBAR_HEIGHT 15
 
 // Window procedure.
 static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -121,11 +121,11 @@ void ca_window_show(void)
 	ca_window = pCreateWindowU("ca_window", "Color Adjustment",
 					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT,
+					DLU_X(CA_WINDOW_WIDTH), DLU_Y(CA_WINDOW_HEIGHT),
 					gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(ca_window, CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(ca_window, DLU_X(CA_WINDOW_WIDTH), DLU_Y(CA_WINDOW_HEIGHT));
 	
 	// Center the window on the parent window.
 	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
@@ -148,14 +148,15 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 	// "Contrast" label.
 	HWND lblContrast = pCreateWindowU(WC_STATIC, "Co&ntrast",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8, 16, 56, 16,
+						DLU_X(5), DLU_Y(10),
+						DLU_X(35), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblContrast, fntMain, TRUE);
+	SetWindowFontU(lblContrast, w32_fntMessage, TRUE);
 	
 	// "Contrast" trackbar.
 	trkContrast = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
-					8+56, 14,
-					CA_TRACKBAR_WIDTH, CA_TRACKBAR_HEIGHT,
+					DLU_X(5+35), DLU_Y(10-1),
+					DLU_X(CA_TRACKBAR_WIDTH), DLU_Y(CA_TRACKBAR_HEIGHT),
 					hWnd, (HMENU)IDC_TRK_CA_CONTRAST, ghInstance, NULL);
 	pSendMessageU(trkContrast, TBM_SETPAGESIZE, 0, 10);
 	pSendMessageU(trkContrast, TBM_SETTICFREQ, 25, 0);
@@ -165,21 +166,23 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 	// "Contrast" value label.
 	lblContrastVal = pCreateWindowU(WC_STATIC, "0",
 					WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
-					8+56+CA_TRACKBAR_WIDTH+8, 16, 32, 16,
+					DLU_X(5+35+CA_TRACKBAR_WIDTH+5), DLU_Y(10),
+					DLU_X(20), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblContrastVal, fntMain, TRUE);
+	SetWindowFontU(lblContrastVal, w32_fntMessage, TRUE);
 	
 	// "Brightness" label.
 	HWND lblBrightness = pCreateWindowU(WC_STATIC, "&Brightness",
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8, 16+32, 56, 16,
+						DLU_X(5), DLU_Y(10+20),
+						DLU_X(35), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblBrightness, fntMain, TRUE);
+	SetWindowFontU(lblBrightness, w32_fntMessage, TRUE);
 	
 	// "Brightness" trackbar.
 	trkBrightness = pCreateWindowU(TRACKBAR_CLASS, NULL, trkStyle,
-					8+56, 14+32,
-					CA_TRACKBAR_WIDTH, CA_TRACKBAR_HEIGHT,
+					DLU_X(5+35), DLU_Y(10-1+20),
+					DLU_X(CA_TRACKBAR_WIDTH), DLU_Y(CA_TRACKBAR_HEIGHT),
 					hWnd, (HMENU)IDC_TRK_CA_CONTRAST, ghInstance, NULL);
 	pSendMessageU(trkBrightness, TBM_SETPAGESIZE, 0, 10);
 	pSendMessageU(trkBrightness, TBM_SETTICFREQ, 25, 0);
@@ -189,43 +192,51 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 	// "Brightness" value label.
 	lblBrightnessVal = pCreateWindowU(WC_STATIC, "0",
 						WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
-						8+56+CA_TRACKBAR_WIDTH+8, 16+32, 32, 16,
+						DLU_X(5+35+CA_TRACKBAR_WIDTH+5), DLU_Y(10+20),
+						DLU_X(20), DLU_Y(10),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblBrightnessVal, fntMain, TRUE);
+	SetWindowFontU(lblBrightnessVal, w32_fntMessage, TRUE);
 	
 	// Center the checkboxes.
-	int ctlLeft = (CA_WINDOW_WIDTH-80-8-96+16)/2;
+	int ctlLeft = DLU_X((CA_WINDOW_WIDTH-50-5-50)/2);
+	int ctlTop = DLU_Y(10+20+10+10);
 	
 	// "Grayscale" checkbox.
 	chkGrayscale = pCreateWindowU(WC_BUTTON, "&Grayscale",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					ctlLeft, 16+32+32, 80, 16,
+					ctlLeft, ctlTop,
+					DLU_X(50), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkGrayscale, fntMain, TRUE);
+	SetWindowFontU(chkGrayscale, w32_fntMessage, TRUE);
 	
 	// "Inverted" checkbox.
+	ctlLeft += DLU_X(5+50);
 	chkInverted = pCreateWindowU(WC_BUTTON, "&Inverted",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					ctlLeft+8+80, 16+32+32, 80, 16,
+					ctlLeft, ctlTop,
+					DLU_X(50), DLU_Y(10),
 					hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkInverted, fntMain, TRUE);
+	SetWindowFontU(chkInverted, w32_fntMessage, TRUE);
 	
 	// Center the "Color Scale Method" controls.
-	ctlLeft = (CA_WINDOW_WIDTH-104-8-96+16)/2;
+	ctlLeft = DLU_X((CA_WINDOW_WIDTH-70-10-60)/2);
 	
 	// Create a label for the "Color Scale Method" dropdown.
 	HWND lblColorScaleMethod = pCreateWindowU(WC_STATIC, "Color Sca&le Method:",
-							WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_CENTER,
-							ctlLeft, 16+32+32+20+2, 104, 16,
+							WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_RIGHT,
+							ctlLeft, DLU_Y(10+20+20+12+2),
+							DLU_X(70), DLU_Y(10),
 							hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblColorScaleMethod, fntMain, TRUE);
+	SetWindowFontU(lblColorScaleMethod, w32_fntMessage, TRUE);
 	
 	// Create the "Color Scale Method" dropdown.
+	ctlLeft += DLU_X(70+10);
 	cboColorScaleMethod = pCreateWindowU(WC_COMBOBOX, NULL,
 						WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-						ctlLeft+104+8, 16+32+32+20, 96, 23*3,
+						ctlLeft, DLU_Y(10+20+20+12),
+						DLU_X(60), DLU_Y(14*3),
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(cboColorScaleMethod, fntMain, TRUE);
+	SetWindowFontU(cboColorScaleMethod, w32_fntMessage, TRUE);
 	
 	// Add the items to the "Color Scale Method" dropdown.
 	ComboBox_AddStringU(cboColorScaleMethod, "Raw");
@@ -236,31 +247,34 @@ static void WINAPI ca_window_create_child_windows(HWND hWnd)
 	
 	// TODO: Center the buttons, or right-align them?
 	// They look better center-aligned in this window...
-	ctlLeft = (CA_WINDOW_WIDTH-75-8-75-8-75)/2;
+	ctlLeft = DLU_X((CA_WINDOW_WIDTH-50-5-50-5-50)/2);
+	ctlTop = DLU_Y(CA_WINDOW_HEIGHT-5-14);
 	
 	// OK button.
 	HWND btnOK = pCreateWindowU(WC_BUTTON, "&OK",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-					ctlLeft, CA_WINDOW_HEIGHT-8-24,
-					75, 23,
+					ctlLeft, ctlTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, fntMain, TRUE);
+	SetWindowFontU(btnOK, w32_fntMessage, TRUE);
 	
 	// Cancel button.
+	ctlLeft += DLU_X(5+50);
 	HWND btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					ctlLeft+8+75, CA_WINDOW_HEIGHT-8-24,
-					75, 23,
+					ctlLeft, ctlTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, fntMain, TRUE);
+	SetWindowFontU(btnCancel, w32_fntMessage, TRUE);
 	
 	// Apply button.
+	ctlLeft += DLU_X(5+50);
 	HWND btnApply = pCreateWindowU(WC_BUTTON, "&Apply",
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					ctlLeft+8+75+8+75, CA_WINDOW_HEIGHT-8-24,
-					75, 23,
+					ctlLeft, ctlTop,
+					DLU_X(50), DLU_Y(14),
 					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, fntMain, TRUE);
+	SetWindowFontU(btnApply, w32_fntMessage, TRUE);
 	
 	// Initialize the color adjustment spinbuttons.
 	ca_window_init();
