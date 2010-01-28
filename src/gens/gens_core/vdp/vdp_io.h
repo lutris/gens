@@ -168,6 +168,11 @@ typedef struct
 	// Interlaced mode. (0 == off; 1 == on)
 	int Interlaced;
 	
+	// Sprite dot overflow.
+	// If set, the previous line had a sprite dot overflow.
+	// This is needed to properly implement Sprite Masking in S1.
+	int SpriteDotOverflow;
+
 	// HACK: There's a minor issue with the SegaCD firmware.
 	// The firmware turns off the VDP after the last line,
 	// which causes the entire screen to disappear if paused.

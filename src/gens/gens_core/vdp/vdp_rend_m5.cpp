@@ -983,9 +983,19 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 	
 	bool overflow = false;
 	
-	// Sprite masking variables.
-	bool sprite_on_line = false;	// True if at least one sprite is on the scanline.
-	
+	// sprite_on_line is set if at least one sprite is on the scanline
+	// that is not a sprite mask (x == 0). Sprite masks are only effective
+	// if there is at least one higher-priority sprite on the scanline.
+	// Thus, if a sprite mask is the first sprite on the scanline it is ignored.
+	// However, if the previous line had a sprite dot overflow, it is *not*
+	// ignored, so it is processed as a regular mask.
+	bool sprite_on_line = (bool)VDP_Reg.SpriteDotOverflow;
+
+	// sprite_mask_active is set if a sprite mask is preventing
+	// remaining sprites from showing up on the scanline.
+	// Those sprites still count towards total sprite and sprite dot counts.
+	bool sprite_mask_active = false;
+
 	unsigned int spr_num = 0;	// Current sprite number in Sprite_Struct[].
 	unsigned int spr_vis = 0;	// Current visible sprite in Sprite_Visible[].
 	
@@ -1010,27 +1020,42 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			max_sprites--;
 		}
 		
-		// Check sprite masking, mode 1.
-		// This mode only works if at least one non-masking sprite
-		// is present on the scanline, regardless of whether it's
-		// visible or not.
-		if (sprite_on_line && Sprite_Struct[spr_num].Pos_X == -128)
-			break;
-		
-		// Sprite is on the current scanline.
-		sprite_on_line = true;
-		
-		// Check if the sprite is onscreen.
-		if (Sprite_Struct[spr_num].Pos_X < VDP_Reg.H_Pix &&
-		    Sprite_Struct[spr_num].Pos_X_Max >= 0)
+		// Check for sprite masking.
+		if (Sprite_Struct[spr_num].Pos_X == -128)
 		{
-			// Sprite is onscreen.
-			Sprite_Visible[spr_vis] = spr_num;
-			spr_vis++;
+			// Sprite mask.
+			if (sprite_on_line)
+			{
+				// There is at least one higher-priority sprite on the scanline.
+				// No more sprites should be visible.
+				// However, remaining sprites will still count towards total sprite and sprite dot counts.
+				// [Nemesis' Sprite Masking and Overflow Test ROM: Test #5]
+				if (!sprite_limit)
+					break;
+				sprite_mask_active = true;
+			}
+			
+			// There aren't any higher-priority sprites on the scanline.
+			// This sprite will still count towards sprite and sprite dot counts.
 		}
-		
-		// Set the visible X max.
-		Sprite_Struct[spr_num].Pos_X_Max_Vis = Sprite_Struct[spr_num].Pos_X_Max;
+		else
+		{
+			// Regular sprite.
+			sprite_on_line = true;
+			
+			// Check if the sprite is onscreen.
+			if (!sprite_mask_active &&
+				Sprite_Struct[spr_num].Pos_X < VDP_Reg.H_Pix &&
+				Sprite_Struct[spr_num].Pos_X_Max >= 0)
+			{
+				// Sprite is onscreen.
+				Sprite_Visible[spr_vis] = spr_num;
+				spr_vis++;
+			}
+			
+			// Set the visible X max.
+			Sprite_Struct[spr_num].Pos_X_Max_Vis = Sprite_Struct[spr_num].Pos_X_Max;
+		}
 		
 		if (sprite_limit)
 		{
@@ -1043,6 +1068,8 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 				// #2 == total sprite dot count; #3 == per-cell dot count.
 				// TODO: Verify how Pos_X_Max_Vis should work with regards to H Flip.
 				overflow = true;
+				
+				// Decrement the displayed number of cells for the sprite.
 				Sprite_Struct[spr_num].Pos_X_Max_Vis += (max_cells * 8);
 				spr_num++;
 				break;
@@ -1057,6 +1084,10 @@ static FORCE_INLINE unsigned int T_Update_Mask_Sprite(void)
 			}
 		}
 	}
+	
+	// Update the SpriteDotOverflow value.
+	// [Nemesis' Sprite Masking and Overflow Test ROM: Test #6]
+	VDP_Reg.SpriteDotOverflow = (max_cells <= 0);
 	
 	if (sprite_limit && overflow)
 	{
@@ -1432,6 +1463,9 @@ void VDP_Render_Line_m5(void)
 		// NOTE: S/H is ignored if the VDP is disabled or if
 		// we're in the border region.
 		memset(LineBuf.u8, 0x00, sizeof(LineBuf.u8));
+
+		// Clear the sprite dot overflow variable.
+		VDP_Reg.SpriteDotOverflow = 0;
 	}
 	else
 	{
