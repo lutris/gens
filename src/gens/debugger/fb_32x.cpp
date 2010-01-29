@@ -58,6 +58,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		
 		case 1:
 			// _32X_Draw_M01
+			// TODO: Endianness conversions.
 			for (unsigned int y = 0; y < 220; y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
@@ -103,6 +104,8 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		case 3:
 			// _32X_Draw_M11
 			// TODO: Port this!
+			// This appears to be a form of RLE compression.
+			// TODO: Endianness conversions.
 			break;
 		
 		default:

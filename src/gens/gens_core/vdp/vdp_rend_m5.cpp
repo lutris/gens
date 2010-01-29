@@ -32,6 +32,7 @@
 #include "vdp_32x.h"
 
 #include "emulator/g_main.hpp"
+#include "libgsft/gsft_byteswap.h"
 
 // C includes.
 #include <stdint.h>
@@ -1600,6 +1601,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 1:	// POST_LINE_32X_M01
 		case 9: // POST_LINE_32X_SM01
 		{
+			// TODO: Endianness conversions.
 			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
 			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px -= 2, src += 2, dest += 2, lbptr += 2)
 			{
@@ -1649,19 +1651,29 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 11:
 		case 15:
 		{
-			//POST_LINE_32X_M11;
-			// TODO: Optimize this!
-			// TODO: Convert this to use decrementing px and pointer arithmetic.
+			// POST_LINE_32X_M11
+			// This appears to be a form of RLE compression.
 			int px = 0;
+			int px_end;
+			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
 			while (px < VDP_Reg.H_Pix)
 			{
-				pixC = (_32X_VDP_Ram.u16[VRam_Ind] & 0xFF);
-				uint8_t Num = (_32X_VDP_Ram.u16[VRam_Ind++] >> 8);
+#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+				px1 = _32X_vdp_cram_adjusted[*src];
+				px_end = px + *(src+1);
+#else //GENS_BYTEORDER == GENS_BIG_ENDIAN
+				px1 = _32X_vdp_cram_adjusted[*(src+1)];
+				px_end = px + *src;
+#endif
+				src += 2;
 				
-				int px_end = px + Num;
+				// Make sure it doesn't go out of bounds.
+				if (px_end >= VDP_Reg.H_Pix)
+					px_end = (VDP_Reg.H_Pix - 1);
+				
 				for (; px <= px_end; px++)
 				{
-					dest[px] = _32X_vdp_cram_adjusted[pixC];
+					dest[px] = px1;
 				}
 			}
 			break;
@@ -1670,6 +1682,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 5:
 		{
 			//POST_LINE_32X_M01_P;
+			// TODO: Endianness conversions.
 			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
 			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px -= 2, src += 2, dest += 2, lbptr += 2)
 			{
@@ -1708,6 +1721,7 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 		case 13:
 			//POST_LINE_32X_SM01_P;
 			// TODO: Optimize this!
+			// TODO: Endianness conversions.
 			VRam_Ind *= 2;
 			for (unsigned int px = VDP_Reg.H_Pix; px != 0; px--, dest++, lbptr++)
 			{
