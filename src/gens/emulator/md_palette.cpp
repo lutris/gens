@@ -188,8 +188,6 @@ static inline void T_Recalculate_Palette_MD(pixel *palMD)
 template<typename pixel>
 static FORCE_INLINE void T_Adjust_CRam_32X(pixel *pal32X, pixel *cramAdjusted32X)
 {
-	uint16_t *cram_ptr = &_32X_VDP_CRam[0];
-	
 	for (int i = 0; i < 0x100; i += 4)
 	{
 		cramAdjusted32X[i] = pal32X[_32X_VDP_CRam[i]];
