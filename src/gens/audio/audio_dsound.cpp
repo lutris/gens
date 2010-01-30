@@ -61,10 +61,12 @@
 
 // DirectSound variables.
 static LPDIRECTSOUND lpDS = NULL;
-static WAVEFORMATEX MainWfx;
-static DSBUFFERDESC dsbdesc;
 static LPDIRECTSOUNDBUFFER lpDSPrimary = NULL;
 static LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
+
+// TODO: These variables are only used in audio_dsound_init();
+static WAVEFORMATEX MainWfx;
+static DSBUFFERDESC dsbdesc;
 
 static int Bytes_Per_Unit;
 static int Sound_Segs = 8;
@@ -76,7 +78,7 @@ static int WP, RP;
 static int WINAPI audio_dsound_get_current_seg(void);
 int audio_dsound_check_sound_timing(void);
 
-// Cooperative level (Win32)
+// Cooperative level. (Win32)
 static void WINAPI audio_dsound_set_cooperative_level(void);
 
 
@@ -98,18 +100,29 @@ int audio_dsound_init(void)
 	// Attempt to initialize DirectSound.
 	rval = DirectSoundCreate(NULL, &lpDS, NULL);
 	if (rval != DS_OK)
+	{
+		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
+			"DirectSoundCreate() failed: 0x%08X",
+			(unsigned int)rval);
 		return -1;
+	}
 	
 	// Set the DirectSound cooperative level.
 	audio_dsound_set_cooperative_level();
 	
-	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
+	// DSBUFFERDESC1 is required for Windows NT 4.0.
+	// DSBUFFERDESC only adds 3D audio support, which isn't needed.
+	// TODO: NT4 crashes, so we'll use DSBUFFERDESC to prevent NT4 from being used.
+	memset(&dsbdesc, 0, sizeof(dsbdesc));
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC);
 	dsbdesc.dwFlags = DSBCAPS_PRIMARYBUFFER;
 	
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSPrimary, NULL);
 	if (rval != DS_OK)
 	{
+		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
+			"lpDS->CreateSoundBuffer(&lpDSPrimary) failed: 0x%08X",
+			(unsigned int)rval);
 		lpDS->Release();
 		lpDS = NULL;
 		return -2;
@@ -128,6 +141,9 @@ int audio_dsound_init(void)
 	rval = lpDSPrimary->SetFormat(&wfx);
 	if (rval != DS_OK)
 	{
+		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
+			"lpDSPrimary->SetFormat() failed: 0x%08X",
+			(unsigned int)rval);
 		lpDSPrimary->Release();
 		lpDSPrimary = NULL;
 		lpDS->Release();
@@ -143,7 +159,10 @@ int audio_dsound_init(void)
 	MainWfx.nBlockAlign = Bytes_Per_Unit;
 	MainWfx.nAvgBytesPerSec = MainWfx.nSamplesPerSec * Bytes_Per_Unit;
 	
-	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
+	// DSBUFFERDESC1 is required for Windows NT 4.0.
+	// DSBUFFERDESC only adds 3D audio support, which isn't needed.
+	// TODO: NT4 crashes, so we'll use DSBUFFERDESC to prevent NT4 from being used.
+	memset(&dsbdesc, 0, sizeof(dsbdesc));
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC);
 	dsbdesc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME | DSBCAPS_GLOBALFOCUS;
 	dsbdesc.dwBufferBytes = audio_seg_length * Sound_Segs * Bytes_Per_Unit;
@@ -155,13 +174,18 @@ int audio_dsound_init(void)
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSBuffer, NULL);
 	if (rval != DS_OK)
 	{
+		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
+			"lpDS->CreateFoundBuffer(&lpDSBuffer) failed: 0x%08X",
+			(unsigned int)rval);
+		lpDSPrimary->Release();
+		lpDSPrimary = NULL;
 		lpDS->Release();
 		lpDS = NULL;
 		return -4;
 	}
 	
 	// Sound is initialized.
-	audio_initialized = TRUE;
+	audio_initialized = true;
 	return 0;
 }
 
@@ -172,8 +196,8 @@ int audio_dsound_init(void)
  */
 int audio_dsound_end(void)
 {
-	audio_sound_is_playing = FALSE;
-	audio_initialized = FALSE;
+	audio_sound_is_playing = false;
+	audio_initialized = false;
 	
 	if (lpDSPrimary)
 	{
@@ -355,7 +379,7 @@ int audio_dsound_play_sound(void)
 	if (rval != DS_OK)
 		return -2;
 	
-	audio_sound_is_playing = TRUE;
+	audio_sound_is_playing = true;
 	return 0;
 }
 
@@ -373,7 +397,7 @@ int audio_dsound_stop_sound(void)
 	if (rval != DS_OK)
 		return -1;
 	
-	audio_sound_is_playing = FALSE;
+	audio_sound_is_playing = false;
 	return 0;
 }
 
