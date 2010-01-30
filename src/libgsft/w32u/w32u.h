@@ -41,8 +41,8 @@ extern "C" {
 
 typedef enum
 {
-	ERR_W32U_SUCCESSFUL		= 0,
-	ERR_W32U_UTF8_NOT_SUPPORTED	= -1,
+	ERR_W32U_SUCCESS		= 0,
+	ERR_W32U_UTF8_NOT_SUPPORTED	= 1,
 } err_w32u_t;
 
 extern BOOL w32u_is_unicode;

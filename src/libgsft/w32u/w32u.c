@@ -133,14 +133,14 @@ int WINAPI w32u_init(void)
 	if (init_counter++ != 0)
 	{
 		// The Win32 Unicode Translation Layer is already initialized.
-		return 0;
+		return ERR_W32U_SUCCESS;
 	}
 	
 	// Check for UTF-8 compatibility.
 	if (w32u_check_UTF8() != 0)
 	{
 		// System doesn't support UTF-8.
-		return ERR_W32U_UTF8_NOT_SUPPORTED;
+		return -ERR_W32U_UTF8_NOT_SUPPORTED;
 	}
 	
 	// Check if the system supports Unicode.
@@ -184,7 +184,7 @@ int WINAPI w32u_init(void)
 	w32u_winnls_init();
 	
 	// Win32 Unicode Translation Layer initialized successfully.
-	return 0;
+	return ERR_W32U_SUCCESS;
 }
 
 
