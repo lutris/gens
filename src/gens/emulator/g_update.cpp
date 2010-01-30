@@ -73,12 +73,13 @@ int Update_Emulation(void)
 
 	if (Frame_Skip != -1)
 	{
-#ifdef GENS_OS_UNIX
 		if (audio_get_enabled())
 		{
+#ifdef GENS_OS_WIN32
+			audio_wp_inc();
+#endif
 			audio_write_sound_buffer(NULL);
 		}
-#endif /* GENS_OS_UNIX */
 		
 		input_update_controllers();
 		
@@ -88,13 +89,6 @@ int Update_Emulation(void)
 		}
 		else
 		{
-#ifdef GENS_OS_WIN32
-			if (audio_get_enabled())
-			{
-				audio_wp_inc();
-				audio_write_sound_buffer(NULL);
-			}
-#endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
 			if (!IS_DEBUGGING())
