@@ -21,6 +21,7 @@
 
 #include "w32u_shlobjA.h"
 #include "w32u_shlobj.h"
+#include "w32u_charset.h"
 
 // C includes.
 #include <stdlib.h>
@@ -28,15 +29,66 @@
 
 static LPITEMIDLIST WINAPI SHBrowseForFolderUA(PBROWSEINFO lpbi)
 {
-	// TODO: ANSI conversion.
-	return SHBrowseForFolderA(lpbi);
+	// BROWSEINFOA and BROWSEINFOW don't contain any actual string data,
+	// so the structs can be copied.
+	BROWSEINFOA abi;
+	memcpy(&abi, lpbi, sizeof(abi));
+	
+	// Convert constant strings from UTF-8 to ANSI.
+	char *lpszaTitle = NULL;
+	
+	if (lpbi->lpszTitle)
+	{
+		lpszaTitle = w32u_UTF8toANSI(lpbi->lpszTitle);
+		abi.lpszTitle = lpszaTitle;
+	}
+	
+	// Allocate the return buffer.
+	char *pszaDisplayName = NULL;
+	if (lpbi->pszDisplayName)
+	{
+		// This is assumed to be MAX_PATH characters.
+		pszaDisplayName = (char*)malloc(MAX_PATH * sizeof(char));
+		abi.pszDisplayName = pszaDisplayName;
+	}
+	
+	// Get the directory list entry.
+	LPITEMIDLIST pidl = SHBrowseForFolderA(&abi);
+	
+	// Convert the non-constant strings from ANSI to UTF-8.
+	if (abi.pszDisplayName)
+	{
+		w32u_ANSItoUTF8_copy(lpbi->pszDisplayName, abi.pszDisplayName, MAX_PATH);
+	}
+	
+	// Free the strings.
+	free(lpszaTitle);
+	free(pszaDisplayName);
+	return pidl;
 }
 
 
 static BOOL WINAPI SHGetPathFromIDListUA(LPCITEMIDLIST pidl, LPSTR pszPath)
 {
-	// TODO: ANSI conversion.
-	return SHGetPathFromIDListA(pidl, pszPath);
+	if (!pszPath)
+	{
+		// No return buffer was specified.
+		return SHGetPathFromIDListA(pidl, pszPath);
+	}
+	
+	// Allocate an ANSI character buffer.
+	// Size is assumed to be MAX_PATH characters.
+	char *pszaPath = (char*)malloc(MAX_PATH * sizeof(char));
+	
+	// Get the directory.
+	BOOL bRet = SHGetPathFromIDListA(pidl, pszaPath);
+	
+	// Convert the text from ANSI to UTF-8.
+	w32u_ANSItoUTF8_copy(pszPath, pszaPath, MAX_PATH);
+	
+	// Free the buffer.
+	free(pszaPath);
+	return bRet;
 }
 
 
