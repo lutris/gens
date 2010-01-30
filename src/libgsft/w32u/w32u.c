@@ -82,6 +82,51 @@ DWORD WINAPI GetDllVersionNumber(const char *filename)
 }
 
 
+/**
+ * w32u_check_UTF8(): Check if UTF-8 is supported.
+ * @return 0 if UTF-8 is supported; non-zero if it isn't.
+ */
+static int WINAPI w32u_check_UTF8(void)
+{
+	static const char s_utf8_test[] =
+	{
+		0xC2, 0xA5, 0xC3, 0xB3, 0xC3, 0xB9, 0x20, 0x6A, 0xC3, 0xBC, 0xC5, 0x9F, 0x74, 0x20, 0xC2, 0xA3,
+		0xC3, 0xB5, 0xC5, 0x9F, 0xE2, 0x94, 0xBC, 0x20, 0x54, 0xE1, 0xB8, 0xA9, 0xE1, 0xBA, 0xBD, 0x20,
+		0xC4, 0xA2, 0xC3, 0xA2, 0x6D, 0xC4, 0x95, 0x2E, 0x20, 0xE2, 0x8C, 0x98, 0x00
+	};
+	static const wchar_t s_utf16_test[] =
+	{
+		0x00A5, 0x00F3, 0x00F9, 0x0020, 0x006A, 0x00FC, 0x015F, 0x0074, 0x0020, 0x00A3,
+		0x00F5, 0x015F, 0x253C, 0x0020, 0x0054, 0x1E29, 0x1EBD, 0x0020, 0x0122, 0x00E2,
+		0x006D, 0x0115, 0x002E, 0x0020, 0x2318, 0x0000
+	};
+	
+	int s_len = MultiByteToWideChar(CP_UTF8, 0, s_utf8_test, -1, NULL, 0);
+	if (s_len != (sizeof(s_utf16_test)/sizeof(s_utf16_test[0])))
+	{
+		// Required length is incorrect.
+		// This usually means it's 0, in which case
+		// the OS doesn't support UTF-8.
+		return -1;
+	}
+	
+	// Convert the test string from UTF-8 to UTF-16.
+	wchar_t s_utf16_result[sizeof(s_utf16_test)/sizeof(s_utf16_test[0])];
+	s_utf16_result[0] = 0x00;
+	MultiByteToWideChar(CP_UTF8, 0, s_utf8_test, -1, s_utf16_result, sizeof(s_utf16_result)/sizeof(s_utf16_result[0]));
+	
+	// Verify that the string matches.
+	if (wcsncmp(s_utf16_test, s_utf16_result, sizeof(s_utf16_test)/sizeof(s_utf16_test[0])) != 0)
+	{
+		// String doesn't match.
+		return -2;
+	}
+	
+	// UTF-8 is supported.
+	return 0;
+}
+
+
 int WINAPI w32u_init(void)
 {
 	// Initialize the Win32 Unicode Translation Layer.
@@ -89,6 +134,13 @@ int WINAPI w32u_init(void)
 	{
 		// The Win32 Unicode Translation Layer is already initialized.
 		return 0;
+	}
+	
+	// Check for UTF-8 compatibility.
+	if (w32u_check_UTF8() != 0)
+	{
+		// System doesn't support UTF-8.
+		return ERR_W32U_UTF8_NOT_SUPPORTED;
 	}
 	
 	// Check if the system supports Unicode.
