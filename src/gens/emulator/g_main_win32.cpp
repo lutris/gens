@@ -24,12 +24,14 @@
 #include <config.h>
 #endif
 
+#include "gens.hpp"
 #include "g_main.hpp"
 #include "g_main_win32.hpp"
 
 // libgsft includes.
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_strlcpy.h"
+#include "libgsft/gsft_szprintf.h"
 #include "libgsft/gsft_win32_gdi.h"
 
 // C++ includes.
@@ -143,7 +145,35 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	ghInstance = hInst;
 	
 	// Initialize the Win32 Unicode Translation Layer.
-	w32u_init();
+	int ret = w32u_init();
+	switch (ret)
+	{
+		case ERR_W32U_SUCCESS:
+			// Initialized successfully.
+			break;
+		
+		case -ERR_W32U_UTF8_NOT_SUPPORTED:
+			// UTF-8 isn't supported.
+			MessageBoxA(NULL, GENS_APPNAME " requires a system that support UTF-8.\n"
+					"This system does not support it.\n\n"
+					"Consider upgrading to an operating system released\n"
+					"in the past ten years or so.",
+					GENS_APPNAME ": UTF-8 Required", MB_ICONSTOP);
+			TerminateProcess(GetCurrentProcess(), -1);
+			return -1;
+		
+		default:
+		{
+			// Unknown error.
+			char buf[2048];
+			szprintf(buf, sizeof(buf), "An unknown error has occurred while initializing\n"
+					"the Win32 Unicode Translation Layer.\n\n"
+					"Error code: %d\n", ret);
+			MessageBoxA(NULL, buf, GENS_APPNAME ": Unicode Error", MB_ICONSTOP);
+			TerminateProcess(GetCurrentProcess(), -2);
+			return -2;
+		}
+	}
 	
 #if defined(GENS_WIN32_CONSOLE)
 	SET_CONSOLE_OUTPUT_CP_UTF8();
