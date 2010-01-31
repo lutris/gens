@@ -35,6 +35,9 @@ extern const char *vdp_m5_reg_name[24+1];
 
 DLL_LOCAL void MDP_FNCALL vdpdbg_get_m5_reg_desc(int reg_num, uint8_t reg_value, mdp_reg_vdp_t *reg_vdp, char *buf, size_t len);
 
+DLL_LOCAL void MDP_FNCALL vdpdbg_get_m5_dma_len_desc(mdp_reg_vdp_t *reg_vdp, char *buf, size_t len);
+DLL_LOCAL void MDP_FNCALL vdpdbg_get_m5_dma_src_desc(mdp_reg_vdp_t *reg_vdp, char *buf, size_t len);
+
 #ifdef __cplusplus
 }
 #endif

@@ -454,32 +454,14 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 	if (DMA_Len_NeedsUpdate)
 	{
 		// DMA Length needs to be updated.
-		szprintf(desc, sizeof(desc), "Length: 0x%04X words",
-				(reg_vdp->regs.dma_len_l |
-				 (reg_vdp->regs.dma_len_h << 8)));
+		vdpdbg_get_m5_dma_len_desc(reg_vdp, desc, sizeof(desc));
 		gtk_list_store_set(GTK_LIST_STORE(lmRegList), &iter_DMA_Len, 4, desc, -1);
 	}
 	
 	if (DMA_Src_NeedsUpdate)
 	{
 		// DMA Src Address needs to be updated.
-		uint32_t dma_src = reg_vdp->regs.dma_src_l |
-				   (reg_vdp->regs.dma_src_m << 8) |
-				   (reg_vdp->regs.dma_src_h << 16);
-		
-		if (!(reg_vdp->regs.dma_src_h & 0x80))
-		{
-			// Memory to VRAM copy.
-			szprintf(desc, sizeof(desc), "Mem to VRAM: 0x%06X",
-					(dma_src & 0x7FFFFF) << 1);
-		}
-		else
-		{
-			szprintf(desc, sizeof(desc), "VRAM %s: 0x%04X",
-					(dma_src & 0x400000 ? "Copy" : "Fill"),
-					(dma_src & 0x3FFFFF));
-		}
-		
+		vdpdbg_get_m5_dma_src_desc(reg_vdp, desc, sizeof(desc));
 		gtk_list_store_set(GTK_LIST_STORE(lmRegList), &iter_DMA_Src, 4, desc, -1);
 	}
 }

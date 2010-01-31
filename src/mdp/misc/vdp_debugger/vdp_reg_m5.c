@@ -65,9 +65,9 @@ const char *vdp_m5_reg_name[24+1] =
  * vdpdbg_get_m5_reg_desc(): Get a Mode 5 register description.
  * @param reg_num	[in] Register number.
  * @param reg_value	[in] Register value.
- * @param reg_vdp	[in, opt] All register values. If not specified, calls vdp_host_srv->reg_get().
+ * @param reg_vdp	[in, opt] All register values. If not specified, the function will call vdp_host_srv->reg_get().
  * @param buf		[out] Buffer for the description.
- * @param len	[in] Size of the buffer.
+ * @param len		[in] Size of the buffer.
  */
 void MDP_FNCALL vdpdbg_get_m5_reg_desc(int reg_num, uint8_t reg_value, mdp_reg_vdp_t *reg_vdp, char *buf, size_t len)
 {
@@ -281,5 +281,69 @@ void MDP_FNCALL vdpdbg_get_m5_reg_desc(int reg_num, uint8_t reg_value, mdp_reg_v
 			// Unused register.
 			strlcpy(buf, "unused", len);
 			break;
+	}
+}
+
+
+/**
+ * vdpdbg_get_m5_reg_desc(): Get the Mode 5 DMA length description.
+ * @param reg_vdp	[in, opt] All register values. If not specified, the function will call vdp_host_srv->reg_get().
+ * @param buf		[out] Buffer for the description.
+ * @param len		[in] Size of the buffer.
+ */
+void MDP_FNCALL vdpdbg_get_m5_dma_len_desc(mdp_reg_vdp_t *reg_vdp, char *buf, size_t len)
+{
+	uint32_t dma_len;
+	if (reg_vdp)
+	{
+		dma_len = (reg_vdp->regs.dma_len_l |
+			   (reg_vdp->regs.dma_len_h << 8));
+	}
+	else
+	{
+		uint32_t reg_dma_len_l, reg_dma_len_h;
+		vdpdbg_host_srv->reg_get(MDP_REG_IC_VDP, MDP_REG_VDP_DMA_LEN_L, &reg_dma_len_l);
+		vdpdbg_host_srv->reg_get(MDP_REG_IC_VDP, MDP_REG_VDP_DMA_LEN_H, &reg_dma_len_h);
+		
+		dma_len = ((reg_dma_len_l & 0xFF) |
+			   ((reg_dma_len_h & 0xFF) << 8));
+	}
+	
+	szprintf(buf, len, "Length: 0x%04X words", dma_len);
+}
+
+
+void MDP_FNCALL vdpdbg_get_m5_dma_src_desc(mdp_reg_vdp_t *reg_vdp, char *buf, size_t len)
+{
+	uint32_t dma_src;
+	if (reg_vdp)
+	{
+		dma_src = (reg_vdp->regs.dma_src_l |
+			   (reg_vdp->regs.dma_src_m << 8) |
+			   (reg_vdp->regs.dma_src_h << 16));
+	}
+	else
+	{
+		uint32_t reg_dma_src_l, reg_dma_src_m, reg_dma_src_h;
+		vdpdbg_host_srv->reg_get(MDP_REG_IC_VDP, MDP_REG_VDP_DMA_SRC_L, &reg_dma_src_l);
+		vdpdbg_host_srv->reg_get(MDP_REG_IC_VDP, MDP_REG_VDP_DMA_SRC_M, &reg_dma_src_m);
+		vdpdbg_host_srv->reg_get(MDP_REG_IC_VDP, MDP_REG_VDP_DMA_SRC_H, &reg_dma_src_h);
+		
+		dma_src = ((reg_dma_src_l & 0xFF) |
+			   ((reg_dma_src_m & 0xFF) << 8) |
+			   ((reg_dma_src_h & 0xFF) << 16));
+	}
+	
+	if (!(dma_src & 0x800000))
+	{
+		// Memory to VRAM copy.
+		szprintf(buf, len, "Mem to VRAM: 0x%06X",
+			 ((dma_src & 0x7FFFFF) << 1));
+	}
+	else
+	{
+		szprintf(buf, len, "VRAM %s: 0x%04X",
+			 ((dma_src & 0x400000) ? "Copy" : "Fill"),
+			 (dma_src & 0x3FFFFF));
 	}
 }
