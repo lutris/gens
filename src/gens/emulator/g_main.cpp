@@ -191,11 +191,14 @@ int Init_Settings(void)
 	STOP_DEBUGGING();
 	
 	// Get the default save path.
-	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
+	get_default_save_path(PathNames.Gens_Save_Path, sizeof(PathNames.Gens_Save_Path));
 	
 	// Create default language filename.
+	// TODO: Implement proper multilingual support.
+#if 0
 	szprintf(PathNames.Language_Path, sizeof(PathNames.Language_Path),
 		 "%s%s", PathNames.Gens_Path, "language.dat");
+#endif
 	
 	// Get the CPU flags.
 	getCPUFlags();
@@ -218,7 +221,7 @@ int Init_Settings(void)
 #ifndef PACKAGE_NAME
 #error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Save_Path) + PACKAGE_NAME + ".cfg";
 	Config::load(cfg_filename, NULL);
 	
 	// Success.

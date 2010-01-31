@@ -68,8 +68,12 @@ typedef struct _Gens_Settings_t
 // Gens Pathnames
 typedef struct _Gens_PathNames_t
 {
-	char Gens_Path[GENS_PATH_MAX];	// TODO: Rename to Gens_Save_Path.
-	char Language_Path[GENS_PATH_MAX];
+	// Default save path.
+	char Gens_Save_Path[GENS_PATH_MAX];
+	
+	// TODO: Implement proper multilingual support.
+	//char Language_Path[GENS_PATH_MAX];
+	
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];
 	char Screenshot_Dir[GENS_PATH_MAX];

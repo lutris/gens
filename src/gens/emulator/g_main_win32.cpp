@@ -332,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 #ifndef PACKAGE_NAME
 #error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Save_Path) + PACKAGE_NAME + ".cfg";
 	Config::save(cfg_filename);
 	
 	End_All();
