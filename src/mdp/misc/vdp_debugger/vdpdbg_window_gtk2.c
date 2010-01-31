@@ -582,20 +582,56 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 			}
 			
 			case 17:
+			{
 				// Window H Pos.
-				szprintf(desc, sizeof(desc), "%d cell%s in %s side from base point",
-						((reg_value & 0x1F) * 2),
-						(reg_value == 1 ? "" : "s"),
-						(reg_value & 0x80 ? "right" : "left"));
+				const int cell_max = ((reg_vdp->regs.mode_set4 & 0x81) ? 40-1 : 32-1);
+				int cell_num = (reg_value & 0x1F) * 2;
+				
+				if (reg_value & 0x80)
+				{
+					// Right-aligned window.
+					if (cell_num > cell_max)
+						strlcpy(desc, "Right-aligned: Offscreen", sizeof(desc));
+					else
+						szprintf(desc, sizeof(desc), "Right-aligned: Cells %d - %d",
+								cell_num, cell_max);
+				}
+				else
+				{
+					// Left-aligned window.
+					if (cell_num == 0)
+						strlcpy(desc, "Left-aligned: Offscreen", sizeof(desc));
+					else
+						szprintf(desc, sizeof(desc), "Left-aligned: Cells 0 - %d", cell_num);
+				}
 				break;
+			}
 			
 			case 18:
-				// Window V Pos.
-				szprintf(desc, sizeof(desc), "%d cell%s in %s side from base point",
-						(reg_value & 0x1F),
-						(reg_value == 1 ? "" : "s"),
-						(reg_value & 0x80 ? "lower" : "upper"));
+			{
+				// Window H Pos.
+				const int cell_max = ((reg_vdp->regs.mode_set2 & 0x08) ? 30-1 : 28-1);
+				int cell_num = (reg_value & 0x1F);
+				
+				if (reg_value & 0x80)
+				{
+					// Bottom-aligned window.
+					if (cell_num > cell_max)
+						strlcpy(desc, "Bottom-aligned: Offscreen", sizeof(desc));
+					else
+						szprintf(desc, sizeof(desc), "Bottom-aligned: Cells %d - %d",
+								cell_num, cell_max);
+				}
+				else
+				{
+					// Top-aligned window.
+					if (cell_num == 0)
+						strlcpy(desc, "Top-aligned: Offscreen", sizeof(desc));
+					else
+						szprintf(desc, sizeof(desc), "Top-aligned: Cells 0 - %d", cell_num);
+				}
 				break;
+			}
 			
 			case 19:
 			case 20:
