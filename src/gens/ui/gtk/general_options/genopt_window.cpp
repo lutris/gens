@@ -98,6 +98,7 @@ static GtkWidget	*chkMisc_FastBlur;
 static GtkWidget	*chkMisc_SegaCDLEDs;
 static GtkWidget	*chkMisc_BorderColorEmulation;
 static GtkWidget	*chkMisc_PauseTint;
+static GtkWidget	*chkMisc_ntscV30rolling;
 
 // Widget creation functions.
 static void	genopt_window_create_osd_frame(GtkWidget *container, const char* title, int index);
@@ -443,6 +444,14 @@ static void genopt_window_create_misc_settings_frame(GtkWidget *container)
 	g_signal_connect(GTK_OBJECT(chkMisc_PauseTint), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
+	// NTSC V30 Rolling
+	chkMisc_ntscV30rolling = gtk_check_button_new_with_label("NTSC V30 Rolling");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_ntscV30rolling), 2);
+	gtk_widget_show(chkMisc_ntscV30rolling);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_ntscV30rolling, false, false, 0);
+	g_signal_connect(GTK_OBJECT(chkMisc_ntscV30rolling), "toggled",
+			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
+	
 	// VBox for intro effect.
 	GtkWidget *vboxIntroEffect = gtk_vbox_new(false, 4);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffect), 8);
@@ -508,6 +517,7 @@ static void genopt_window_init(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation), Video.borderColorEmulation);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint), Video.pauseTint);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_ntscV30rolling), Video.ntscV30rolling);
 	
 	// FPS counter
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), vdraw_get_fps_enabled());
@@ -550,6 +560,7 @@ static void genopt_window_save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
+	Video.ntscV30rolling = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_ntscV30rolling));
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.

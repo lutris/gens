@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2009 by David Korth                                       *
+ * Copyright (c) 2009-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -22,6 +22,9 @@
 
 #include "vdraw.h"
 #include "vdraw_gdi.h"
+
+// C includes.
+#include <stdint.h>
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -66,7 +69,6 @@ static int	vdraw_gdi_end(void);
 static void	vdraw_gdi_clear_screen(void);
 
 static int	vdraw_gdi_flip(void);
-static void	WINAPI vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
 static int	vdraw_gdi_reinit_gens_window(void);
@@ -175,7 +177,7 @@ static int vdraw_gdi_init(void)
 	}
 	
 	// Select the bitmap object on the device context.
-	(void)SelectBitmap(hdcComp, hbmpDraw);
+	SelectBitmap(hdcComp, hbmpDraw);
 	
 	// Set bpp to 15-bit color.
 	// GDI doesn't actually support 16-bit color.
@@ -184,9 +186,6 @@ static int vdraw_gdi_init(void)
 	
 	// Adjust stretch parameters.
 	vdraw_gdi_stretch_adjust();
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_32 = ~MD_Palette32[0];
 	
 	// GDI initialized.
 	return 0;
@@ -237,10 +236,6 @@ static int WINAPI vdraw_gdi_clear_primary_screen(void)
 		return -1;
 	
 	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_32 = ~MD_Palette32[0];
-	
 	return 0;
 }
 
@@ -258,9 +253,6 @@ static int WINAPI vdraw_gdi_clear_back_screen(void)
 	InvalidateRect(gens_window, NULL, FALSE);
 	GetClientRect(gens_window, &rectDest);
 	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_32 = ~MD_Palette32[0];
 	
 	return 0;
 }
@@ -310,21 +302,16 @@ static int vdraw_gdi_flip(void)
 	hdcDest = GetDC(gens_window);
 	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	const int pitch = szGDIBuf.cx * bytespp;
 	
 	// Start of the GDI framebuffer.
-	const int pitch = szGDIBuf.cx * bytespp;
-	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	
-	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
-	
-	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(pbmpData))[startPos]);
+	uint8_t *start = pbmpData;
 	
 	// Set up the render information.
+	// TODO: Optimize rendering if using a stretch mode.
 	vdraw_rInfo.destScreen = (void*)start;
-	vdraw_rInfo.width = 320 - vdraw_border_h;
-	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.width = 320;
+	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
 	if (vdraw_needs_conversion)
@@ -338,31 +325,35 @@ static int vdraw_gdi_flip(void)
 		vdraw_blitW(&vdraw_rInfo);
 	}
 	
-	// Draw the border.
-	vdraw_gdi_draw_border();
-	
 	// Draw the message and/or FPS counter.
+	int msg_width = vdp_getHPix();
+	start += ((pitch * VDP_Lines.Visible.Border_Size) * vdraw_scale);
+	if (msg_width != 320)
+		start += (((320 - msg_width) / 2) * bytespp * vdraw_scale);
+	msg_width *= vdraw_scale;
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
 		draw_text(start, szGDIBuf.cx,
-			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
-			  vdraw_msg_text, &vdraw_msg_style, FALSE);
+			  msg_width,
+			  VDP_Lines.Visible.Total * vdraw_scale,
+			  vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
 		draw_text(start, szGDIBuf.cx,
-			  vdraw_rInfo.width * vdraw_scale,
-			  vdraw_rInfo.height * vdraw_scale,
-			  vdraw_msg_text, &vdraw_fps_style, FALSE);
+			  msg_width,
+			  VDP_Lines.Visible.Total * vdraw_scale,
+			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	// Blit the image to the GDI window.
 	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
-		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
+		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
+		       hdcComp, 0, 0, SRCCOPY);
 	}
 	else
 	{
@@ -406,11 +397,12 @@ static void vdraw_gdi_stretch_adjust(void)
 	// Adjust the stretch parameters.
 	vdraw_gdi_stretch_flags = vdraw_get_stretch();
 	
-	if ((vdraw_gdi_stretch_flags & STRETCH_H) && !vdp_isH40())
+	const int HPix = vdp_getHPix();
+	if ((vdraw_gdi_stretch_flags & STRETCH_H) && HPix < 320)
 	{
 		// Horizontal stretch.
-		vdraw_gdi_stretch_srcX = ((320 - 256) / 2) * vdraw_scale;
-		vdraw_gdi_stretch_srcW = 256 * vdraw_scale;
+		vdraw_gdi_stretch_srcX = (vdraw_border_h / 2) * vdraw_scale;
+		vdraw_gdi_stretch_srcW = HPix * vdraw_scale;
 	}
 	else
 	{
@@ -421,83 +413,12 @@ static void vdraw_gdi_stretch_adjust(void)
 	if (vdraw_gdi_stretch_flags & STRETCH_V)
 	{
 		// Vertical stretch.
-		vdraw_gdi_stretch_srcY = ((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale;
-		vdraw_gdi_stretch_srcH = VDP_Num_Vis_Lines * vdraw_scale;
+		vdraw_gdi_stretch_srcY = VDP_Lines.Visible.Border_Size * vdraw_scale;
+		vdraw_gdi_stretch_srcH = VDP_Lines.Visible.Total * vdraw_scale;
 	}
 	else
 	{
 		vdraw_gdi_stretch_srcY = 0;
 		vdraw_gdi_stretch_srcH = 240 * vdraw_scale;
-	}
-}
-
-
-/**
- * vdraw_gdi_draw_border(): Draw the border color.
- * Called from vdraw_gdi_flip().
- */
-static void WINAPI vdraw_gdi_draw_border(void)
-{
-	if (!Video.borderColorEmulation)
-	{
-		// Border color emulation is disabled.
-		// Don't do anything if the border color is currently black.
-		if (vdraw_border_color_32 == 0)
-			return;
-	}
-	
-	unsigned int new_border_color_32 = MD_Palette32[0];
-	if (!Video.borderColorEmulation || (Game == NULL) || IS_DEBUGGING())
-	{
-		// Either no game is loaded or the debugger is enabled.
-		// Make sure the border color is black.
-		new_border_color_32 = 0;
-	}
-	
-	if (vdraw_border_color_32 != new_border_color_32)
-	{
-		vdraw_border_color_32 = new_border_color_32;
-		const uint8_t stretch = vdraw_get_stretch();
-		
-		// MD color has R and B channels swapped from Windows GDI.
-		const uint32_t bcolor = ((vdraw_border_color_32 >> 16) & 0xFF) |
-					 (vdraw_border_color_32 & 0x00FF00) |
-					((vdraw_border_color_32 & 0xFF) << 16);
-		HBRUSH hbrBorder = CreateSolidBrush(bcolor);
-		
-		RECT rectBorder;
-		
-		if (VDP_Num_Vis_Lines < 240 && !(stretch & STRETCH_V))
-		{
-			// Top/Bottom borders.
-			rectBorder.left = 0;
-			rectBorder.right = szGDIBuf.cx;
-			
-			rectBorder.top = 0;
-			rectBorder.bottom = 8 * vdraw_scale;
-			FillRect(hdcComp, &rectBorder, hbrBorder);
-			
-			rectBorder.top = szGDIBuf.cy - (8 * vdraw_scale);
-			rectBorder.bottom = szGDIBuf.cy;
-			FillRect(hdcComp, &rectBorder, hbrBorder);
-		}
-		
-		if (!vdp_isH40() && !(stretch & STRETCH_H))
-		{
-			// Left/Right borders.
-			rectBorder.top = 0;
-			rectBorder.bottom = szGDIBuf.cy;
-			
-			rectBorder.left = 0;
-			rectBorder.right = 32 * vdraw_scale;
-			FillRect(hdcComp, &rectBorder, hbrBorder);
-			
-			rectBorder.left = szGDIBuf.cx - (32 * vdraw_scale);
-			rectBorder.right = szGDIBuf.cx;
-			FillRect(hdcComp, &rectBorder, hbrBorder);
-		}
-		
-		// Delete the brush.
-		DeleteBrush(hbrBorder);
 	}
 }

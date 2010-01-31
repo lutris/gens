@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -32,6 +32,7 @@
 #include "debugger/debugger.hpp"
 
 // C includes.
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,8 +68,8 @@ static void	vdraw_sdl_gl_update_renderer(void);
 static int	vdraw_sdl_gl_reinit_gens_window(void);
 
 // Used internally. (Not used in vdraw_backend_t.)
-static void	vdraw_sdl_gl_draw_border(void);
 static int	vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitSDL);
+static void	vdraw_sdl_gl_init_orthographic_projection(void);
 
 // Miscellaneous.
 #define VDRAW_SDL_GL_FLAGS (SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL | SDL_OPENGL)
@@ -281,36 +282,12 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	
 	glViewport(0, 0, vdraw_sdl_gl_screen->w, vdraw_sdl_gl_screen->h);
 	
-	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
-	// TODO: Is this stuff really necessary?
-	// NOTE: Disabled for now due to garbage problems.
-#if 0
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	if ((Video.Width_GL * 3 > Video.Height_GL * 4) && Video.Height_GL != 0)
-	{
-		glOrtho(-((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
-			((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
-			-1, 1, -1, 1);
-	}
-	else if ((Video.Width_GL * 3 < Video.Height_GL * 4) && Video.Width_GL != 0)
-	{
-		glOrtho(-1, 1,
-			-((float)Video.Height_GL * 4) / ((float)Video.Width_GL * 3),
-			((float)Video.Height_GL * 3) / ((float)Video.Width_GL * 3),
-			-1, 1);
-	}
-	else
-	{
-		glOrtho(-1, 1, -1, 1, -1, 1);
-	}
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-#endif
-	
+	// Disable depth testing.
 	glDisable(GL_DEPTH_TEST);
+	
+	// Initialize the orthographic projection.
+	vdraw_sdl_gl_init_orthographic_projection();
+	
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
 	
@@ -333,6 +310,48 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	
 	// SDL+OpenGL initialized.
 	return 0;
+}
+
+
+static void vdraw_sdl_gl_init_orthographic_projection(void)
+{
+	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
+	// TODO: Is this stuff really necessary?
+	// NOTE: Disabled for now due to garbage problems.
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	if (!Video.GL.glOrthographicProjection)
+	{
+		// Orthographic projection is disabled.
+		glOrtho(-1, 1, -1, 1, -1, 1);
+	}
+	else
+	{
+		if ((Video.GL.width * 3 > Video.GL.height * 4) && Video.GL.height != 0)
+		{
+			// Window is wider than 4:3.
+			glOrtho(-((float)Video.GL.width * 3) / ((float)Video.GL.height * 4),
+				((float)Video.GL.width * 3) / ((float)Video.GL.height * 4),
+				-1, 1, -1, 1);
+		}
+		else if ((Video.GL.width * 3 < Video.GL.height * 4) && Video.GL.width != 0)
+		{
+			// Window is taller than 4:3.
+			glOrtho(-1, 1,
+				-((float)Video.GL.height * 4) / ((float)Video.GL.width * 3),
+				((float)Video.GL.height * 4) / ((float)Video.GL.width * 3),
+				-1, 1);
+		}
+		else
+		{
+			// Window is 4:3.
+			glOrtho(-1, 1, -1, 1, -1, 1);
+		}
+	}
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 
@@ -361,11 +380,9 @@ static int vdraw_sdl_gl_end(void)
 static void vdraw_sdl_gl_clear_screen(void)
 {
 	// Clear the screen.
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	memset(filterBuffer, 0x00, filterBufferSize);
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
 
@@ -375,21 +392,29 @@ static void vdraw_sdl_gl_clear_screen(void)
  */
 static int vdraw_sdl_gl_flip(void)
 {
-	// Draw the border.
-	vdraw_sdl_gl_draw_border();
+	// Clear the GL surface.
+	// This is needed in order to make sure that we have the
+	// correct video mode for some reason.
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// OpenGL framebuffer pitch.
 	const int pitch = rowLength * bytespp;
 	
-	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(filterBuffer))[0]);
+	// Start of the OpenGL texture buffer.
+	uint8_t *start = filterBuffer;
+	
+	// Position in the texture to start rendering from.
+	// This is modified if STRETCH_V is enabled.
+	uint8_t *glStart = start;
 	
 	// Set up the render information.
+	// TODO: If STRETCH_V is set, only render the visible area.
 	vdraw_rInfo.destScreen = (void*)start;
-	vdraw_rInfo.width = 320 - vdraw_border_h;
-	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.width = 320;
+	vdraw_rInfo.height = 240;
 	vdraw_rInfo.destPitch = pitch;
 	
 	if (vdraw_needs_conversion)
@@ -406,23 +431,57 @@ static int vdraw_sdl_gl_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 	}
 	
+	const uint8_t stretch_flags = vdraw_get_stretch();
+	
 	// Calculate the texture size.
 	const int totalHeight = ((rowLength * 3) / 4);
-	const int texHeight = (VDP_Num_Vis_Lines * vdraw_scale);
-	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
 	
-	// Draw the message and/or FPS counter.
+	int texHeight = 240 * vdraw_scale;
+	if (VDP_Lines.Visible.Total < 240)
+	{
+		// Check for vertical stretch.
+		const unsigned int start_offset = (pitch * VDP_Lines.Visible.Border_Size * vdraw_scale);
+		start += start_offset;	// Text starting position.
+		
+		if (stretch_flags & STRETCH_V)
+		{
+			// Vertical stretch is enabled.
+			texHeight = VDP_Lines.Visible.Total * vdraw_scale;
+			glStart += start_offset;
+		}
+	}
+	
+	int texWidth = 320 * vdraw_scale;
+	const int HPix = vdp_getHPix();
+	if (HPix < 320)
+	{
+		// Check for horizontal stretch.
+		const unsigned int start_offset = (((320 - HPix) / 2) * bytespp * vdraw_scale);
+		start += start_offset;	// Text starting position.
+		
+		if (stretch_flags & STRETCH_H)
+		{
+			// Horizontal stretch is enabled.
+			texWidth = HPix * vdraw_scale;
+			glStart += start_offset;
+		}
+	}
+	
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text(filterBuffer, rowLength, texWidth, texHeight,
-			  vdraw_msg_text, &vdraw_msg_style, FALSE);
+		draw_text(start, rowLength,
+				HPix * vdraw_scale,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_msg_style);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Settings.Active && !Settings.Paused && !IS_DEBUGGING())
 	{
 		// FPS is enabled.
-		draw_text(filterBuffer, rowLength, texWidth, texHeight,
-			  vdraw_msg_text, &vdraw_fps_style, FALSE);
+		draw_text(start, rowLength,
+				HPix * vdraw_scale,
+				VDP_Lines.Visible.Total * vdraw_scale,
+				vdraw_msg_text, &vdraw_fps_style);
 	}
 	
 	// Set the GL MAG filter.
@@ -444,55 +503,40 @@ static int vdraw_sdl_gl_flip(void)
 			texWidth,		// width
 			texHeight,		// height
 			m_pixelFormat, m_pixelType,
-			filterBuffer);
+			glStart);
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	// Get the stretch parameters.
-	uint8_t stretch = vdraw_get_stretch();
-	
-	// Calculate the image position.
-	double imgTop, imgBottom;
-	if (texHeight == totalHeight || (stretch & STRETCH_V))
-	{
-		imgTop = 1.0;
-		imgBottom = -1.0;
-	}
-	else
-	{
-		imgTop = (1.0 * ((double)texHeight / (double)totalHeight));
-		imgBottom = -imgTop;
-	}
-	
+	// Determine the left and right corners of the texture.
+#if 0
 	double imgLeft, imgRight;
-	if (vdraw_border_h == 0 || (stretch & STRETCH_H))
+	if (vdraw_border_h == 0 || !(stretch_flags & STRETCH_H))
 	{
-		imgLeft = -1.0;
-		imgRight = 1.0;
+		imgLeft = 0.0;
+		imgRight = (double)(texWidth) / (double)(textureSize * 2);
 	}
 	else
 	{
-		imgLeft = -(1.0 * ((double)(320 - vdraw_border_h) / 320.0));
-		imgRight = -imgLeft;
+		imgLeft = (double)(msg_diff / 2) / (double)(textureSize * 2);
+		imgRight = ((double)(msg_width) / (double)(textureSize * 2) + imgLeft);
 	}
+#endif
 	
-	double imgWidth, imgHeight;
-	imgWidth = (double)(texWidth) / (double)(textureSize * 2);
-	imgHeight = (double)(texHeight) / (double)(textureSize);
+	double imgWidth = (double)(texWidth) / (double)(textureSize * 2);
+	double imgHeight = (double)(texHeight) / (double)(textureSize);
 	
-	glTexCoord2d(0.0, 0.0);		// Upper-left corner of the texture.
-	glVertex2d(imgLeft, imgTop);	// Upper-left vertex of the quad.
+	glTexCoord2d(0.0, 0.0);			// Upper-left corner of the texture.
+	glVertex2d(-1.0,  1.0);			// Upper-left vertex of the quad.
 	
-	glTexCoord2d(imgWidth, 0.0);	// Upper-right corner of the texture.
-	glVertex2d(imgRight, imgTop);	// Upper-right vertex of the quad.
+	glTexCoord2d(imgWidth, 0.0);		// Upper-right corner of the texture.
+	glVertex2d( 1.0,  1.0);			// Upper-right vertex of the quad.
 	
-	// 0.9375 = 240/256; 0.9375 = 480/512
 	glTexCoord2d(imgWidth, imgHeight);	// Lower-right corner of the texture.
-	glVertex2d(imgRight, imgBottom);	// Lower-right vertex of the quad.
+	glVertex2d( 1.0, -1.0);			// Lower-right vertex of the quad.
 	
 	glTexCoord2d(0.0, imgHeight);		// Lower-left corner of the texture.
-	glVertex2d(imgLeft, imgBottom);		// Lower-left corner of the quad.
+	glVertex2d(-1.0, -1.0);			// Lower-left corner of the quad.
 	
 	glEnd();
 	
@@ -505,60 +549,13 @@ static int vdraw_sdl_gl_flip(void)
 
 
 /**
- * vdraw_sdl_gl_draw_border(): Draw the border color.
- * Called from vdraw_sdl_gl_flip().
- */
-static void vdraw_sdl_gl_draw_border(void)
-{
-	// Clear the OpenGL buffer.
-	if (!Video.borderColorEmulation)
-	{
-		// Border color should be black.
-		glClearColor(0.0, 0.0, 0.0, 0.0);
-	}
-	else
-	{
-		if ((Game == NULL) || IS_DEBUGGING())
-		{
-			// Either no system is active or the debugger is enabled.
-			// Make sure the border color is black.
-			vdraw_border_color_32 = 0;
-		}
-		else
-		{
-			// Set the border color to the first palette entry.
-			vdraw_border_color_32 = MD_Palette32[0];
-		}
-		
-		// Set the border color.
-		// TODO: This may not work properly on big-endian systems.
-		union
-		{
-			struct
-			{
-				uint8_t b;
-				uint8_t g;
-				uint8_t r;
-				uint8_t a;
-			};
-			uint32_t b32;
-		} colorU;
-		
-		colorU.b32 = vdraw_border_color_32;
-		glClearColor((GLclampf)colorU.r / 255.0,
-			     (GLclampf)colorU.g / 255.0,
-			     (GLclampf)colorU.b / 255.0, 0.0);
-	}
-	
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
-
-/**
  * vdraw_sdl_gl_update_renderer(): Update the renderer.
  */
 static void vdraw_sdl_gl_update_renderer(void)
 {
+	// Reinitialize the orthographic projection.
+	vdraw_sdl_gl_init_orthographic_projection();
+	
 	// Check if a resolution switch is needed.
 	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;

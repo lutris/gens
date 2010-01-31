@@ -150,8 +150,7 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 
 template<typename pixel>
 static inline void T_drawText(pixel *screen, const int pitch, const int w, const int h,
-			      const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-			      const bool isDDraw)
+			      const char *msg, const pixel transparentMask, const vdraw_style_t *style)
 {
 	unsigned int x, y;
 	unsigned int charSize;
@@ -173,44 +172,6 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	// Bottom-left of the screen.
 	x = 8;
 	y = h;
-	
-#if defined(GENS_OS_WIN32)
-	if (isDDraw)
-	{
-		// Check if the text position needs to be adjusted.
-		if (vdraw_scale == 1)
-		{
-			// With the DirectDraw renderer, the vertical shift is weird
-			// in normal (1x) rendering.
-			
-			if (vdraw_get_fullscreen() && vdraw_get_sw_render())
-			{
-				// Software rendering.
-				x = (vdp_isH40() ? 0 : (32 * vdraw_scale));
-				
-				// Adjust the vertical position, if necessary.
-				if (VDP_Num_Vis_Lines < 240)
-				{
-					y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
-				}
-			}
-		}
-		else
-		{
-			// 2x or higher.
-			
-			// For whatever reason, text is always shifted over 8 pixels
-			// when not using Normal rendering.
-			x = (vdp_isH40() ? 0 : (32 * vdraw_scale));
-			
-			// Adjust the vertical position, if necessary.
-			if (VDP_Num_Vis_Lines < 240)
-			{
-				y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
-			}
-		}
-	}
-#endif /* defined(GENS_OS_WIN32) */
 	
 	// Character size is 8x16 normal, 16x32 double.
 	y -= (8 + (charSize * 2));
@@ -258,11 +219,9 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
  * @param h Height of the viewable area of the screen surface (in pixels).
  * @param msg Text to draw to the screen.
  * @param style Pointer to style information.
- * @param DDRAW_adjustForScreenSize
  */
 void draw_text(void *screen, const int pitch, const int w, const int h,
-	       const char *msg, const vdraw_style_t *style,
-	       const BOOL isDDraw)
+	       const char *msg, const vdraw_style_t *style)
 {
 	if (!style)
 		return;
@@ -271,15 +230,13 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 	{
 		// 15/16-bit color.
 		T_drawText((uint16_t*)screen, pitch, w, h, msg,
-			   (uint16_t)m_Transparency_Mask, style,
-			   (isDDraw ? true : false));
+			   (uint16_t)m_Transparency_Mask, style);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		T_drawText((uint32_t*)screen, pitch, w, h, msg,
-			   (uint32_t)m_Transparency_Mask, style,
-			   (isDDraw ? true : false));
+			   (uint32_t)m_Transparency_Mask, style);
 	}
 }
 

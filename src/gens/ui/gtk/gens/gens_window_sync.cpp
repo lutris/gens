@@ -64,6 +64,7 @@ using std::deque;
 
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_m68k_cd.h"
@@ -273,9 +274,13 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Rebuild the Render submenu.
 	Sync_Gens_Window_GraphicsMenu_Render(gens_menu_find_item(IDM_GRAPHICS_RENDER));
 	
+	// Interlaced Mode
+	id = IDM_GRAPHICS_INTREND_EVEN + (int)VDP_IntRend_Mode;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), true);
+	
 	// Frame Skip
-	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
+	id = IDM_GRAPHICS_FRAMESKIP_AUTO + (Frame_Skip + 1);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), true);
 	
 	// Screenshot
 	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
@@ -284,8 +289,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	Sync_Gens_Window_GraphicsMenu_Backend(gens_menu_find_item(IDM_GRAPHICS_BACKEND));
 	
 #ifdef GENS_OPENGL
-	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)), Video.GL.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+						gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)),
+						Video.GL.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(
+						gens_menu_find_item(IDM_GRAPHICS_OPENGL_ORTHOPROJ)),
+						Video.GL.glOrthographicProjection);
 	
 	// OpenGL Resolution
 	int resID = 0;

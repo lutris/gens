@@ -175,12 +175,8 @@ int Init_Settings(void)
 	bppOut = 32;
 	
 	// Old code from InitParameters().
-	VDP_Num_Vis_Lines = 224;
-#if 0	// TODO: Replace with MDP "exclusive mode" later.
-	Net_Play = 0;
-#endif
-	Sprite_Over = 1;
 	
+	Sprite_Over = 1;
 	GYM_Dumping = 0;
 	
 	Game = NULL;
@@ -189,6 +185,13 @@ int Init_Settings(void)
 	_32X_Started = 0;
 	CPU_Mode = 0;
 	STOP_DEBUGGING();
+	
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
+	Net_Play = 0;
+#endif
+	
+	// Initialize VDP_Lines.
+	VDP_Set_Visible_Lines();
 	
 	// Get the default save path.
 	get_default_save_path(PathNames.Gens_Save_Path, sizeof(PathNames.Gens_Save_Path));
@@ -351,8 +354,7 @@ int W_VSync;
 int ice = 0;
 void Clear_Screen_MD(void)
 {
-	memset(MD_Screen, 0x00, sizeof(MD_Screen));
-	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+	memset(&MD_Screen, 0x00, sizeof(MD_Screen));
 }
 
 

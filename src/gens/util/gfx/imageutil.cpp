@@ -43,6 +43,7 @@
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
 
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
@@ -480,12 +481,13 @@ int ImageUtil::ScreenShot(void)
 		return 1;
 	
 	// Variables used:
-	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
+	// VDP_Lines.Visible.Total: Number of lines visible on the screen. (bitmap height)
 	// MD_Screen: MD screen buffer.
-	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
+	// vdp_getHPix(): Number of pixels horizontally.
 	// TODO: Use macros in video/v_inline.h
-	const int w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
-	const int h = VDP_Num_Vis_Lines;
+	const int w = vdp_getHPix();
+	const int h = VDP_Lines.Visible.Total;
+	const int start = TAB336[VDP_Lines.Visible.Border_Size] + 8 + vdp_getHPixBegin();
 	
 	// Build the filename.
 	int num = -1;
@@ -517,9 +519,9 @@ int ImageUtil::ScreenShot(void)
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
-		screen = (void*)(&MD_Screen[8]);
+		screen = (void*)(&MD_Screen.u16[start]);
 	else //if (bppMD == 32)
-		screen = (void*)(&MD_Screen32[8]);
+		screen = (void*)(&MD_Screen.u32[start]);
 	
 	// Attempt to save the screenshot.
 	int rval = WriteImage(filename, fmt, w, h, 336, screen, bppMD);

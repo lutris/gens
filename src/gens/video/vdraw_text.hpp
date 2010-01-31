@@ -56,8 +56,7 @@ typedef struct
 } vdraw_style_t;
 
 void draw_text(void *screen, const int pitch, const int w, const int h,
-	       const char *msg, const vdraw_style_t *style,
-	       const BOOL isDDraw);
+	       const char *msg, const vdraw_style_t *style);
 
 void calc_text_style(vdraw_style_t *style);
 void calc_transparency_mask(void);

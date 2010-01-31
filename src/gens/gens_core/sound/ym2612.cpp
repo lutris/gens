@@ -241,7 +241,9 @@ static int int_cnt;	// Interpolation calculation
 
 #include "audio/audio.h"
 #include "util/sound/gym.hpp"
-extern int VDP_Current_Line;
+
+// Needed for VDP line number.
+#include "gens_core/vdp/vdp_io.h"
 
 int YM2612_Enable;
 int YM2612_Improv;
@@ -1561,7 +1563,7 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		
 		// We recalculate rate and frequence after interpolation
 		
-		YM2612.Rate = YM2612.Clock / 144;
+		YM2612.Rate = YM2612.Clock / 144.0;
 		YM2612.Frequence = 1.0;
 	}
 	else
@@ -2457,8 +2459,8 @@ void YM2612_Special_Update(void)
 	{
 		YM2612_Update(YM_Buf, YM_Len);
 		
-		YM_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
-		YM_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
+		YM_Buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
+		YM_Buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
 		YM_Len = 0;
 	}
 }

@@ -112,6 +112,11 @@ int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
+#ifdef GENS_OS_WIN32
+extern RECT vdraw_rectDisplay;
+void WINAPI vdraw_init_display_size(void);
+#endif
+
 // Current backend.
 extern const vdraw_backend_t *vdraw_cur_backend;
 extern VDRAW_BACKEND vdraw_cur_backend_id;
@@ -142,8 +147,10 @@ extern vdraw_style_t vdraw_msg_style;
 // Properties.
 uint8_t	vdraw_get_stretch(void);
 void	vdraw_set_stretch(const uint8_t new_stretch);
+#ifdef GENS_OS_WIN32
 BOOL	vdraw_get_sw_render(void);
 void	vdraw_set_sw_render(const BOOL new_sw_render);
+#endif /* GENS_OS_WIN32 */
 BOOL	vdraw_get_msg_enabled(void);
 void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
 BOOL	vdraw_get_fps_enabled(void);
@@ -177,8 +184,6 @@ extern int vdraw_scale;
 
 // Screen border.
 extern int vdraw_border_h, vdraw_border_h_old;
-extern uint16_t vdraw_border_color_16;
-extern uint32_t vdraw_border_color_32;
 
 // RGB color conversion variables.
 extern BOOL vdraw_needs_conversion;

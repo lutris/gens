@@ -58,6 +58,7 @@ using std::list;
 
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 #include "gens_core/cpu/sh2/cpu_sh2.h"
@@ -274,7 +275,7 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Num_Lines = 312;
+		VDP_Lines.Display.Total = 312;	// TODO: Change to 313!
 		VDP_Status |= 0x0001;
 		_32X_VDP.Mode &= ~0x8000;
 		
@@ -290,8 +291,8 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Num_Lines = 262;
-		VDP_Status &= 0xFFFE;
+		VDP_Lines.Display.Total = 262;
+		VDP_Status &= ~0x0001;
 		_32X_VDP.Mode |= 0x8000;
 		
 		CD_Access_Timer = 2096;
@@ -369,12 +370,12 @@ bool Options::soundEnable(void)
 /**
  * setSoundEnable(): Enable or disable sound.
  * @param newSoundEnable New sound enable setting.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Options::setSoundEnable(const bool newSoundEnable)
 {
 	if (newSoundEnable == audio_get_enabled())
-		return 0;
+		return -1;
 	
 	// Make sure WAV dumping has stopped.
 	if (WAV_Dumping)
@@ -385,13 +386,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 	if (!audio_get_enabled())
 	{
 		audio_end();
-		YM2612_Enable = 0;
-		PSG_Enable = 0;
-		DAC_Enable = 0;
-		PCM_Enable = 0;
-		PWM_Enable = 0;
-		CDDA_Enable = 0;
-		vdraw_text_write("Sound Disabled", 1500);
+		vdraw_text_write("Sound Disabled.", 1500);
 	}
 	else
 	{
@@ -399,13 +394,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		{
 			// Error initializing sound.
 			audio_set_enabled(false);
-			YM2612_Enable = 0;
-			PSG_Enable = 0;
-			DAC_Enable = 0;
-			PCM_Enable = 0;
-			PWM_Enable = 0;
-			CDDA_Enable = 0;
-			return 0;
+			return -2;
 		}
 		
 		if (audio_play_sound)
@@ -415,17 +404,10 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		if (!(Z80_State & Z80_STATE_ENABLED))
 			setSoundZ80(true);
 		
-		YM2612_Enable = 1;
-		PSG_Enable = 1;
-		DAC_Enable = 1;
-		PCM_Enable = 1;
-		PWM_Enable = 1;
-		CDDA_Enable = 1;
-		
-		vdraw_text_write("Sound Enabled", 1500);
+		vdraw_text_write("Sound Enabled.", 1500);
 	}
 	
-	return 1;
+	return 0;
 }
 
 
@@ -1126,10 +1108,9 @@ bool Options::OpenGL_LinearFilter(void)
 	return Video.GL.glLinearFilter;
 }
 
-
 /**
  * setOpenGL_LinearFilter(): Set the OpenGL Linear Filter state.
- * @param newFilter New linear filter state.
+ * @param newFilter New OpenGL Linear Filter state.
  */
 void Options::setOpenGL_LinearFilter(bool newFilter)
 {
@@ -1146,7 +1127,88 @@ void Options::setOpenGL_LinearFilter(bool newFilter)
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
 }
+
+
+/**
+ * OpenGL_OrthographicProjection(): Get the current OpenGL Orthographic Projection state.
+ * @return OpenGL Orthographic Projection state.
+ */
+bool Options::OpenGL_OrthographicProjection(void)
+{
+	return Video.GL.glOrthographicProjection;
+}
+
+/**
+ * setOpenGL_LinearFilter(): Set the OpenGL Orthographic Projection state.
+ * @param newOrthoProj New OpenGL Orthographic Projection state.
+ */
+void Options::setOpenGL_OrthographicProjection(bool newOrthoProj)
+{
+	if (Video.GL.glOrthographicProjection == newOrthoProj)
+		return;
+	
+	Video.GL.glOrthographicProjection = newOrthoProj;
+	
+	if (Video.GL.glOrthographicProjection)
+		vdraw_text_write("Enabled Orthographic Projection.", 1500);
+	else
+		vdraw_text_write("Disabled Orthographic Projection.", 1500);
+	
+	// If OpenGL is in use, reinitialize the renderer.
+	if (vdraw_cur_backend_id == VDRAW_BACKEND_SDL_GL)
+		vdraw_cur_backend->update_renderer();
+	
+	// Synchronize the Graphics Menu.
+	Sync_Gens_Window_GraphicsMenu();
+}
 #endif /* GENS_OPENGL */
+
+
+/**
+ * IntRend_Mode(): Get the interlaced rendering mode.
+ * @return Interlaced rendering mode.
+ */
+int Options::IntRend_Mode(void)
+{
+	return VDP_IntRend_Mode;
+}
+
+/**
+ * setIntRend_Mode(): Set the interlaced rendering mode.
+ * @param newIntRend_Mode New interlaced rendering mode.
+ */
+void Options::setIntRend_Mode(const int newIntRend_Mode)
+{
+	if ((VDP_IntRend_Mode == newIntRend_Mode) ||
+	    (newIntRend_Mode < 0) ||
+	    (newIntRend_Mode > (int)(INTREND_FLICKER)))
+	{
+		// Same setting, or invalid setting.
+		return;
+	}
+	
+	VDP_IntRend_Mode = (IntRend_Mode_t)newIntRend_Mode;
+	
+	switch (VDP_IntRend_Mode)
+	{
+		case INTREND_EVEN:
+		default:
+			vdraw_text_write("Interlaced: Even fields only.", 1500);
+			break;
+		
+		case INTREND_ODD:
+			vdraw_text_write("Interlaced: Odd fields only.", 1500);
+			break;
+		
+		case INTREND_FLICKER:
+			vdraw_text_write("Interlaced: Alternating fields.", 1500);
+			break;
+		
+		case INTREND_2X:
+			vdraw_text_write("Interlaced: 2x resolution.", 1500);
+			break;
+	}
+}
 
 
 #ifdef GENS_OS_WIN32
@@ -1160,21 +1222,20 @@ bool Options::swRender(void)
 }
 
 /**
- * setSwRender(): Force software rendering in fullscreen mode. (Win32 only)
+ * setSwRender(): Force software rendering for 1x mode. (Win32 only)
  * @param newSwRender New software rendering setting.
  */
 void Options::setSwRender(const bool newSwRender)
 {
-	// TODO: Specify software blit in the parameter.
+	// TODO: Change to "setHwRender".
 	
 	Flag_Clr_Scr = 1;
-	
 	vdraw_set_sw_render(newSwRender);
 	
 	if (vdraw_get_sw_render())
-		vdraw_text_write("Force software blit for Full-Screen", 1000);
+		vdraw_text_write("Disabled HW blit for 1x rendering.", 1000);
 	else
-		vdraw_text_write("Enable hardware blit for Full-Screen", 1000);
+		vdraw_text_write("Enabled HW blit for 1x rendering.", 1000);
 }
 #endif /* GENS_OS_WIN32 */
 

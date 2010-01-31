@@ -133,7 +133,9 @@ mdp_render_info_t vdraw_rInfo = { .vmodeFlags = 0 };
 static uint8_t	vdraw_prop_stretch = 0;
 static uint8_t	vdraw_prop_intro_effect_color = 0;
 static BOOL	vdraw_prop_fullscreen = FALSE;
+#ifdef GENS_OS_WIN32
 static BOOL	vdraw_prop_sw_render = FALSE;
+#endif /* GENS_OS_WIN32 */
 static BOOL	vdraw_prop_fast_blur = FALSE;
 int		vdraw_scale = 1;
 
@@ -159,8 +161,6 @@ vdraw_style_t	vdraw_msg_style;
 
 // Screen border.
 int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
-uint16_t	vdraw_border_color_16 = ~0;
-uint32_t	vdraw_border_color_32 = ~0;
 
 // RGB color conversion functions.
 #include "vdraw_RGB.h"
@@ -248,6 +248,11 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		return -1;
 	}
 	
+#ifdef GENS_OS_WIN32
+	// Initialize the display size.
+	vdraw_init_display_size();
+#endif
+	
 	// Initialize the backend.
 	if (vdraw_backends_broken[backend] != 0 ||
 	    vdraw_backends[backend]->init() != 0)
@@ -321,6 +326,43 @@ int vdraw_backend_end(void)
 	vdraw_cur_backend = NULL;
 	return 0;
 }
+
+
+#ifdef GENS_OS_WIN32
+RECT vdraw_rectDisplay;
+/**
+ * vdraw_init_display_size(): Initialize the Win32 display size variables.
+ */
+void WINAPI vdraw_init_display_size(void)
+{
+	// Check if the system supports multiple monitors.
+	const int scrn_width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+	const int scrn_height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	
+	if (scrn_width == 0 || scrn_height == 0)
+	{
+		// System does not support multiple monitors.
+		vdraw_rectDisplay.left = 0;
+		vdraw_rectDisplay.top = 0;
+		
+		// Get the single-monitor size.
+		vdraw_rectDisplay.right = GetSystemMetrics(SM_CXSCREEN);
+		vdraw_rectDisplay.bottom = GetSystemMetrics(SM_CYSCREEN);
+	}
+	else
+	{
+		// System supports multiple monitors.
+		
+		// Get the left/top.
+		vdraw_rectDisplay.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+		vdraw_rectDisplay.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+		
+		// Calculate the right/bottom.
+		vdraw_rectDisplay.right = vdraw_rectDisplay.left + scrn_width;
+		vdraw_rectDisplay.bottom = vdraw_rectDisplay.top + scrn_height;
+	}
+}
+#endif
 
 
 /**
@@ -437,11 +479,9 @@ int vdraw_flip(int md_screen_updated)
 	}
 	
 	// Check if the display width changed.
+	// TODO: Eliminate this.
 	vdraw_border_h_old = vdraw_border_h;
-	if (vdp_isH40())
-		vdraw_border_h = 0;	// 320x224
-	else
-		vdraw_border_h = 64;	// 256x224
+	vdraw_border_h = vdp_getHPixBegin() * 2;
 	
 	if (vdraw_border_h != vdraw_border_h_old)
 	{
@@ -450,6 +490,7 @@ int vdraw_flip(int md_screen_updated)
 			vdraw_cur_backend->stretch_adjust();
 	}
 	
+	// TODO: This check seems to be inverted...
 	if (vdraw_border_h > vdraw_border_h_old)
 	{
 		// New screen width is smaller than old screen width.
@@ -487,6 +528,10 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	// Recalculate palettes.
 	Recalculate_Palettes();
 	
+	// Readjust the 32X CRam, if necessary.
+	if (_32X_Started)
+		Adjust_CRam_32X();
+	
 	// Recalculate the text styles.
 	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
@@ -504,10 +549,6 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
  */
 void vdraw_refresh_video(void)
 {
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
-	
 	if (vdraw_cur_backend)
 	{
 		vdraw_cur_backend->end();
@@ -542,14 +583,32 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 }
 
 
+#ifdef GENS_OS_WIN32
+#include "plugins/render/normal/mdp_render_1x_plugin.h"
+//#include "plugins/render/double/mdp_render_2x_plugin.h"
 BOOL vdraw_get_sw_render(void)
 {
 	return (vdraw_prop_sw_render ? TRUE : FALSE);
 }
 void vdraw_set_sw_render(const BOOL new_sw_render)
 {
+	if (vdraw_prop_sw_render == new_sw_render)
+		return;
+	
 	vdraw_prop_sw_render = (new_sw_render ? TRUE : FALSE);
+	
+	// TODO: Make this DDraw-only.
+	if (vdraw_cur_backend_id != VDRAW_BACKEND_DDRAW)
+		return;
+	
+	// Check the renderer.
+	mdp_render_fn cur_render = (vdraw_get_fullscreen() ? vdraw_blitFS : vdraw_blitW);
+	if (cur_render == mdp_render_1x_render_t.blit)
+		vdraw_reset_renderer(TRUE);
+	//else if (cur_render == mdp_render_2x_render_t.blit)
+	//	vdraw_reset_renderer(TRUE);
 }
+#endif /* GENS_OS_WIN32 */
 
 
 BOOL vdraw_get_msg_enabled(void)

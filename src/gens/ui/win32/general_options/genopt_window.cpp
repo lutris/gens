@@ -110,6 +110,7 @@ static HWND	chkMisc_FastBlur;
 static HWND	chkMisc_SegaCDLEDs;
 static HWND	chkMisc_BorderColorEmulation;
 static HWND	chkMisc_PauseTint;
+static HWND	chkMisc_ntscV30rolling;
 
 // GDI objects.
 static HBRUSH	brushIntroEffect[8][2];
@@ -283,6 +284,15 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_PauseTint, w32_fntMessage, true);
+	
+	// NTSC V30 Rolling
+	frameTop += 20;
+	chkMisc_ntscV30rolling = pCreateWindowU(WC_BUTTON, "NTSC V30 Rolling",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						frameLeft+8, frameTop,
+						(GENOPT_FRAME_WIDTH-16), 20,
+						hWnd, NULL, ghInstance, NULL);
+	SetWindowFontU(chkMisc_ntscV30rolling, fntMain, true);
 	
 	// Intro Effect label.
 	frameTop += DLU_Y(10+5);
@@ -476,6 +486,7 @@ static void WINAPI genopt_window_init(void)
 	Button_SetCheckU(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheckU(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheckU(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheckU(chkMisc_ntscV30rolling, (Video.ntscV30rolling ? BST_CHECKED : BST_UNCHECKED));
 	
 	// FPS counter
 	Button_SetCheckU(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
@@ -527,6 +538,7 @@ static void WINAPI genopt_window_save(void)
 	Show_LED = (Button_GetCheckU(chkMisc_SegaCDLEDs) == BST_CHECKED);
 	Video.borderColorEmulation = (Button_GetCheckU(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	Video.pauseTint = (Button_GetCheckU(chkMisc_PauseTint) == BST_CHECKED);
+	Video.ntscV30rolling = (Button_GetCheckU(chkMisc_ntscV30rolling) == BST_CHECKED);
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.

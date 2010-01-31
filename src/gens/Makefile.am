@@ -29,10 +29,7 @@ ASMFILES = \
 		gens_core/mem/mem_sh2.o \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
-		gens_core/cpu/sh2/sh2_io.o \
-		gens_core/vdp/vdp_32x_x86.o \
-		gens_core/vdp/vdp_io_x86.o \
-		gens_core/vdp/vdp_rend_x86.o
+		gens_core/cpu/sh2/sh2_io.o
 
 NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
@@ -97,19 +94,19 @@ gens_SOURCES = \
 		gens_core/mem/mem_sh2.asm \
 		gens_core/mem/mem_z80.c \
 		gens_core/misc/misc.asm \
-		gens_core/gfx/fastblur.cpp \
 		gens_core/misc/cpuflags.c \
+		gens_core/misc/print_text.cpp \
 		$(gens_x86_asm_src) \
+		gens_core/gfx/fastblur.cpp \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
-		gens_core/vdp/vdp_io_x86.asm \
-		gens_core/vdp/vdp_io.c \
-		gens_core/vdp/vdp_rend_x86.asm \
+		gens_core/vdp/vdp_io.cpp \
+		gens_core/vdp/TAB336.c \
 		gens_core/vdp/vdp_rend.cpp \
-		gens_core/vdp/vdp_32x_x86.asm \
+		gens_core/vdp/vdp_rend_err.cpp \
+		gens_core/vdp/vdp_rend_m5.cpp \
 		gens_core/vdp/vdp_32x.c \
-		gens_core/vdp/vdp_32x_32bit.c \
 		macros/log_msg.c \
 		port/ini.cpp \
 		segacd/cd_file.c \
@@ -172,7 +169,8 @@ gens_SOURCES += \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c \
-		debugger/mcd_cell_dump.asm
+		debugger/mcd_cell_dump.asm \
+		debugger/fb_32x.cpp
 ASMFILES += \
 		debugger/mcd_cell_dump.o
 endif
@@ -219,18 +217,22 @@ noinst_HEADERS = \
 		gens_core/mem/mem_sh2.h \
 		gens_core/mem/mem_z80.h \
 		gens_core/misc/misc.h \
-		gens_core/gfx/fastblur.hpp \
 		gens_core/misc/cpuflags.h \
+		gens_core/misc/print_text.hpp \
 		$(gens_x86_asm_h) \
+		gens_core/gfx/fastblur.hpp \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
 		gens_core/io/io_teamplayer.h \
 		gens_core/vdp/vdp_io.h \
+		gens_core/vdp/TAB336.h \
 		gens_core/vdp/vdp_rend.h \
+		gens_core/vdp/vdp_rend_err.hpp \
+		gens_core/vdp/vdp_rend_m5.hpp \
 		gens_core/vdp/vdp_32x.h \
-		gens_core/vdp/vdp_32x_32bit.h \
 		macros/git.h \
 		macros/log_msg.h \
+		macros/force_inline.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
@@ -295,7 +297,8 @@ noinst_HEADERS += \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h \
-		debugger/mcd_cell_dump.h
+		debugger/mcd_cell_dump.h \
+		debugger/fb_32x.hpp
 endif
 
 if GENS_CDROM

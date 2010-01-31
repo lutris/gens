@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -42,7 +42,6 @@ extern "C" {
 
 // Constant data.
 extern const uint32_t CD_Table[64];
-extern const uint8_t  DMA_Timing_Table[16];
 
 // System status.
 extern int Genesis_Started;
@@ -59,64 +58,157 @@ typedef struct
 		uint8_t reg[24];
 		struct
 		{
-			uint8_t Set1;
-			uint8_t Set2;
-			uint8_t Pat_ScrA_Adr;
-			uint8_t Pat_Win_Adr;
-			uint8_t Pat_ScrB_Adr;
-			uint8_t Spr_Att_Adr;
-			uint8_t Reg6;
-			uint8_t BG_Color;
-			uint8_t Reg8;
-			uint8_t Reg9;
-			uint8_t H_Int;
-			uint8_t Set3;
-			uint8_t Set4;
-			uint8_t H_Scr_Adr;
-			uint8_t Reg14;
-			uint8_t Auto_Inc;
-			uint8_t Scr_Size;
-			uint8_t Win_H_Pos;
-			uint8_t Win_V_Pos;
-			uint8_t DMA_Length_L;
-			uint8_t DMA_Length_H;
-			uint8_t DMA_Src_Adr_L;
-			uint8_t DMA_Src_Adr_M;
-			uint8_t DMA_Src_Adr_H;
-		};
+			/**
+			 * Mode 5 (MD) registers.
+			 * DISP == Display Enable. (1 == on; 0 == off)
+			 * IE0 == Enable V interrupt. (1 == on; 0 == off)
+			 * IE1 == Enable H interrupt. (1 == on; 0 == off)
+			 * IE2 == Enable external interrupt. (1 == on; 0 == off)
+			 * M1 == DMA Enable. (1 == on; 0 == off)
+			 * M2 == V cell mode. (1 == V30 [PAL only]; 0 == V28)
+			 * M3 == HV counter latch. (1 == stop HV counter; 0 == enable read, H, V counter)
+			 * M4/PSEL == Palette Select; if clear, masks high two bits of each CRam color component.
+			 *            If M5 is off, acts like M4 instead of PSEL.
+			 * M5 == Mode 4/5 toggle; set for Mode 5, clear for Mode 4.
+			 * VSCR == V Scroll mode. (0 == full; 1 == 2-cell)
+			 * HSCR/LSCR == H Scroll mode. (00 == full; 01 == invalid; 10 == 1-cell; 11 == 1-line)
+			 * RS0/RS1 == H cell mode. (11 == H40; 00 == H32; others == invalid)
+			 * LSM1/LSM0 == Interlace mode. (00 == normal; 01 == interlace mode 1; 10 == invalid; 11 == interlace mode 2)
+			 * S/TE == Highlight/Shadow enable. (1 == on; 0 == off)
+			 * VSZ1/VSZ2 == Vertical scroll size. (00 == 32 cells; 01 == 64 cells; 10 == invalid; 11 == 128 cells)
+			 * HSZ1/HSZ2 == Vertical scroll size. (00 == 32 cells; 01 == 64 cells; 10 == invalid; 11 == 128 cells)
+			 */
+			uint8_t Set1;		// Mode Set 1.  [   0    0    0  IE1    0 PSEL   M3    0]
+			uint8_t Set2;		// Mode Set 2.  [   0 DISP  IE0   M1   M2   M5    0    0]
+			uint8_t Pat_ScrA_Adr;	// Pattern name table base address for Scroll A.
+			uint8_t Pat_Win_Adr;	// Pattern name table base address for Window.
+			uint8_t Pat_ScrB_Adr;	// Pattern name table base address for Scroll B.
+			uint8_t Spr_Att_Adr;	// Sprite Attribute Table base address.
+			uint8_t Reg6;		// unused
+			uint8_t BG_Color;	// Background color.
+			uint8_t Reg8;		// unused
+			uint8_t Reg9;		// unused
+			uint8_t H_Int;		// H Interrupt.
+			uint8_t Set3;		// Mode Set 3.  [   0    0    0    0  IE2 VSCR HSCR LSCR]
+			uint8_t Set4;		// Mode Set 4.  [ RS0    0    0    0 S/TE LSM1 LSM0  RS1]
+			uint8_t H_Scr_Adr;	// H Scroll Data Table base address.
+			uint8_t Reg14;		// unused
+			uint8_t Auto_Inc;	// Auto Increment.
+			uint8_t Scr_Size;	// Scroll Size. [   0    0 VSZ1 VSZ0    0    0 HSZ1 HSZ0]
+			uint8_t Win_H_Pos;	// Window H position.
+			uint8_t Win_V_Pos;	// Window V position.
+			uint8_t DMA_Length_L;	// DMA Length Counter Low.
+			uint8_t DMA_Length_H;	// DMA Length Counter High.
+			uint8_t DMA_Src_Adr_L;	// DMA Source Address Low.
+			uint8_t DMA_Src_Adr_M;	// DMA Source Address Mid.
+			uint8_t DMA_Src_Adr_H;	// DMA Source Address High.
+		} m5;
+		struct
+		{
+			/**
+			 * Mode 4 (SMS) registers.
+			 * NOTE: Mode 4 is currently not implemented.
+			 * This is here for future use.
+			 */
+			uint8_t Set1;		// Mode Set 1.
+			uint8_t Set2;		// Mode Set 2.
+			uint8_t NameTbl_Addr;	// Name table base address.
+			uint8_t ColorTbl_Addr;	// Color table base address.
+			uint8_t	Pat_BG_Addr;	// Background Pattern Generator base address.
+			uint8_t Spr_Att_Addr;	// Sprite Attribute Table base address.
+			uint8_t Spr_Pat_addr;	// Sprite Pattern Generator base address.
+			uint8_t BG_Color;	// Background color.
+			uint8_t H_Scroll;	// Horizontal scroll.
+			uint8_t V_Scroll;	// Vertical scroll.
+			uint8_t H_Int;		// H Interrupt.
+		} m4;
 	};
 	
 	// These two variables are internal to Gens.
 	// They don't map to any actual VDP registers.
-	unsigned int DMA_Length;
+	int DMA_Length;
 	unsigned int DMA_Address;
 	
 	// DMAT variables.
 	unsigned int DMAT_Tmp;
-	unsigned int DMAT_Length;
+	int DMAT_Length;
 	unsigned int DMAT_Type;
+	
+	// VDP address pointers.
+	// These are relative to VRam[] and are based on register values.
+	uint16_t *ScrA_Addr;
+	uint16_t *ScrB_Addr;
+	uint16_t *Win_Addr;
+	uint16_t *Spr_Addr;
+	uint16_t *H_Scroll_Addr;
+	
+	// VDP convenience values: Horizontal.
+	// NOTE: These must be signed for VDP arithmetic to work properly!
+	int H_Cell;
+	int H_Pix;
+	int H_Pix_Begin;
+	
+	// Window row shift.
+	// H40: 6. (64x32 window)
+	// H32: 5. (32x32 window)
+	unsigned int H_Win_Shift;
+	
+	// VDP convenience values: Scroll.
+	unsigned int V_Scroll_MMask;
+	unsigned int H_Scroll_Mask;
+	
+	unsigned int H_Scroll_CMul;
+	unsigned int H_Scroll_CMask;
+	unsigned int V_Scroll_CMask;
+	
+	// TODO: Eliminate these.
+	int Win_X_Pos;
+	int Win_Y_Pos;
+	
+	// Interlaced mode. (0 == off; 1 == on)
+	int Interlaced;
+	
+	// Sprite dot overflow.
+	// If set, the previous line had a sprite dot overflow.
+	// This is needed to properly implement Sprite Masking in S1.
+	int SpriteDotOverflow;
+
+	// HACK: There's a minor issue with the SegaCD firmware.
+	// The firmware turns off the VDP after the last line,
+	// which causes the entire screen to disappear if paused.
+	// TODO: Don't rerun the VDP drawing functions when paused!
+	int HasVisibleLines;	// 0 if VDP was off for the whole frame.
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 
 /**
  * VDP_Ctrl_t: VDP Control struct.
  */
-typedef union
+typedef struct _VDP_Ctrl_t
 {
-	int reg[7];
-	uint32_t ureg[7];
-	struct
+	unsigned int Flag;	// Data latch.
+	union
 	{
-		unsigned int Flag;
-		unsigned int Data;
-		unsigned int Write;
-		unsigned int Access;
-		unsigned int Address;
-		unsigned int DMA_Mode;
-		unsigned int DMA;
-	};
+		uint16_t w[2];	// Control words.
+		uint32_t d;	// Control DWORD. (TODO: Endianness conversion.)
+	} Data;
+	unsigned int Write;
+	unsigned int Access;
+	unsigned int Address;
+	unsigned int DMA_Mode;
+	unsigned int DMA;
 } VDP_Ctrl_t;
 extern VDP_Ctrl_t VDP_Ctrl;
+
+/**
+ * VDP_Mode: Current VDP mode.
+ */
+#define VDP_MODE_M1	(1 << 0)
+#define VDP_MODE_M2	(1 << 1)
+#define VDP_MODE_M3	(1 << 2)
+#define VDP_MODE_M4	(1 << 3)
+#define VDP_MODE_M5	(1 << 4)
+extern unsigned int VDP_Mode;
 
 typedef union
 {
@@ -134,20 +226,50 @@ typedef union
 } VDP_CRam_t;
 extern VDP_CRam_t CRam;
 
-extern uint32_t VSRam_Over[8];
-extern union
+// TODO:
+// - Shrink VSRam[] to 80 bytes (40 words).
+typedef struct
 {
-	uint8_t  u8[128<<1];
-	uint16_t u16[128];
-} VSRam;
+	union
+	{
+		uint8_t  u8[128<<1];	// Only 80 bytes on the actual system!
+		uint16_t u16[128];	// Only 40 words on the actual system!
+	};
+} VSRam_t;
+extern VSRam_t VSRam;
 
 extern uint8_t  H_Counter_Table[512][2];
 
-extern int VDP_Current_Line;
-extern int VDP_Num_Lines;
-extern int VDP_Num_Vis_Lines;
 extern int VDP_Int;
 extern int VDP_Status;
+
+// VDP line counters.
+// NOTE: Gens/GS currently uses 312 lines for PAL. It should use 313!
+typedef struct _VDP_Lines_t
+{
+	/** Total lines using NTSC/PAL line numbering. **/
+	struct
+	{
+		unsigned int Total;	// Total number of lines on the display. (262, 313)
+		unsigned int Current;	// Current display line.
+	} Display;
+	
+	/** Visible lines using VDP line numbering. **/
+	struct
+	{
+		int Total;		// Total number of visible lines. (192, 224, 240)
+		int Current;		// Current visible line. (May be negative for top border.)
+		int Border_Size;	// Size of the border. (192 lines == 24; 224 lines == 8)
+	} Visible;
+	
+	/** NTSC V30 handling. **/
+	struct
+	{
+		int Offset;		// Current NTSC V30 roll offset.
+		int VBlank;		// VBlank divider.
+	} NTSC_V30;
+} VDP_Lines_t;
+extern VDP_Lines_t VDP_Lines;
 
 // Flags.
 typedef union
@@ -166,110 +288,112 @@ extern VDP_Flags_t VDP_Flags;
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
 
-// VDP address pointers.
-extern uint8_t *ScrA_Addr;
-extern uint8_t *ScrB_Addr;
-extern uint8_t *Win_Addr;
-extern uint8_t *Spr_Addr;
-extern uint8_t *H_Scroll_Addr;
+void    VDP_Reset(void);
+uint8_t VDP_Int_Ack(void);
+void    VDP_Update_IRQ_Line(void);
 
-// VDP convenience values: Horizontal.
-extern unsigned int H_Cell;
-extern unsigned int H_Win_Mul;
-extern unsigned int H_Pix;
-extern unsigned int H_Pix_Begin;
+void	VDP_Set_Visible_Lines(void);
 
-// VDP convenience values: Scroll.
-extern unsigned int V_Scroll_MMask;
-extern unsigned int H_Scroll_Mask;
+void    VDP_Set_Reg(int reg_num, uint8_t val);
 
-extern unsigned int H_Scroll_CMul;
-extern unsigned int H_Scroll_CMask;
-extern unsigned int V_Scroll_CMask;
-
-// TODO: Eliminate these.
-extern unsigned int Win_X_Pos;
-extern unsigned int Win_Y_Pos;
-
-void     VDP_Reset(void);
 uint8_t  VDP_Read_H_Counter(void);
 uint8_t  VDP_Read_V_Counter(void);
 uint16_t VDP_Read_Status(void);
 uint16_t VDP_Read_Data(void);
 
-/* Functions that need to be ported to C. */
-int Write_Byte_VDP_Data(uint8_t  Data);
-int Write_Word_VDP_Data(uint16_t Data);
-int Write_VDP_Ctrl(uint16_t Data);
-void VDP_Set_Reg(int reg_num, uint8_t val);
-unsigned int Update_DMA(void);
+unsigned int VDP_Update_DMA(void);
 
-uint8_t VDP_Int_Ack(void);
-void VDP_Update_IRQ_Line(void);
+void VDP_Write_Data_Byte(uint8_t  data);
+void VDP_Write_Data_Word(uint16_t data);
+void VDP_Write_Ctrl(uint16_t data);
 
 
 /** Inline VDP functions. **/
 
 /**
- * vdp_isH40(): Determine if the current horiontal resolution is H40.
- * @return Zero if H32 (256); non-zero if H40 (320).
+ * vdp_getHPix(): Get the current horizontal resolution.
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.H_Pix directly.
+ * @return Horizontal resolution, in pixels.
  */
-static inline int vdp_isH40(void)
+static inline int vdp_getHPix(void)
 {
-	// Default when no game is loaded is 1. (320x224)
-	int rval = 0;
-	if ((VDP_Reg.Set4 & 0x1) || !Game)
-		rval = 1;
+	// Default when no game is loaded is 320. (320x224)
 #ifdef GENS_DEBUGGER
-	if (debug_mode != DEBUG_NONE)
-		rval = 1;
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 320;
+#else
+	if (!Game)
+		return 320;
 #endif
+	
 #if 0
 	if (!FrameCount)
 		rval = 1;
 #endif
-	return rval;
+	
+	// Game is running. Return VDP_Reg.H_Pix.
+	// TODO: Force 256px for SMS or SG-1000 mode.
+	return VDP_Reg.H_Pix;
 }
 
+
 /**
- * vdp_isH40(): Determine if the current horiontal resolution is H40.
- * @return Zero if V28 (224); non-zero if V30 (240).
+ * vdp_getHPixBegin(): Get the first horizontal pixel number..
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.H_Pix_Begin directly.
+ * @return First horizontal pixel number.
  */
-static inline int vdp_isV30(void)
+static inline int vdp_getHPixBegin(void)
 {
 	// Default when no game is loaded is 0. (320x224)
-	int rval = 0;
-	if (((CPU_Mode == 1) && (VDP_Reg.Set2 & 0x8)) && Game)
-		rval = 1;
 #ifdef GENS_DEBUGGER
-	if (debug_mode != DEBUG_NONE)
-		rval = 1;
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 0;
+#else
+	if (!Game)
+		return 0;
 #endif
+	
 #if 0
 	if (!FrameCount)
-		rval = 1;
+	rval = 1;
 #endif
-	return rval;
+	
+	// Game is running. Return VDP_Reg.H_Pix_Begin.
+	// TODO: Force 32px for SMS or SG-1000 mode.
+	return VDP_Reg.H_Pix_Begin;
+}
+
+
+/**
+ * vdp_getVPix(): Get the current vertical resolution.
+ * This should only be used for non-VDP code.
+ * VDP code should access VDP_Reg.Set2 directly.
+ * @return Vertical resolution, in pixels.
+ */
+static inline int vdp_getVPix(void)
+{
+	// Default when no game is loaded is 224. (320x224)
+#ifdef GENS_DEBUGGER
+	if (!Game || debug_mode != DEBUG_NONE)
+		return 224;
+#else
+	if (!Game)
+		return 224;
+#endif
+	
+#if 0
+	if (!FrameCount)
+	rval = 1;
+#endif
+	
+	return VDP_Lines.Visible.Total;
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-/** VDP macros. **/
-
-/**
- * VDP_SET_VISIBLE_LINES(): Sets the number of visible lines, depending on CPU mode and VDP setting.
- * Possible options:
- * - Normal: 224 lines. (V28)
- * - If PAL and Set2.M2 (bit 3) is set, 240 lines. (V30)
- */
-#define VDP_SET_VISIBLE_LINES()				\
-do {							\
-	if ((CPU_Mode == 1) && (VDP_Reg.Set2 & 0x8))	\
-		VDP_Num_Vis_Lines = 240;		\
-	else						\
-		VDP_Num_Vis_Lines = 224;		\
-} while (0)
 
 #endif /* GENS_VDP_IO_H */

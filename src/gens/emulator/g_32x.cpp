@@ -25,16 +25,20 @@
 #include "mdZ80/mdZ80.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
 #include "gens_core/sound/pwm.h"
+
+// VDP rendering functions.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/TAB336.h"
+#include "gens_core/vdp/vdp_32x.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
 #include "libgsft/gsft_byteswap.h"
+#include "macros/force_inline.h"
 
 #include "ui/gens_ui.hpp"
 
@@ -43,9 +47,6 @@
 
 // MDP Event Manager.
 #include "plugins/eventmgr.hpp"
-
-// 32X 32-bit color functions
-#include "gens_core/vdp/vdp_32x_32bit.h"
 
 // Reverse-engineered 32X firmware.
 #include "fw/bios32xg.bin.h"
@@ -172,7 +173,8 @@ int Init_32X(ROM_t* MD_ROM)
 			break;
 	}
 	
-	VDP_Num_Vis_Lines = 224;
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
 	
 	// Two copies of the ROM are needed, one for the 68000 and one for the SH2s.
 	// SH2 is little-endian, 68000 is big endian.
@@ -315,16 +317,17 @@ void Reset_32X(void)
 int Do_32X_VDP_Only(void)
 {
 	// Set the number of visible lines.
-	VDP_SET_VISIBLE_LINES();
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
 	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		Render_Line_32X();
-		Post_Line_32X();
+		// TODO: Call VDP_Render_Line_m5_32X() directly?
+		VDP_Render_Line();
 	}
-
+	
 	return 0;
 }
 
@@ -334,14 +337,14 @@ int Do_32X_VDP_Only(void)
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static inline int T_gens_do_32X_frame(void)
+static FORCE_INLINE int T_gens_do_32X_frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
 	
-	// Set the number of visible lines.
-	VDP_SET_VISIBLE_LINES();
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;
@@ -364,12 +367,17 @@ static inline int T_gens_do_32X_frame(void)
 	// Set the VRam flag to force a VRam update.
 	VDP_Flags.VRam = 1;
 	
-	VDP_Status &= 0xFFF7;		// Clear V Blank
-	if (VDP_Reg.Set4 & 0x2)
+	// Interlaced frame status.
+	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
+	// This bit is cleared on even frames and if not running in interlaced mode.
+	if (VDP_Reg.m5.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
+	else
+		VDP_Status &= ~0x0010;
+	
 	_32X_VDP.State &= ~0x8000;
 	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step d'interruption H
+	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step d'interruption H
 	HInt_Counter_32X = _32X_HIC;
 	
 	p_i = 84;
@@ -377,16 +385,17 @@ static inline int T_gens_do_32X_frame(void)
 	p_k = (p_i * CPL_SSH2) / CPL_M68K;
 	p_l = p_i * 3;
 	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
+	/** Main execution loop. **/
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		PWM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
+		buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
+		buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+		PWM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+		YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+		PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
 		
 		i = Cycles_M68K + (p_i * 2);
 		j = Cycles_MSH2 + (p_j * 2);
@@ -400,214 +409,201 @@ static inline int T_gens_do_32X_frame(void)
 		Cycles_Z80 += CPL_Z80;
 		PWM_Cycles += CPL_PWM;
 		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(VDP_Update_DMA());
 		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		_32X_VDP.State |= 0x6000;
+		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
+				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
 		
-		main68k_exec(i - p_i);
-		SH2_EXEC(j - p_j, k - p_k);
-		PWM_Update_Timer (l - p_l);
-		
-		VDP_Status &= ~0x0004;	// HBlank = 0
-		_32X_VDP.State &= ~0x6000;
-		
-		if (--HInt_Counter < 0)
+		// TODO: Combine chunks of code here.
+		if (inVisibleArea)
 		{
-			HInt_Counter = VDP_Reg.H_Int;
-			VDP_Int |= 0x4;
+			// In visible area.
+			
+			// Clear VBlank status.
+			// TODO: Only do this on visible line 0.
+			VDP_Status &= ~0x0008;
+			
+			VDP_Status |= 0x0004;	// HBlank = 1
+			_32X_VDP.State |= 0x6000;
+			
+			main68k_exec(i - p_i);
+			SH2_EXEC(j - p_j, k - p_k);
+			PWM_Update_Timer (l - p_l);
+			
+			VDP_Status &= ~0x0004;	// HBlank = 0
+			_32X_VDP.State &= ~0x6000;
+			
+			if (--HInt_Counter < 0)
+			{
+				HInt_Counter = VDP_Reg.m5.H_Int;
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+			}
+			
+			if (--HInt_Counter_32X < 0)
+			{
+				HInt_Counter_32X = _32X_HIC;
+				if (_32X_MINT & 0x04)
+					SH2_Interrupt(&M_SH2, 10);
+				if (_32X_SINT & 0x04)
+					SH2_Interrupt(&S_SH2, 10);
+			}
+			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
+			}
+			
+			/* instruction by instruction execution */
+			
+			while (i < Cycles_M68K)
+			{
+				main68k_exec(i);
+				SH2_EXEC(j, k);
+				PWM_Update_Timer(l);
+				i += p_i;
+				j += p_j;
+				k += p_k;
+				l += p_l;
+			}
+			
+			main68k_exec(Cycles_M68K);
+			SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
+			PWM_Update_Timer(PWM_Cycles);
+			
+			Z80_EXEC(0);
+		}
+		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
+		{
+			// VBlank line!
+			if (--HInt_Counter < 0)
+			{
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+			}
+			
+			if (--HInt_Counter_32X < 0)
+			{
+				HInt_Counter_32X = _32X_HIC;
+				if (_32X_MINT & 0x04)
+					SH2_Interrupt(&M_SH2, 10);
+				if (_32X_SINT & 0x04)
+					SH2_Interrupt(&S_SH2, 10);
+			}
+			
+			VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
+			_32X_VDP.State |= 0xE000;	// VBlank = 1, HBlank = 1, PEN = 1
+			
+			if (_32X_VDP.State & 0x10000)
+				_32X_VDP.State |= 1;
+			else
+				_32X_VDP.State &= ~1;
+			
+			_32X_Set_FB();
+			
+			while (i < (Cycles_M68K - 360))
+			{
+				main68k_exec(i);
+				SH2_EXEC(j, k);
+				PWM_Update_Timer(l);
+				i += p_i;
+				j += p_j;
+				k += p_k;
+				l += p_l;
+			}
+			
+			main68k_exec(Cycles_M68K - 360);
+			Z80_EXEC(168);
+			
+			VDP_Status &= ~0x0004;		// HBlank = 0
+			_32X_VDP.State &= ~0x4000;
+			VDP_Status |= 0x0080;		// V Int happened
+			
+			VDP_Int |= 0x8;
 			VDP_Update_IRQ_Line();
+			
+			if (_32X_MINT & 0x08)
+				SH2_Interrupt(&M_SH2, 12);
+			if (_32X_SINT & 0x08)
+				SH2_Interrupt(&S_SH2, 12);
+			
+			mdZ80_interrupt(&M_Z80, 0xFF);
+			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
+			}
+			
+			while (i < Cycles_M68K)
+			{
+				main68k_exec(i);
+				SH2_EXEC(j, k);
+				PWM_Update_Timer(l);
+				i += p_i;
+				j += p_j;
+				k += p_k;
+				l += p_l;
+			}
+			
+			main68k_exec(Cycles_M68K);
+			SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
+			PWM_Update_Timer(PWM_Cycles);
+			
+			Z80_EXEC(0);
 		}
-		
-		if (--HInt_Counter_32X < 0)
+		else
 		{
-			HInt_Counter_32X = _32X_HIC;
-			if (_32X_MINT & 0x04)
-				SH2_Interrupt(&M_SH2, 10);
-			if (_32X_SINT & 0x04)
-				SH2_Interrupt(&S_SH2, 10);
+			// Not visible area.
+			// TODO: We're processing HBlank here, but we don't for MD...
+			VDP_Status |= 0x0004;	// HBlank = 1
+			_32X_VDP.State |= 0x6000;
+			
+			main68k_exec (i - p_i);
+			SH2_EXEC(j - p_j, k - p_k);
+			PWM_Update_Timer (l - p_l);
+			
+			VDP_Status &= ~0x0004;	// HBlank = 0
+			_32X_VDP.State &= ~0x6000;
+			
+			if (--HInt_Counter_32X < 0)
+			{
+				HInt_Counter_32X = _32X_HIC;
+				if ((_32X_MINT & 0x04) && (_32X_MINT & 0x80))
+					SH2_Interrupt(&M_SH2, 10);
+				if ((_32X_SINT & 0x04) && (_32X_SINT & 0x80))
+					SH2_Interrupt(&S_SH2, 10);
+			}
+			
+			if (VDP)
+			{
+				// VDP needs to be updated.
+				// TODO: Call VDP_Render_Line_m5_32X() directly?
+				VDP_Render_Line();
+			}
+			
+			/* instruction by instruction execution */
+			
+			while (i < Cycles_M68K)
+			{
+				main68k_exec(i);
+				SH2_EXEC(j, k);
+				PWM_Update_Timer(l);
+				i += p_i;
+				j += p_j;
+				k += p_k;
+				l += p_l;
+			}
+			
+			main68k_exec(Cycles_M68K);
+			SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
+			PWM_Update_Timer(PWM_Cycles);
+			
+			Z80_EXEC(0);
 		}
-		
-		if (VDP)
-		{
-			// VDP needs to be updated.
-			Render_Line_32X();
-			Post_Line_32X();
-		}
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec(i);
-			SH2_EXEC(j, k);
-			PWM_Update_Timer(l);
-			i += p_i;
-			j += p_j;
-			k += p_k;
-			l += p_l;
-		}
-		
-		main68k_exec(Cycles_M68K);
-		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
-		PWM_Update_Timer(PWM_Cycles);
-		
-		Z80_EXEC(0);
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	PWM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	
-	i = Cycles_M68K + p_i;
-	j = Cycles_MSH2 + p_j;
-	k = Cycles_SSH2 + p_k;
-	l = PWM_Cycles + p_l;
-	
-	Fix_Controllers();
-	Cycles_M68K += CPL_M68K;
-	Cycles_MSH2 += CPL_MSH2;
-	Cycles_SSH2 += CPL_SSH2;
-	Cycles_Z80 += CPL_Z80;
-	PWM_Cycles += CPL_PWM;
-	if (VDP_Reg.DMAT_Length)
-		main68k_addCycles(Update_DMA());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		VDP_Update_IRQ_Line();
-	}
-	
-	if (--HInt_Counter_32X < 0)
-	{
-		HInt_Counter_32X = _32X_HIC;
-		if (_32X_MINT & 0x04)
-			SH2_Interrupt(&M_SH2, 10);
-		if (_32X_SINT & 0x04)
-			SH2_Interrupt(&S_SH2, 10);
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	_32X_VDP.State |= 0xE000;	// VBlank = 1, HBlank = 1, PEN = 1
-	
-	if (_32X_VDP.State & 0x10000)
-		_32X_VDP.State |= 1;
-	else
-		_32X_VDP.State &= ~1;
-	
-	_32X_Set_FB();
-	
-	while (i < (Cycles_M68K - 360))
-	{
-		main68k_exec(i);
-		SH2_EXEC(j, k);
-		PWM_Update_Timer(l);
-		i += p_i;
-		j += p_j;
-		k += p_k;
-		l += p_l;
-	}
-	
-	main68k_exec(Cycles_M68K - 360);
-	Z80_EXEC(168);
-	
-	VDP_Status &= ~0x0004;		// HBlank = 0
-	_32X_VDP.State &= ~0x4000;
-	VDP_Status |= 0x0080;		// V Int happened
-	
-	VDP_Int |= 0x8;
-	VDP_Update_IRQ_Line();
-	
-	if (_32X_MINT & 0x08)
-		SH2_Interrupt(&M_SH2, 12);
-	if (_32X_SINT & 0x08)
-		SH2_Interrupt(&S_SH2, 12);
-	
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	while (i < Cycles_M68K)
-	{
-		main68k_exec(i);
-		SH2_EXEC(j, k);
-		PWM_Update_Timer(l);
-		i += p_i;
-		j += p_j;
-		k += p_k;
-		l += p_l;
-	}
-	
-	main68k_exec(Cycles_M68K);
-	SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
-	PWM_Update_Timer(PWM_Cycles);
-	
-	Z80_EXEC(0);
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		PWM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		
-		i = Cycles_M68K + (p_i * 2);
-		j = Cycles_MSH2 + (p_j * 2);
-		k = Cycles_SSH2 + (p_k * 2);
-		l = PWM_Cycles + (p_l * 2);
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_MSH2 += CPL_MSH2;
-		Cycles_SSH2 += CPL_SSH2;
-		Cycles_Z80 += CPL_Z80;
-		PWM_Cycles += CPL_PWM;
-		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(Update_DMA());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		_32X_VDP.State |= 0x6000;
-		
-		main68k_exec (i - p_i);
-		SH2_EXEC(j - p_j, k - p_k);
-		PWM_Update_Timer (l - p_l);
-		
-		VDP_Status &= ~0x0004;	// HBlank = 0
-		_32X_VDP.State &= ~0x6000;
-		
-		if (--HInt_Counter_32X < 0)
-		{
-			HInt_Counter_32X = _32X_HIC;
-			if ((_32X_MINT & 0x04) && (_32X_MINT & 0x80))
-				SH2_Interrupt(&M_SH2, 10);
-			if ((_32X_SINT & 0x04) && (_32X_SINT & 0x80))
-				SH2_Interrupt(&S_SH2, 10);
-		}
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec(i);
-			SH2_EXEC(j, k);
-			PWM_Update_Timer(l);
-			i += p_i;
-			j += p_j;
-			k += p_k;
-			l += p_l;
-		}
-		
-		main68k_exec(Cycles_M68K);
-		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
-		PWM_Update_Timer(PWM_Cycles);
-		
-		Z80_EXEC(0);
 	}
 	
 	PSG_Special_Update();
@@ -622,14 +618,19 @@ static inline int T_gens_do_32X_frame(void)
 	
 	// Raise the MDP_EVENT_POST_FRAME event.
 	mdp_event_post_frame_t post_frame;
-	if (bppMD == 32)
-		post_frame.md_screen = &MD_Screen32[8];
-	else
-		post_frame.md_screen = &MD_Screen[8];
-	post_frame.width = (vdp_isH40() ? 320 : 256);
-	post_frame.height = VDP_Num_Vis_Lines;
+	post_frame.width = vdp_getHPix();
+	post_frame.height = VDP_Lines.Visible.Total;
 	post_frame.pitch = 336;
 	post_frame.bpp = bppMD;
+	
+	int screen_offset = (TAB336[VDP_Lines.Visible.Border_Size] + 8);
+	if (post_frame.width < 320)
+		screen_offset += ((320 - post_frame.width) / 2);
+	
+	if (bppMD == 32)
+		post_frame.md_screen = &MD_Screen.u32[screen_offset];
+	else
+		post_frame.md_screen = &MD_Screen.u16[screen_offset];
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
 	

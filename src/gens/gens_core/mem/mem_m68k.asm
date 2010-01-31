@@ -83,9 +83,9 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Bad,		; 0xB00000 - 0xB7FFFF
 		dd	M68K_Read_Byte_Bad,		; 0xB80000 - 0xBFFFFF
 		dd	M68K_Read_Byte_VDP,		; 0xC00000 - 0xC7FFFF
-		dd	M68K_Read_Byte_Bad,		; 0xC80000 - 0xCFFFFF
-		dd	M68K_Read_Byte_Bad,		; 0xD00000 - 0xD7FFFF
-		dd	M68K_Read_Byte_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Byte_VDP,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Byte_VDP,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Byte_VDP,		; 0xD80000 - 0xDFFFFF
 		dd	M68K_Read_Byte_Ram,		; 0xE00000 - 0xE7FFFF
 		dd	M68K_Read_Byte_Ram,		; 0xE80000 - 0xEFFFFF
 		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
@@ -118,9 +118,9 @@ section .rodata align=64
 		dd	M68K_Read_Word_Bad,		; 0xB00000 - 0xB7FFFF
 		dd	M68K_Read_Word_Bad,		; 0xB80000 - 0xBFFFFF
 		dd	M68K_Read_Word_VDP,		; 0xC00000 - 0xC7FFFF
-		dd	M68K_Read_Word_Bad,		; 0xC80000 - 0xCFFFFF
-		dd	M68K_Read_Word_Bad,		; 0xD00000 - 0xD7FFFF
-		dd	M68K_Read_Word_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Word_VDP,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Word_VDP,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Word_VDP,		; 0xD80000 - 0xDFFFFF
 		dd	M68K_Read_Word_Ram,		; 0xE00000 - 0xE7FFFF
 		dd	M68K_Read_Word_Ram,		; 0xE80000 - 0xEFFFFF
 		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
@@ -141,7 +141,7 @@ section .rodata align=64
 		dd	M68K_Write_Byte_Misc,		; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
 		dd	M68K_Write_Byte_VDP,		; 0xC00000 - 0xCFFFFF
-		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Byte_VDP,		; 0xD00000 - 0xDFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
 	
@@ -160,7 +160,7 @@ section .rodata align=64
 		dd	M68K_Write_Word_Misc,		; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
 		dd	M68K_Write_Word_VDP,		; 0xC00000 - 0xCFFFFF
-		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Word_VDP,		; 0xD00000 - 0xDFFFFF
 		dd	M68K_Write_Word_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Word_Ram,		; 0xF00000 - 0xFFFFFF
 	
@@ -279,9 +279,9 @@ section .text align=64
 	extern SYM(VDP_Read_Status)
 	extern SYM(VDP_Read_V_Counter) 
 	extern SYM(VDP_Read_H_Counter)
-	extern SYM(Write_Byte_VDP_Data)
-	extern SYM(Write_Word_VDP_Data)
-	extern SYM(Write_VDP_Ctrl)
+	extern SYM(VDP_Write_Data_Byte)
+	extern SYM(VDP_Write_Data_Word)
+	extern SYM(VDP_Write_Ctrl)
 	
 	extern SYM(main68k_readOdometer)
 	extern SYM(mdZ80_reset)
@@ -780,11 +780,17 @@ section .text align=64
 	
 	global M68K_Read_Byte_VDP
 	M68K_Read_Byte_VDP:
-		cmp	ebx, 0xC00004
+		; Valid address: ((address & 0xE700E0) == 0xC00000)
+		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
+		test	ebx, 0x700E0
+		jnz	short .bad
+		and	ebx, byte 0x1F	; only check low 5 bits.
+		
+		cmp	ebx, byte 0x04
 		jb	short .bad
-		cmp	ebx, 0xC00008
+		cmp	ebx, byte 0x08
 		jb	short .vdp_status
-		cmp	ebx, 0xC00009
+		cmp	ebx, byte 0x09
 		ja	short .bad
 	
 	.vdp_counter:
@@ -1143,7 +1149,14 @@ section .text align=64
 	
 	global M68K_Read_Word_VDP
 	M68K_Read_Word_VDP:
-		cmp	ebx, 0xC00003
+		; Valid address: ((address & 0xE700E0) == 0xC00000)
+		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
+		test	ebx, 0x700E0
+		jnz	short .bad
+		and	ebx, byte 0x1F	; only check low 5 bits.
+		
+		; TODO: $C00008 == HV counter.
+		cmp	ebx, byte 0x03
 		ja	short .no_vdp_data
 		
 		call	SYM(VDP_Read_Data)
@@ -1434,11 +1447,17 @@ section .text align=64
 	
 	global M68K_Write_Byte_VDP
 	M68K_Write_Byte_VDP:
-		cmp	ebx, 0xC00003
+		; Valid address: ((address & 0xE700E0) == 0xC00000)
+		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
+		test	ebx, 0x700E0
+		jnz	short .bad
+		and	ebx, byte 0x1F	; only check low 5 bits.
+		
+		cmp	ebx, byte 0x03
 		ja	short .no_data_port
 		
 		push	eax
-		call	SYM(Write_Byte_VDP_Data)
+		call	SYM(VDP_Write_Data_Byte)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1447,8 +1466,8 @@ section .text align=64
 	align 16
 	
 	.no_data_port:
-		cmp	ebx, 0xC00011
-		jne	.bad
+		cmp	ebx, byte 0x11
+		jne	short .bad
 		
 		push	eax
 		call	SYM(PSG_Write)
@@ -1719,11 +1738,17 @@ section .text align=64
 	
 	global M68K_Write_Word_VDP
 	M68K_Write_Word_VDP:
-		cmp	ebx, 0xC00003
+		; Valid address: ((address & 0xE700E0) == 0xC00000)
+		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
+		test	ebx, 0x700E0
+		jnz	short .bad
+		and	ebx, byte 0x1F	; only check low 5 bits.
+		
+		cmp	ebx, byte 0x03
 		ja	short .no_data_port
 		
 		push	eax
-		call	SYM(Write_Word_VDP_Data)
+		call	SYM(VDP_Write_Data_Word)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1736,7 +1761,7 @@ section .text align=64
 		ja	short .bad
 		
 		push	eax
-		call	SYM(Write_VDP_Ctrl)
+		call	SYM(VDP_Write_Ctrl)
 		pop	eax
 		pop	ecx
 		pop	ebx

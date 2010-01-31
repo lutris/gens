@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -26,18 +26,18 @@
 #include <stdint.h>
 #include <string.h>
 
+// 32X VDP.
+VDP_32X_t _32X_VDP;
+
+// Full 32X palette. (initialized in /src/gens/emulator/md_palette.cpp)
+_32X_Palette_t _32X_Palette;
 
 // VDP RAM and CRam.
 _32X_VDP_Ram_t _32X_VDP_Ram;
 uint16_t _32X_VDP_CRam[0x100];
 
-// Full 32X palettes.
-uint16_t _32X_Palette_16B[0x10000];
-uint32_t _32X_Palette_32B[0x10000];
-
 // Adjusted CRam.
-uint16_t _32X_VDP_CRam_Adjusted[0x100];
-uint32_t _32X_VDP_CRam_Adjusted32[0x100];
+_32X_VDP_CRam_Adjusted_t _32X_VDP_CRam_Adjusted;
 
 
 /**
@@ -47,4 +47,6 @@ void _32X_VDP_Reset(void)
 {
 	memset(&_32X_VDP, 0x00, sizeof(_32X_VDP));
 	memset(&_32X_VDP_Ram, 0x00, sizeof(_32X_VDP_Ram));
+	memset(&_32X_VDP_CRam, 0x00, sizeof(_32X_VDP_CRam));
+	memset(&_32X_VDP_CRam_Adjusted, 0x00, sizeof(_32X_VDP_CRam_Adjusted));
 }

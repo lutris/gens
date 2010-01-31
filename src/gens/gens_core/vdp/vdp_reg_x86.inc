@@ -53,6 +53,36 @@ struc VDP_Reg_t
 	.DMAT_Tmp:		resd 1
 	.DMAT_Length:		resd 1
 	.DMAT_Type:		resd 1
+	
+	; VDP address pointers.
+	; These are relative to VRam[] and are based on register values.
+	.ScrA_Addr:		resd 1
+	.ScrB_Addr:		resd 1
+	.Win_Addr:		resd 1
+	.Spr_Addr:		resd 1
+	.H_Scroll_Addr:		resd 1
+	
+	; VDP convenience values: Horizontal.
+	; NOTE: These must be signed for VDP arithmetic to work properly!
+	.H_Cell:		resd 1
+	.H_Win_Mul:		resd 1
+	.H_Pix:			resd 1
+	.H_Pix_Begin:		resd 1
+	
+	; VDP convenience values: Scroll.
+	.V_Scroll_MMask:	resd 1
+	.H_Scroll_Mask:		resd 1
+	
+	.H_Scroll_CMul:		resd 1
+	.H_Scroll_CMask:	resd 1
+	.V_Scroll_CMask:	resd 1
+	
+	; TODO: Eliminate these.
+	.Win_X_Pos:		resd 1
+	.Win_Y_Pos:		resd 1
+	
+	; Interlaced mode. (0 == off; 1 == on)
+	.Interlaced:		resd 1
 endstruc
 
 struc VDP_Ctrl_t
@@ -63,4 +93,14 @@ struc VDP_Ctrl_t
 	.Address:	resd 1
 	.DMA_Mode:	resd 1
 	.DMA:		resd 1
+endstruc
+
+struc VDP_Lines_t
+	.Display_Total:		resd 1
+	.Display_Current:	resd 1
+	
+	.Visible_Total:		resd 1
+	.Visible_Current:	resd 1
+	.Border_Size:		resd 1
+	.NTSC_V30_Roll:		resd 1
 endstruc

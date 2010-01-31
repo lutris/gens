@@ -33,6 +33,7 @@
 #include "save.hpp"
 
 #include "emulator/g_main.hpp"
+#include "emulator/md_palette.hpp"
 
 // CPU
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -409,7 +410,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	// Copy the CRam, VSRam, and Z80 RAM.
 	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
 	memcpy(&CRam.u8, &md_save.cram, sizeof(CRam));
-	memcpy(&VSRam.u8, &md_save.vsram, sizeof(VSRam));
+	memcpy(&VSRam.u8, &md_save.vsram, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
 	memcpy(&Ram_Z80, &md_save.z80_ram, sizeof(Ram_Z80));
 	
 	// 68000 RAM.
@@ -479,8 +480,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// Load VDP control settings.
 		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
-		Write_VDP_Ctrl(lastCtrlData >> 16);
-		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
+		VDP_Write_Ctrl(lastCtrlData >> 16);
+		VDP_Write_Ctrl(lastCtrlData & 0xFFFF);
 		
 		VDP_Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
 		VDP_Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
@@ -574,34 +575,34 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.sr		= le16_to_cpu(md_save_v6.mc68000_reg.sr);
 		Context_68K.contextfiller00 = le16_to_cpu(md_save_v6.mc68000_reg.contextfiller00);
 		
-		VDP_Reg.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
-		VDP_Reg.Set1		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set1);
-		VDP_Reg.Set2		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set2);
-		VDP_Reg.Pat_ScrA_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
-		VDP_Reg.Pat_ScrA_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
-		VDP_Reg.Pat_Win_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
-		VDP_Reg.Pat_ScrB_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
-		VDP_Reg.Spr_Att_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
-		VDP_Reg.Reg6		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg6);
-		VDP_Reg.BG_Color	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
-		VDP_Reg.Reg8		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg8);
-		VDP_Reg.Reg9		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg9);
-		VDP_Reg.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Int);
-		VDP_Reg.Set3		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set3);
-		VDP_Reg.Set4		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set4);
-		VDP_Reg.H_Scr_Adr	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
-		VDP_Reg.Reg14		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg14);
-		VDP_Reg.Auto_Inc	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
-		VDP_Reg.Scr_Size	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
-		VDP_Reg.Win_H_Pos	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
-		VDP_Reg.Win_V_Pos	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
-		VDP_Reg.DMA_Length_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
-		VDP_Reg.DMA_Length_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
-		VDP_Reg.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
-		VDP_Reg.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
-		VDP_Reg.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
-		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
-		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
+		VDP_Reg.m5.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
+		VDP_Reg.m5.Set1			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set1);
+		VDP_Reg.m5.Set2			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set2);
+		VDP_Reg.m5.Pat_ScrA_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
+		VDP_Reg.m5.Pat_ScrA_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
+		VDP_Reg.m5.Pat_Win_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
+		VDP_Reg.m5.Pat_ScrB_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
+		VDP_Reg.m5.Spr_Att_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
+		VDP_Reg.m5.Reg6			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg6);
+		VDP_Reg.m5.BG_Color		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
+		VDP_Reg.m5.Reg8			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg8);
+		VDP_Reg.m5.Reg9			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg9);
+		VDP_Reg.m5.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Int);
+		VDP_Reg.m5.Set3			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set3);
+		VDP_Reg.m5.Set4			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set4);
+		VDP_Reg.m5.H_Scr_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
+		VDP_Reg.m5.Reg14		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg14);
+		VDP_Reg.m5.Auto_Inc		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
+		VDP_Reg.m5.Scr_Size		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
+		VDP_Reg.m5.Win_H_Pos		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
+		VDP_Reg.m5.Win_V_Pos		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
+		VDP_Reg.m5.DMA_Length_L		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
+		VDP_Reg.m5.DMA_Length_H		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
+		VDP_Reg.m5.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
+		VDP_Reg.m5.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
+		VDP_Reg.m5.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
+		VDP_Reg.DMA_Length		= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
+		VDP_Reg.DMA_Address		= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
 		
 		// Control Port 1. (Port Information)
 		Controller_1_Counter	= le32_to_cpu(md_save_v6.control_port1.counter);
@@ -644,31 +645,31 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player2, 2);
 		
 		// Miscellaneous.
-		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v6.dmat_length);
-		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v6.dmat_type);
-		VDP_Reg.DMAT_Tmp	= le32_to_cpu(md_save_v6.dmat_tmp);
-		VDP_Current_Line	= le32_to_cpu(md_save_v6.vdp_current_line);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
-		Bank_M68K		= le32_to_cpu(md_save_v6.bank_m68k);
-		S68K_State		= le32_to_cpu(md_save_v6.s68k_state);
-		Z80_State		= le32_to_cpu(md_save_v6.z80_state);
-		Last_BUS_REQ_Cnt	= le32_to_cpu(md_save_v6.last_bus_req_cnt);
-		Last_BUS_REQ_St		= le32_to_cpu(md_save_v6.last_bus_req_st);
-		Fake_Fetch		= le32_to_cpu(md_save_v6.fake_fetch);
-		Game_Mode		= le32_to_cpu(md_save_v6.game_mode);
-		CPU_Mode		= le32_to_cpu(md_save_v6.cpu_mode);
-		CPL_M68K		= le32_to_cpu(md_save_v6.cpl_m68k);
-		CPL_S68K		= le32_to_cpu(md_save_v6.cpl_s68k);
-		CPL_Z80			= le32_to_cpu(md_save_v6.cpl_z80);
-		Cycles_S68K		= le32_to_cpu(md_save_v6.cycles_s68k);
-		Cycles_M68K		= le32_to_cpu(md_save_v6.cycles_m68k);
-		Cycles_Z80		= le32_to_cpu(md_save_v6.cycles_z80);
-		VDP_Status		= le32_to_cpu(md_save_v6.vdp_status);
-		VDP_Int			= le32_to_cpu(md_save_v6.vdp_int);
-		VDP_Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
-		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
-		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
+		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
+		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
+		VDP_Reg.DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
+		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v6.vdp_current_line);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
+		Bank_M68K			= le32_to_cpu(md_save_v6.bank_m68k);
+		S68K_State			= le32_to_cpu(md_save_v6.s68k_state);
+		Z80_State			= le32_to_cpu(md_save_v6.z80_state);
+		Last_BUS_REQ_Cnt		= le32_to_cpu(md_save_v6.last_bus_req_cnt);
+		Last_BUS_REQ_St			= le32_to_cpu(md_save_v6.last_bus_req_st);
+		Fake_Fetch			= le32_to_cpu(md_save_v6.fake_fetch);
+		Game_Mode			= le32_to_cpu(md_save_v6.game_mode);
+		CPU_Mode			= le32_to_cpu(md_save_v6.cpu_mode);
+		CPL_M68K			= le32_to_cpu(md_save_v6.cpl_m68k);
+		CPL_S68K			= le32_to_cpu(md_save_v6.cpl_s68k);
+		CPL_Z80				= le32_to_cpu(md_save_v6.cpl_z80);
+		Cycles_S68K			= le32_to_cpu(md_save_v6.cycles_s68k);
+		Cycles_M68K			= le32_to_cpu(md_save_v6.cycles_m68k);
+		Cycles_Z80			= le32_to_cpu(md_save_v6.cycles_z80);
+		VDP_Status			= le32_to_cpu(md_save_v6.vdp_status);
+		VDP_Int				= le32_to_cpu(md_save_v6.vdp_int);
+		VDP_Ctrl.Write			= le32_to_cpu(md_save_v6.vdp_ctrl_write);
+		VDP_Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
+		VDP_Ctrl.DMA			= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
 		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
@@ -681,7 +682,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		VDP_Flags.VRam_Spr	= ((tmp >> 1) & 1);
 		
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE1_vdp_reg_dma_length);
-		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
+		VDP_Reg.m5.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE2_vdp_reg_dma_length);
 		//ImportDataAuto(VRam, data, offset, sizeof(VRam));
 		memcpy(&CRam, &md_save_v6.cram, sizeof(CRam));
@@ -691,13 +692,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		//extern int DMAT_Tmp, VSRam_Over;
 		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
 		//ImportDataAuto(&VSRam_Over, data, offset, 4);
-		VDP_Reg.DMA_Length_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
-		VDP_Reg.DMA_Length_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
-		VDP_Reg.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
-		VDP_Reg.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
-		VDP_Reg.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
-		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
-		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
+		VDP_Reg.m5.DMA_Length_L		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
+		VDP_Reg.m5.DMA_Length_H		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
+		VDP_Reg.m5.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
+		VDP_Reg.m5.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
+		VDP_Reg.m5.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
+		VDP_Reg.DMA_Length		= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
+		VDP_Reg.DMA_Address		= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
 	}
 	else if (m_Version >= 7)
 	{
@@ -820,13 +821,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
 		
 		// Miscellaneous. (apparently necessary)
-		VDP_Status		= le32_to_cpu(md_save_v7.vdp_status);
-		VDP_Int			= le32_to_cpu(md_save_v7.vdp_int);
-		VDP_Current_Line	= le32_to_cpu(md_save_v7.vdp_current_line);
-		VDP_Num_Lines		= le32_to_cpu(md_save_v7.vdp_num_lines);
-		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
-		VDP_Reg.DMAT_Length	= le32_to_cpu(md_save_v7.dmat_length);
-		VDP_Reg.DMAT_Type	= le32_to_cpu(md_save_v7.dmat_type);
+		VDP_Status			= le32_to_cpu(md_save_v7.vdp_status);
+		VDP_Int				= le32_to_cpu(md_save_v7.vdp_int);
+		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v7.vdp_current_line);
+		VDP_Lines.Display.Total		= le32_to_cpu(md_save_v7.vdp_num_lines);
+		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
+		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
+		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
 		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
@@ -877,11 +878,14 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 			VDP_Reg.reg[i] = (uint8_t)le32_to_cpu(md_save_v7.vdp_reg[i]);
 		}
 		
-		// VDP control.
-		for (unsigned int i = 0; i < 7; i++)
-		{
-			VDP_Ctrl.ureg[i] = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
-		}
+		// VDP control data.
+		VDP_Ctrl.Flag		= le32_to_cpu(md_save_v7.vdp_ctrl.Flag);
+		VDP_Ctrl.Data.d		= le32_to_cpu(md_save_v7.vdp_ctrl.Data);
+		VDP_Ctrl.Write		= le32_to_cpu(md_save_v7.vdp_ctrl.Write);
+		VDP_Ctrl.Access		= le32_to_cpu(md_save_v7.vdp_ctrl.Access);
+		VDP_Ctrl.Address	= le32_to_cpu(md_save_v7.vdp_ctrl.Address);
+		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v7.vdp_ctrl.DMA_Mode);
+		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v7.vdp_ctrl.DMA);
 		
 		// Extra Starscream MC68000 information.
 		Context_68K.cycles_needed		= le32_to_cpu(md_save_v7.starscream_extra.cycles_needed);
@@ -991,7 +995,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	}
 	
 	// VDP control data.
-	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data);
+	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data.d);
 	
 	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(VDP_Ctrl.Flag);
 	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((VDP_Ctrl.DMA >> 2) & 1);
@@ -1002,14 +1006,14 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save.vdp_ctrl.write_address = cpu_to_le32(VDP_Ctrl.Address & 0xFFFF);
 	
 	// VDP registers.
-	VDP_Reg.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
-	VDP_Reg.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
+	VDP_Reg.m5.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
+	VDP_Reg.m5.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
 	
-	VDP_Reg.DMA_Src_Adr_L = VDP_Reg.DMA_Address & 0xFF;
-	VDP_Reg.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
-	VDP_Reg.DMA_Src_Adr_H = (VDP_Reg.DMA_Address >> 16) & 0xFF;
+	VDP_Reg.m5.DMA_Src_Adr_L = VDP_Reg.DMA_Address & 0xFF;
+	VDP_Reg.m5.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
+	VDP_Reg.m5.DMA_Src_Adr_H = (VDP_Reg.DMA_Address >> 16) & 0xFF;
 	
-	VDP_Reg.DMA_Src_Adr_H |= VDP_Ctrl.DMA_Mode & 0xC0;
+	VDP_Reg.m5.DMA_Src_Adr_H |= VDP_Ctrl.DMA_Mode & 0xC0;
 	
 	for (unsigned int i = 0; i < 24; i++)
 	{
@@ -1019,7 +1023,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// CRam and VSRam.
 	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
 	memcpy(&md_save.cram, CRam.u8, sizeof(md_save.cram));
-	memcpy(&md_save.vsram, VSRam.u8, sizeof(md_save.vsram));
+	memcpy(&md_save.vsram, VSRam.u8, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
 	
 	// YM2612 registers.
 	YM2612_Save(&md_save.ym2612[0]);
@@ -1191,9 +1195,9 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// Miscellaneous.
 	md_save_v7.vdp_status		= cpu_to_le32(VDP_Status);
 	md_save_v7.vdp_int		= cpu_to_le32(VDP_Int);
-	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Current_Line);
-	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Num_Lines);
-	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Num_Vis_Lines);
+	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Lines.Display.Current);
+	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Lines.Display.Total);
+	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Lines.Visible.Total);
 	md_save_v7.dmat_length		= cpu_to_le32(VDP_Reg.DMAT_Length);
 	md_save_v7.dmat_type		= cpu_to_le32(VDP_Reg.DMAT_Type);
 	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]
@@ -1244,11 +1248,14 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 		md_save_v7.vdp_reg[i] = (uint8_t)cpu_to_le32(VDP_Reg.reg[i]);
 	}
 	
-	// VDP control.
-	for (unsigned int i = 0; i < 7; i++)
-	{
-		md_save_v7.vdp_ctrl[i] = cpu_to_le32(VDP_Ctrl.ureg[i]);
-	}
+	// VDP control data.
+	md_save_v7.vdp_ctrl.Flag	= cpu_to_le32(VDP_Ctrl.Flag);
+	md_save_v7.vdp_ctrl.Data	= cpu_to_le32(VDP_Ctrl.Data.d);
+	md_save_v7.vdp_ctrl.Write	= cpu_to_le32(VDP_Ctrl.Write);
+	md_save_v7.vdp_ctrl.Access	= cpu_to_le32(VDP_Ctrl.Access);
+	md_save_v7.vdp_ctrl.Address	= cpu_to_le32(VDP_Ctrl.Address);
+	md_save_v7.vdp_ctrl.DMA_Mode	= cpu_to_le32(VDP_Ctrl.DMA_Mode);
+	md_save_v7.vdp_ctrl.DMA		= cpu_to_le32(VDP_Ctrl.DMA);
 	
 	// Extra Starscream MC68000 information.
 	md_save_v7.starscream_extra.cycles_needed	= cpu_to_le32(Context_68K.cycles_needed);
@@ -1942,12 +1949,8 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	_32X_Set_FB();
 	M68K_Set_32X_Rom_Bank();
 
-	//Recalculate_Palettes();
-	for (int i = 0; i < 0x100; i++)
-	{
-		_32X_VDP_CRam_Adjusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
-		_32X_VDP_CRam_Adjusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
-	}
+	// Readjust the 32X CRam.
+	Adjust_CRam_32X();
 
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(sizeof(gsx_v7_32X) == G32X_LENGTH_EX);

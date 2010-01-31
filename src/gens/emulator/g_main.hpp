@@ -112,12 +112,14 @@ typedef struct _Gens_VideoSettings_t
 	int VSync_W;
 	int borderColorEmulation;
 	int pauseTint;
+	int ntscV30rolling;
 #ifdef GENS_OPENGL
 	struct
 	{
 		int width;
 		int height;
 		int glLinearFilter;
+		int glOrthographicProjection;
 	} GL;
 #endif
 } Gens_VideoSettings_t;

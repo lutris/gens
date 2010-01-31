@@ -366,6 +366,23 @@ typedef struct PACKED _gsx_v7_starscream_extra
 
 
 /**
+ *
+ */
+#pragma pack(1)
+typedef struct PACKED _gsx_v7_vdp_ctrl
+{
+	uint32_t Flag;
+	uint32_t Data;
+	uint32_t Write;
+	uint32_t Access;
+	uint32_t Address;
+	uint32_t DMA_Mode;
+	uint32_t DMA;
+} gsx_v7_vdp_ctrl;
+
+
+
+/**
  * gsx_struct_md_v7_t: Gens v7 savestate extensions. (MD portion)
  */
 #pragma pack(1)
@@ -416,11 +433,9 @@ typedef struct PACKED _gsx_struct_md_v7_t
 	// H Counter Table.
 	uint8_t  h_counter_table[512][2];
 	
-	// VDP registers.
+	// VDP registers and control data.
 	uint32_t vdp_reg[26];
-	
-	// VDP control.
-	uint32_t vdp_ctrl[7];
+	gsx_v7_vdp_ctrl vdp_ctrl;
 	
 	// Extra Starscream 68000 information.
 	gsx_v7_starscream_extra		starscream_extra;

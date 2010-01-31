@@ -61,6 +61,7 @@ using std::string;
 // VDP
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 // Audio
@@ -261,6 +262,8 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
+	cfg.writeBool("Graphics", "NTSC V30 Rolling", Video.ntscV30rolling);
+	cfg.writeInt("Graphics", "Interlaced Display", (int)VDP_IntRend_Mode);
 	
 #ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
@@ -271,6 +274,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "OpenGL Width", Video.GL.width);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.GL.height);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.GL.glLinearFilter);
+	cfg.writeInt("Graphics", "OpenGL Orthographic Projection", Video.GL.glOrthographicProjection);
 #endif /* GENS_OPENGL */
 	
 	cfg.writeInt("Graphics", "Stretch", Options::stretch());
@@ -547,6 +551,10 @@ int Config::load(const string& filename, void* gameActive)
 	vdraw_set_fullscreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
+	Video.ntscV30rolling = cfg.getBool("Graphics", "NTSC V30 Rolling", true);
+	
+	// TODO: Change default to INTREND_2X once it's implemented.
+	VDP_IntRend_Mode = (IntRend_Mode_t)cfg.getInt("Graphics", "Interlaced Display", INTREND_FLICKER);
 	
 	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "Double");
@@ -613,12 +621,7 @@ int Config::load(const string& filename, void* gameActive)
 	Video.GL.width = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.GL.height = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.GL.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
-	
-	// Set the OpenGL renderer.
-	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
-	// because the window hasn't been created yet.
-//	if (is_gens_running())
-// TODO		Options::setOpenGL(Video.OpenGL);
+	Video.GL.glOrthographicProjection = cfg.getInt("Graphics", "OpenGL Orthographic Projection", 0);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);
@@ -648,20 +651,16 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Only load the IC sound settings if sound can be initialized.
 	// TODO: Change it to load the settings unconditionally?
-	int new_val = cfg.getInt("Sound", "State", 1);
-	if (new_val == audio_get_enabled() ||
-	    (new_val != audio_get_enabled() && Options::setSoundEnable(true)))
-	{
-		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
-		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
-		DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
-		PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
-		PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
-		CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
-		
-		// Improved sound options
-		YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
-	}
+	Options::setSoundEnable(cfg.getInt("Sound", "State", 1));
+	YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
+	PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
+	DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
+	PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
+	PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
+	CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
+	
+	// Improved sound options
+	YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
 	
 	// Country codes.
 	Country = cfg.getInt("CPU", "Country", -1);

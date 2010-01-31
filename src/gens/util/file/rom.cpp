@@ -1067,9 +1067,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	// Reset the ROM byteswap state.
 	ROM_ByteSwap_State = 0;
 	
-	// Clear the border color palette entries.
-	MD_Palette[0] = 0;
-	MD_Palette32[0] = 0;
+	// Clear the border color palette entry.
+	MD_Palette.u32[0] = 0;	// also clears MD_Palette.u16[0].
 	
 	Game = NULL;
 	ice = 0;

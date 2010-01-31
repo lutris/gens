@@ -205,7 +205,9 @@ struct optBarg_str_t
 static const optBarg_str_t optBarg_str[] =
 {
 	OPTBARG_STR("stretch",		"Stretch mode"),
+#ifdef GENS_OS_WIN32
 	OPTBARG_STR("swblit",		"Software blitting"),
+#endif /* GENS_OS_WIN32 */
 	OPTBARG_STR("greyscale",	"Greyscale"),
 	OPTBARG_STR("invert",		"Invert color"),
 	OPTBARG_STR("scale-colors",	"Scale colors to full RGB"),
@@ -233,7 +235,9 @@ static const optBarg_str_t optBarg_str[] =
 enum optBarg_enum
 {
 	OPTB_STRETCH = 0,
+#ifdef GENS_OS_WIN32
 	OPTB_SWBLIT,
+#endif /* GENS_OS_WIN32 */
 	OPTB_GREYSCALE,
 	OPTB_INVERT,
 	OPTB_SCALE,
@@ -311,7 +315,9 @@ static const struct option long_options[] =
 	
 	// Boolean parameters.
 	LONGOPT_BARG(OPTB_STRETCH),
+#ifdef GENS_OS_WIN32
 	LONGOPT_BARG(OPTB_SWBLIT),
+#endif /* GENS_OS_WIN32 */
 	LONGOPT_BARG(OPTB_GREYSCALE),
 	LONGOPT_BARG(OPTB_INVERT),
 	LONGOPT_BARG(OPTB_SCALE),
@@ -576,6 +582,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			audio_set_stereo(false);
 		}
+#ifdef GENS_OS_WIN32
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT].enable))
 		{
 			vdraw_set_sw_render(true);
@@ -584,6 +591,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			vdraw_set_sw_render(false);
 		}
+#endif /* GENS_OS_WIN32 */
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR].enable))
 		{
 			vdraw_set_fast_blur(true);

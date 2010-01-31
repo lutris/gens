@@ -382,6 +382,10 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Options::setOpenGL_LinearFilter(!state);
 			break;
 		
+		case IDM_GRAPHICS_OPENGL_ORTHOPROJ:
+			Options::setOpenGL_OrthographicProjection(!state);
+			break;
+		
 		case IDM_GRAPHICS_OPENGL_RES_320x240:
 			Options::setOpenGL_Resolution(320, 240);
 			break;
@@ -435,6 +439,15 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		case IDM_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Options::setSpriteLimit(!state);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_INTREND_EVEN:
+		case IDM_GRAPHICS_INTREND_ODD:
+		case IDM_GRAPHICS_INTREND_FLICKER:
+		//case IDM_GRAPHICS_INTREND_2X:
+			// Interlaced Rendering Mode.
+			Options::setIntRend_Mode(menuID - IDM_GRAPHICS_INTREND_EVEN);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		

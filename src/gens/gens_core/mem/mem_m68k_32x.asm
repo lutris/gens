@@ -57,10 +57,9 @@ section .bss align=64
 	extern _32X_MINT
 	extern _32X_SINT
 	
-	extern SYM(_32X_Palette_16B)
-	extern SYM(_32X_Palette_32B)
+	extern SYM(bppMD)
+	extern SYM(_32X_Palette)
 	extern SYM(_32X_VDP_CRam_Adjusted)
-	extern SYM(_32X_VDP_CRam_Adjusted32)
 	extern SYM(_32X_VDP_Ram)
 	extern SYM(_32X_VDP_CRam)
 	extern SYM(_32X_VDP)
@@ -2545,12 +2544,20 @@ section .text align=64
 		push	edx
 		
 		and	eax, 0xFFFF
-		mov	cx, [SYM(_32X_Palette_16B) + eax * 2]
-		mov	edx, [SYM(_32X_Palette_32B) + eax * 4]
 		mov	[SYM(_32X_VDP_CRam) + ebx - 0xA15200], ax
-		mov	[SYM(_32X_VDP_CRam_Adjusted) + ebx - 0xA15200], cx
-		mov	[SYM(_32X_VDP_CRam_Adjusted32) + (ebx - 0xA15200) * 2], edx
 		
+		; Adjust 32X CRam.
+		cmp	[SYM(bppMD)], byte 32
+		je	short ._32X_CRAM_32BPP
+		movzx	ecx, word [SYM(_32X_Palette) + eax * 2]
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + ebx - 0xA15200], cx
+		jmp	short ._32X_CRAM_END
+		
+	._32X_CRAM_32BPP:
+		mov	edx, [SYM(_32X_Palette) + eax * 4]
+		mov	[SYM(_32X_VDP_CRam_Adjusted) + (ebx - 0xA15200) * 2], edx
+		
+	._32X_CRAM_END:
 		pop	edx
 		pop	ecx
 		pop	ebx

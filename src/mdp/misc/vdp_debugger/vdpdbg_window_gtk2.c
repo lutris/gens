@@ -27,6 +27,7 @@
 // C includes.
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <errno.h>
 
 #include "vdpdbg_window.h"
@@ -462,9 +463,11 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 		{
 			case 0:
 				// Mode Set 1.
-				szprintf(desc, sizeof(desc), "H Int %s; HV counter %s",
+				szprintf(desc, sizeof(desc), "H Int %s; HV counter %s; %s %s",
 						(reg_value & 0x10 ? "ON" : "OFF"),
-						(reg_value & 0x02 ? "ON" : "OFF"));
+						(reg_value & 0x02 ? "ON" : "OFF"),
+						((reg_vdp->regs.mode_set2 & 0x04) ? "PSEL" : "M4"),
+						(reg_value & 0x04 ? "ON" : "OFF"));
 				break;
 			
 			case 1:
@@ -581,7 +584,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 			case 17:
 				// Window H Pos.
 				szprintf(desc, sizeof(desc), "%d cell%s in %s side from base point",
-						(reg_value & 0x1F),
+						((reg_value & 0x1F) * 2),
 						(reg_value == 1 ? "" : "s"),
 						(reg_value & 0x80 ? "right" : "left"));
 				break;
