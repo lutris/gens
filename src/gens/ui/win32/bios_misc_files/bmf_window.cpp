@@ -179,8 +179,8 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 			// Create the textbox for the file.
 			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 								WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-								grpBox_Left+DLU_X(5+35+5), grpBox_Top+entryTop,
-								DLU_X(BMF_FRAME_WIDTH-(5+45+5+45+5)), DLU_Y(12),
+								grpBox_Left+DLU_X(5+45+5), grpBox_Top+entryTop,
+								DLU_X(BMF_FRAME_WIDTH-(5+45+5+45+5+5)), DLU_Y(12),
 								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
 			SetWindowFontU(txtFile[file], w32_fntMessage, true);
 			Edit_LimitTextU(txtFile[file], GENS_PATH_MAX-1);
