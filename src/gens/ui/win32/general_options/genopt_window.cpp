@@ -290,9 +290,9 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	chkMisc_ntscV30rolling = pCreateWindowU(WC_BUTTON, "NTSC V30 Rolling",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop,
-						(GENOPT_FRAME_WIDTH-16), 20,
+						(GENOPT_OSD_FRAME_WIDTH-16), 20,
 						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(chkMisc_ntscV30rolling, fntMain, true);
+	SetWindowFontU(chkMisc_ntscV30rolling, w32_fntMessage, true);
 	
 	// Intro Effect label.
 	frameTop += DLU_Y(10+5);
