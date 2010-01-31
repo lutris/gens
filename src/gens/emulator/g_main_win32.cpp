@@ -202,6 +202,7 @@ void get_default_save_path(char *buf, size_t size)
 	
 	// Check if the EXE is in a "special" directory.
 	
+	// System directories.
 	static const csidl_dir_t SpecialDirs_System[] =
 	{
 		{CSIDL_PROGRAM_FILES, "ProgramFiles", "?:\\Program Files\\"},
@@ -211,15 +212,42 @@ void get_default_save_path(char *buf, size_t size)
 		{-1, NULL, NULL}
 	};
 	
-	string SpecialDir;
-	for (int i = 0; i < ((sizeof(SpecialDirs_System)/sizeof(SpecialDirs_System[0]))-1); i++)
+	// Application Data directories.
+	static const csidl_dir_t SpecialDirs_AppData[] =
 	{
-		SpecialDir = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_System[i]);
-		if (!SpecialDir.empty())
-			break;
+		{CSIDL_APPDATA, "APPDATA", NULL},
+		{CSIDL_PROFILE, "USERPROFILE", NULL},
+		
+		{-1, NULL, NULL}
+	};
+	
+	// Check "Program Files" on all systems.
+	string SpecialDir = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_System[0]);
+	if (SpecialDir.empty() && (winVersion.dwPlatformId == VER_PLATFORM_WIN32_NT))
+	{
+		// Check the Windows directory on NT only.
+		// (Windows 9x stores user files in C:\WINDOWS.)
+		SpecialDir = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_System[1]);
 	}
 	
-	if (SpecialDir.empty())
+	if (!SpecialDir.empty())
+	{
+		// Special Directory.
+		// On Windows 9x and NT 4.0, user profiles are stored in
+		// C:\WINDOWS\Profiles. Make sure the user's profile
+		// isn't part of the directory.
+		string UserProfile = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_AppData[1]);
+		if (!UserProfile.empty())
+		{
+			// The path is part of the user profile.
+			// Gens/GS is not located in a special directory.
+			// Use the current directory as the save path.
+			pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+			strlcpy(buf, PathNames.Gens_EXE_Path, size);
+			return;
+		}
+	}
+	else
 	{
 		// Gens/GS is not located in a special directory.
 		// Use the current directory as the save path.
@@ -230,14 +258,6 @@ void get_default_save_path(char *buf, size_t size)
 	
 	// Gens/GS is located in a special directory.
 	// Get the "Application Data" directory.
-	static const csidl_dir_t SpecialDirs_AppData[] =
-	{
-		{CSIDL_APPDATA, "APPDATA", NULL},
-		{CSIDL_PROFILE, "USERPROFILE", NULL},
-		
-		{-1, NULL, NULL}
-	};
-	
 	SpecialDir = checkSpecialDirectory(NULL, &SpecialDirs_AppData[0]);
 	if (SpecialDir.empty())
 	{
@@ -339,6 +359,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 #if defined(GENS_WIN32_CONSOLE)
 	SET_CONSOLE_OUTPUT_CP_UTF8();
 #endif
+	
+	// Get the Windows version.
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (pGetVersionExU((OSVERSIONINFO*)(&winVersion)) == 0)
+	{
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		pGetVersionExU((OSVERSIONINFO*)(&winVersion));
+	}
 	
 	// Initialize the PRNG.
 	Init_PRNG();
