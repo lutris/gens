@@ -84,11 +84,45 @@ static int statUA(const char *path, struct stat *buf)
 }
 
 
+static int mkdirUA(const char *dirname)
+{
+	if (!dirname)
+	{
+		// String not specified. Don't bother converting anything.
+		return _mkdir(dirname);
+	}
+	
+	// Convert dirname from UTF-8 to ANSI.
+	char *adirname = w32u_UTF8toANSI(dirname);
+	int ret = _mkdir(adirname);
+	free(adirname);
+	return ret;
+}
+
+
+static int unlinkUA(const char *filename)
+{
+	if (!filename)
+	{
+		// String not specified. Don't bother converting anything.
+		return _unlink(filename);
+	}
+	
+	// Convert filename from UTF-8 to ANSI.
+	char *afilename = w32u_UTF8toANSI(filename);
+	int ret = _unlink(afilename);
+	free(afilename);
+	return ret;
+}
+
+
 void WINAPI w32u_libcA_init(void)
 {
 	paccess		= &accessUA;
 	pfopen		= &fopenUA;
 	pstat		= &statUA;
+	pmkdir		= &mkdirUA;
+	punlink		= &unlinkUA;
 	
 	p_wcsicmp	= &_wcsicmp;
 }

@@ -45,6 +45,12 @@ MAKE_EXTFUNCPTR(fopen);
 MAKE_EXTFUNCPTR(stat);
 #define stat(path, buf) pstat(path, buf)
 
+MAKE_EXTFUNCPTR(mkdir);
+#define mkdir(dirname) pmkdir(dirname)
+
+MAKE_EXTFUNCPTR(unlink);
+#define unlink(filename) punlink(filename)
+
 /** Unicode functions that are accessed directly. **/
 MAKE_EXTFUNCPTR(_wcsicmp);
 

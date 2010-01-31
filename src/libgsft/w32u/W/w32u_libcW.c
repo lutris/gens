@@ -25,6 +25,7 @@
 
 // C includes.
 #include <stdlib.h>
+#include <wchar.h>	/* contains _wmkdir() */
 
 
 static int accessUW(const char *path, int mode)
@@ -77,11 +78,45 @@ static int statUW(const char *path, struct stat *buf)
 }
 
 
+static int mkdirUW(const char *dirname)
+{
+	if (!dirname)
+	{
+		// String not specified. Don't bother converting anything.
+		return _wmkdir((const wchar_t*)dirname);
+	}
+	
+	// Convert dirname from UTF-8 to UTF-16.
+	wchar_t *wdirname = w32u_UTF8toUTF16(dirname);
+	int ret = _wmkdir(wdirname);
+	free(wdirname);
+	return ret;
+}
+
+
+static int unlinkUW(const char *filename)
+{
+	if (!filename)
+	{
+		// String not specified. Don't bother converting anything.
+		return _wunlink((const wchar_t*)filename);
+	}
+	
+	// Convert filename from UTF-8 to UTF-16.
+	wchar_t *wfilename = w32u_UTF8toUTF16(filename);
+	int ret = _wunlink(wfilename);
+	free(wfilename);
+	return ret;
+}
+
+
 void WINAPI w32u_libcW_init(void)
 {
 	paccess		= &accessUW;
 	pfopen		= &fopenUW;
 	pstat		= &statUW;
+	pmkdir		= &mkdirUW;
+	punlink		= &unlinkUW;
 	
 	p_wcsicmp	= &_wcsicmp;
 }
