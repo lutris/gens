@@ -56,15 +56,7 @@ int MDP_FNCALL mdp_host_dir_get_default_save_path(char *buf, unsigned int size)
 	}
 	
 	// TODO: Return an error if the buffer is too small.
-#ifdef GENS_OS_WIN32
-	// Win32's default save path is ".\\".
-	// Return the full save path instead.
-	strlcpy(buf, PathNames.Gens_EXE_Path, size);
-#else
-	// Get the actual default save path.
-	get_default_save_path(buf, size);
-#endif
-	
+	strlcpy(buf, PathNames.Gens_Save_Path, size);
 	return MDP_ERR_OK;
 }
 
