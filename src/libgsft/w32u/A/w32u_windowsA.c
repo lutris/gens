@@ -113,6 +113,22 @@ static WINBASEAPI BOOL WINAPI GetVersionExUA(LPOSVERSIONINFOA lpVersionInfo)
 }
 
 
+static WINBASEAPI HINSTANCE WINAPI LoadLibraryUA(LPCSTR lpFileName)
+{
+	if (!lpFileName)
+	{
+		// String not specified. Don't bother converting anything.
+		return LoadLibraryA(lpFileName);
+	}
+	
+	// Convert lpFileName from UTF-8 to ANSI.
+	char *lpaFileName = w32u_UTF8toANSI(lpFileName);
+	HINSTANCE hRet = LoadLibraryA(lpaFileName);
+	free(lpaFileName);
+	return hRet;
+}
+
+
 /** user32.dll **/
 
 
@@ -359,6 +375,7 @@ void WINAPI w32u_windowsA_init(void)
 	pGetSystemDirectoryU	= &GetSystemDirectoryUA;
 	pSetCurrentDirectoryU	= &SetCurrentDirectoryUA;
 	pGetVersionExU		= &GetVersionExUA;
+	pLoadLibraryU		= &LoadLibraryUA;
 	
 	pRegisterClassU		= &RegisterClassUA;
 	pCreateWindowExU	= &CreateWindowExUA;

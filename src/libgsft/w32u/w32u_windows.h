@@ -34,6 +34,7 @@ MAKE_EXTFUNCPTR2(GetModuleHandleA,	GetModuleHandleU);
 MAKE_EXTFUNCPTR2(GetSystemDirectoryA,	GetSystemDirectoryU);
 MAKE_EXTFUNCPTR2(SetCurrentDirectoryA,	SetCurrentDirectoryU);
 MAKE_EXTFUNCPTR2(GetVersionExA,		GetVersionExU);
+MAKE_EXTFUNCPTR2(LoadLibraryA,		LoadLibraryU);
 
 /** user32.dll **/
 MAKE_EXTFUNCPTR2(RegisterClassA,	RegisterClassU);
