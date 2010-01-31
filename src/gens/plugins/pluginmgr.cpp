@@ -55,7 +55,7 @@
 
 #ifdef _WIN32
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_libc.h"
 #endif
 
@@ -385,7 +385,12 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 {
 	const char *err;
 	
+#ifdef GENS_OS_WIN32
+	// Use pLoadLibraryU() for Unicode filename support.
+	void *dlhandle = pLoadLibraryU(filename.c_str());
+#else
 	void *dlhandle = mdp_dlopen(filename.c_str());
+#endif
 	
 	if (!dlhandle)
 	{
