@@ -29,6 +29,39 @@
 
 
 /**
+ * vdp_m5_reg_name[]: Mode 5 register names.
+ */
+const char *vdp_m5_reg_name[24+1] =
+{
+	"Mode Set 1",			// 0
+	"Mode Set 2",			// 1
+	"Scroll A Pattern Addr",	// 2
+	"Window Pattern Addr",		// 3
+	"Scroll B Pattern Addr",	// 4
+	"Sprite Attr Table Addr",	// 5
+	"unused",			// 6
+	"Background Color",		// 7
+	"unused",			// 8
+	"unused",			// 9
+	"H Interrupt",			// 10
+	"Mode Set 3",			// 11
+	"Mode Set 4",			// 12
+	"H Scroll Addr",		// 13
+	"unused",			// 14
+	"Auto Increment",		// 15
+	"Scroll Size",			// 16
+	"Window H Pos",			// 17
+	"Window V Pos",			// 18
+	"DMA Length Low",		// 19
+	"DMA Length High",		// 20
+	"DMA Src Low",			// 21
+	"DMA Src Mid",			// 22
+	"DMA Src High",			// 23
+	NULL
+};
+
+
+/**
  * vdpdbg_get_m5_reg_desc(): Get a Mode 5 register description.
  * @param reg_num	[in] Register number.
  * @param reg_value	[in] Register value.

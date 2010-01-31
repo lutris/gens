@@ -223,45 +223,16 @@ static void vdpdbg_window_create_lstRegList(GtkWidget *container)
 	// Populate the register list.
 	// NOTE: These names are correct for MD mode only.
 	// SMS mode may be different.
-	static const char *reg_name[24+1] =
-	{
-		"Mode Set 1",			// 0
-		"Mode Set 2",			// 1
-		"Scroll A Pattern Addr",	// 2
-		"Window Pattern Addr",		// 3
-		"Scroll B Pattern Addr",	// 4
-		"Sprite Attr Table Addr",	// 5
-		"unused",			// 6
-		"Background Color",		// 7
-		"unused",			// 8
-		"unused",			// 9
-		"H Interrupt",			// 10
-		"Mode Set 3",			// 11
-		"Mode Set 4",			// 12
-		"H Scroll Addr",		// 13
-		"unused",			// 14
-		"Auto Increment",		// 15
-		"Scroll Size",			// 16
-		"Window H Pos",			// 17
-		"Window V Pos",			// 18
-		"DMA Length Low",		// 19
-		"DMA Length High",		// 20
-		"DMA Src Low",			// 21
-		"DMA Src Mid",			// 22
-		"DMA Src High",			// 23
-		NULL
-	};
-	
-	for (int i = 0; i < 24; i++)
+	for (int reg_num = 0; reg_num < 24; reg_num++)
 	{
 		GtkTreeIter iter;
 		gtk_list_store_append(lmRegList, &iter);
 		gtk_list_store_set(GTK_LIST_STORE(lmRegList), &iter,
-					0, i,			// Register number.
-					1, reg_name[i],		// Register name.
-					2, -1,			// Value.
-					3, "0x00",		// Value (in hex).
-					4, "", -1);		// Description.
+					0, reg_num,			// Register number.
+					1, vdp_m5_reg_name[reg_num],	// Register name.
+					2, -1,				// Value.
+					3, "0x00",			// Value (in hex).
+					4, "", -1);			// Description.
 	}
 	
 	// Set the GtkTreeView's list model.
