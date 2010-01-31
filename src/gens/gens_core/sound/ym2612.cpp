@@ -2220,7 +2220,7 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be normalized to an offset.
-			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&Rate_Tabs.DT_TAB));
+			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&Rate_Tabs.DT_TAB[0][0]));
 			
 			// Regular ints.
 			slotGSX->MUL		= cpu_to_le32(slotYM->MUL);
@@ -2233,10 +2233,10 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&Rate_Tabs.AR_TAB));
-			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&Rate_Tabs.DR_TAB));
-			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&Rate_Tabs.DR_TAB));
-			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&Rate_Tabs.DR_TAB));
+			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&Rate_Tabs.AR_TAB[0]));
+			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
+			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
+			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
 			
 			// Regular ints.
 			slotGSX->Fcnt		= cpu_to_le32(slotYM->Fcnt);
@@ -2355,7 +2355,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be converted from an offset.
-			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&Rate_Tabs.DT_TAB;
+			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&Rate_Tabs.DT_TAB[0][0];
 			
 			// Regular ints.
 			slotYM->MUL		= le32_to_cpu(slotGSX->MUL);
@@ -2368,10 +2368,10 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&Rate_Tabs.AR_TAB;
-			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&Rate_Tabs.DR_TAB;
-			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&Rate_Tabs.DR_TAB;
-			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&Rate_Tabs.DR_TAB;
+			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&Rate_Tabs.AR_TAB[0];
+			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
+			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
+			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
 			
 			// Regular ints.
 			slotYM->Fcnt		= le32_to_cpu(slotGSX->Fcnt);
