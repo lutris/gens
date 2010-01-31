@@ -67,7 +67,6 @@ typedef union
 extern _32X_VDP_CRam_Adjusted_t _32X_VDP_CRam_Adjusted;
 
 void _32X_VDP_Reset(void);
-void _32X_VDP_Draw(int FB_Num);
 
 #ifdef __cplusplus
 }

@@ -29,8 +29,7 @@ ASMFILES = \
 		gens_core/mem/mem_sh2.o \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
-		gens_core/cpu/sh2/sh2_io.o \
-		gens_core/vdp/vdp_32x_x86.o
+		gens_core/cpu/sh2/sh2_io.o
 
 NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
@@ -107,7 +106,6 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_rend.cpp \
 		gens_core/vdp/vdp_rend_err.cpp \
 		gens_core/vdp/vdp_rend_m5.cpp \
-		gens_core/vdp/vdp_32x_x86.asm \
 		gens_core/vdp/vdp_32x.c \
 		macros/log_msg.c \
 		port/ini.cpp \

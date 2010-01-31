@@ -26,12 +26,15 @@
 #include <stdint.h>
 #include <string.h>
 
+// 32X VDP.
+VDP_32X_t _32X_VDP;
+
+// Full 32X palette. (initialized in /src/gens/emulator/md_palette.cpp)
+_32X_Palette_t _32X_Palette;
+
 // VDP RAM and CRam.
 _32X_VDP_Ram_t _32X_VDP_Ram;
 uint16_t _32X_VDP_CRam[0x100];
-
-// Full 32X palette.
-_32X_Palette_t _32X_Palette;
 
 // Adjusted CRam.
 _32X_VDP_CRam_Adjusted_t _32X_VDP_CRam_Adjusted;
@@ -44,4 +47,6 @@ void _32X_VDP_Reset(void)
 {
 	memset(&_32X_VDP, 0x00, sizeof(_32X_VDP));
 	memset(&_32X_VDP_Ram, 0x00, sizeof(_32X_VDP_Ram));
+	memset(&_32X_VDP_CRam, 0x00, sizeof(_32X_VDP_CRam));
+	memset(&_32X_VDP_CRam_Adjusted, 0x00, sizeof(_32X_VDP_CRam_Adjusted));
 }
