@@ -146,7 +146,7 @@ void PluginMgr::init(void)
 	
 #if !defined(GENS_OS_WIN32)
 	// Linux/UNIX: Load external plugins from the user's ~/.gens directory first.
-	scanExternalPlugins(string(PathNames.Gens_Path) + GSFT_DIR_SEP_STR + "plugins");
+	scanExternalPlugins(string(PathNames.Gens_Save_Path) + GSFT_DIR_SEP_STR + "plugins");
 #else	
 	// Win32: Load external plugins from the Gens directory.
 	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GSFT_DIR_SEP_STR + "plugins");
