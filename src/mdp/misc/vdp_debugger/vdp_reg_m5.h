@@ -1,9 +1,9 @@
 /***************************************************************************
- * MDP: VDP Debugger.                                                      *
+ * MDP: VDP Debugger. (Mode 5 Register Descriptions)                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,24 +20,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_VDPDBG_H
-#define _MDP_MISC_VDPDBG_H
+#ifndef _MDP_MISC_VDPDBG_VDP_REG_M5_H
+#define _MDP_MISC_VDPDBG_VDP_REG_M5_H
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_fncall.h"
-#include "mdp/mdp_host.h"
+#include "mdp/mdp_reg.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DLL_LOCAL int MDP_FNCALL vdpdbg_init(const mdp_host_t *host_srv);
-DLL_LOCAL int MDP_FNCALL vdpdbg_end(void);
-
-DLL_LOCAL extern const mdp_host_t *vdpdbg_host_srv;
+DLL_LOCAL void MDP_FNCALL vdpdbg_get_m5_reg_desc(int reg_num, uint8_t reg_value, mdp_reg_vdp_t *reg_vdp, char *buf, size_t len);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _MDP_MISC_VDPDBG_H */
+#endif /* _MDP_MISC_VDPDBG_VDP_REG_M5_H */

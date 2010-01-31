@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -36,6 +36,7 @@
 
 // VDP Data.
 #include "vdp_data.h"
+#include "vdp_reg_m5.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -46,6 +47,7 @@
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
 #include "libgsft/gsft_strlcpy.h"
+#include "libgsft/gsft_unused.h"
 
 
 // Window.
@@ -204,7 +206,7 @@ static void vdpdbg_window_create_lstRegList(GtkWidget *container)
 	
 	// Value.
 	GtkCellRenderer  *rendValue = gtk_cell_renderer_text_new();
-	GValue editable = {0};
+	GValue editable = {0, {{0}, {0}}};
 	g_value_init(&editable, G_TYPE_BOOLEAN);
 	g_value_set_boolean(&editable, TRUE);
 	g_object_set_property(G_OBJECT(rendValue), "editable", &editable);
@@ -415,7 +417,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 	// Go through the list and update the registers.
 	// TODO: If a user is editing a register, don't update that register.
 	GtkTreeIter iter;
-	int i;
+	int reg_num;
 	char hex_value[16];
 	char desc[1024];
 	uint8_t reg_value;
@@ -430,16 +432,18 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmRegList), &iter);
 	while (valid)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(lmRegList), &iter, 0, &i, 2, &prev_value, -1);
-		if (i < 0 || i >= 24)
+		gtk_tree_model_get(GTK_TREE_MODEL(lmRegList), &iter, 0, &reg_num, 2, &prev_value, -1);
+		if (reg_num < 0 || reg_num >= 24)
 		{
+			// Invalid register number. Go to the next entry.
 			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmRegList), &iter);
 			continue;
 		}
 		
-		if (i == 19)
+		// TODO: If these aren't found but 20/22/23 are, an error will occur.
+		if (reg_num == 19)
 			iter_DMA_Len = iter;
-		else if (i == 21)
+		else if (reg_num == 21)
 			iter_DMA_Src = iter;
 		
 		// Get the register value.
@@ -447,7 +451,7 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 		// TODO: DMA Length and DMA Src Addr are multibyte values.
 		// With this method, they're only updated if the low byte is changed.
 		// Maybe they should be displayed in a different area...
-		reg_value = reg_vdp->data[i];
+		reg_value = reg_vdp->data[reg_num];
 		if (prev_value != -1 && ((uint8_t)prev_value == reg_value))
 		{
 			// Register hasn't been changed. Skip it.
@@ -458,201 +462,12 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
 		// Create the hexadecimal value.
 		szprintf(hex_value, sizeof(hex_value), "0x%02X", reg_value);
 		
-		// Create the description.
-		switch (i)
-		{
-			case 0:
-				// Mode Set 1.
-				szprintf(desc, sizeof(desc), "H Int %s; HV counter %s; %s %s",
-						(reg_value & 0x10 ? "ON" : "OFF"),
-						(reg_value & 0x02 ? "ON" : "OFF"),
-						((reg_vdp->regs.mode_set2 & 0x04) ? "PSEL" : "M4"),
-						(reg_value & 0x04 ? "ON" : "OFF"));
-				break;
-			
-			case 1:
-				// Mode Set 2.
-				szprintf(desc, sizeof(desc), "Disp %s; V Int %s; DMA %s; V%d",
-						(reg_value & 0x40 ? "ON" : "OFF"),
-						(reg_value & 0x20 ? "ON" : "OFF"),
-						(reg_value & 0x10 ? "ON" : "OFF"),
-						(reg_value & 0x08 ? 30 : 28));
-				break;
-			
-			case 2:
-				// Scroll A Pattern Address.
-				szprintf(desc, sizeof(desc), "0x%01X000",
-						(reg_value & 0x38) >> 2);
-				break;
-			
-			case 3:
-				// Window Pattern Address.
-				// NOTE: In H40 mode, bit 1 should be 0.
-				// Should this be enforced?
-				szprintf(desc, sizeof(desc), "0x%03X0",
-						(reg_value & 0x3E) << 6);
-				break;
-			
-			case 4:
-				// Scroll B Pattern Address.
-				szprintf(desc, sizeof(desc), "0x%01X000",
-						(reg_value & 0x07) << 1);
-				break;
-			
-			case 5:
-				// Sprite Attribute Table Address.
-				// NOTE: In H40 mode, bit 0 should be 0.
-				// Should this be enforced?
-				szprintf(desc, sizeof(desc), "0x%02X00",
-						(reg_value & 0x7F) << 1);
-				break;
-			
-			case 7:
-				// Background Color.
-				szprintf(desc, sizeof(desc), "Palette %d, Color %d",
-						((reg_value >> 4) & 0x03),
-						(reg_value & 0xF));
-				break;
-			
-			case 10:
-				// H Interrupt.
-				// If this value is >= vertical resolution, then it has no effect.
-				
-				if (reg_value >= (reg_vdp->regs.mode_set2 & 0x08 ? (240+1) : (224+1)))
-				{
-					// No effect.
-					szprintf(desc, sizeof(desc), "%d lines (disabled)", reg_value + 1);
-				}
-				else
-				{
-					// Has effect.
-					szprintf(desc, sizeof(desc), "%d line%s",
-							reg_value + 1,
-							(reg_value == 0 ? "" : "s"));
-				}
-				break;
-			
-			case 11:
-			{
-				// Mode Set 3.
-				static const char HScroll_Desc[][8] = {"Full", "Invalid", "1Cell", "1Line"};
-				szprintf(desc, sizeof(desc), "Ext Int %s; VScroll %s; HScroll %s",
-						(reg_value & 0x04 ? "ON" : "OFF"),
-						(reg_value & 0x04 ? "2Cell" : "Full"),
-						HScroll_Desc[reg_value & 0x03]);
-				break;
-			}
-			
-			case 12:
-			{
-				// Mode Set 4.
-				// NOTE: Bits 7 and 0 both control H32/H40 mode.
-				// We're only looking at Bit 0.
-				// Should we look at both?
-				static const char *Interlace_Desc[] = {"OFF", "ON (1x res)", "Invalid", "ON (2x res)"};
-				szprintf(desc, sizeof(desc), "H%d; S/H %s; Interlace: %s",
-						(reg_value & 0x01 ? 40 : 32),
-						(reg_value & 0x08 ? "ON" : "OFF"),
-						Interlace_Desc[(reg_value & 0x06) >> 1]);
-				break;
-			}
-			
-			case 13:
-				// H Scroll Address.
-				szprintf(desc, sizeof(desc), "0x%02X00",
-						(reg_value & 0x3F) << 2);
-				break;
-			
-			case 15:
-				// Auto Increment.
-				if (reg_value == 0)
-					strlcpy(desc, "Disabled", sizeof(desc));
-				else
-					szprintf(desc, sizeof(desc), "+%d bytes", reg_value);
-				break;
-			
-			case 16:
-			{
-				// Scroll Size.
-				static const char *ScrlSize_Desc[] = {"32 cells", "64 cells", "Invalid", "128 cells"};
-				szprintf(desc, sizeof(desc), "H: %s; V: %s",
-						ScrlSize_Desc[reg_value & 0x03],
-						ScrlSize_Desc[(reg_value >> 4) & 0x03]);
-				break;
-			}
-			
-			case 17:
-			{
-				// Window H Pos.
-				const int cell_max = ((reg_vdp->regs.mode_set4 & 0x81) ? 40-1 : 32-1);
-				int cell_num = (reg_value & 0x1F) * 2;
-				
-				if (reg_value & 0x80)
-				{
-					// Right-aligned window.
-					if (cell_num > cell_max)
-						strlcpy(desc, "Right-aligned: Offscreen", sizeof(desc));
-					else
-						szprintf(desc, sizeof(desc), "Right-aligned: Cells %d - %d",
-								cell_num, cell_max);
-				}
-				else
-				{
-					// Left-aligned window.
-					if (cell_num == 0)
-						strlcpy(desc, "Left-aligned: Offscreen", sizeof(desc));
-					else
-						szprintf(desc, sizeof(desc), "Left-aligned: Cells 0 - %d", cell_num);
-				}
-				break;
-			}
-			
-			case 18:
-			{
-				// Window H Pos.
-				const int cell_max = ((reg_vdp->regs.mode_set2 & 0x08) ? 30-1 : 28-1);
-				int cell_num = (reg_value & 0x1F);
-				
-				if (reg_value & 0x80)
-				{
-					// Bottom-aligned window.
-					if (cell_num > cell_max)
-						strlcpy(desc, "Bottom-aligned: Offscreen", sizeof(desc));
-					else
-						szprintf(desc, sizeof(desc), "Bottom-aligned: Cells %d - %d",
-								cell_num, cell_max);
-				}
-				else
-				{
-					// Top-aligned window.
-					if (cell_num == 0)
-						strlcpy(desc, "Top-aligned: Offscreen", sizeof(desc));
-					else
-						szprintf(desc, sizeof(desc), "Top-aligned: Cells 0 - %d", cell_num);
-				}
-				break;
-			}
-			
-			case 19:
-			case 20:
-				// DMA Length.
-				DMA_Len_NeedsUpdate = TRUE;
-				desc[0] = 0x00;
-				break;
-				
-			case 21:
-			case 22:
-			case 23:
-				// DMA Src Address.
-				DMA_Src_NeedsUpdate = TRUE;
-				desc[0] = 0x00;
-				break;
-				
-			default:
-				// Unused register.
-				strlcpy(desc, "unused", sizeof(desc));
-				break;
-		}
+		// Get the description.
+		vdpdbg_get_m5_reg_desc(reg_num, reg_value, reg_vdp, desc, sizeof(desc));
+		if (reg_num == 19 || reg_num == 20)
+			DMA_Len_NeedsUpdate = TRUE;
+		else if (reg_num >= 21 && reg_num <= 23)
+			DMA_Src_NeedsUpdate = TRUE;
 		
 		// Set the value and description.
 		gtk_list_store_set(GTK_LIST_STORE(lmRegList), &iter,
@@ -708,6 +523,9 @@ static void vdpdbg_window_update_lstRegList(mdp_reg_vdp_t *reg_vdp)
  */
 static void vdpdbg_window_callback_reg_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer user_data)
 {
+	GSFT_UNUSED_PARAMETER(renderer);
+	GSFT_UNUSED_PARAMETER(user_data);
+	
 	// Convert the text to a number.
 	errno = 0;
 	int new_value = strtol(new_text, NULL, 0);
