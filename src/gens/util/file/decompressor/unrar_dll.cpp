@@ -25,20 +25,35 @@
 #define InitFuncPtr_unrar(hDll, fn) p##fn = (typeof(p##fn))GetProcAddress((hDll), #fn)
 #include <stdio.h>
 
-UnRAR_dll::UnRAR_dll(const char *base_path, const char *filename)
+UnRAR_dll::UnRAR_dll(void)
 {
 	m_isLoaded = false;
+}
+
+
+/**
+ * UnRAR_dll::load(): Load UnRAR.dll.
+ * @param base_path Base path to cd into.
+ * @param filename Filename of UnRAR.dll.
+ * @return true on success; false on failure.
+ */
+bool UnRAR_dll::load(const char *filename, const char *base_path)
+{
+	if (m_isLoaded)
+		return true;
 	
 	if (!filename)
-		return;
+		return false;
 	
+	// If a base path is specified, cd to it.
+	// TODO: Append the base path to filename instead?
 	if (base_path)
 		pSetCurrentDirectoryU(base_path);
 	
-	// TODO: Unicode translations for LoadLibrary().
-	hUnrarDll = LoadLibrary(filename);
+	// NOTE: Only ANSI filenames will be accepted here.
+	hUnrarDll = LoadLibraryA(filename);
 	if (!hUnrarDll)
-		return;
+		return false;
 	
 	// Load the function pointers.
 	InitFuncPtr_unrar(hUnrarDll, RAROpenArchiveEx);
@@ -59,6 +74,7 @@ UnRAR_dll::UnRAR_dll(const char *base_path, const char *filename)
 	
 	// UnRAR.dll loaded successfully.
 	m_isLoaded = true;
+	return true;
 }
 
 
@@ -67,16 +83,18 @@ UnRAR_dll::~UnRAR_dll()
 	if (!m_isLoaded)
 		return;
 	
-	m_isLoaded = false;
+	// Unload the DLL.
 	unload();
 }
 
 
 void UnRAR_dll::unload(void)
 {
-	// Unload the DLL.
-	FreeLibrary(hUnrarDll);
-	hUnrarDll = NULL;
+	if (!m_isLoaded)
+		return;
+	
+	// Mark the DLL as unloaded.
+	m_isLoaded = false;
 	
 	// Clear the function pointers.
 	pRAROpenArchiveEx	= NULL;
@@ -85,4 +103,8 @@ void UnRAR_dll::unload(void)
 	pRARProcessFile		= NULL;
 	pRARSetCallback		= NULL;
 	pRARGetDllVersion	= NULL;
+	
+	// Unload the DLL.
+	FreeLibrary(hUnrarDll);
+	hUnrarDll = NULL;
 }

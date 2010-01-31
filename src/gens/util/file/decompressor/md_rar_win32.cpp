@@ -84,12 +84,17 @@ int decompressor_rar_win32_get_file_info(FILE *zF, const char* filename, mdp_z_e
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// Initialize UnRAR.dll.
-	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
-	if (!dll.isLoaded())
+	UnRAR_dll dll;
+	if (!dll.load(Misc_Filenames.RAR_Binary, PathNames.Gens_EXE_Path))
 	{
-		// Error initializing UnRAR.dll.
-		// TODO: Determine if it was a missing DLL or a missing symbol.
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
+		// Error initializing UnRAR.dll from the EXE path.
+		// Try the save path.
+		if (!dll.load(Misc_Filenames.RAR_Binary, PathNames.Gens_Save_Path))
+		{
+			// Error initializing UnRAR.dll from the save path.
+			// TODO: Determine if it was a missing DLL or a missing symbol.
+			return -MDP_ERR_Z_EXE_NOT_FOUND;
+		}
 	}
 	
 	HANDLE hRar;
@@ -250,12 +255,18 @@ int decompressor_rar_win32_get_file(FILE *zF, const char *filename,
 {
 	GSFT_UNUSED_PARAMETER(zF);
 	
-	UnRAR_dll dll(PathNames.Gens_EXE_Path, Misc_Filenames.RAR_Binary);
-	if (!dll.isLoaded())
+	// Initialize UnRAR.dll.
+	UnRAR_dll dll;
+	if (!dll.load(Misc_Filenames.RAR_Binary, PathNames.Gens_EXE_Path))
 	{
-		// Error initializing UnRAR.dll.
-		// TODO: Determine if it was a missing DLL or a missing symbol.
-		return -MDP_ERR_Z_EXE_NOT_FOUND;
+		// Error initializing UnRAR.dll from the EXE path.
+		// Try the save path.
+		if (!dll.load(Misc_Filenames.RAR_Binary, PathNames.Gens_Save_Path))
+		{
+			// Error initializing UnRAR.dll from the save path.
+			// TODO: Determine if it was a missing DLL or a missing symbol.
+			return -MDP_ERR_Z_EXE_NOT_FOUND;
+		}
 	}
 	
 	HANDLE hRar;

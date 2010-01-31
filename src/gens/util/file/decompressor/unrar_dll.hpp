@@ -39,8 +39,11 @@
 class UnRAR_dll
 {
 	public:
-		UnRAR_dll(const char *base_path, const char *filename);
+		UnRAR_dll(void);
 		~UnRAR_dll();
+		
+		bool load(const char *filename, const char *base_path = NULL);
+		void unload(void);
 		
 		bool isLoaded(void) { return m_isLoaded; }
 		
@@ -54,8 +57,6 @@ class UnRAR_dll
 	private:
 		bool m_isLoaded;
 		HINSTANCE hUnrarDll;
-		
-		void unload(void);
 };
 
 #endif
