@@ -49,7 +49,6 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 	// Temporary pixels.
 	register pixel px1, px2;
 	
-	// TODO: Draw the entire visible area instead of just 220 lines.
 	switch (_32X_VDP.Mode & 3)
 	{
 		case 0:
@@ -58,9 +57,9 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 			return;
 		
 		case 1:
-			// _32X_Draw_M01
+			// _32X_Draw_M01: 256-color.
 			// TODO: Endianness conversions.
-			for (unsigned int y = 0; y < (224-4); y++)
+			for (unsigned int y = 0; y < 224; y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
 				uint8_t *src = &_32X_VDP_Ram.u8[(FB_Address * 2) + (offset * 2)];
@@ -81,9 +80,9 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 			break;
 		
 		case 2:
-			// _32X_Draw_M10
+			// _32X_Draw_M10: 15-bit color.
 			// TODO: Test this!
-			for (unsigned int y = 0; y < (224-4); y++)
+			for (unsigned int y = 0; y < 224; y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
 				uint16_t *src = &_32X_VDP_Ram.u16[FB_Address + offset];
@@ -103,9 +102,8 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 			break;
 		
 		case 3:
-			// _32X_Draw_M11
+			// _32X_Draw_M11: 256-color RLE.
 			// TODO: Port this!
-			// This appears to be a form of RLE compression.
 			// TODO: Endianness conversions.
 			break;
 		
@@ -115,7 +113,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 	}
 	
 	// Draw the palette.
-	dest = &screen[(336*(8+220))+8];
+	dest = &screen[(336*(8+224))+8];
 	for (unsigned int i = (256/2); i != 0; i--, dest += 2, _32X_vdp_cram_adjusted += 2)
 	{
 		px1 = *_32X_vdp_cram_adjusted;
