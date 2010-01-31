@@ -230,7 +230,9 @@ void get_default_save_path(char *buf, size_t size)
 		SpecialDir = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_System[1]);
 	}
 	
-	if (!SpecialDir.empty())
+	// If true, then Gens/GS is in a special directory.
+	bool isSpecialDir = !SpecialDir.empty();
+	if (isSpecialDir)
 	{
 		// Special Directory.
 		// On Windows 9x and NT 4.0, user profiles are stored in
@@ -241,13 +243,11 @@ void get_default_save_path(char *buf, size_t size)
 		{
 			// The path is part of the user profile.
 			// Gens/GS is not located in a special directory.
-			// Use the current directory as the save path.
-			pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-			strlcpy(buf, PathNames.Gens_EXE_Path, size);
-			return;
+			isSpecialDir = false;
 		}
 	}
-	else
+	
+	if (!isSpecialDir)
 	{
 		// Gens/GS is not located in a special directory.
 		// Use the current directory as the save path.
