@@ -139,7 +139,6 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 	HWND grpBox;
 	
 	// Positioning.
-	const int grpBox_Left = DLU_X(5);
 	int grpBox_Top = 0, grpBox_Height = 0, grpBox_Entry = 0;
 	int entryTop;
 	
@@ -154,7 +153,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 			
 			grpBox = pCreateWindowU(WC_BUTTON, bmf_entries[file].title,
 						WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-						grpBox_Left, grpBox_Top,
+						DLU_X(5), grpBox_Top,
 						DLU_X(BMF_FRAME_WIDTH), grpBox_Height,
 						hWnd, NULL, ghInstance, NULL);
 			SetWindowFontU(grpBox, w32_fntMessage, true);
@@ -171,7 +170,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 			// Create the label for the file.
 			HWND lblFile = pCreateWindowU(WC_STATIC, bmf_entries[file].title,
 							WS_CHILD | WS_VISIBLE | SS_LEFT,
-							grpBox_Left + DLU_X(5), grpBox_Top + entryTop + DLU_Y(1),
+							DLU_X(5+5), grpBox_Top + entryTop + DLU_Y(1),
 							DLU_X(45), DLU_Y(10),
 							hWnd, NULL, ghInstance, NULL);
 			SetWindowFontU(lblFile, w32_fntMessage, true);
@@ -179,7 +178,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 			// Create the textbox for the file.
 			txtFile[file] = pCreateWindowExU(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 								WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-								grpBox_Left+DLU_X(5+45+5), grpBox_Top+entryTop,
+								DLU_X(5+5+45+5), grpBox_Top+entryTop,
 								DLU_X(BMF_FRAME_WIDTH-(5+45+5+45+5+5)), DLU_Y(12),
 								hWnd, (HMENU)(IDC_BMF_TXTFILE + file), ghInstance, NULL);
 			SetWindowFontU(txtFile[file], w32_fntMessage, true);
@@ -188,7 +187,7 @@ static void WINAPI bmf_window_create_child_windows(HWND hWnd)
 			// Create the "Change..." button for the file.
 			HWND btnChange = pCreateWindowU(WC_BUTTON, "Change...",
 							WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-							grpBox_Left+DLU_X(BMF_FRAME_WIDTH-(5+45)), grpBox_Top + entryTop,
+							DLU_X(5+BMF_FRAME_WIDTH-(5+45)), grpBox_Top + entryTop,
 							DLU_X(45), DLU_Y(12),
 							hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 			SetWindowFontU(btnChange, w32_fntMessage, true);
