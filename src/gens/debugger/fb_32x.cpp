@@ -34,6 +34,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// libgsft includes.
+#include "libgsft/gsft_byteswap.h"
+
 
 template<typename pixel>
 static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
@@ -59,6 +62,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		case 1:
 			// _32X_Draw_M01: 256-color.
 			// TODO: Endianness conversions.
+			// TODO: Fix issues with Knuckles Chaotix's "SEGA" screen.
 			for (unsigned int y = 0; y < 224; y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
@@ -103,8 +107,40 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		
 		case 3:
 			// _32X_Draw_M11: 256-color RLE.
-			// TODO: Port this!
 			// TODO: Endianness conversions.
+			// TODO: Fix issues with Virtua Racing DX's "SEGA" screen.
+			for (unsigned int y = 0; y < 224; y++)
+			{
+				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
+				uint8_t *src = &_32X_VDP_Ram.u8[(FB_Address + offset) << 1];
+				
+				int px = 0;
+				int px_end;
+				while (px < 320)
+				{
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
+					px1 = _32X_vdp_cram_adjusted[*src];
+					px_end = px + *(src+1);
+#else //GSFT_BYTEORDER == GSFT_BIG_ENDIAN
+					px1 = _32X_vdp_cram_adjusted[*(src+1)];
+					px_end = px + *src;
+#endif
+					
+					src += 2;
+					
+					// Make sure it doesn't go out of bounds.
+					if (px_end >= VDP_Reg.H_Pix)
+						px_end = (VDP_Reg.H_Pix - 1);
+					
+					for (; px <= px_end; px++)
+					{
+						*dest++ = px1;
+					}
+				}
+				
+				// Next line.
+				dest += 16;
+			}
 			break;
 		
 		default:
