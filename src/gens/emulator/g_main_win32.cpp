@@ -48,6 +48,8 @@ using std::list;
 // Win32 Unicode support.
 #include "libgsft/w32u/w32u_windows.h"
 #include "libgsft/w32u/w32u_charset.h"
+#include "libgsft/w32u/w32u_shlobj.h"
+#include "libgsft/w32u/w32u_libc.h"
 
 #if !defined(GENS_WIN32_CONSOLE)
 // Win32 I/O functions. (Required for console allocation.)
@@ -92,6 +94,94 @@ int win32_CommCtrlEx = 0;
 #define GENS_DEFAULT_SAVE_PATH ".\\"
 
 
+typedef struct _csidl_dir_t
+{
+	int nFolder;		// CSIDL value. (negative number == end of list)
+	const char *env_var;	// Environment variable fallback, if available.
+	const char *def;	// Default pathname fallback.
+} csidl_dir_t;
+
+/**
+ * checkSpecialDirectory(): Check if a pathname contains a Special Directory.
+ * @param path Pathname. (If NULL, simply resolves the special directory and doesn't check anything.)
+ * @param SpecialDirs Pointer to a special directory.
+ * @return Special directory pathname, or empty if none.
+ */
+static string checkSpecialDirectory(const char *path, const csidl_dir_t *SpecialDir)
+{
+	// Get the directory.
+	LPITEMIDLIST pidl;
+	char spdir_buf[MAX_PATH+32];
+	
+	HRESULT hRet = SHGetSpecialFolderLocation(NULL, SpecialDir->nFolder, &pidl);
+	
+	spdir_buf[0] = 0x00;
+	if (SUCCEEDED(hRet))
+	{
+		// Directory obtained.
+		pSHGetPathFromIDListU(pidl, spdir_buf);
+	}
+	else if (SpecialDir->env_var != NULL)
+	{
+		// Directory not obtained.
+		// Check the environment variable.
+		char *env_var = getenv(SpecialDir->env_var);
+		if (env_var)
+			strlcpy(spdir_buf, getenv(SpecialDir->env_var), sizeof(spdir_buf));
+	}
+	else
+	{
+		// Directory not obtained.
+		return "";
+	}
+	
+	if (spdir_buf[0] == 0x00)
+	{
+		// Empty buffer. Check if there's a default fallback.
+		if (!SpecialDir->def)
+			return "";
+		
+		// Default fallback found.
+		// TODO: This will trigger a false positive if the
+		// Program Files directory is "C:\Program Files",
+		// but the program is located in "D:\Program Files".
+		strlcpy(spdir_buf, SpecialDir->def, sizeof(spdir_buf));
+		spdir_buf[0] = (path ? path[0] : 'C');
+	}
+	
+	spdir_buf[sizeof(spdir_buf)-1] = 0x00;
+	size_t len = strlen(spdir_buf);
+	if (len == 0)
+		return "";
+	
+	// Make sure the directory name has a trailing backslash.
+	if (spdir_buf[len-1] != '\\')
+	{
+		spdir_buf[len] = '\\';
+		spdir_buf[len+1] = 0x00;
+		len++;
+	}
+	
+	if (!path)
+	{
+		// No path specified.
+		// Return the directory as-is.
+		return string(spdir_buf);
+	}
+	
+	// Check if the directory is the same as the
+	// beginning of the path to check.
+	if (strncasecmp(path, spdir_buf, len) == 0)
+	{
+		// Directory is the same!
+		return string(spdir_buf);
+	}
+	
+	// Path doesn't match the special directory.
+	return "";
+}
+
+
 /**
  * get_default_save_path(): Get the default save path.
  * @param buf Buffer to store the default save path in.
@@ -110,11 +200,82 @@ void get_default_save_path(char *buf, size_t size)
 		*(last_backslash + 1) = 0x00;
 	}
 	
-	// Set the current directory.
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	// Check if the EXE is in a "special" directory.
 	
-	// Set the default save path.
-	strlcpy(buf, GENS_DEFAULT_SAVE_PATH, size);
+	static const csidl_dir_t SpecialDirs_System[] =
+	{
+		{CSIDL_PROGRAM_FILES, "ProgramFiles", "?:\\Program Files\\"},
+		//{CSIDL_PROGRAM_FILESX86, "ProgramFiles(x86)", ":\\Program Files (x86)\\"},
+		{CSIDL_WINDOWS, "WINDIR", NULL},
+		
+		{-1, NULL, NULL}
+	};
+	
+	string SpecialDir;
+	for (int i = 0; i < ((sizeof(SpecialDirs_System)/sizeof(SpecialDirs_System[0]))-1); i++)
+	{
+		SpecialDir = checkSpecialDirectory(PathNames.Gens_EXE_Path, &SpecialDirs_System[i]);
+		if (!SpecialDir.empty())
+			break;
+	}
+	
+	if (SpecialDir.empty())
+	{
+		// Gens/GS is not located in a special directory.
+		// Use the current directory as the save path.
+		pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+		strlcpy(buf, PathNames.Gens_EXE_Path, size);
+		return;
+	}
+	
+	// Gens/GS is located in a special directory.
+	// Get the "Application Data" directory.
+	static const csidl_dir_t SpecialDirs_AppData[] =
+	{
+		{CSIDL_APPDATA, "APPDATA", NULL},
+		{CSIDL_PROFILE, "USERPROFILE", NULL},
+		
+		{-1, NULL, NULL}
+	};
+	
+	SpecialDir = checkSpecialDirectory(NULL, &SpecialDirs_AppData[0]);
+	if (SpecialDir.empty())
+	{
+		// "Application Data" directory not found.
+		// Get the user profile directory.
+		SpecialDir = checkSpecialDirectory(NULL, &SpecialDirs_AppData[1]);
+		if (SpecialDir.empty())
+		{
+			// User profile directory not found.
+			// TODO: For now, simply fall back to the current directory.
+			pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+			strlcpy(buf, PathNames.Gens_EXE_Path, size);
+			return;
+		}
+		
+		// Check if "Application Data" exists as a subdirectory.
+		// NOTE: Win32's stat() doesn't like trailing slashes.
+		string AppDataSubDir = SpecialDir + "Application Data";
+		
+		struct stat st_appdata;
+		int ret = stat(AppDataSubDir.c_str(), &st_appdata);
+		if (ret == 0 && S_ISDIR(st_appdata.st_mode))
+		{
+			// Subdirectory exists.
+			SpecialDir = AppDataSubDir + "\\";
+		}
+	}
+	
+	// Append "Gens\\" to the subdirectory.
+	SpecialDir += "Gens\\";
+	
+	// Make sure the Gens subdirectory exists.
+	// TODO: Unicode version.
+	mkdir(SpecialDir.c_str());
+	
+	// Return the Gens subdirectory.
+	pSetCurrentDirectoryU(SpecialDir.c_str());
+	strlcpy(buf, SpecialDir.c_str(), size);
 }
 
 
