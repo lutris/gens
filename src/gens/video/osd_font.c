@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -127,8 +127,8 @@ void osd_font_init_ASCII(void)
 int osd_font_load(const char *filename)
 {
 #ifdef _WIN32
-	// TODO: Use pSetCurrentDirectoryU once win32-unicode is merged to master.
-	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
 #endif
 	
 	// Get the filesize.

@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -549,9 +549,9 @@ static string WINAPI UI_Win32_OpenFile_int(const string& title, const string& in
 		ret = pGetSaveFileNameU(&ofn);
 	}
 	
-	// Reset the current directory to PathNames.Gens_EXE_Path.
+	// Reset the current directory to PathNames.Gens_Save_Path.
 	// (Why do GetOpenFileName() and GetSaveFileName change it?)
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
 	
 	if (!ret)
 		return "";
@@ -614,9 +614,9 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	
 	bool bRet = pSHGetPathFromIDListU(pidl, selDir);
 	
-	// Reset the current directory to PathNames.Gens_EXE_Path.
+	// Reset the current directory to PathNames.Gens_Save_Path.
 	// I'm not sure if SHGetPathFromIDList() changes it, but it might.
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
 	
 	if (!bRet)
 		return "";

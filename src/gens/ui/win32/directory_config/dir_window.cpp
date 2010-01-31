@@ -362,7 +362,7 @@ static void WINAPI dir_window_init(void)
 			
 			// Directory retrieved.
 			// If possible, convert it to a relative pathname.
-			gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
+			gsft_file_abs_to_rel(dir_buf, PathNames.Gens_Save_Path,
 						dir_buf_rel, sizeof(dir_buf_rel));
 			Edit_SetTextU(vectDirs[dir].txt, dir_buf_rel);
 		}
@@ -430,7 +430,7 @@ static void WINAPI dir_window_save(void)
 			}
 			
 			// If necessary, convert the pathname to an absolute pathname.
-			gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
+			gsft_file_rel_to_abs(dir_buf, PathNames.Gens_Save_Path,
 						dir_buf_abs, sizeof(dir_buf_abs));
 			
 			mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find(vectDirs[dir].id);
@@ -536,7 +536,7 @@ static void WINAPI dir_window_callback_btnChange_clicked(int dir)
 	dir_buf[sizeof(dir_buf)-1] = 0x00;
 	
 	// Convert the current directory to an absolute pathname, if necessary.
-	gsft_file_rel_to_abs(dir_buf, PathNames.Gens_EXE_Path,
+	gsft_file_rel_to_abs(dir_buf, PathNames.Gens_Save_Path,
 				dir_buf_abs, sizeof(dir_buf_abs));
 	
 	// Set the title of the window.
@@ -555,7 +555,7 @@ static void WINAPI dir_window_callback_btnChange_clicked(int dir)
 		new_dir += GSFT_DIR_SEP_CHR;
 	
 	// Convert the new directory to a relative pathname, if possible.
-	gsft_file_abs_to_rel(new_dir.c_str(), PathNames.Gens_EXE_Path,
+	gsft_file_abs_to_rel(new_dir.c_str(), PathNames.Gens_Save_Path,
 				dir_buf, sizeof(dir_buf));
 	
 	// Set the new directory.

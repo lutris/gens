@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -173,8 +173,9 @@ int Savestate::LoadState(const string& filename)
 		return -1;
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	FILE *f = fopen(filename.c_str(), "rb");
 	if (!f)
@@ -253,8 +254,9 @@ int Savestate::SaveState(const string& filename)
 	ice = 0;
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	FILE *f = fopen(filename.c_str(), "wb");
 	if (!f)
@@ -2125,8 +2127,9 @@ int Savestate::LoadSRAM(void)
 	memset(SRAM, 0x00, sizeof(SRAM));
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	string filename = GetSRAMFilename();
 	if (filename.empty())
@@ -2166,8 +2169,9 @@ int Savestate::SaveSRAM(void)
 		size_to_save <<= 1;
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	string filename = GetSRAMFilename();
 	if (filename.empty())
@@ -2249,8 +2253,9 @@ int Savestate::LoadBRAM(void)
 	Savestate::FormatSegaCD_BackupRAM();
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	string filename = GetBRAMFilename();
 	if (filename.empty())
@@ -2278,8 +2283,9 @@ int Savestate::LoadBRAM(void)
 int Savestate::SaveBRAM(void)
 {
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	string filename = GetBRAMFilename();
 	if (filename.empty())

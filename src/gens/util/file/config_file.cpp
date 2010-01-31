@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -129,8 +129,9 @@ int Config::save(const string& filename)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
@@ -161,7 +162,7 @@ int Config::save(const string& filename)
 #ifdef GENS_OS_WIN32
 		// Convert the directory from an absolute pathname to a
 		// relative pathname, if possible.
-		gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
+		gsft_file_abs_to_rel(dir_buf, PathNames.Gens_Save_Path,
 				     dir_buf_rel, sizeof(dir_buf_rel));
 		
 		// Save the setting.
@@ -434,8 +435,9 @@ int Config::load(const string& filename, void* gameActive)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-#endif /* GENS_OS_WIN32 */
+	// Make sure relative pathnames are handled correctly on Win32.
+	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+#endif
 	
 	INI cfg(filename);
 	
@@ -465,7 +467,7 @@ int Config::load(const string& filename, void* gameActive)
 		{
 #ifdef GENS_OS_WIN32
 			// If the pathname is relative, convert it to absolute.
-			gsft_file_rel_to_abs(dir_buf.c_str(), PathNames.Gens_EXE_Path,
+			gsft_file_rel_to_abs(dir_buf.c_str(), PathNames.Gens_Save_Path,
 					     dir_buf_abs, sizeof(dir_buf_abs));
 			
 			// Set the plugin directory.
