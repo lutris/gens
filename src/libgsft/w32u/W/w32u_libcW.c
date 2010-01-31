@@ -110,6 +110,56 @@ static int unlinkUW(const char *filename)
 }
 
 
+static DIR *opendirUW(const char *name)
+{
+	if (!name)
+	{
+		// String not specified. Don't bother converting anything.
+		return (DIR*)_wopendir((const wchar_t*)name);
+	}
+	
+	// Convert name from UTF-8 to UTF-16.
+	wchar_t *wname = w32u_UTF8toUTF16(name);
+	_WDIR *ret = _wopendir(wname);
+	free(wname);
+	
+	// NOTE: opendir() returns a struct of type DIR*.
+	// _wopendir() returns a struct of type _WDIR*.
+	// DO NOT use the return value except for readdir()!
+	return (DIR*)ret;
+}
+
+
+static struct dirent *readdirUW(DIR *dirp)
+{
+	if (!dirp)
+	{
+		// Directory not specified. Don't bother converting anything.
+		return (struct dirent*)_wreaddir((_WDIR*)dirp);
+	}
+	
+	// Internal buffer. This buffer is returned.
+	// Note that readdir() is not reentrant, so this is fine.
+	static struct dirent dirUW;
+	
+	// Read the directory.
+	struct _wdirent *dirW = _wreaddir((_WDIR*)dirp);
+	if (!dirW)
+		return NULL;
+	
+	// Copy the numeric fields.
+	dirUW.d_ino	= dirW->d_ino;
+	dirUW.d_reclen	= dirW->d_reclen;
+	
+	// Convert the filename from UTF-16 to UTF-8.
+	w32u_UTF16toUTF8_copy(dirUW.d_name, dirW->d_name, sizeof(dirUW.d_name));
+	dirUW.d_namlen = strlen(dirUW.d_name);
+	
+	// Return a pointer to dirUW.
+	return &dirUW;
+}
+
+
 void WINAPI w32u_libcW_init(void)
 {
 	paccess		= &accessUW;
@@ -117,6 +167,8 @@ void WINAPI w32u_libcW_init(void)
 	pstat		= &statUW;
 	pmkdir		= &mkdirUW;
 	punlink		= &unlinkUW;
+	popendir	= &opendirUW;
+	preaddir	= &readdirUW;
 	
 	p_wcsicmp	= &_wcsicmp;
 }

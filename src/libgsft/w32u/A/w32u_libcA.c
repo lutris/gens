@@ -26,13 +26,20 @@
 // C includes.
 #include <stdlib.h>
 
-// Make sure fopen and stat aren't defined as macros.
+// Make sure fopen(), stat(), opendir(), and readdir() aren't defined as macros.
 #ifdef fopen
 #undef fopen
 #endif
 #ifdef stat
 #undef stat
 #endif
+#ifdef opendir
+#undef opendir
+#endif
+#ifdef readdir
+#undef readdir
+#endif
+
 
 static int accessUA(const char *path, int mode)
 {
@@ -116,6 +123,52 @@ static int unlinkUA(const char *filename)
 }
 
 
+static DIR *opendirUA(const char *name)
+{
+	if (!name)
+	{
+		// String not specified. Don't bother converting anything.
+		return opendir(name);
+	}
+	
+	// Convert name from UTF-8 to ANSI.
+	char *aname = w32u_UTF8toANSI(name);
+	DIR *ret = opendir(aname);
+	free(aname);
+	return ret;
+}
+
+
+static struct dirent *readdirUA(DIR *dirp)
+{
+	if (!dirp)
+	{
+		// Directory not specified. Don't bother converting anything.
+		return readdir(dirp);
+	}
+	
+	// Internal buffer. This buffer is returned.
+	// Note that readdir() is not reentrant, so this is fine.
+	static struct dirent dirUA;
+	
+	// Read the directory.
+	struct dirent *dirA = readdir(dirp);
+	if (!dirA)
+		return NULL;
+	
+	// Copy the numeric fields.
+	dirUA.d_ino	= dirA->d_ino;
+	dirUA.d_reclen	= dirA->d_reclen;
+	
+	// Convert the filename from ANSI to UTF-8.
+	w32u_ANSItoUTF8_copy(dirUA.d_name, dirA->d_name, sizeof(dirUA.d_name));
+	dirUA.d_namlen = strlen(dirUA.d_name);
+	
+	// Return a pointer to dirUA.
+	return &dirUA;
+}
+
+
 void WINAPI w32u_libcA_init(void)
 {
 	paccess		= &accessUA;
@@ -123,6 +176,8 @@ void WINAPI w32u_libcA_init(void)
 	pstat		= &statUA;
 	pmkdir		= &mkdirUA;
 	punlink		= &unlinkUA;
+	popendir	= &opendirUA;
+	preaddir	= &readdirUA;
 	
 	p_wcsicmp	= &_wcsicmp;
 }

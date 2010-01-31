@@ -29,6 +29,8 @@ MAKE_FUNCPTR(fopen);
 MAKE_FUNCPTR(stat);
 MAKE_FUNCPTR(mkdir);
 MAKE_FUNCPTR(unlink);
+MAKE_FUNCPTR(opendir);
+MAKE_FUNCPTR(readdir);
 
 /** Unicode functions that are accessed directly. **/
 MAKE_FUNCPTR(_wcsicmp);

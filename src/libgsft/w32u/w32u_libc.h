@@ -26,6 +26,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -50,6 +51,12 @@ MAKE_EXTFUNCPTR(mkdir);
 
 MAKE_EXTFUNCPTR(unlink);
 #define unlink(filename) punlink(filename)
+
+MAKE_EXTFUNCPTR(opendir);
+#define opendir(name) popendir(name)
+
+MAKE_EXTFUNCPTR(readdir);
+#define readdir(dirp) preaddir(dirp)
 
 /** Unicode functions that are accessed directly. **/
 MAKE_EXTFUNCPTR(_wcsicmp);
