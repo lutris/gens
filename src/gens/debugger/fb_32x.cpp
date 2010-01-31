@@ -43,7 +43,8 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 	const unsigned int FB_Address = ((fb_num & 1) << 17) >> 1;
 	
 	// Destination pixel.
-	pixel *dest = &screen[TAB336[VDP_Lines.Visible.Border_Size] + 8];
+	// NOTE: Debugger always uses 320x224.
+	pixel *dest = &screen[(336*8)+8];
 	
 	// Temporary pixels.
 	register pixel px1, px2;
@@ -59,7 +60,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		case 1:
 			// _32X_Draw_M01
 			// TODO: Endianness conversions.
-			for (unsigned int y = 0; y < 220; y++)
+			for (unsigned int y = 0; y < (224-4); y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
 				uint8_t *src = &_32X_VDP_Ram.u8[(FB_Address * 2) + (offset * 2)];
@@ -82,7 +83,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 		case 2:
 			// _32X_Draw_M10
 			// TODO: Test this!
-			for (unsigned int y = 0; y < 220; y++)
+			for (unsigned int y = 0; y < (224-4); y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
 				uint16_t *src = &_32X_VDP_Ram.u16[FB_Address + offset];
@@ -114,7 +115,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 	}
 	
 	// Draw the palette.
-	dest = &screen[TAB336[VDP_Lines.Visible.Border_Size + 220] + 8];
+	dest = &screen[(336*(8+220))+8];
 	for (unsigned int i = (256/2); i != 0; i--, dest += 2, _32X_vdp_cram_adjusted += 2)
 	{
 		px1 = *_32X_vdp_cram_adjusted;
