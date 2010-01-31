@@ -76,7 +76,7 @@ static WNDCLASS genopt_wndclass;
 
 // Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
 #define GENOPT_WINDOW_WIDTH  225
-#define GENOPT_WINDOW_HEIGHT 180
+#define GENOPT_WINDOW_HEIGHT 192
 
 #define GENOPT_OSD_FRAME_WIDTH  95
 #define GENOPT_OSD_FRAME_HEIGHT 65
@@ -286,11 +286,11 @@ static void WINAPI genopt_window_create_child_windows(HWND hWnd)
 	SetWindowFontU(chkMisc_PauseTint, w32_fntMessage, true);
 	
 	// NTSC V30 Rolling
-	frameTop += 20;
+	frameTop += DLU_Y(12);
 	chkMisc_ntscV30rolling = pCreateWindowU(WC_BUTTON, "NTSC V30 Rolling",
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						frameLeft+8, frameTop,
-						(GENOPT_OSD_FRAME_WIDTH-16), 20,
+						frameLeft, frameTop,
+						DLU_X(GENOPT_OSD_FRAME_WIDTH), DLU_Y(12),
 						hWnd, NULL, ghInstance, NULL);
 	SetWindowFontU(chkMisc_ntscV30rolling, w32_fntMessage, true);
 	
