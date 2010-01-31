@@ -309,6 +309,10 @@ void MDP_FNCALL vdpdbg_get_m5_dma_len_desc(mdp_reg_vdp_t *reg_vdp, char *buf, si
 			   ((reg_dma_len_h & 0xFF) << 8));
 	}
 	
+	// Zero-length DMA bug.
+	if (dma_len == 0)
+		dma_len = 0x10000;
+	
 	szprintf(buf, len, "Length: 0x%04X words", dma_len);
 }
 
