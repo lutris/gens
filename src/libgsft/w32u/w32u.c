@@ -50,12 +50,12 @@ DWORD shell32_dll_version = 0;
 
 /**
  * GetDllVersionNumber(): Get a DLL's version number via DllGetVersion().
- * @param filename DLL filename.
+ * @param filename DLL filename. (ANSI only)
  * @return DLL version number, or 0 on error.
  */
 DWORD WINAPI GetDllVersionNumber(const char *filename)
 {
-	HMODULE hDll = LoadLibrary(filename);
+	HMODULE hDll = LoadLibraryA(filename);
 	if (!hDll)
 		return 0;
 	
