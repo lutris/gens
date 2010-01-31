@@ -250,10 +250,25 @@ void get_default_save_path(char *buf, size_t size)
 	if (!isSpecialDir)
 	{
 		// Gens/GS is not located in a special directory.
-		// Use the current directory as the save path.
-		pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
-		strlcpy(buf, PathNames.Gens_EXE_Path, size);
-		return;
+		// Attempt to create a temporary file.
+		// (Checking the directory always returns 0 for some reason.)
+		char tmp_buf[1024];
+		szprintf(tmp_buf, sizeof(tmp_buf), "%stmpXXXXXX", PathNames.Gens_EXE_Path);
+		mktemp(tmp_buf);
+		
+		FILE *f_tmp = fopen(tmp_buf, "wb");
+		if (f_tmp)
+		{
+			// Temporary file created.
+			// Gens/GS directory is writable.
+			fclose(f_tmp);
+			unlink(tmp_buf);
+			
+			// Use the current directory as the save path.
+			pSetCurrentDirectoryU(PathNames.Gens_EXE_Path);
+			strlcpy(buf, PathNames.Gens_EXE_Path, size);
+			return;
+		}
 	}
 	
 	// Gens/GS is located in a special directory.
@@ -290,7 +305,6 @@ void get_default_save_path(char *buf, size_t size)
 	SpecialDir += "Gens\\";
 	
 	// Make sure the Gens subdirectory exists.
-	// TODO: Unicode version.
 	mkdir(SpecialDir.c_str());
 	
 	// Return the Gens subdirectory.
