@@ -40,7 +40,7 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 					   pixel *_32X_palette, pixel *_32X_vdp_cram_adjusted)
 {
 	// Determine the framebuffer to use.
-	const unsigned int FB_Address = ((fb_num & 1) << 17) >> 1;
+	const unsigned int FB_Address = ((fb_num & 1) << 16);
 	
 	// Destination pixel.
 	// NOTE: Debugger always uses 320x224.
@@ -62,14 +62,14 @@ static FORCE_INLINE void T_VDP_32X_Draw_FB(int fb_num, pixel *screen,
 			for (unsigned int y = 0; y < 224; y++)
 			{
 				const unsigned int offset = _32X_VDP_Ram.u16[FB_Address + y];
-				uint8_t *src = &_32X_VDP_Ram.u8[(FB_Address * 2) + (offset * 2)];
+				uint8_t *src = &_32X_VDP_Ram.u8[(FB_Address + offset) << 1];
 				
 				for (unsigned int x = (320/2); x != 0; x--, src += 2, dest += 2)
 				{
 					px1 = _32X_vdp_cram_adjusted[*src];
 					px2 = _32X_vdp_cram_adjusted[*(src+1)];
 					
-					// Note that in this mode, the pixels are flipped in the destination buffer.
+					// NOTE: Destination pixels are swapped in this mode.
 					*dest = px2;
 					*(dest+1) = px1;
 				}
