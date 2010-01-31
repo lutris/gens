@@ -50,8 +50,7 @@ bool UnRAR_dll::load(const char *filename, const char *base_path)
 	if (base_path)
 		pSetCurrentDirectoryU(base_path);
 	
-	// NOTE: Only ANSI filenames will be accepted here.
-	hUnrarDll = LoadLibraryA(filename);
+	hUnrarDll = pLoadLibraryU(filename);
 	if (!hUnrarDll)
 		return false;
 	
