@@ -1658,10 +1658,10 @@ static FORCE_INLINE void T_Render_LineBuf_32X(pixel *dest, pixel *md_palette,
 			const uint8_t *src = &_32X_VDP_Ram.u8[VRam_Ind << 1];
 			while (px < VDP_Reg.H_Pix)
 			{
-#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+#if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
 				px1 = _32X_vdp_cram_adjusted[*src];
 				px_end = px + *(src+1);
-#else //GENS_BYTEORDER == GENS_BIG_ENDIAN
+#else //GSFT_BYTEORDER == GSFT_BIG_ENDIAN
 				px1 = _32X_vdp_cram_adjusted[*(src+1)];
 				px_end = px + *src;
 #endif
