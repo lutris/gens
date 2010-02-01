@@ -961,7 +961,7 @@ static FORCE_INLINE void T_Make_Sprite_Struct(void)
 		// - We've processed the maximum number of sprites.
 	} while (link < max_spr && spr_num < max_spr);
 	
-	// Store the total number of sprite.s
+	// Store the total number of sprites.
 	if (!partial)
 		TotalSprites = spr_num;
 }
