@@ -43,6 +43,7 @@
 // VDP Render Error cache.
 static unsigned int Last_VDP_Mode = ~0;
 static int Last_HPix = ~0;
+static int Last_VPix = ~0;
 static uint8_t Last_BPP = ~0;
 
 
@@ -410,6 +411,7 @@ void VDP_Render_Error(void)
 	
 	if (VDP_Mode != Last_VDP_Mode ||
 	    Last_HPix != vdp_getHPix() ||
+	    Last_VPix != vdp_getVPix() ||
 	    Last_BPP != bppMD)
 	{
 		// VDP mode has changed.
@@ -463,5 +465,6 @@ void VDP_Render_Error_Update(void)
 	// Save the VDP mode.
 	Last_VDP_Mode = VDP_Mode;
 	Last_HPix = vdp_getHPix();
+	Last_VPix = vdp_getVPix();
 	Last_BPP = bppMD;
 }
