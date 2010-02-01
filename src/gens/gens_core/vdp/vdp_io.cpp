@@ -912,26 +912,44 @@ static void DMA_Fill(uint16_t data)
 	VDP_Reg.DMAT_Type = 0x02;	// DMA Fill.
 	VDP_Reg.DMAT_Length = length;
 	
-	// TODO: I don't think this algorithm is correct.
-	// It matches the original asm, but does not match the Genesis Software Manual
-	// for either even VRam addresses or odd VRam addresses.
-	
-	// Write the low byte first.
-	// TODO: Endianness conversions.
-	// TODO: Verify if this is right.
-	// This is what the original asm code says, not what the manual says.
-	// Using this version fixes random dots appearing in title cards in
-	// Sonic 2's 2P VS mode when using Odd Fields Only or Flickering Interlaced.
-	VRam.u8[address] = (data & 0xFF);
-	address ^= 1;
-	
-	// Fill the data.
-	const uint8_t fill_hi = (data >> 8) & 0xFF;
-	do
+	// NOTE: DMA FILL seems to treat VRam as little-endian...
+	if (!(address & 1))
 	{
-		VRam.u8[address] = fill_hi;
-		address += VDP_Reg.m5.Auto_Inc;
-	} while (--length != 0);
+		// Even VRam address.
+		
+		// Step 1: Write the VRam data to the current address. (little-endian)
+		VRam.u8[address] = (data & 0xFF);
+		address = ((address + 1) & 0xFFFF);
+		VRam.u8[address] = ((data >> 8) & 0xFF);
+		address = ((address - 1 + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
+		
+		// Step 2: Write the high byte of the VRam data to the remaining addresses.
+		const uint8_t fill_hi = (data >> 8) & 0xFF;
+		do
+		{
+			VRam.u8[address] = fill_hi;
+			address = ((address + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
+		} while (--length != 0);
+	}
+	else
+	{
+		// Odd VRam address.
+		
+		// Step 1: Write the VRam data to the previous address. (big-endian)
+		address = ((address - 1) & 0xFFFF);
+		VRam.u8[address] = ((data >> 8) & 0xFF);
+		address = ((address + 1) & 0xFFFF);
+		VRam.u8[address] = (data & 0xFF);
+		address = ((address + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
+		
+		// Step 2: Write the high byte of the VRam data to the remaining addresses.
+		const uint8_t fill_hi = (data >> 8) & 0xFF;
+		do
+		{
+			VRam.u8[address] = fill_hi;
+			address = ((address + VDP_Reg.m5.Auto_Inc) & 0xFFFF);
+		} while (--length != 0);
+	}
 	
 	// Save the new address.
 	VDP_Ctrl.Address = (address & 0xFFFF);
