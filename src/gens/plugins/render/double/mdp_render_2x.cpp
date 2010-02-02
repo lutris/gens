@@ -95,32 +95,34 @@ static inline void T_mdp_render_2x_cpp(pixel *destScreen, pixel *mdScreen,
 {
 	// Pitch difference.
 	destPitch /= sizeof(pixel);
-	int nextLine = destPitch + (destPitch - (width * 2));
+	unsigned int nextLine = destPitch + (destPitch - (width * 2));
 	
 	srcPitch /= sizeof(pixel);
+	const unsigned int srcPitchDiff = (srcPitch - width);
 	
+	// Destination lines.
 	pixel *line1 = destScreen;
-	for (int y = 0; y < height; y++)
+	pixel *line2 = (destScreen + destPitch);
+	
+	for (unsigned int y = height; y != 0; y--)
 	{
-		for (int x = 0; x < width; x++)
+		for (unsigned int x = width; x != 0; x--)
 		{
-			*line1++ = *mdScreen;
-			*line1++ = *mdScreen++;
+			*line1     = *mdScreen;
+			*(line1+1) = *mdScreen;
+			*line2     = *mdScreen;
+			*(line2+1) = *mdScreen;
+			
+			// Next pixel.
+			line1 += 2;
+			line2 += 2;
+			mdScreen++;
 		}
 		
 		// Next line.
-		mdScreen += (srcPitch - width);
 		line1 += nextLine;
-	}
-	
-	// Copy lines.
-	line1 = destScreen;
-	pixel *line2 = destScreen + destPitch;
-	for (int y = 0; y < height; y++)
-	{
-		memcpy(line2, line1, width * 2 * sizeof(pixel));
-		line1 += (destPitch * 2);
-		line2 += (destPitch * 2);
+		line2 += nextLine;
+		mdScreen += srcPitchDiff;
 	}
 }
 #endif /* GENS_X86_ASM */
