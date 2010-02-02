@@ -84,7 +84,20 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 	{
 		for (unsigned int cy = 0; cy < (charSize * 2); cy++)
 		{
-			pixel *screen_pos = screen_start + ((cy + line) * pitch);
+			pixel *screen_pos, *screen_pos_sh;
+			if (do2x)
+			{
+				// 2x text drawing.
+				screen_pos = screen_start - 1 + ((cy + line - 1) * pitch);
+				screen_pos_sh = screen_start + 1 + ((cy + line + 1) * pitch);
+			}
+			else
+			{
+				// 1x text drawing.
+				screen_pos = screen_start + ((cy + line) * pitch);
+				screen_pos_sh = screen_start + 1 + ((cy + line + 1) * pitch);
+			}
+			
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
 				if (cx + chr_offset >= vdraw_msg_prerender_len)
@@ -98,6 +111,7 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 				{
 					// Empty line.
 					screen_pos += charSize;
+					screen_pos_sh += charSize;
 					continue;
 				}
 				
@@ -116,6 +130,8 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 							{
 								*screen_pos = style->dot_color;
 								*(screen_pos + 1) = style->dot_color;
+								*screen_pos_sh = 0;
+								*(screen_pos_sh + 1) = 0;
 							}
 							else
 							{
@@ -123,22 +139,39 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 									      ((*screen_pos & transparentMask) >> 1);
 								*(screen_pos + 1) = ((style->dot_color & transparentMask) >> 1) +
 										    ((*(screen_pos + 1) & transparentMask) >> 1);
+								
+								*screen_pos_sh = ((*screen_pos & transparentMask) >> 1);
+								*(screen_pos_sh + 1) = ((*(screen_pos + 1) & transparentMask) >> 1);
 							}
 						}
 						else
 						{
 							if (!style->transparent)
+							{
 								*screen_pos = style->dot_color;
+								*screen_pos_sh = 0;
+							}
 							else
+							{
 								*screen_pos = ((style->dot_color & transparentMask) >> 1) +
 									      ((*screen_pos & transparentMask) >> 1);
+								*screen_pos_sh = ((*screen_pos & transparentMask) >> 1);
+							}
 						}
 					}
 					
 					cRow <<= 1;
-					screen_pos++;
+					
 					if (do2x)
+					{
+						screen_pos += 2;
+						screen_pos_sh += 2;
+					}
+					else
+					{
 						screen_pos++;
+						screen_pos_sh++;
+					}
 				}
 			}
 		}
@@ -187,23 +220,14 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	if (style->double_size)
 	{
 		// 2x text rendering.
-		// TODO: Make text shadow an option.
 		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
-					 &textShadowStyle, transparentMask);
-		
-		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, x-1, y-1, msgWidth, (lineBreaks + 1),
+					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
 					 style, transparentMask);
 	}
 	else
 	{
 		// 1x text rendering.
 		// TODO: Make text shadow an option.
-		drawStr_preRender<pixel, 8, false>
-					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
-					 &textShadowStyle, transparentMask);
-		
 		drawStr_preRender<pixel, 8, false>
 					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
 					 style, transparentMask);
