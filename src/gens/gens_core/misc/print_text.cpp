@@ -27,7 +27,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "gens_core/vdp/vdp_rend.h"	// For MD_Screen[] / MD_Screen32[].
+#include "gens_core/vdp/vdp_rend.h"	// For MD_Screen[].
 #include "gens_core/vdp/vdp_io.h"	// For VDP_Reg.H_Pix.
 #include "emulator/g_main.hpp"		// For bppMD.
 
@@ -233,10 +233,6 @@ static inline void T_Print_Text(pixel *screen, const char *str,
 {
 	// Get the screen pointer.
 	pixel *screen_ptr = &screen[8 + (Pos_Y * 336) + Pos_X];
-	
-	// TODO: 2x text rendering and transparency rendering.
-	if (Style & (TEXT_SIZE_X2 | TEXT_TRANS))
-		return;
 	
 	// Process the string.
 	int chr = *str++;
