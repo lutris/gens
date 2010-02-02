@@ -95,7 +95,7 @@ void Fast_Blur(void)
 		else
 			Fast_Blur_16_x86();
 #else
-		T_Fast_Blur(MD_Screen, (bppMD == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
+		T_Fast_Blur<uint16_t>(MD_Screen.u16, (bppMD == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 #endif
 	}
 	else //if (bppMD == 32)
@@ -106,7 +106,7 @@ void Fast_Blur(void)
 		else
 			Fast_Blur_32_x86();
 #else
-		T_Fast_Blur(MD_Screen32, MASK_DIV2_32);
+		T_Fast_Blur<uint32_t>(MD_Screen.u32, MASK_DIV2_32);
 #endif
 	}
 }
