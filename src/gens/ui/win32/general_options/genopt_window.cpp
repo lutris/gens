@@ -79,7 +79,7 @@ static WNDCLASS genopt_wndclass;
 #define GENOPT_WINDOW_HEIGHT 192
 
 #define GENOPT_OSD_FRAME_WIDTH  95
-#define GENOPT_OSD_FRAME_HEIGHT 65
+#define GENOPT_OSD_FRAME_HEIGHT 53
 
 // Window procedure.
 static LRESULT CALLBACK genopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -90,7 +90,6 @@ static HWND	btnOK, btnCancel, btnApply;
 // Widgets: On-Screen Display.
 static HWND	chkOSD_Enable[2];
 static HWND	chkOSD_DoubleSized[2];
-static HWND	chkOSD_Transparency[2];
 static HWND	btnColor[2];
 static BtnColor *btnColor_cpp[2] = {NULL, NULL};
 
@@ -408,15 +407,6 @@ static void WINAPI genopt_window_create_osd_frame(HWND container, const char* ti
 							container, NULL, ghInstance, NULL);
 	SetWindowFontU(chkOSD_DoubleSized[index], w32_fntMessage, true);
 	
-	// Transparency
-	y += rowInc;
-	chkOSD_Transparency[index] = pCreateWindowU(WC_BUTTON, "Transparency",
-							WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-							x, y,
-							DLU_X(GENOPT_OSD_FRAME_WIDTH-10), DLU_Y(10),
-							container, NULL, ghInstance, NULL);
-	SetWindowFontU(chkOSD_Transparency[index], w32_fntMessage, true);
-	
 	// Color label.
 	y += rowInc;
 	lblColor = pCreateWindowU(WC_STATIC, "Color:",
@@ -493,7 +483,6 @@ static void WINAPI genopt_window_init(void)
 	
 	curFPSStyle = vdraw_get_fps_style();
 	Button_SetCheckU(chkOSD_DoubleSized[0], ((curFPSStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheckU(chkOSD_Transparency[0], ((curFPSStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	
 	color_tmp = vdraw_get_fps_color();
 	osd_colors[0] = ((color_tmp >> 16) & 0xFF) |
@@ -506,7 +495,6 @@ static void WINAPI genopt_window_init(void)
 	
 	curMsgStyle = vdraw_get_msg_style();
 	Button_SetCheckU(chkOSD_DoubleSized[1], ((curMsgStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheckU(chkOSD_Transparency[1], ((curMsgStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	
 	color_tmp = vdraw_get_msg_color();
 	osd_colors[1] = ((color_tmp >> 16) & 0xFF) |
@@ -549,7 +537,6 @@ static void WINAPI genopt_window_save(void)
 	
 	curFPSStyle = vdraw_get_fps_style() & ~0x18;
 	curFPSStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
-	curFPSStyle |= ((Button_GetCheckU(chkOSD_Transparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
 	curFPSStyle &= ~0x06;
 	vdraw_set_fps_style(curFPSStyle);
 	
@@ -562,7 +549,6 @@ static void WINAPI genopt_window_save(void)
 	vdraw_set_msg_enabled(Button_GetCheckU(chkOSD_Enable[1]) == BST_CHECKED);
 	curMsgStyle = vdraw_get_msg_style() & ~0x18;
 	curMsgStyle |= ((Button_GetCheckU(chkOSD_DoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
-	curMsgStyle |= ((Button_GetCheckU(chkOSD_Transparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
 	curMsgStyle &= ~0x06;
 	vdraw_set_msg_style(curMsgStyle);
 	
