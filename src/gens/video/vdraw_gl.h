@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: Video Drawing - OS-Specific OpenGL Functions.                     *
+ * Gens: Video Drawing - Common OpenGL Functions.                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -41,6 +41,21 @@ int vdraw_gl_is_supported(void);
 
 void vdraw_gl_init_vsync(void);
 void vdraw_gl_update_vsync(const int fromInitSDLGL);
+
+// Initialize OpenGL.
+int vdraw_gl_init(const int vp_w, const int vp_h);
+void vdraw_gl_end(void);
+
+// GL visual information.
+void vdraw_gl_set_visual(GLenum format, GLenum type);
+
+void vdraw_gl_clear_screen(void);
+
+// GL Orthographic Projection.
+void vdraw_gl_init_orthographic_projection(void);
+
+void vdraw_gl_flip(void);
+int vdraw_gl_update_renderer(const int vp_w, const int vp_h);
 
 #ifdef __cplusplus
 }
