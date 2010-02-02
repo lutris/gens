@@ -1342,18 +1342,22 @@ static FORCE_INLINE void T_Render_Line_m5(void)
 template<typename pixel>
 static FORCE_INLINE void T_Render_LineBuf(pixel *dest, pixel *md_palette)
 {
-	const unsigned int num_px = (160 - VDP_Reg.H_Pix_Begin) * 2;
 	const LineBuf_px_t *src = &LineBuf.px[8];
 	
 	// Render the line buffer to the destination surface.
 	dest += VDP_Reg.H_Pix_Begin;
-	for (unsigned int i = (num_px / 4); i != 0; i--, dest += 4, src += 4)
+	for (unsigned int i = ((160 - VDP_Reg.H_Pix_Begin) / 4);
+	     i != 0; i--, dest += 8, src += 8)
 	{
 		// TODO: Endianness conversions.
 		*dest     = md_palette[src->pixel];
 		*(dest+1) = md_palette[(src+1)->pixel];
 		*(dest+2) = md_palette[(src+2)->pixel];
 		*(dest+3) = md_palette[(src+3)->pixel];
+		*(dest+4) = md_palette[(src+4)->pixel];
+		*(dest+5) = md_palette[(src+5)->pixel];
+		*(dest+6) = md_palette[(src+6)->pixel];
+		*(dest+7) = md_palette[(src+7)->pixel];
 	}
 	
 	if (VDP_Reg.H_Pix_Begin == 0)
@@ -1368,22 +1372,30 @@ static FORCE_INLINE void T_Render_LineBuf(pixel *dest, pixel *md_palette)
 	// Left border.
 	dest -= VDP_Reg.H_Pix_Begin;
 	dest -= VDP_Reg.H_Pix;
-	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
+	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 8); i != 0; i--, dest += 8)
 	{
 		*dest     = border_color;
 		*(dest+1) = border_color;
 		*(dest+2) = border_color;
 		*(dest+3) = border_color;
+		*(dest+4) = border_color;
+		*(dest+5) = border_color;
+		*(dest+6) = border_color;
+		*(dest+7) = border_color;
 	}
 	
 	// Right border.
 	dest += VDP_Reg.H_Pix;
-	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 4); i != 0; i--, dest += 4)
+	for (unsigned int i = (VDP_Reg.H_Pix_Begin / 8); i != 0; i--, dest += 8)
 	{
 		*dest     = border_color;
 		*(dest+1) = border_color;
 		*(dest+2) = border_color;
 		*(dest+3) = border_color;
+		*(dest+4) = border_color;
+		*(dest+5) = border_color;
+		*(dest+6) = border_color;
+		*(dest+7) = border_color;
 	}
 }
 
