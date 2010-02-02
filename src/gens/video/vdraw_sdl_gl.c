@@ -72,6 +72,7 @@ const vdraw_backend_t vdraw_backend_sdl_gl =
 {
 	.name			= "SDL+OpenGL",
 	.flags			= VDRAW_BACKEND_FLAG_VSYNC |
+				  VDRAW_BACKEND_FLAG_STRETCH |
 				  VDRAW_BACKEND_FLAG_FULLSCREEN,
 	
 	.init			= vdraw_sdl_gl_init,
