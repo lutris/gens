@@ -57,10 +57,8 @@ static inline void T_Fast_Blur(pixel *mdScreen, pixel mask)
 	// MD screen has an 8-pixel-wide buffer at the left-most side.
 	mdScreen += 8;
 	
-	// Number of pixels to process.
-	const int numPixels = (336 * 240) - 8;
-	
-	for (int i = 0; i < numPixels; i++)
+	// Process the framebuffer.
+	for (unsigned int i = ((336*240)-8); i != 0; i--)
 	{
 		// Get the current pixel.
 		color = (*mdScreen >> 1) & mask;
