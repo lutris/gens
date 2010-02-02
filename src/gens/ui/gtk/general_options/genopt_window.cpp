@@ -83,7 +83,6 @@ static GtkWidget	*btnCancel, *btnApply, *btnSave;
 // Widgets: On-Screen Display.
 static GtkWidget	*chkOSD_Enable[2];
 static GtkWidget	*chkOSD_DoubleSized[2];
-static GtkWidget	*chkOSD_Transparency[2];
 static GtkWidget	*btnColor[2];
 static uint32_t		osd_colors[2];
 
@@ -249,14 +248,6 @@ static void genopt_window_create_osd_frame(GtkWidget *container, const char* tit
 	gtk_widget_show(chkOSD_DoubleSized[index]);
 	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_DoubleSized[index], false, false, 0);
 	g_signal_connect(GTK_OBJECT(chkOSD_DoubleSized[index]), "toggled",
-			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
-	
-	// Transparency
-	chkOSD_Transparency[index] = gtk_check_button_new_with_label("Transparency");
-	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Transparency[index]), 2);
-	gtk_widget_show(chkOSD_Transparency[index]);
-	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Transparency[index], false, false, 0);
-	g_signal_connect(GTK_OBJECT(chkOSD_Transparency[index]), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
 	// Color HBox
@@ -524,7 +515,6 @@ static void genopt_window_init(void)
 	
 	unsigned char curFPSStyle = vdraw_get_fps_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0]), (curFPSStyle & 0x10));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0]), (curFPSStyle & 0x08));
 	osd_colors[0] = vdraw_get_fps_color();
 	genopt_window_set_button_color(btnColor[0], osd_colors[0]);
 	
@@ -533,7 +523,6 @@ static void genopt_window_init(void)
 	
 	unsigned char curMsgStyle = vdraw_get_msg_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1]), (curMsgStyle & 0x10));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1]), (curMsgStyle & 0x08));
 	osd_colors[1] = vdraw_get_msg_color();
 	genopt_window_set_button_color(btnColor[1], osd_colors[1]);
 	
@@ -571,7 +560,6 @@ static void genopt_window_save(void)
 	
 	unsigned char curFPSStyle = vdraw_get_fps_style() & ~0x18;
 	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0])) ? 0x10 : 0x00);
-	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0])) ? 0x08 : 0x00);
 	
 	vdraw_set_fps_style(curFPSStyle);
 	vdraw_set_fps_color(osd_colors[0]);
@@ -581,7 +569,6 @@ static void genopt_window_save(void)
 	
 	unsigned char curMsgStyle = vdraw_get_msg_style() & ~0x18;
 	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1])) ? 0x10 : 0x00);
-	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1])) ? 0x08 : 0x00);
 	
 	vdraw_set_msg_style(curMsgStyle);
 	vdraw_set_msg_color(osd_colors[1]);
