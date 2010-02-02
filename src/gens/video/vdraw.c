@@ -180,7 +180,6 @@ int vdraw_init(void)
 	memset(&vdraw_fps_style, 0x00, sizeof(vdraw_fps_style));
 	memset(&vdraw_msg_style, 0x00, sizeof(vdraw_msg_style));
 	
-	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
 	
@@ -533,7 +532,6 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 		Adjust_CRam_32X();
 	
 	// Recalculate the text styles.
-	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
 	

@@ -52,14 +52,12 @@ typedef struct
 	uint32_t	dot_color;	// RGB color value. (Screen color depth.)
 	uint8_t		style;		// Old Gens style byte.
 	uint8_t		double_size;	// 0 == 1x; non-zero == 2x.
-	uint8_t		transparent;	// 0 == opaque; non-zero == transparent.
 } vdraw_style_t;
 
 void draw_text(void *screen, const int pitch, const int w, const int h,
 	       const char *msg, const vdraw_style_t *style);
 
 void calc_text_style(vdraw_style_t *style);
-void calc_transparency_mask(void);
 
 // Text write functions.
 void vdraw_text_write(const char* msg, const int duration);

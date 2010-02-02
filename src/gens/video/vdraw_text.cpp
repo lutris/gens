@@ -55,9 +55,6 @@ using std::list;
 // OSD character set.
 #include "osd_charset.hpp"
 
- // Text drawing values.
-static uint32_t m_Transparency_Mask;
-
 // Message timer.
 #include "port/timer.h"
 static uint32_t	vdraw_msg_time = 0;
@@ -74,7 +71,7 @@ static unsigned int vdraw_msg_prerender_len;
 template<typename pixel, unsigned int charSize, bool do2x>
 static inline void drawStr_preRender(pixel *screen, const int pitch, const int x, const int y,
 					const unsigned int msgWidth, const unsigned int numLines,
-					const vdraw_style_t *style, const pixel transparentMask)
+					const vdraw_style_t *style)
 {
 	pixel *screen_start = &screen[y*pitch + x];
 	const unsigned int chars_per_line = (msgWidth / charSize);
@@ -120,43 +117,17 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 					if (cRow & 0x80)
 					{
 						// Dot is opaque. Draw it.
-						// TODO: Original asm version had transparency in a separate function for performance.
-						// See if that would actually help.
-						
-						// TODO: The transparency method used here might be slow on DDraw when using video memory.
 						if (do2x)
 						{
-							if (!style->transparent)
-							{
-								*screen_pos = style->dot_color;
-								*(screen_pos + 1) = style->dot_color;
-								*screen_pos_sh = 0;
-								*(screen_pos_sh + 1) = 0;
-							}
-							else
-							{
-								*screen_pos = ((style->dot_color & transparentMask) >> 1) +
-									      ((*screen_pos & transparentMask) >> 1);
-								*(screen_pos + 1) = ((style->dot_color & transparentMask) >> 1) +
-										    ((*(screen_pos + 1) & transparentMask) >> 1);
-								
-								*screen_pos_sh = ((*screen_pos & transparentMask) >> 1);
-								*(screen_pos_sh + 1) = ((*(screen_pos + 1) & transparentMask) >> 1);
-							}
+							*screen_pos = style->dot_color;
+							*(screen_pos + 1) = style->dot_color;
+							*screen_pos_sh = 0;
+							*(screen_pos_sh + 1) = 0;
 						}
 						else
 						{
-							if (!style->transparent)
-							{
-								*screen_pos = style->dot_color;
-								*screen_pos_sh = 0;
-							}
-							else
-							{
-								*screen_pos = ((style->dot_color & transparentMask) >> 1) +
-									      ((*screen_pos & transparentMask) >> 1);
-								*screen_pos_sh = ((*screen_pos & transparentMask) >> 1);
-							}
+							*screen_pos = style->dot_color;
+							*screen_pos_sh = 0;
 						}
 					}
 					
@@ -183,7 +154,7 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 
 template<typename pixel>
 static inline void T_drawText(pixel *screen, const int pitch, const int w, const int h,
-			      const char *msg, const pixel transparentMask, const vdraw_style_t *style)
+			      const char *msg, const vdraw_style_t *style)
 {
 	unsigned int x, y;
 	unsigned int charSize;
@@ -220,17 +191,13 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	if (style->double_size)
 	{
 		// 2x text rendering.
-		drawStr_preRender<pixel, 16, true>
-					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
-					 style, transparentMask);
+		drawStr_preRender<pixel, 16, true>(screen, pitch, x, y, msgWidth, (lineBreaks + 1), style);
 	}
 	else
 	{
 		// 1x text rendering.
 		// TODO: Make text shadow an option.
-		drawStr_preRender<pixel, 8, false>
-					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
-					 style, transparentMask);
+		drawStr_preRender<pixel, 8, false>(screen, pitch, x, y, msgWidth, (lineBreaks + 1), style);
 	}
 }
 
@@ -253,14 +220,12 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
-		T_drawText((uint16_t*)screen, pitch, w, h, msg,
-			   (uint16_t)m_Transparency_Mask, style);
+		T_drawText((uint16_t*)screen, pitch, w, h, msg, style);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		T_drawText((uint32_t*)screen, pitch, w, h, msg,
-			   (uint32_t)m_Transparency_Mask, style);
+		T_drawText((uint32_t*)screen, pitch, w, h, msg, style);
 	}
 }
 
@@ -297,21 +262,6 @@ void calc_text_style(vdraw_style_t *style)
 	}
 	
 	style->double_size = ((style->style & STYLE_DOUBLESIZE) ? TRUE : FALSE);
-	style->transparent = ((style->style & STYLE_TRANSPARENT) ? TRUE : FALSE);
-}
-
-
-/**
- * calc_transparency_mask(): Calculate the transparency mask.
- */
-void calc_transparency_mask(void)
-{
-	if (bppOut == 15)
-		m_Transparency_Mask = 0x7BDE;
-	else if (bppOut == 16)
-		m_Transparency_Mask = 0xF7DE;
-	else //if (bppOut == 32)
-		m_Transparency_Mask = 0xFEFEFE;
 }
 
 
