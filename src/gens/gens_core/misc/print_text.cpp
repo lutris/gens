@@ -30,6 +30,7 @@
 #include "gens_core/vdp/vdp_rend.h"	// For MD_Screen[].
 #include "gens_core/vdp/vdp_io.h"	// For VDP_Reg.H_Pix.
 #include "emulator/g_main.hpp"		// For bppMD.
+#include "macros/force_inline.h"
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
@@ -207,7 +208,7 @@ static const uint32_t Text_Palette_32[4][16] =
  * @param chr ((Character & 0x7F) - 0x20).
  */
 template<typename pixel, unsigned int line>
-static inline void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, int chr)
+static FORCE_INLINE void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, int chr)
 {
 	unsigned int font_data = Small_Police[chr][line];
 	screen_ptr += (line * 336);
@@ -227,9 +228,9 @@ static inline void T_Aff_Line_Letter(const pixel *palette, pixel *screen_ptr, in
  * T_Print_Text(): Print text directly to MD_Screen[] / MD_Screen32[].
  */
 template<typename pixel>
-static inline void T_Print_Text(pixel *screen, const char *str,
-				int row_length, const pixel *palette,
-				int Pos_X, int Pos_Y, int Style)
+static FORCE_INLINE void T_Print_Text(pixel *screen, const char *str,
+					int row_length, const pixel *palette,
+					int Pos_X, int Pos_Y, int Style)
 {
 	// Get the screen pointer.
 	pixel *screen_ptr = &screen[8 + (Pos_Y * 336) + Pos_X];
