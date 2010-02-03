@@ -156,9 +156,30 @@ static int vdraw_gdi_init(void)
 	memset(&bih, 0x00, sizeof(bih));
 	bih.biSize	= sizeof(bih);
 	bih.biPlanes	= 1;
-	bih.biBitCount	= 16;
 	bih.biWidth	= szGDIBuf.cx;
 	bih.biHeight	= -szGDIBuf.cy;
+	
+	switch (bppOut)
+	{
+		case 15:
+			// 15-bit color. (555)
+			bih.biBitCount = 16;
+			break;
+		
+		case 16:
+			// 16-bit color. (565)
+			// TODO: BI_BITFIELDS
+			bih.biBitCount = 16;
+			break;
+		
+		case 32:
+		default:
+			// 32-bit color.
+			bih.biBitCount = 32;
+			break;
+	}
+	
+	// Create the DIB.
 	hbmpDraw = CreateDIBSection(hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
 	if (!hbmpDraw)
 	{
@@ -178,11 +199,6 @@ static int vdraw_gdi_init(void)
 	
 	// Select the bitmap object on the device context.
 	SelectBitmap(hdcComp, hbmpDraw);
-	
-	// Set bpp to 15-bit color.
-	// GDI doesn't actually support 16-bit color.
-	if (bppOut != 15)
-		vdraw_set_bpp(15, FALSE);
 	
 	// Adjust stretch parameters.
 	vdraw_gdi_stretch_adjust();
