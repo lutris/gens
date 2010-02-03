@@ -31,7 +31,6 @@ extern "C" {
 
 extern char State_Dir[GENS_PATH_MAX];
 extern char SRAM_Dir[GENS_PATH_MAX];
-extern char BRAM_Dir[GENS_PATH_MAX];
 
 #ifdef __cplusplus
 }
@@ -56,11 +55,6 @@ class Savestate
 		
 		static int LoadSRAM(void);
 		static int SaveSRAM(void);
-		
-		static void FormatSegaCD_BackupRAM(void);
-		
-		static int LoadBRAM(void);
-		static int SaveBRAM(void);
 	
 	protected:
 		// ImportData / ExportData functions from Gens Rerecording
@@ -89,8 +83,6 @@ class Savestate
 		static void GsxExport32X(unsigned char* data);
 		
 		static std::string GetSRAMFilename(void);
-		
-		static std::string GetBRAMFilename(void);
 	
 	private:
 		// Don't allow instantiation of this class.

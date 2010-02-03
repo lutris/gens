@@ -32,13 +32,16 @@ using std::string;
 #include "mdZ80/mdZ80.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/io/io.h"
-#include "util/file/save.hpp"
 #include "segacd/cd_sys.hpp"
 #include "segacd/lc89510.h"
 #include "gens_core/gfx/gfx_cd.h"
 #include "gens_core/sound/pcm.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/cd_file.h"
+
+// Save file handlers.
+#include "util/file/save.hpp"
+#include "util/file/mcd_bram.h"
 
 // VDP rendering functions.
 #include "gens_core/vdp/vdp_rend.h"
@@ -217,7 +220,7 @@ int Init_SegaCD(const char* iso_name)
 	}
 	
 	// Initialize BRAM.
-	Savestate::LoadBRAM();
+	BRAM_Load();
 	
 	Reset_Update_Timers();
 	
@@ -247,7 +250,7 @@ int Reload_SegaCD(const char* iso_name)
 	audio_clear_sound_buffer();
 	
 	// Save the current BRAM.
-	Savestate::SaveBRAM();
+	BRAM_Save();
 	
 	// Set the window title to "Reinitializing..."
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
@@ -260,7 +263,7 @@ int Reload_SegaCD(const char* iso_name)
 	Options::setGameName(1);
 	
 	// Load the new BRAM.
-	Savestate::LoadBRAM();
+	BRAM_Load();
 	
 	return 1;
 }

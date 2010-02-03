@@ -32,9 +32,12 @@
 #include <string>
 using std::string;
 
-#include "save.hpp"
 #include "config_file.hpp"
 #include "port/ini.hpp"
+
+// Save file handlers.
+#include "save.hpp"
+#include "mcd_bram.h"
 
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"

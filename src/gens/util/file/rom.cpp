@@ -64,7 +64,10 @@ using std::deque;
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+
+// Save file handlers.
 #include "util/file/save.hpp"
+#include "util/file/mcd_bram.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -1044,7 +1047,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	STOP_DEBUGGING();
 	
 	if (SegaCD_Started)
-		Savestate::SaveBRAM();
+		BRAM_Save();
 	
 	Savestate::SaveSRAM();
 	

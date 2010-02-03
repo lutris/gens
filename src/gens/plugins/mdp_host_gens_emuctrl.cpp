@@ -35,8 +35,13 @@
 #include "emulator/options.hpp"
 #include "emulator/g_md.hpp"
 #include "util/file/rom.hpp"
-#include "util/file/save.hpp"
 
+// Save file handlers.
+#include "util/file/save.hpp"
+#include "util/file/mcd_bram.h"
+
+
+// Forward declarations for static functions.
 static int mdp_host_emulator_control_reload_info(void) throw();
 
 
@@ -90,7 +95,7 @@ static int mdp_host_emulator_control_reload_info(void) throw()
 	if (!SegaCD_Started)
 		Savestate::SaveSRAM();
 	else
-		Savestate::SaveBRAM();
+		BRAM_Save();
 	
 	// Reload the ROM header.
 	ROM::fillROMInfo(Game);
@@ -102,7 +107,7 @@ static int mdp_host_emulator_control_reload_info(void) throw()
 		Savestate::LoadSRAM();
 	}
 	else
-		Savestate::LoadBRAM();
+		BRAM_Load();
 	
 	// Reinitialize the title bar.
 	if (Genesis_Started)

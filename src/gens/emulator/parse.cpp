@@ -33,9 +33,12 @@
 #include <ctype.h>
 
 #include "g_main.hpp"
-#include "util/file/save.hpp"
 #include "md_palette.hpp"
 #include "util/file/rom.hpp"
+
+// Save file handlers.
+#include "util/file/save.hpp"
+#include "util/file/mcd_bram.h"
 
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
