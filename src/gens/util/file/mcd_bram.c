@@ -46,6 +46,9 @@
 #include "libgsft/w32u/w32u_libc.h"
 #endif
 
+// BRAM directory.
+char BRAM_Dir[GENS_PATH_MAX] = "";
+
 
 /**
  * BRAM_Format(): Format the SegaCD Backup RAM.

@@ -99,7 +99,6 @@ extern char preloaded_tracks [100], played_tracks_linear [101]; // added for syn
 int Current_State = 0;
 char State_Dir[GENS_PATH_MAX] = "";
 char SRAM_Dir[GENS_PATH_MAX] = "";
-char BRAM_Dir[GENS_PATH_MAX] = "";
 
 // C++ includes
 using std::string;
