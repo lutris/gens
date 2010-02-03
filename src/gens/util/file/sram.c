@@ -69,8 +69,9 @@ static inline void SRAM_GetFilename(char *buf, size_t len)
  */
 int SRAM_Load(void)
 {
-	// Clear SRAM before loading.
-	memset(SRAM, 0x00, sizeof(SRAM));
+	// Reset SRAM before loading.
+	// SRAM is reset to 0xFF, since that's how SRAM is initialized from the factory.
+	memset(SRAM, 0xFF, sizeof(SRAM));
 	
 #ifdef GENS_OS_WIN32
 	// Make sure relative pathnames are handled correctly on Win32.
@@ -104,7 +105,7 @@ int SRAM_Save(void)
 	int size_to_save, i;
 	
 	i = (64 * 1024) - 1;
-	while ((i >= 0) && (SRAM[i] == 0))
+	while ((i >= 0) && (SRAM[i] == 0xFF))
 		i--;
 	
 	if (i < 0)
