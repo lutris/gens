@@ -187,7 +187,7 @@ void Options::setBpp(uint8_t newBpp)
 	else //if (bppOut == 32)
 		s_depth = "32-bit";
 	
-	if (oldBpp == bppOut)
+	if (newBpp != bppOut)
 	{
 		// Couldn't adjust color depth.
 		const char *s_req = "";
