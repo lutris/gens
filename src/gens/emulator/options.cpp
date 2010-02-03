@@ -198,7 +198,7 @@ void Options::setBpp(uint8_t newBpp)
 		else //if (newBpp == 32)
 			s_req = "32-bit";
 		
-		vdraw_text_printf(1500, "Can't set %s. Reverted to %s.", s_depth, s_req);
+		vdraw_text_printf(1500, "Can't set %s. Reverted to %s.", s_req, s_depth);
 	}
 	else
 	{
