@@ -21,7 +21,6 @@
  ***************************************************************************/
 
 #include "mcd_bram.h"
-#include "save.hpp"	/* State_Dir[] */
 #include "rom.hpp"	/* ROM_Filename[] */
 
 #include "emulator/g_main.hpp"
@@ -106,7 +105,7 @@ static inline void BRAM_GetFilename(char *buf, size_t len)
 		return;
 	}
 	
-	szprintf(buf, len, "%s%s.brm", State_Dir, ROM_Filename);
+	szprintf(buf, len, "%s%s.brm", BRAM_Dir, ROM_Filename);
 }
 
 
