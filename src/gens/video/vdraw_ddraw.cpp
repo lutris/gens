@@ -947,20 +947,6 @@ cleanup_flip:
 
 
 /**
- * vdraw_ddraw_update_vsync(): Update the VSync value.
- * @param fromInitDDraw If true, this function is being called from vdraw_ddraw_init().
- */
-void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
-{
-	GSFT_UNUSED_PARAMETER(fromInitDDraw);
-	
-	// If Full Screen, reinitialize the video subsystem.
-	if (vdraw_get_fullscreen())
-		vdraw_refresh_video();
-}
-
-
-/**
  * vdraw_ddraw_reinit_gens_window(): Reinitialize the Gens window.
  * @return 0 on success; non-zero on error.
  */

@@ -35,7 +35,6 @@ int	vdraw_ddraw_end(void);
 
 int	vdraw_ddraw_flip(void);
 void	vdraw_ddraw_clear_screen(void);
-void	vdraw_ddraw_update_vsync(const BOOL fromInitDDraw);
 int	vdraw_ddraw_reinit_gens_window(void);
 
 // Win32-specific functions.

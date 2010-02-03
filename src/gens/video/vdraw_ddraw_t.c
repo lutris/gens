@@ -39,7 +39,7 @@ const vdraw_backend_t vdraw_backend_ddraw =
 	.shutdown		= NULL,
 	
 	.clear_screen		= vdraw_ddraw_clear_screen,
-	.update_vsync		= vdraw_ddraw_update_vsync,
+	.update_vsync		= NULL,
 	
 	.flip = vdraw_ddraw_flip,
 	.stretch_adjust = NULL,
