@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -225,6 +225,33 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | flags);
 	flags = (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH ? MF_ENABLED : MF_GRAYED);
 	EnableMenuItem(mnuGraphics, (UINT)(gens_menu_find_item(IDM_GRAPHICS_STRETCH)), MF_BYCOMMAND | flags);
+	
+	// Color depth.
+	uint16_t id;
+	switch (bppOut)
+	{
+		case 15:
+			id = IDM_GRAPHICS_BPP_15;
+			break;
+		case 16:
+			id = IDM_GRAPHICS_BPP_16;
+			break;
+		case 32:
+			id = IDM_GRAPHICS_BPP_32;
+			break;
+		default:
+			id = 0;
+			break;
+	}
+	
+	if (id != 0)
+	{
+		HMENU mnuBpp = gens_menu_find_item(IDM_GRAPHICS_BPP);
+		CheckMenuRadioItem(mnuBpp,
+					IDM_GRAPHICS_BPP_15,
+					IDM_GRAPHICS_BPP_32,
+					id, MF_BYCOMMAND);
+	}
 	
 	// Full Screen
 	const bool fullScreen = vdraw_get_fullscreen();

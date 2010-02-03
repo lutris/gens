@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -251,7 +251,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_STRETCH),
 				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH));
 	
-	// SDL color depth.
+	// Color depth.
 	switch (bppOut)
 	{
 		case 15:

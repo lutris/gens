@@ -109,9 +109,7 @@ static const GensMenuItem_t gmiGraphics_Stretch[];
 #ifdef GENS_OPENGL
 static const GensMenuItem_t gmiGraphics_GLRes[];
 #endif
-#ifdef GENS_OS_UNIX
 static const GensMenuItem_t gmiGraphics_bpp[];
-#endif
 static const GensMenuItem_t gmiGraphics_IntRend[];
 static const GensMenuItem_t gmiGraphics_FrameSkip[];
 
@@ -128,9 +126,7 @@ static const GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_OPENGL_ORTHOPROJ,	GMF_ITEM_CHECK,		"Orthographic &Projection",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_OPENGL_RES,	GMF_ITEM_SUBMENU,	"OpenGL Resolution",		&gmiGraphics_GLRes[0],	0, 0, 0},
 #endif /* GENS_OPENGL */
-#ifdef GENS_OS_UNIX
-	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Bits per pixel",		&gmiGraphics_bpp[0],	0, 0, 0},
-#endif /* GENS_OS_UNIX */
+	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Color &Depth",			&gmiGraphics_bpp[0],	0, 0, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Ad&just...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
 	{IDM_GRAPHICS_RENDER,		GMF_ITEM_SUBMENU,	"&Render",			NULL,	0, 0, IDIM_RENDER},
@@ -169,7 +165,6 @@ static const GensMenuItem_t gmiGraphics_GLRes[] =
 };
 #endif
 
-#ifdef GENS_OS_UNIX
 static const GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, 0},
@@ -177,7 +172,6 @@ static const GensMenuItem_t gmiGraphics_bpp[] =
 	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
-#endif
 
 static const GensMenuItem_t gmiGraphics_IntRend[] =
 {

@@ -28,6 +28,9 @@ class Options
 		static int saveSlot(void);
 		static void setSaveSlot(const int newSaveSlot);
 		
+		static int bpp(void);
+		static void setBpp(uint8_t newBpp);
+		
 		static int frameSkip(void);
 		static void setFrameSkip(const int newFrameSkip);
 		

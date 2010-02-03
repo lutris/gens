@@ -357,25 +357,17 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-#ifdef GENS_OS_UNIX
 		case IDM_GRAPHICS_BPP_15:
-			vdraw_set_bpp(15, true);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("SDL color depth: 15-bit (555)", 1500);
+			Options::setBpp(15);
 			break;
 		
 		case IDM_GRAPHICS_BPP_16:
-			vdraw_set_bpp(16, true);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("SDL color depth: 16-bit (565)", 1500);
+			Options::setBpp(16);
 			break;
 		
 		case IDM_GRAPHICS_BPP_32:
-			vdraw_set_bpp(32, true);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("SDL color depth: 32-bit", 1500);
+			Options::setBpp(32);
 			break;
-#endif /* GENS_OS_UNIX */
 		
 #ifdef GENS_OPENGL
 		case IDM_GRAPHICS_OPENGL_FILTER:

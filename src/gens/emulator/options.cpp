@@ -154,6 +154,61 @@ void Options::setSaveSlot(const int newSaveSlot)
 
 
 /**
+ * bpp(): Get the output color depth.
+ * @return Output color depth.
+ */
+int Options::bpp(void)
+{
+	return bppOut;
+}
+
+/**
+ * setBpp(): Set the output color depth.
+ * @param newBpp New output color depth.
+ */
+void Options::setBpp(uint8_t newBpp)
+{
+	if (newBpp == bppOut)
+		 return;
+	if (newBpp != 15 && newBpp != 16 && newBpp != 32)
+		return;
+	
+	// Set the new color depth.
+	uint8_t oldBpp = bppOut;
+	vdraw_set_bpp(newBpp, true);
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// Color depth setting.
+	const char *s_depth = "";
+	if (bppOut == 15)
+		s_depth = "15-bit (555)";
+	else if (bppOut == 16)
+		s_depth = "16-bit (565)";
+	else //if (bppOut == 32)
+		s_depth = "32-bit";
+	
+	if (oldBpp == bppOut)
+	{
+		// Couldn't adjust color depth.
+		const char *s_req = "";
+		if (newBpp == 15)
+			s_req = "15-bit (555)";
+		else if (newBpp == 16)
+			s_req = "16-bit (565)";
+		else //if (newBpp == 32)
+			s_req = "32-bit";
+		
+		vdraw_text_printf(1500, "Can't set %s. Reverted to %s.", s_depth, s_req);
+	}
+	else
+	{
+		// Color depth set.
+		vdraw_text_printf(1500, "Color depth set to %s.", s_depth);
+	}
+}
+
+
+/**
  * frameSkip(): Get the frame skip setting.
  * @return Frame skip setting. (-1 == Auto)
  */

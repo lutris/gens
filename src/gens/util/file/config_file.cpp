@@ -264,10 +264,7 @@ int Config::save(const string& filename)
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	cfg.writeBool("Graphics", "NTSC V30 Rolling", Video.ntscV30rolling);
 	cfg.writeInt("Graphics", "Interlaced Display", (int)VDP_IntRend_Mode);
-	
-#ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
-#endif /* GENS_OS_WIN32 */
 	
 	cfg.writeString("Graphics", "Backend", vdraw_backends[vdraw_cur_backend_id]->name);
 #ifdef GENS_OPENGL
@@ -574,7 +571,6 @@ int Config::load(const string& filename, void* gameActive)
 		rendMode_W = RenderMgr::begin();
 	}
 	
-#ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
 	bppOut = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 16));
 	if (bppOut != 15 && bppOut != 16 && bppOut != 32)
@@ -583,7 +579,6 @@ int Config::load(const string& filename, void* gameActive)
 		bppOut = 16;
 	}
 	bppMD = bppOut;
-#endif /* GENS_OS_WIN32 */
 	
 	string backend = cfg.getString("Graphics", "Backend", "");
 	// Determine the initial backend ID.

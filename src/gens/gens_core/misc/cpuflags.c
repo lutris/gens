@@ -175,11 +175,13 @@ uint32_t getCPUFlags(void)
 		{
 			// CPU supports FXSAVE. Does the OS?
 			unsigned int smsw;
+#if 0
 			__asm__ (
 				"smsw	%0"
 				:	"=r" (smsw)
 				);
-			
+#endif
+			smsw = 0;
 			if (!(smsw & IA32_CR0_EM))
 			{
 				// FPU emulation is disabled. This CPU supports FXSAVE with SSE.
