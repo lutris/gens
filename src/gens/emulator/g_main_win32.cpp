@@ -497,6 +497,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	gens_sighandler_init();	
 #endif
 	
+	// Reset the renderer.
+	// This should be done before initializing the backend
+	// to make sure vdraw_rInfo is initialized.
+	vdraw_reset_renderer(true);
+	
 	// Initialize the video backend.
 	if ((int)vdraw_cur_backend_id < 0)
 	{
@@ -515,9 +520,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Update the UI.
 	GensUI::update();
-	
-	// Reset the renderer.
-	vdraw_reset_renderer(true);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
