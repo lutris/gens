@@ -38,6 +38,7 @@
 
 // Save file handlers.
 #include "util/file/save.hpp"
+#include "util/file/sram.h"
 #include "util/file/mcd_bram.h"
 
 
@@ -93,7 +94,7 @@ static int mdp_host_emulator_control_reload_info(void) throw()
 {
 	// Save SRAM or BRAM, depending on what's loaded.
 	if (!SegaCD_Started)
-		Savestate::SaveSRAM();
+		SRAM_Save();
 	else
 		BRAM_Save();
 	
@@ -103,11 +104,15 @@ static int mdp_host_emulator_control_reload_info(void) throw()
 	// Reload SRAM or BRAM, depending on what's loaded.
 	if (!SegaCD_Started)
 	{
+		// MD/32X. Load SRAM.
 		Init_Genesis_SRAM(Game);
-		Savestate::LoadSRAM();
+		SRAM_Load();
 	}
 	else
+	{
+		// SegaCD. Load BRAM.
 		BRAM_Load();
+	}
 	
 	// Reinitialize the title bar.
 	if (Genesis_Started)

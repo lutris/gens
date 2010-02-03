@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: Directory Configuration Window. (Common Data)                     *
+ * Gens: Genesis Save RAM handler.                                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,27 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "dir_window_common.h"
+#ifndef GENS_SRAM_H
+#define GENS_SRAM_H
 
-// Includes with directory defines.
-// TODO: Consolidate these into Settings.PathNames
-#include "util/gfx/imageutil.hpp"
-#include "util/file/rom.hpp"
+// GENS_PATH_MAX
+#include "emulator/gens.hpp"
 
-// Save file handlers.
-#include "util/file/save.hpp"
-#include "util/file/sram.h"
-#include "util/file/mcd_bram.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+extern char SRAM_Dir[GENS_PATH_MAX];
 
-// Directory entries.
-const dir_entry_t dir_window_entries[DIR_WINDOW_ENTRIES_COUNT + 1] =
-{
-	{"Savestates",	State_Dir},
-	{"SRAM Backup",	SRAM_Dir},
-	{"BRAM Backup",	BRAM_Dir},
-	{"WAV Dump",	PathNames.Dump_WAV_Dir},
-	{"GYM Dump",	PathNames.Dump_GYM_Dir},
-	{"Screenshots",	PathNames.Screenshot_Dir},
-	{NULL, NULL}
-};
+int SRAM_Load(void);
+int SRAM_Save(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_SRAM_H */

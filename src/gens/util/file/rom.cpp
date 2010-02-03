@@ -67,6 +67,7 @@ using std::deque;
 
 // Save file handlers.
 #include "util/file/save.hpp"
+#include "util/file/sram.h"
 #include "util/file/mcd_bram.h"
 
 #include "util/sound/wave.h"
@@ -1049,7 +1050,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	if (SegaCD_Started)
 		BRAM_Save();
 	
-	Savestate::SaveSRAM();
+	SRAM_Save();
 	
 	// Audio dumping.
 	if (WAV_Dumping)

@@ -123,6 +123,7 @@ gens_SOURCES = \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
+		util/file/sram.c \
 		util/file/mcd_bram.c \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
@@ -249,6 +250,7 @@ noinst_HEADERS = \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
+		util/file/sram.h \
 		util/file/mcd_bram.h \
 		util/file/file.hpp \
 		util/file/gsx_struct.h \

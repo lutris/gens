@@ -37,6 +37,7 @@ using std::string;
 
 // Save file handlers.
 #include "save.hpp"
+#include "sram.h"
 #include "mcd_bram.h"
 
 #include "emulator/gens.hpp"

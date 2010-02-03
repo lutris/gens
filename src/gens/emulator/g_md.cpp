@@ -26,7 +26,10 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
+
+// Save file handlers.
 #include "util/file/save.hpp"
+#include "util/file/sram.h"
 
 // VDP rendering functions.
 #include "gens_core/vdp/vdp_rend.h"
@@ -249,7 +252,7 @@ void Init_Genesis_SRAM(ROM_t* MD_ROM)
 		SRAM_Custom = 0;
 	
 	// Load the SRAM file.
-	Savestate::LoadSRAM();
+	SRAM_Load();
 }
 
 

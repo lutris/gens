@@ -98,7 +98,6 @@ extern char preloaded_tracks [100], played_tracks_linear [101]; // added for syn
 
 int Current_State = 0;
 char State_Dir[GENS_PATH_MAX] = "";
-char SRAM_Dir[GENS_PATH_MAX] = "";
 
 // C++ includes
 using std::string;
@@ -2104,88 +2103,4 @@ void Savestate::GsxExport32X(unsigned char* data)
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);
 #endif
-}
-
-
-/**
- * GetSRAMFilename(): Get the filename of the SRAM file.
- * @return Filename of the SRAM file.
- */
-inline string Savestate::GetSRAMFilename(void)
-{
-	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
-		return "";
-	
-	return string(State_Dir) + string(ROM_Filename) + ".srm";
-}
-
-
-/**
- * LoadSRAM(): Load the SRAM file.
- * @return 0 on success; non-zero on error.
- */
-int Savestate::LoadSRAM(void)
-{
-	memset(SRAM, 0x00, sizeof(SRAM));
-	
-#ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
-	
-	string filename = GetSRAMFilename();
-	if (filename.empty())
-		return -1;
-	
-	FILE *SRAM_File = fopen(filename.c_str(), "rb");
-	if (!SRAM_File)
-		return -2;
-	
-	fread(SRAM, sizeof(SRAM), 1, SRAM_File);
-	fclose(SRAM_File);
-	
-	vdraw_text_printf(2000, "SRAM loaded from %s", filename.c_str());
-	return 0;
-}
-
-
-/**
- * SaveSRAM(): Save the SRAM file.
- * @return 0 on success; non-zero on error.
- */
-int Savestate::SaveSRAM(void)
-{
-	int size_to_save, i;
-	
-	i = (64 * 1024) - 1;
-	while ((i >= 0) && (SRAM[i] == 0))
-		i--;
-	
-	if (i < 0)
-		return -1;
-	
-	i++;
-	
-	size_to_save = 1;
-	while (i > size_to_save)
-		size_to_save <<= 1;
-	
-#ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
-	
-	string filename = GetSRAMFilename();
-	if (filename.empty())
-		return -2;
-	
-	FILE *SRAM_File = fopen(filename.c_str(), "wb");
-	if (!SRAM_File)
-		return -3;
-	
-	fwrite(SRAM, size_to_save, 1, SRAM_File);
-	fclose(SRAM_File);
-	
-	vdraw_text_printf(2000, "SRAM saved to %s", filename.c_str());
-	return 0;
 }

@@ -38,6 +38,7 @@
 
 // Save file handlers.
 #include "util/file/save.hpp"
+#include "util/file/sram.h"
 #include "util/file/mcd_bram.h"
 
 #include "gens_core/cpu/68k/cpu_68k.h"
