@@ -248,10 +248,14 @@ static void vdraw_gdi_clear_screen(void)
  */
 static int WINAPI vdraw_gdi_clear_primary_screen(void)
 {
-	if (!pbmpData)
-		return -1;
+	HDC  hdcDest;
+	RECT rectDest;
 	
-	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
+	hdcDest = GetDC(gens_window);
+	InvalidateRect(gens_window, NULL, FALSE);
+	GetClientRect(gens_window, &rectDest);
+	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	
 	return 0;
 }
 
@@ -262,14 +266,10 @@ static int WINAPI vdraw_gdi_clear_primary_screen(void)
  */
 static int WINAPI vdraw_gdi_clear_back_screen(void)
 {
-	HDC  hdcDest;
-	RECT rectDest;
+	if (!pbmpData)
+		return -1;
 	
-	hdcDest = GetDC(gens_window);
-	InvalidateRect(gens_window, NULL, FALSE);
-	GetClientRect(gens_window, &rectDest);
-	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
-	
+	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
 	return 0;
 }
 
