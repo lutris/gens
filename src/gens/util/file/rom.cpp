@@ -1049,8 +1049,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	
 	if (SegaCD_Started)
 		BRAM_Save();
-	
-	SRAM_Save();
+	else
+		SRAM_Save();
 	
 	// Audio dumping.
 	if (WAV_Dumping)
