@@ -152,35 +152,48 @@ static int vdraw_gdi_init(void)
 	// Create the DIB.
 	// TODO: Currently always uses 16-bit color.
 	// Maybe make it user-specified.
-	BITMAPINFOHEADER bih;
-	memset(&bih, 0x00, sizeof(bih));
-	bih.biSize	= sizeof(bih);
-	bih.biPlanes	= 1;
-	bih.biWidth	= szGDIBuf.cx;
-	bih.biHeight	= -szGDIBuf.cy;
+	typedef struct _BITMAPINFO_BI_BITFIELDS
+	{
+		BITMAPINFOHEADER bmiHeader;
+		uint32_t bmiColors[3];
+	} BITMAPINFO_BI_BITFIELDS;
 	
+	BITMAPINFO_BI_BITFIELDS bmi;
+	memset(&bmi, 0x00, sizeof(bmi));
+	bmi.bmiHeader.biSize	= sizeof(bmi.bmiHeader);
+	bmi.bmiHeader.biPlanes	= 1;
+	bmi.bmiHeader.biWidth	= szGDIBuf.cx;
+	bmi.bmiHeader.biHeight	= -szGDIBuf.cy;
+	
+	// Determine the bit count, compression, and color table values.
 	switch (bppOut)
 	{
 		case 15:
 			// 15-bit color. (555)
-			bih.biBitCount = 16;
+			bmi.bmiHeader.biBitCount = 16;
+			bmi.bmiHeader.biCompression = BI_RGB;
 			break;
 		
 		case 16:
 			// 16-bit color. (565)
 			// TODO: BI_BITFIELDS
-			bih.biBitCount = 16;
+			bmi.bmiHeader.biBitCount = 16;
+			bmi.bmiHeader.biCompression = BI_BITFIELDS;
+			bmi.bmiColors[0] = 0xF800; // Red
+			bmi.bmiColors[1] = 0x07E0; // Green
+			bmi.bmiColors[2] = 0x001F; // Blue
 			break;
 		
 		case 32:
 		default:
 			// 32-bit color.
-			bih.biBitCount = 32;
+			bmi.bmiHeader.biBitCount = 32;
+			bmi.bmiHeader.biCompression = BI_RGB;
 			break;
 	}
 	
 	// Create the DIB.
-	hbmpDraw = CreateDIBSection(hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
+	hbmpDraw = CreateDIBSection(hdcComp, (BITMAPINFO*)&bmi, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
 	if (!hbmpDraw)
 	{
 		// Error creating the DIB.
