@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -453,21 +453,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Delete the command line arguments.
 	deleteArgcArgv(&arg);
 	
-	// Recalculate the palettes, in case a command line argument changed a video setting.
-	Recalculate_Palettes();
-	
-	Init_Genesis_Bios();
-	
-	// Initialize Gens.
-	if (!Init())
-		return 0;
-	
-	// Initialize the UI.
-	GensUI::init(NULL, NULL);
-	
-	// not yet finished (? - wryun)
-	//initializeConsoleRomsView();
-	
 #if !defined(GENS_WIN32_CONSOLE)
 	int enable_debug_console = startup->enable_debug_console;
 	if (enable_debug_console)
@@ -496,6 +481,21 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Install the signal handler.
 	gens_sighandler_init();	
 #endif
+	
+	// Recalculate the palettes, in case a command line argument changed a video setting.
+	Recalculate_Palettes();
+	
+	Init_Genesis_Bios();
+	
+	// Initialize Gens.
+	if (!Init())
+		return 0;
+	
+	// Initialize the UI.
+	GensUI::init(NULL, NULL);
+	
+	// not yet finished (? - wryun)
+	//initializeConsoleRomsView();
 	
 	// Reset the renderer.
 	// This should be done before initializing the backend
