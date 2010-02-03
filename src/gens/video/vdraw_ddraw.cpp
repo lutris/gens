@@ -280,8 +280,9 @@ int vdraw_ddraw_init(void)
 	// TODO: Figure out if this is correct.
 	if (vdraw_get_fullscreen() /* && !FS_No_Res_Change*/)
 	{
-		// Always use 16-bit color in fullscreen.
-		rval = lpDD->SetDisplayMode(Res_X, Res_Y, 16, 0, 0);
+		// Use the color depth setting.
+		// NOTE: "15-bit" color requires 16-bit to be specified.
+		rval = lpDD->SetDisplayMode(Res_X, Res_Y, (bppOut == 15 ? 16 : bppOut), 0, 0);
 		if (FAILED(rval))
 		{
 			vdraw_ddraw_free_all(false);
@@ -303,6 +304,7 @@ int vdraw_ddraw_init(void)
 		}
 	}
 	
+#if 0
 	// Check the current color depth.
 	unsigned char newBpp;
 	lpDD->GetDisplayMode(&ddsd);
@@ -325,6 +327,7 @@ int vdraw_ddraw_init(void)
 	
 	if (newBpp != bppOut)
 		vdraw_set_bpp(newBpp, false);
+#endif
 	
 	vdraw_ddraw_set_cooperative_level();
 	
@@ -428,6 +431,42 @@ int vdraw_ddraw_init(void)
 		ddsd.dwHeight = h;
 	}
 	
+	// Set the pixel format.
+	ddsd.dwFlags |= DDSD_PIXELFORMAT;
+	ddsd.ddpfPixelFormat.dwSize = sizeof(ddsd.ddpfPixelFormat);
+	ddsd.ddpfPixelFormat.dwFlags = DDPF_RGB;
+	ddsd.ddpfPixelFormat.dwFourCC = 0; // RGB
+	ddsd.ddpfPixelFormat.dwRGBAlphaBitMask = 0;
+	
+	// Bits per component.
+	switch (bppOut)
+	{
+		case 15:
+			// 15-bit color. (555)
+			ddsd.ddpfPixelFormat.dwRGBBitCount = 16;
+			ddsd.ddpfPixelFormat.dwRBitMask = 0x7C00;
+			ddsd.ddpfPixelFormat.dwGBitMask = 0x03E0;
+			ddsd.ddpfPixelFormat.dwBBitMask = 0x001F;
+			break;
+		
+		case 16:
+			// 16-bit color. (555)
+			ddsd.ddpfPixelFormat.dwRGBBitCount = 16;
+			ddsd.ddpfPixelFormat.dwRBitMask = 0xF800;
+			ddsd.ddpfPixelFormat.dwGBitMask = 0x07E0;
+			ddsd.ddpfPixelFormat.dwBBitMask = 0x001F;
+			break;
+		
+		case 32:
+		default:
+			// 32-bit color.
+			ddsd.ddpfPixelFormat.dwRGBBitCount = 32;
+			ddsd.ddpfPixelFormat.dwRBitMask = 0xFF0000;
+			ddsd.ddpfPixelFormat.dwGBitMask = 0x00FF00;
+			ddsd.ddpfPixelFormat.dwBBitMask = 0x0000FF;
+			break;
+	}
+	
 	// Create the back surface.
 	rval = lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL);
 	if (FAILED(rval))
@@ -473,6 +512,9 @@ int vdraw_ddraw_init(void)
 		memset(&ddsd, 0, sizeof(ddsd));
 		ddsd.dwSize = sizeof(ddsd);
 		
+		// TODO: This causes issues if the selected color depth isn't the
+		// same as the desktop color depth. This only affects windowed mode,
+		// since in fullscreen, the desktop color depth is changed.
 		rval = lpDDS_Back->GetSurfaceDesc(&ddsd);
 		if (FAILED(rval))
 		{
