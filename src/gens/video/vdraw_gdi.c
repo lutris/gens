@@ -295,12 +295,6 @@ static void vdraw_gdi_update_renderer(void)
  */
 static int vdraw_gdi_flip(void)
 {
-	HDC	hdcDest;
-	RECT	rectDest;
-	
-	GetClientRect(gens_window, &rectDest);
-	hdcDest = GetDC(gens_window);
-	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	const int pitch = szGDIBuf.cx * bytespp;
 	
@@ -349,17 +343,24 @@ static int vdraw_gdi_flip(void)
 			  vdraw_msg_text, &vdraw_fps_style);
 	}
 	
+	// Get the device context.
+	HDC hdcDest = GetDC(gens_window);
+	
+	// Get the window rectangle.
+	RECT rectDest;
+	GetClientRect(gens_window, &rectDest);
+	
 	// Blit the image to the GDI window.
 	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
 		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
-		       hdcComp, 0, 0, SRCCOPY);
+			hdcComp, 0, 0, SRCCOPY);
 	}
 	else
 	{
 		StretchBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
-			   hdcComp, vdraw_gdi_stretch_srcX, vdraw_gdi_stretch_srcY,
-			   vdraw_gdi_stretch_srcW, vdraw_gdi_stretch_srcH, SRCCOPY);
+				hdcComp, vdraw_gdi_stretch_srcX, vdraw_gdi_stretch_srcY,
+				vdraw_gdi_stretch_srcW, vdraw_gdi_stretch_srcH, SRCCOPY);
 	}
 	
 	InvalidateRect(gens_window, NULL, FALSE);
