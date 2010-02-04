@@ -919,14 +919,18 @@ AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
 
 # Check for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
+AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h wchar.h])
+if test x$os != xwin32; then
+# Headers for non-Win32 operating systems.
+	AC_CHECK_HEADERS([sys/ioctl.h])
+fi
 
 # Check for library functions.
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_ALLOCA
-AC_CHECK_FUNCS([getcwd gettimeofday memmove memset mkdir pow rint])
-AC_CHECK_FUNCS([setenv sqrt strcasecmp strchr strerror strncasecmp])
-AC_CHECK_FUNCS([strpbrk strrchr strspn strstr strtol strtoul])
+AC_CHECK_FUNCS([memset memmove strcasecmp strncasecmp strchr strerror])
+AC_CHECK_FUNCS([strrchr strstr strtol strtoul])
+AC_CHECK_FUNCS([getcwd gettimeofday mkdir pow rint setenv unsetenv])
 
 # Check for iconv().
 # First, check for iconv() in the C library.
