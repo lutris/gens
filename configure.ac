@@ -814,11 +814,13 @@ if test x$GCC = xyes; then
 	fi
 fi
 
-# Stack smash protection.
-AM_CFLAGS="$AM_CFLAGS -D_FORTIFY_SOURCE=2"
-AM_CXXFLAGS="$AM_CXXFLAGS -D_FORTIFY_SOURCE=2"
-GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector], AM_CFLAGS, AM_CXXFLAGS)
-GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector-all], AM_CFLAGS, AM_CXXFLAGS)
+# Stack-smashing protection. (Not supported on MinGW.)
+if test x$os != xwin32; then
+	AM_CFLAGS="$AM_CFLAGS -D_FORTIFY_SOURCE=2"
+	AM_CXXFLAGS="$AM_CXXFLAGS -D_FORTIFY_SOURCE=2"
+	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector], AM_CFLAGS, AM_CXXFLAGS)
+	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector-all], AM_CFLAGS, AM_CXXFLAGS)
+fi
 
 
 # Check for various optimization flags.
