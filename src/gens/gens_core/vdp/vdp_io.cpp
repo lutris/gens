@@ -745,35 +745,36 @@ uint16_t VDP_Read_Data(void)
 	// (It's set when the address is set.)
 	VDP_Ctrl.Flag = 0;
 	
-	uint16_t data;
+	// NOTE: volatile is needed due to an optimization issue in gcc-4.3/4.4.
+	// Specifically, Soleil (Crusader oF Centry) has corrupted onscreen text
+	// if Gens/GS is compiled with optimizations.
+	// TODO: Report this as a bug to the gcc developers.
+	volatile uint16_t data;
 	
 	// Check the access mode.
 	switch (VDP_Ctrl.Access)
 	{
 		case 5:
 			// VRam Read.
-			data = VRam.u16[(VDP_Ctrl.Address & 0xFFFE) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
+			data = VRam.u16[(VDP_Ctrl.Address & 0xFFFF) >> 1];
 			break;
 		
 		case 6:
 			// CRam Read.
 			data = CRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 			break;
 		
 		case 7:
 			// VSRam Read.
 			data = VSRam.u16[(VDP_Ctrl.Address & 0x7E) >> 1];
-			VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 			break;
 		
 		default:
 			// Invalid read specification.
-			data = 0;
-			break;
+			return 0;
 	}
 	
+	VDP_Ctrl.Address += VDP_Reg.m5.Auto_Inc;
 	return data;
 }
 
