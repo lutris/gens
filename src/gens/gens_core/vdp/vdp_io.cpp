@@ -745,9 +745,10 @@ uint16_t VDP_Read_Data(void)
 	// (It's set when the address is set.)
 	VDP_Ctrl.Flag = 0;
 	
-	// NOTE: volatile is needed due to an optimization issue in gcc-4.3/4.4.
-	// Specifically, Soleil (Crusader oF Centry) has corrupted onscreen text
-	// if Gens/GS is compiled with optimizations.
+	// NOTE: volatile is needed due to an optimization issue caused by
+	// -march=i586 -mtune=i686 (specifically, the -mtune).
+	// An example of the issue can be seen in Soleil (Crusader oF Centry).
+	// The onscreen text is partially corrupted when scrolling.
 	// TODO: Report this as a bug to the gcc developers.
 	volatile uint16_t data;
 	
