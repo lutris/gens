@@ -807,10 +807,10 @@ if test x$GCC = xyes; then
 		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wunused], AM_CFLAGS, AM_CXXFLAGS)
 		
 		# C-only flags.
-		GSFT_CFLAGS_GCC_OPTION([-Wstrict-prototypes], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wold-style-definition], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wmissing-prototypes], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wnested-externs], AM_CFLAGS, AM_CXXFLAGS)
+		GSFT_CFLAGS_GCC_OPTION([-Wstrict-prototypes], AM_CFLAGS)
+		GSFT_CFLAGS_GCC_OPTION([-Wold-style-definition], AM_CFLAGS)
+		GSFT_CFLAGS_GCC_OPTION([-Wmissing-prototypes], AM_CFLAGS)
+		GSFT_CFLAGS_GCC_OPTION([-Wnested-externs], AM_CFLAGS)
 	fi
 fi
 
