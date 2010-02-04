@@ -918,11 +918,10 @@ AM_CONDITIONAL([HAVE_STRLCAT], [test x$has_strlcat = xyes])
 AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
 
-# Checks for header files.
-AC_PATH_X
+# Check for header files.
 AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
 
-# Checks for library functions.
+# Check for library functions.
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS([getcwd gettimeofday memmove memset mkdir pow rint])
