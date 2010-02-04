@@ -175,9 +175,12 @@ if test x$os = xunix -o x$os = xlinux -o x$os = xmacosx; then
 # Unix or Unix-like operating system.
 
 # Check for libX11.
-PKG_CHECK_MODULES([X11], [x11], [has_libX11=yes], [has_libX11=no])
-if test x$has_libX11 = xyes; then
+AC_PATH_XTRA
+if test x$no_x != xyes; then
 	AC_DEFINE(HAVE_LIBX11, 1, Define to 1 if you have the `X11' library (-lX11).)
+	
+	# AC_PATH_XTRA doesn't seem to add -lX11 for some reason.
+	X_LIBS="$X_LIBS -lX11"
 fi
 
 # TODO: Allow UI selection later on.
@@ -303,9 +306,11 @@ AC_SUBST(DBUS_GLIB_CFLAGS)
 AC_SUBST(DBUS_GLIB_LIBS)
 
 # X11 conditional and substitutions.
-AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])
-AC_SUBST(X11_CFLAGS)
-AC_SUBST(X11_LIBS)
+AM_CONDITIONAL([HAVE_LIBX11], [test x$no_x != xyes])
+AC_SUBST(X_CFLAGS)
+AC_SUBST(X_LIBS)
+AC_SUBST(X_EXTRA_LIBS)
+AC_SUBST(X_PRE_LIBS)
 
 # Check for nasm.
 AC_ARG_WITH(nasm, AC_HELP_STRING([--with-nasm[[=nasm]]], [Select nasm or yasm [[default=nasm]]]), with_nasm=$withval, with_nasm=nasm)
@@ -919,7 +924,6 @@ AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
 
 # Checks for header files.
-AC_PATH_X
 AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
 
 # Checks for library functions.
