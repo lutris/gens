@@ -5,7 +5,6 @@
 // C includes.
 #include <string.h>
 #include <stdio.h>
-#include <limits.h>
 #include <unistd.h>
 
 #include "emulator/g_main.hpp"

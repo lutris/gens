@@ -11,7 +11,6 @@
 // C includes.
 #include <string.h>
 #include <stdio.h>
-#include <limits.h>
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
