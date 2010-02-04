@@ -98,7 +98,7 @@ libgsft_iconv_la_LIBADD		= @ICONV_LIBS@
 libgsft_iconv_la_LIBTOOLFLAGS	= $(libgsft_la_LIBTOOLFLAGS)
 
 libgsft_iconv_la_SOURCES	= gsft_iconv.c
-noinst_HEADERS			= gsft_iconv.h
+noinst_HEADERS			+= gsft_iconv.h
 
 endif # HAVE_ICONV
 
