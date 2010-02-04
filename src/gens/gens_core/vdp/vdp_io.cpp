@@ -746,7 +746,8 @@ uint16_t VDP_Read_Data(void)
 	VDP_Ctrl.Flag = 0;
 	
 	// NOTE: volatile is needed due to an optimization issue caused by
-	// -march=i586 -mtune=i686 (specifically, the -mtune).
+	// -ftree-pre on gcc-4.4.2. (It also breaks on gcc-3.4.5, but that
+	// flag doesn't exist on gcc-3.4.5...)
 	// An example of the issue can be seen in Soleil (Crusader oF Centry).
 	// The onscreen text is partially corrupted when scrolling.
 	// TODO: Report this as a bug to the gcc developers.
