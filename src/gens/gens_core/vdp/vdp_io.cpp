@@ -1058,7 +1058,7 @@ typedef enum
 
 
 /**
- * T_DMA_Loop(): DMA copy loop.
+ * T_DMA_Loop(): Mem-to-DMA loop.
  * @param src_component Source component.
  * @param dest_component Destination component.
  * @param src_address Source address.
@@ -1150,35 +1150,35 @@ static inline void T_DMA_Loop(unsigned int src_address, unsigned int dest_addres
 			
 			case DMA_SRC_PRG_RAM:
 				// TODO: This is untested!
-				w = ((uint16_t*)Ram_Prg)[src_address >> 1];
+				w = Ram_Prg.u16[src_address >> 1];
 				break;
 			
 			case DMA_SRC_WORD_RAM_2M:
-				w = ((uint16_t*)Ram_Word_2M)[src_address >> 1];
+				w = Ram_Word_2M.u16[src_address >> 1];
 				break;
 			
 			case DMA_SRC_WORD_RAM_1M_0:
 				// TODO: This is untested!
-				w = ((uint16_t*)Ram_Word_1M)[src_address >> 1];
+				w = Ram_Word_1M.u16[src_address >> 1];
 				break;
 			
 			case DMA_SRC_WORD_RAM_1M_1:
 				// TODO: This is untested!
-				w = ((uint16_t*)Ram_Word_1M)[(src_address + 0x20000) >> 1];
+				w = Ram_Word_1M.u16[(src_address + 0x20000) >> 1];
 				break;
 			
 			case DMA_SRC_WORD_RAM_CELL_1M_0:
 				// TODO: This is untested!
 				// Cell conversion is required.
 				w = Cell_Conv_Tab[src_address >> 1];
-				w = ((uint16_t*)Ram_Word_1M)[w];
+				w = Ram_Word_1M.u16[w];
 				break;
 			
 			case DMA_SRC_WORD_RAM_CELL_1M_1:
 				// TODO: This is untested!
 				// Cell conversion is required.
 				w = Cell_Conv_Tab[src_address >> 1];
-				w = ((uint16_t*)Ram_Word_1M)[w + (0x20000 >> 1)];
+				w = Ram_Word_1M.u16[w + (0x20000 >> 1)];
 				break;
 			
 			default:	// to make gcc shut up

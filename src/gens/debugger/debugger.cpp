@@ -530,16 +530,17 @@ static void Refresh_S68k_Mem(void)
 	
 	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
+		// TODO: Optimize this to use Ram_Word_1M.u16[].
 		unsigned int i = (j & 0x1FFFF) << 1;
 		PrintF_Text(1, 146 + (k << 3), TEXT_WHITE,
 				"%05X: %04X %04X %04X %04X %04X %04X",
 				i, // current address
-				Ram_Word_1M[i] + (Ram_Word_1M[i + 1] << 8),
-				Ram_Word_1M[i + 2] + (Ram_Word_1M[i + 3] << 8),
-				Ram_Word_1M[i + 4] + (Ram_Word_1M[i + 5] << 8),
-				Ram_Word_1M[i + 6] + (Ram_Word_1M[i + 7] << 8),
-				Ram_Word_1M[i + 8] + (Ram_Word_1M[i + 9] << 8),
-				Ram_Word_1M[i + 10] + (Ram_Word_1M[i + 11] << 8));
+				Ram_Word_1M.u8[i] + (Ram_Word_1M.u8[i + 1] << 8),
+				Ram_Word_1M.u8[i + 2] + (Ram_Word_1M.u8[i + 3] << 8),
+				Ram_Word_1M.u8[i + 4] + (Ram_Word_1M.u8[i + 5] << 8),
+				Ram_Word_1M.u8[i + 6] + (Ram_Word_1M.u8[i + 7] << 8),
+				Ram_Word_1M.u8[i + 8] + (Ram_Word_1M.u8[i + 9] << 8),
+				Ram_Word_1M.u8[i + 10] + (Ram_Word_1M.u8[i + 11] << 8));
 	}
 }
 
@@ -1164,9 +1165,9 @@ static void Refresh_Word_RAM_Pattern(void)
 	}
 	
 	if (Rot_Comp.Stamp_Size & 2)
-		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr], pattern_pal);
+		Cell_32x32_Dump(&Ram_Word_2M.u8[cd_pattern_adr], pattern_pal);
 	else
-		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr], pattern_pal);
+		Cell_16x16_Dump(&Ram_Word_2M.u8[cd_pattern_adr], pattern_pal);
 }
 
 

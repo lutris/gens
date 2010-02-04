@@ -112,35 +112,35 @@ struct STARSCREAM_DATAREGION M68K_Write_Word[] =
 
 struct STARSCREAM_PROGRAMREGION S68K_Fetch[] =
 {
-	{0x000000, 0x07FFFF, (unsigned int)&Ram_Prg[0]},
+	{0x000000, 0x07FFFF, (unsigned int)&Ram_Prg.u8[0]},
 	{-1, -1, (unsigned int)NULL},
 	{-1, -1, (unsigned int)NULL}
 };
 
 struct STARSCREAM_DATAREGION S68K_Read_Byte[] =
 {
-	{0x000000, 0x07FFFF, NULL, &Ram_Prg[0]},
+	{0x000000, 0x07FFFF, NULL, &Ram_Prg.u8[0]},
 	{0x080000, 0xFFFFFF, (void*)S68K_RB, NULL},
 	{-1, -1, NULL, NULL}
 };
 
 struct STARSCREAM_DATAREGION S68K_Read_Word[] =
 {
-	{0x000000, 0x07FFFF, NULL, &Ram_Prg[0]},
+	{0x000000, 0x07FFFF, NULL, &Ram_Prg.u8[0]},
 	{0x080000, 0xFFFFFF, (void*)S68K_RW, NULL},
 	{-1, -1, NULL, NULL}
 };
 
 struct STARSCREAM_DATAREGION S68K_Write_Byte[] =
 {
-	{0x000000, 0x07FFFF, NULL, &Ram_Prg[0]},
+	{0x000000, 0x07FFFF, NULL, &Ram_Prg.u8[0]},
 	{0x080000, 0xFFFFFF, (void*) S68K_WB, NULL},
 	{-1, -1, NULL, NULL}
 };
 
 struct STARSCREAM_DATAREGION S68K_Write_Word[] =
 {
-	{0x000000, 0x07FFFF, NULL, &Ram_Prg[0]},
+	{0x000000, 0x07FFFF, NULL, &Ram_Prg.u8[0]},
 	{0x080000, 0xFFFFFF, (void*) S68K_WW, NULL},
 	{-1, -1, NULL, NULL}
 };
@@ -282,9 +282,9 @@ void M68K_Reset(int System_ID)
  */
 void S68K_Reset(void)
 {
-	memset(Ram_Prg,     0x00, sizeof(Ram_Prg));
-	memset(Ram_Word_2M, 0x00, sizeof(Ram_Word_2M));
-	memset(Ram_Word_1M, 0x00, sizeof(Ram_Word_1M));
+	memset(Ram_Prg.u8,     0x00, sizeof(Ram_Prg));
+	memset(Ram_Word_2M.u8, 0x00, sizeof(Ram_Word_2M));
+	memset(Ram_Word_1M.u8, 0x00, sizeof(Ram_Word_1M));
 	
 	memset(COMM.Command, 0x00, sizeof(COMM.Command));
 	memset(COMM.Status,  0x00, sizeof(COMM.Status));
@@ -398,7 +398,7 @@ void M68K_Set_32X_Rom_Bank(void)
 void M68K_Set_Prg_Ram(void)
 {
 	// Program RAM uses M68K_Fetch[34].
-	M68K_Fetch[34].offset = (unsigned int)&Ram_Prg[Bank_M68K] - 0x020000;
+	M68K_Fetch[34].offset = (unsigned int)&Ram_Prg.u8[Bank_M68K] - 0x020000;
 }
 
 
@@ -415,7 +415,7 @@ void MS68K_Set_Word_Ram(void)
 			// Mode 2M -> Assigned to Main CPU
 			M68K_Fetch[33].lowaddr = 0x200000;
 			M68K_Fetch[33].highaddr = 0x23FFFF;
-			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_2M[0] - 0x200000;
+			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_2M.u8[0] - 0x200000;
 			
 			//S68K_Fetch[1].lowaddr = -1;
 			//S68K_Fetch[1].highaddr = -1;
@@ -423,7 +423,7 @@ void MS68K_Set_Word_Ram(void)
 			
 			S68K_Fetch[1].lowaddr = 0x080000;	// why not after all...
 			S68K_Fetch[1].highaddr = 0x0BFFFF;
-			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_2M[0] - 0x080000;
+			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_2M.u8[0] - 0x080000;
 			break;
 		
 		case 1:
@@ -434,33 +434,37 @@ void MS68K_Set_Word_Ram(void)
 			
 			M68K_Fetch[33].lowaddr = 0x200000;	// why not after all...
 			M68K_Fetch[33].highaddr = 0x23FFFF;
-			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_2M[0] - 0x200000;
+			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_2M.u8[0] - 0x200000;
 			
 			S68K_Fetch[1].lowaddr = 0x080000;
 			S68K_Fetch[1].highaddr = 0x0BFFFF;
-			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_2M[0] - 0x080000;
+			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_2M.u8[0] - 0x080000;
 			break;
 		
 		case 2:
 			// Mode 1M -> Bank 0 to Main CPU
 			M68K_Fetch[33].lowaddr = 0x200000;	// Bank 0
 			M68K_Fetch[33].highaddr = 0x21FFFF;
-			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_1M[0] - 0x200000;
+			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_1M.u8[0] - 0x200000;
 			
 			S68K_Fetch[1].lowaddr = 0x0C0000;	// Bank 1
 			S68K_Fetch[1].highaddr = 0x0DFFFF;
-			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_1M[0x20000] - 0x0C0000;
+			S68K_Fetch[1].offset = (unsigned int)&Ram_Word_1M.u8[0x20000] - 0x0C0000;
 			break;
 		
 		case 3:
 			// Mode 1M -> Bank 0 to Sub CPU
 			M68K_Fetch[33].lowaddr = 0x200000;	// Bank 1
 			M68K_Fetch[33].highaddr = 0x21FFFF;
-			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_1M[0x20000] - 0x200000;
+			M68K_Fetch[33].offset = (unsigned int)&Ram_Word_1M.u8[0x20000] - 0x200000;
 			
 			S68K_Fetch[1].lowaddr = 0x0C0000;	// Bank 0
 			S68K_Fetch[1].highaddr = 0x0DFFFF;
-			S68K_Fetch[1].offset = (unsigned int) &Ram_Word_1M[0] - 0x0C0000;
+			S68K_Fetch[1].offset = (unsigned int) &Ram_Word_1M.u8[0] - 0x0C0000;
+			break;
+		
+		default:
+			// to make gcc shut up
 			break;
 	}
 }

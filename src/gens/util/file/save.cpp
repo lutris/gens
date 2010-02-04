@@ -1392,14 +1392,14 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 	//Word RAM state
 	
 	//Prg RAM
-	ImportData(Ram_Prg, data, 0x1000, 0x80000);
+	ImportData(Ram_Prg.u8, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		ImportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
+		ImportData(Ram_Word_1M.u8, data, 0x81000, 0x40000); //1M mode
 	else
-		ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
-		//ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		ImportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
+		//ImportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
 	ImportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
@@ -1628,13 +1628,13 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	//Word RAM state
 	
 	//Prg RAM
-	ExportData(Ram_Prg, data, 0x1000, 0x80000);
+	ExportData(Ram_Prg.u8, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		ExportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
+		ExportData(Ram_Word_1M.u8, data, 0x81000, 0x40000); //1M mode
 	else
-		ExportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		ExportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
 	ExportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
