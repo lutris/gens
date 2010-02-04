@@ -2,15 +2,20 @@
 /autom4te.cache/
 /FOR FUTURE USE/
 /aclocal.m4
+/compile
 /config.guess
 /config.sub
 /config.h.in
 /config.log
 /configure
+/depcomp
 /Doxyfile
 /gens_gs.kdev*
+/install-sh
 /libtool
 /ltmain.sh
+/missing
+/mkinstalldirs
 
 Makefile.in
 
