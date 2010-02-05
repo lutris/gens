@@ -1166,7 +1166,7 @@ section .text align=64
 	align 16
 	
 	.no_vdp_data:
-		cmp	ebx, 0xC00007
+		cmp	ebx, byte 0x07
 		ja	.no_vdp_status
 		
 		call	SYM(VDP_Read_Status)
@@ -1176,7 +1176,7 @@ section .text align=64
 	align 16
 	
 	.no_vdp_status:
-		cmp	ebx, 0xC00009
+		cmp	ebx, byte 0x09
 		ja	short .bad
 		call	SYM(VDP_Read_V_Counter)
 		mov	bl, al
@@ -1757,7 +1757,7 @@ section .text align=64
 	align 16
 	
 	.no_data_port:
-		cmp	ebx, 0xC00007
+		cmp	ebx, byte 0x07
 		ja	short .bad
 		
 		push	eax
