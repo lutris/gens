@@ -833,7 +833,7 @@ unsigned int VDP_Update_DMA(void)
 	}
 	
 	// DMA is finished. Do some processing.
-	unsigned int len_tmp = (VDP_Reg.DMAT_Length + timing);
+	const unsigned int len_tmp = VDP_Reg.DMAT_Length;
 	VDP_Reg.DMAT_Length = 0;
 	
 	// Calculate the new cycles value.
