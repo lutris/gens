@@ -267,9 +267,21 @@ static FORCE_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern,
 		
 		// Apply highlight/shadow based on priority.
 		if (!priority)
+		{
+			// No priority.
 			layer_bits &= (LINEBUF_SHAD_B | LINEBUF_HIGH_B);
+			
+			if (px == 0x0E || px == 0x1E || px == 0x2E)
+			{
+				// Color 14 in palettes 0-2 are never shadowed.
+				layer_bits &= ~LINEBUF_SHAD_B;
+			}
+		}
 		else
+		{
+			// Priority. Only allow highlighting.
 			layer_bits &= LINEBUF_HIGH_B;
+		}
 		
 		// Apply the layer bits.
 		px |= layer_bits;
