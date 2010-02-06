@@ -68,8 +68,14 @@ void	(*audio_wp_inc)(void) = NULL;
 
 // Audio data.
 int Seg_L[882], Seg_R[882];
+
+/**
+ * Sound_Extrapol[][]: Sound extrapolation data.
+ * [312]: Line number.
+ * [1]: 0 == start position; 1 == length.
+ * TODO: This restricts DAC frequency to a maximum of 15,720 Hz on NTSC.
+ */
 unsigned int Sound_Extrapol[312][2];
-unsigned int Sound_Interpol[882];
 
 // External values. (TODO: Make these properties.)
 int	audio_seg_length;
@@ -128,8 +134,6 @@ int audio_init(AUDIO_BACKEND backend)
 		Sound_Extrapol[i][0] = ((audio_seg_length * i) / videoLines);
 		Sound_Extrapol[i][1] = (((audio_seg_length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
 	}
-	for (i = 0; i < audio_seg_length; i++)
-		Sound_Interpol[i] = ((videoLines * i) / audio_seg_length);
 	
 	// Clear the segment buffers.
 	memset(Seg_L, 0x00, sizeof(Seg_L));
