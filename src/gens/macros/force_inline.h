@@ -21,6 +21,10 @@
 #ifndef GENS_FORCE_INLINE_H
 #define GENS_FORCE_INLINE_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // Force inlining if we're not making a debug build.
 #if !defined(GENS_DEBUG) && defined(__GNUC__) && (__GNUC__ >= 4)
 #define FORCE_INLINE __attribute__ ((always_inline))
