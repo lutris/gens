@@ -105,7 +105,7 @@ int Update_Emulation(void)
 			// cycles ahead of the graphics.
 			
 #ifdef GENS_OS_WIN32
-			// Win32 specific.
+			// Win32-specific.
 			audio_wp_seg_wait();
 #endif /* GENS_OS_WIN32 */
 			
@@ -118,14 +118,6 @@ int Update_Emulation(void)
 			 * - Update_Frame_Fast() (if necessary)
 			 */
 			audio_wait_for_audio_buffer();
-			
-#ifndef GENS_OS_WIN32
-			// Audio buffer is empty.
-			input_update_controllers();
-			Update_Frame();
-			if (!IS_DEBUGGING())
-				vdraw_flip(1);
-#endif
 		}
 		else
 		{

@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -28,6 +28,14 @@
 #include "audio_sdl.h"
 #include <SDL/SDL.h>
 
+// Update functions.
+#include "debugger/debugger.hpp"
+#include "video/vdraw.h"
+#include "emulator/g_main.hpp"
+
+// Input Handler: Update Controllers.
+#include "input/input_update.h"
+
 // MMX audio functions.
 #ifdef GENS_X86_ASM
 #include "audio_mmx.h"
@@ -43,6 +51,9 @@
 // C includes.
 #include <string.h>
 #include <unistd.h>
+
+// libgsft includes.
+#include "libgsft/gsft_unused.h"
 
 // Function prototypes.
 static int	audio_sdl_init(void);
@@ -149,6 +160,8 @@ static int audio_sdl_end(void)
  */
 static void audio_sdl_callback(void *user, uint8_t *buffer, int len)
 {
+	GSFT_UNUSED_PARAMETER(user);
+	
 	if (audio_sdl_len < len)
 	{
 		memcpy(buffer, audio_sdl_audiobuf, audio_sdl_len);
@@ -225,15 +238,42 @@ static void audio_sdl_clear_sound_buffer(void)
 
 
 /**
+ * audio_sdl_wait_condition(): Audio wait condition.
+ * This has been split out into a separate inline function for ease of maintenance.
+ * @return Non-zero if we should still wait; 0 if we shouldn't.
+ */
+static inline int audio_sdl_wait_condition(void)
+{
+	return (audio_sdl_len <= (audio_seg_length * audio_seg_to_buffer));
+}
+
+
+/**
  * audio_sdl_wait_for_audio_buffer(): Wait for the audio buffer to empty out.
  * This function is used for Auto Frame Skip.
  */
 static void audio_sdl_wait_for_audio_buffer(void)
 {
-	audio_sdl_write_sound_buffer(NULL);
-	while (audio_sdl_len <= (audio_seg_length * audio_seg_to_buffer))
+	// Updated code ported from Gens Plus.
+	// TODO: This doesn't appear to work properly with SDL.
+	// Figure out why!
+	
+#if 0
+	while (audio_sdl_wait_condition())
+#endif
 	{
-		Update_Frame_Fast();
 		audio_sdl_write_sound_buffer(NULL);
+		input_update_controllers();
+	
+#if 0
+		if (audio_sdl_wait_condition())
+			Update_Frame_Fast();
+		else
+#endif
+		{
+			Update_Frame();
+			if (!IS_DEBUGGING())
+				vdraw_flip(1);
+		}
 	}
 }
