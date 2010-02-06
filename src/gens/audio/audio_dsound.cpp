@@ -32,6 +32,9 @@
 #include "video/vdraw.h"
 #include "emulator/g_main.hpp"
 
+// Input Handler: Update Controllers.
+#include "input/input_update.h"
+
 // Message logging.
 #include "macros/log_msg.h"
 
@@ -46,9 +49,6 @@
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"
 #include "mdp/mdp_cpuflags.h"
-
-// Input Handler - Update Controllers.
-#include "input/input_update.h"
 
 // C includes.
 #include <string.h>
