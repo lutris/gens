@@ -165,8 +165,12 @@ typedef struct
 	int Win_X_Pos;
 	int Win_Y_Pos;
 	
-	// Interlaced mode. (0 == off; 1 == on)
-	int Interlaced;
+	// Interlaced mode.
+	struct
+	{
+		unsigned int HalfLine  :1;	// Half-line is enabled. [LSM0]
+		unsigned int DoubleRes :1;	// 2x resolution is enabled. [LSM1]
+	} Interlaced;
 	
 	// Sprite dot overflow.
 	// If set, the previous line had a sprite dot overflow.

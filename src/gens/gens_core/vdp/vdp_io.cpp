@@ -296,8 +296,8 @@ void VDP_Set_Visible_Lines(void)
 					: VisLines_Current_NTSC[LineOffset]);
 	
 	// Check interlaced mode.
-	// TODO: This checks LSM1 only. Check both LSM1 and LSM0!
-	VDP_Reg.Interlaced = ((VDP_Reg.m5.Set4 & 0x04) ? 1 : 0);
+	VDP_Reg.Interlaced.HalfLine  = ((VDP_Reg.m5.Set4 & 0x02) >> 1);	// LSM0
+	VDP_Reg.Interlaced.DoubleRes = ((VDP_Reg.m5.Set4 & 0x04) >> 2);	// LSM1
 	
 	// HACK: There's a minor issue with the SegaCD firmware.
 	// The firmware turns off the VDP after the last line,
@@ -688,8 +688,8 @@ uint8_t VDP_Read_V_Counter(void)
 		}
 	}
 	
-	// Check for interlaced mode.
-	if (VDP_Reg.Interlaced)
+	// Check for 2x interlaced mode.
+	if (VDP_Reg.Interlaced.DoubleRes)
 	{
 		// Interlaced mode is enabled.
 		uint8_t vc_tmp = (V_Counter & 0xFF);

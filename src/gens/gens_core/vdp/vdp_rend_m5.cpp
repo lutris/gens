@@ -1503,7 +1503,7 @@ void VDP_Render_Line_m5(void)
 		VDP_Reg.HasVisibleLines = 1;
 		
 		// Check if sprite structures need to be updated.
-		if (VDP_Reg.Interlaced)
+		if (VDP_Reg.Interlaced.DoubleRes)
 		{
 			// Interlaced.
 			if (VDP_Flags.VRam)
@@ -1525,7 +1525,7 @@ void VDP_Render_Line_m5(void)
 		VDP_Flags.VRam_Spr = 0;
 		
 		// Determine how to render the image.
-		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced;
+		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced.DoubleRes;
 		switch (RenderMode & 3)
 		{
 			case 0:
@@ -1834,7 +1834,7 @@ void VDP_Render_Line_m5_32X(void)
 		// VDP is enabled.
 		
 		// Check if sprite structures need to be updated.
-		if (VDP_Reg.Interlaced)
+		if (VDP_Reg.Interlaced.DoubleRes)
 		{
 			// Interlaced.
 			if (VDP_Flags.VRam)
@@ -1856,7 +1856,7 @@ void VDP_Render_Line_m5_32X(void)
 		VDP_Flags.VRam_Spr = 0;
 		
 		// Determine how to render the image.
-		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced;
+		const int RenderMode = ((VDP_Reg.m5.Set4 & 0x8) >> 2) | VDP_Reg.Interlaced.DoubleRes;
 		switch (RenderMode & 3)
 		{
 			case 0:
