@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: Audio output functions, MMX-optimized.                            *
+ * Gens: Audio Handler - Write Functions.                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,18 +20,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_AUDIO_MMX_H
-#define GENS_AUDIO_MMX_H
+#ifndef GENS_AUDIO_WRITE_H
+#define GENS_AUDIO_WRITE_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length);
-void audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length);
+void	audio_write_sound_stereo(short *dest, int length);
+void	audio_dump_sound_stereo(short *dest, int length);
+
+void	audio_write_sound_mono(short *dest, int length);
+void	audio_dump_sound_mono(short *dest, int length);
+
+#ifdef GENS_X86_ASM
+void	audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length);
+void	audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length);
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_AUDIO_MMX_H */
+#endif /* GENS_AUDIO_WRITE_H */

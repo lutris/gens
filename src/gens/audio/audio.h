@@ -94,12 +94,6 @@ extern void	(*audio_wp_seg_wait)(void);
 extern void	(*audio_wp_inc)(void);
 #endif /* GENS_OS_WIN32 */
 
-// Write sound data.
-void	audio_write_sound_stereo(short *dest, int length);
-void	audio_dump_sound_stereo(short *dest, int length);
-void	audio_write_sound_mono(short *dest, int length);
-void	audio_dump_sound_mono(short *dest, int length);
-
 // Audio data.
 extern int Seg_L[882], Seg_R[882];
 extern unsigned int Sound_Extrapol[312][2];

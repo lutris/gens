@@ -36,10 +36,8 @@
 // Input Handler: Update Controllers.
 #include "input/input_update.h"
 
-// MMX audio functions.
-#ifdef GENS_X86_ASM
-#include "audio_mmx.h"
-#endif /* GENS_X86_ASM */
+// Audio write functions.
+#include "audio_write.h"
 
 // Gens includes.
 #include "emulator/g_main.hpp"

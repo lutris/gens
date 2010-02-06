@@ -9,10 +9,9 @@ gens_x86_asm_o =
 gens_x86_asm_src = \
 		gens_core/gfx/fastblur_16_x86.S \
 		gens_core/gfx/fastblur_32_x86.S \
-		audio/audio_mmx.S
+		audio/audio_write_mmx.S
 gens_x86_asm_h = \
-		gens_core/gfx/fastblur_x86.h \
-		audio/audio_mmx.h
+		gens_core/gfx/fastblur_x86.h
 else
 gens_x86_asm_o =
 gens_x86_asm_src =
@@ -142,6 +141,7 @@ gens_SOURCES = \
 		input/input.c \
 		input/input_update.c \
 		audio/audio.c \
+		audio/audio_write.c \
 		plugins/pluginmgr.cpp \
 		plugins/rendermgr.cpp \
 		plugins/mdp_host_gens.c \
@@ -272,6 +272,7 @@ noinst_HEADERS = \
 		input/input.h \
 		input/input_update.h \
 		audio/audio.h \
+		audio/audio_write.h \
 		plugins/pluginmgr.hpp \
 		plugins/rendermgr.hpp \
 		plugins/mdp_host_gens.h \
