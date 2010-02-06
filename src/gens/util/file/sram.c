@@ -28,6 +28,9 @@
 // SRAM variables.
 #include "gens_core/mem/mem_m68k.h"
 
+// Text drawing functions.
+#include "video/vdraw_text.hpp"
+
 // C includes.
 #include <stdio.h>
 #include <string.h>
