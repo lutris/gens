@@ -27,6 +27,11 @@
 #include "audio.h"
 #include "audio_dsound.hpp"
 
+// Update functions.
+#include "debugger/debugger.hpp"
+#include "video/vdraw.h"
+#include "emulator/g_main.hpp"
+
 // Message logging.
 #include "macros/log_msg.h"
 
@@ -427,12 +432,22 @@ void audio_dsound_wp_inc(void)
  */
 void audio_dsound_wait_for_audio_buffer(void)
 {
+	// Updated code ported from Gens Plus.
 	RP = audio_dsound_get_current_seg();
 	while (WP != RP)
 	{
 		audio_write_sound_buffer(NULL);
 		WP = (WP + 1) & (Sound_Segs - 1);
 		input_update_controllers();
+		
+		if (WP != RP)
+			Update_Frame_Fast();
+		else
+		{
+			Update_Frame();
+			if (!IS_DEBUGGING())
+				vdraw_flip(true);
+		}
 	}
 }
 

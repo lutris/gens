@@ -247,6 +247,7 @@ int vdraw_ddraw_init(void)
 	int rval;
 	
 	// Initialize DirectDraw.
+	// TODO: Initialize DirectDraw on the monitor with most of Gens/GS onscreen.
 	LPDIRECTDRAW lpDD_Init;
 	rval = DirectDrawCreate(NULL, &lpDD_Init, NULL);
 	if (FAILED(rval))
@@ -271,6 +272,9 @@ int vdraw_ddraw_init(void)
 	
 	// Free the DirectDraw initialization object.
 	lpDD_Init->Release();
+	
+	// Set the cooperative level.
+	vdraw_ddraw_set_cooperative_level();
 	
 	// TODO: 15-bit color override. ("Force 555" or "Force 565" in the config file.)
 	memset(&ddsd, 0, sizeof(ddsd));
@@ -328,8 +332,6 @@ int vdraw_ddraw_init(void)
 	if (newBpp != bppOut)
 		vdraw_set_bpp(newBpp, false);
 #endif
-	
-	vdraw_ddraw_set_cooperative_level();
 	
 	// Clear ddsd.
 	memset(&ddsd, 0x00, sizeof(ddsd));

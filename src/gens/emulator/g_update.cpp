@@ -110,13 +110,20 @@ int Update_Emulation(void)
 #endif /* GENS_OS_WIN32 */
 			
 			// Wait for the audio buffer to empty out.
+			// NOTE: This function calls the following functions:
+			// - input_update_controllers()
+			// - Update_Frame()
+			// - vdraw_flip()
+			// - Update_Frame_Fast() (if necessary)
 			audio_wait_for_audio_buffer();
 			
+#ifndef GENS_OS_WIN32
 			// Audio buffer is empty.
 			input_update_controllers();
 			Update_Frame();
 			if (!IS_DEBUGGING())
 				vdraw_flip(1);
+#endif
 		}
 		else
 		{
