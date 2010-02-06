@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2008-2010 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -109,12 +109,14 @@ int Update_Emulation(void)
 			audio_wp_seg_wait();
 #endif /* GENS_OS_WIN32 */
 			
-			// Wait for the audio buffer to empty out.
-			// NOTE: This function calls the following functions:
-			// - input_update_controllers()
-			// - Update_Frame()
-			// - vdraw_flip()
-			// - Update_Frame_Fast() (if necessary)
+			/**
+			 * Wait for the audio buffer to empty out.
+			 * NOTE: This function calls the following functions:
+			 * - input_update_controllers()
+			 * - Update_Frame()
+			 * - vdraw_flip()
+			 * - Update_Frame_Fast() (if necessary)
+			 */
 			audio_wait_for_audio_buffer();
 			
 #ifndef GENS_OS_WIN32
