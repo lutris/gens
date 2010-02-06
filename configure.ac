@@ -22,14 +22,6 @@ AM_INIT_AUTOMAKE([1.10])
 # Disable the Fortran check.
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 
-# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
-if test "$CFLAGS" = "-g -O2"; then
-	CFLAGS=""
-fi
-if test "$CXXFLAGS" = "-g -O2"; then
-	CXXFLAGS=""
-fi
-
 # Check for programs.
 AM_PROG_AS
 AC_PROG_CXX
@@ -46,6 +38,17 @@ AC_PROG_LIBTOOL
 
 # Enable C99.
 AC_PROG_CC_C99
+
+# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
+if test "$CFLAGS" = "-g -O2"; then
+	CFLAGS=""
+fi
+if test "$CXXFLAGS" = "-g -O2"; then
+	CXXFLAGS=""
+fi
+if test "$CCASFLAGS" = "-g -O2"; then
+	CCASFLAGS=""
+fi
 
 # Check operating system.
 nasm_debug=""
