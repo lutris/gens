@@ -268,7 +268,7 @@ static FORCE_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern,
 		// Apply highlight/shadow based on priority.
 		if (!priority)
 		{
-			// No priority.
+			// Low priority. Pixel can be normal, shadowed, or highlighted.
 			layer_bits &= (LINEBUF_SHAD_B | LINEBUF_HIGH_B);
 			
 			if (px == 0x0E || px == 0x1E || px == 0x2E)
@@ -279,7 +279,7 @@ static FORCE_INLINE uint8_t T_PutPixel_Sprite(int disp_pixnum, uint32_t pattern,
 		}
 		else
 		{
-			// Priority. Only allow highlighting.
+			// High priority. Pixel can either be normal or highlighted.
 			layer_bits &= LINEBUF_HIGH_B;
 		}
 		
