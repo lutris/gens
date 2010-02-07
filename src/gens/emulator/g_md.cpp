@@ -444,13 +444,6 @@ do {									\
 } while (0)
 
 
-typedef enum
-{
-	LINETYPE_ACTIVEDISPLAY	= 0,
-	LINETYPE_VBLANKLINE	= 1,
-	LINETYPE_BORDER		= 2,
-} LineType_t;
-
 /**
  * T_gens_do_MD_line(): Do an MD line.
  * @param LineType Line type.

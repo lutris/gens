@@ -406,93 +406,44 @@ static void SegaCD_Display_LED(void)
 
 
 /**
- * T_gens_do_MCD_frame(): Do an MCD frame.
+ * T_gens_do_MCD_line(): Do an MCD line.
+ * @param LineType Line type.
  * @param VDP If true, VDP is updated.
  * @param perfect_sync If true, use perfect synchronization.
  */
-template<bool VDP, bool perfect_sync>
-static FORCE_INLINE int T_gens_do_MCD_frame(void)
+template<LineType_t LineType, bool VDP, bool perfect_sync>
+static FORCE_INLINE void T_gens_do_MCD_line(void)
 {
-	// TODO: Update for VDP border changes.
 	int *buf[2], i, j;
 	
-	// Initialize VDP_Lines.Display.
-	VDP_Set_Visible_Lines();
-
-	CPL_S68K = 795;
+	buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	if (PCM_Enable)
+		PCM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+	YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+	YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+	PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+	Update_CDC_TRansfert();
 	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer();
-	sub68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	
-	// Raise the MDP_EVENT_PRE_FRAME event.
-	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
-	
-	// Set the VRam flag to force a VRam update.
-	VDP_Flags.VRam = 1;
-	
-	// Interlaced frame status.
-	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
-	// This bit is cleared on even frames and if not running in interlaced mode.
-	if (VDP_Reg.m5.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	else
-		VDP_Status &= ~0x0010;
-	
-	/** Main execution loop. **/
-	/** TODO: Unroll the loop into four loops using a templated function:
-	 * - Loop 0: Top border.
-	 * - Loop 1: Active display.
-	 * - Loop 2: VBlank line.
-	 * - Loop 3: Bottom border.
-	 */
-	for (VDP_Lines.Display.Current = 0;
-	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
-	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	if (perfect_sync)
 	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		if (PCM_Enable)
-			PCM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
-		YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		Update_CDC_TRansfert();
-		
-		if (perfect_sync)
-		{
-			i = Cycles_M68K + 24;
-			j = Cycles_S68K + 39;
-		}
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(VDP_Update_DMA());
-		
-		// Initialize HInt_Counter on visible line 0.
-		if (VDP_Lines.Visible.Current == 0)
-			VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
-		
-		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
-				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
-		
-		// TODO: Combine chunks of code here.
-		if (inVisibleArea)
-		{
-			// Clear VBlank status.
-			// TODO: Only do this on visible line 0.
-			VDP_Status &= ~0x0008;
-			
+		i = Cycles_M68K + 24;
+		j = Cycles_S68K + 39;
+	}
+	
+	Fix_Controllers();
+	Cycles_M68K += CPL_M68K;
+	Cycles_Z80 += CPL_Z80;
+	if (S68K_State == 1)
+		Cycles_S68K += CPL_S68K;
+	if (VDP_Reg.DMAT_Length)
+		main68k_addCycles(VDP_Update_DMA());
+	
+	// TODO: Consolidate this code.
+	switch (LineType)
+	{
+		case LINETYPE_ACTIVEDISPLAY:
+			// In visible area.
 			VDP_Status |= 0x0004;	// HBlank = 1
 			
 			if (!perfect_sync)
@@ -551,9 +502,10 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 					}
 				}
 			}
-		}
-		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
-		{
+			
+			break;
+		
+		case LINETYPE_VBLANKLINE:
 			// VBlank line!
 			if (--VDP_Reg.HInt_Counter < 0)
 			{
@@ -612,9 +564,11 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 					}
 				}
 			}
-		}
-		else
-		{
+			
+			break;
+		
+		case LINETYPE_BORDER:
+		default:
 			// Not visible area.
 			// TODO: We're processing HBlank here, but we don't for MD...
 			VDP_Status |= 0x0004;	// HBlank = 1
@@ -664,20 +618,102 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 					}
 				}
 			}
-		}
-		
-		main68k_exec(Cycles_M68K);
-		sub68k_exec(Cycles_S68K);
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer();
+			
+			break;
 	}
 	
-	buf[0] = Seg_L;
-	buf[1] = Seg_R;
+	main68k_exec(Cycles_M68K);
+	sub68k_exec(Cycles_S68K);
+	Z80_EXEC(0);
 	
+	Update_SegaCD_Timer();
+}
+
+
+/**
+ * T_gens_do_MCD_frame(): Do an MCD frame.
+ * @param VDP If true, VDP is updated.
+ * @param perfect_sync If true, use perfect synchronization.
+ */
+template<bool VDP, bool perfect_sync>
+static FORCE_INLINE int T_gens_do_MCD_frame(void)
+{
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
+
+	// Check if VBlank is allowed.
+	VDP_Check_NTSC_V30_VBlank();
+	
+	// S68K is always 12.5 MHz regardless of region.
+	// TODO: PAL is 312*50 == 15,600 Hz;
+	// NTSC is 262*60 = 15,720 Hz.
+	CPL_S68K = 795;
+	
+	YM_Buf[0] = PSG_Buf[0] = Seg_L;
+	YM_Buf[1] = PSG_Buf[1] = Seg_R;
+	YM_Len = PSG_Len = 0;
+	
+	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
+	Last_BUS_REQ_Cnt = -1000;
+	main68k_tripOdometer();
+	sub68k_tripOdometer();
+	mdZ80_clear_odo(&M_Z80);
+	
+	// Raise the MDP_EVENT_PRE_FRAME event.
+	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
+	
+	// Set the VRam flag to force a VRam update.
+	VDP_Flags.VRam = 1;
+	
+	// Interlaced frame status.
+	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
+	// This bit is cleared on even frames and if not running in interlaced mode.
+	if (VDP_Reg.m5.Set4 & 0x2)
+		VDP_Status ^= 0x0010;
+	else
+		VDP_Status &= ~0x0010;
+	
+	/** Main execution loops. **/
+	
+	/** Loop 0: Top border. **/
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Visible.Current < 0;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_MCD_line<LINETYPE_BORDER, VDP, perfect_sync>();
+	}
+	
+	/** Visible line 0. **/
+	VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;	// Initialize HInt_Counter.
+	VDP_Status &= ~0x0008;				// Clear VBlank status.
+	
+	/** Loop 1: Active display. **/
+	for (;
+	     VDP_Lines.Visible.Current < VDP_Lines.Visible.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_MCD_line<LINETYPE_ACTIVEDISPLAY, VDP, perfect_sync>();
+	}
+	
+	/** Loop 2: VBlank line. **/
+	T_gens_do_MCD_line<LINETYPE_VBLANKLINE, VDP, perfect_sync>();
+	
+	/** Loop 3: Bottom border. **/
+	for (VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_MCD_line<LINETYPE_BORDER, VDP, perfect_sync>();
+	}
+	
+	// Update the PSG and YM2612 output.
 	PSG_Special_Update();
 	YM2612_Special_Update();
+	
+	// Update CD audio.
+	int *buf[2];
+	buf[0] = Seg_L;
+	buf[1] = Seg_R;
 	Update_CD_Audio(buf, audio_seg_length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
