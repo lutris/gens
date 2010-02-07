@@ -36,7 +36,7 @@ section .text align=64
 	mov	eax, ebx				; eax = data pixels
 	shr	eax, %2					; keep the first
 	and	eax, 0xF
-	mov	ax, [SYM(MD_Palette) + eax * 2 + ebp]	; conversion 8->16 bits palette
+	movzx	eax, word [SYM(MD_Palette) + eax * 2 + ebp]	; conversion 8->16 bits palette
 	mov	[edi + (%1 * 2)], ax			; write the pixel to Dest
 %endmacro
 
@@ -298,18 +298,18 @@ SYM(Cell_16x16_Dump):
 	AFF_PIXEL 6, 20
 	AFF_PIXEL 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 2				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 2)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX				; then keep going
 	
 	sub	edi, ((336 * 8) - 8) * 2		; we skip 8 rows from the top and 8 pixels from the left of Dest
-	add	esi, 0x20				; pattern à droite
+	add	esi, byte 0x20				; pattern à droite
 	dec	ecx					; if there is more to copy on this row
 	jnz	near .Loop_ECX				; then keep going
 	
 	add	edi, ((336 * 8) - (8 * 16)) * 2		; we skip 8 rows from the top and 16*8 pixels from the left of Dest
-	sub	esi, 0x400 - 0x20
+	sub	esi, (0x400 - 0x20)
 	mov	ecx, 16					; ecx = Number of patterns per row
 
 .Loop_ECX_2:
@@ -327,8 +327,8 @@ SYM(Cell_16x16_Dump):
 	AFF_PIXEL 6, 20
 	AFF_PIXEL 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 2				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 2)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX_2			; then keep going
 	
@@ -367,18 +367,18 @@ align 16
 	AFF_PIXEL32 6, 20
 	AFF_PIXEL32 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 4				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 4)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX32			; then keep going
 	
 	sub	edi, ((336 * 8) - 8) * 4		; we skip 8 rows from the top and 8 pixels from the left of Dest
-	add	esi, 0x20				; pattern à droite
+	add	esi, byte 0x20				; pattern à droite
 	dec	ecx					; if there is more to copy on this row
 	jnz	near .Loop_ECX32			; then keep going
 	
 	add	edi, ((336 * 8) - (8 * 16)) * 4		; we skip 8 rows from the top and 16*8 pixels from the left of Dest
-	sub	esi, 0x400 - 0x20
+	sub	esi, (0x400 - 0x20)
 	mov	ecx, 16					; ecx = Number of patterns per row
 
 .Loop_ECX_232:
@@ -396,18 +396,18 @@ align 16
 	AFF_PIXEL32 6, 20
 	AFF_PIXEL32 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 4				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 4)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX_232			; then keep going
 	
 	sub	edi, ((336 * 8) - 8) * 4		; we skip 8 rows from the top and 8 pixels from the left of Dest
-	add	esi, 0x20				; pattern à droite
+	add	esi, byte 0x20				; pattern à droite
 	dec	ecx					; if there is more to copy on this row
 	jnz	near .Loop_ECX_232			; then keep going
 	
 	add	edi, ((336 * 8) - (8 * 16)) * 4		; we skip 8 rows from the top and 16*8 pixels from the left of Dest
-	sub	esi, 0x20
+	sub	esi, byte 0x20
 	dec	edx
 	jnz	near .Loop_EDX32
 
@@ -464,8 +464,8 @@ SYM(Cell_32x32_Dump):
 	AFF_PIXEL 6, 20
 	AFF_PIXEL 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 2				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 2)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX				; then keep going
 	
@@ -502,8 +502,8 @@ align 16
 	AFF_PIXEL32 6, 20
 	AFF_PIXEL32 7, 16
 	pop	ebx
-	add	esi, 4					; advance Src by 4
-	add	edi, 336 * 4				; go to the next Dest row
+	add	esi, byte 4				; advance Src by 4
+	add	edi, (336 * 4)				; go to the next Dest row
 	dec	ebx					; if there are any more rows
 	jnz	near .Loop_EBX32			; then keep going
 	
@@ -523,4 +523,3 @@ align 16
 	pop	ecx
 	pop	ebx
 	ret
-
