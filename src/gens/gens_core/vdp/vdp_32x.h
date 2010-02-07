@@ -37,6 +37,7 @@ typedef struct _VDP_32X_t
 	unsigned int AF_St;
 	unsigned int AF_Len;
 	unsigned int AF_Line;
+	int HInt_Counter;
 } VDP_32X_t;
 extern VDP_32X_t _32X_VDP;
 

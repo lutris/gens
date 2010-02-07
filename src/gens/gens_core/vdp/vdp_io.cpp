@@ -180,6 +180,9 @@ void VDP_Reset(void)
 	VDP_Flags.CRam = 1;
 	VDP_Flags.VRam = 1;
 	
+	// Initialize the Horizontal Interrupt counter.
+	VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
+	
 	// Initialize the Horizontal Counter table.
 	unsigned int hc;
 	unsigned int hc_val;

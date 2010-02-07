@@ -340,7 +340,6 @@ template<bool VDP>
 static FORCE_INLINE int T_gens_do_32X_frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
-	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
 	
 	// Initialize VDP_Lines.Display.
@@ -377,9 +376,6 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 	
 	_32X_VDP.State &= ~0x8000;
 	
-	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step d'interruption H
-	HInt_Counter_32X = _32X_HIC;
-	
 	p_i = 84;
 	p_j = (p_i * CPL_MSH2) / CPL_M68K;
 	p_k = (p_i * CPL_SSH2) / CPL_M68K;
@@ -411,6 +407,13 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
 		
+		// Initialize HInt_Counter on visible line 0.
+		if (VDP_Lines.Visible.Current == 0)
+		{
+			VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
+			_32X_VDP.HInt_Counter = _32X_HIC;
+		}
+		
 		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
 				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
 		
@@ -433,16 +436,16 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 			VDP_Status &= ~0x0004;	// HBlank = 0
 			_32X_VDP.State &= ~0x6000;
 			
-			if (--HInt_Counter < 0)
+			if (--VDP_Reg.HInt_Counter < 0)
 			{
-				HInt_Counter = VDP_Reg.m5.H_Int;
+				VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
 				VDP_Int |= 0x4;
 				VDP_Update_IRQ_Line();
 			}
 			
-			if (--HInt_Counter_32X < 0)
+			if (--_32X_VDP.HInt_Counter < 0)
 			{
-				HInt_Counter_32X = _32X_HIC;
+				_32X_VDP.HInt_Counter = _32X_HIC;
 				if (_32X_MINT & 0x04)
 					SH2_Interrupt(&M_SH2, 10);
 				if (_32X_SINT & 0x04)
@@ -478,15 +481,15 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
 		{
 			// VBlank line!
-			if (--HInt_Counter < 0)
+			if (--VDP_Reg.HInt_Counter < 0)
 			{
 				VDP_Int |= 0x4;
 				VDP_Update_IRQ_Line();
 			}
 			
-			if (--HInt_Counter_32X < 0)
+			if (--_32X_VDP.HInt_Counter < 0)
 			{
-				HInt_Counter_32X = _32X_HIC;
+				_32X_VDP.HInt_Counter = _32X_HIC;
 				if (_32X_MINT & 0x04)
 					SH2_Interrupt(&M_SH2, 10);
 				if (_32X_SINT & 0x04)
@@ -569,9 +572,10 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 			VDP_Status &= ~0x0004;	// HBlank = 0
 			_32X_VDP.State &= ~0x6000;
 			
-			if (--HInt_Counter_32X < 0)
+			// TODO: WHy 32X HInt_Counter and not regular HInt_Counter?
+			if (--_32X_VDP.HInt_Counter < 0)
 			{
-				HInt_Counter_32X = _32X_HIC;
+				_32X_VDP.HInt_Counter = _32X_HIC;
 				if ((_32X_MINT & 0x04) && (_32X_MINT & 0x80))
 					SH2_Interrupt(&M_SH2, 10);
 				if ((_32X_SINT & 0x04) && (_32X_SINT & 0x80))

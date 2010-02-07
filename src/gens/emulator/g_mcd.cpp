@@ -415,7 +415,6 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 {
 	// TODO: Update for VDP border changes.
 	int *buf[2], i, j;
-	int HInt_Counter;
 	
 	// Initialize VDP_Lines.Display.
 	VDP_Set_Visible_Lines();
@@ -446,9 +445,13 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 	else
 		VDP_Status &= ~0x0010;
 	
-	HInt_Counter = VDP_Reg.m5.H_Int;	// Hint_Counter = step H interrupt
-	
 	/** Main execution loop. **/
+	/** TODO: Unroll the loop into four loops using a templated function:
+	 * - Loop 0: Top border.
+	 * - Loop 1: Active display.
+	 * - Loop 2: VBlank line.
+	 * - Loop 3: Bottom border.
+	 */
 	for (VDP_Lines.Display.Current = 0;
 	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
 	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
@@ -475,6 +478,10 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 			Cycles_S68K += CPL_S68K;
 		if (VDP_Reg.DMAT_Length)
 			main68k_addCycles(VDP_Update_DMA());
+		
+		// Initialize HInt_Counter on visible line 0.
+		if (VDP_Lines.Visible.Current == 0)
+			VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
 		
 		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
 				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
@@ -515,9 +522,9 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 			
 			VDP_Status &= ~0x0004;	// HBlank = 0
 			
-			if (--HInt_Counter < 0)
+			if (--VDP_Reg.HInt_Counter < 0)
 			{
-				HInt_Counter = VDP_Reg.m5.H_Int;
+				VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
 				VDP_Int |= 0x4;
 				VDP_Update_IRQ_Line();
 			}
@@ -548,7 +555,7 @@ static FORCE_INLINE int T_gens_do_MCD_frame(void)
 		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
 		{
 			// VBlank line!
-			if (--HInt_Counter < 0)
+			if (--VDP_Reg.HInt_Counter < 0)
 			{
 				VDP_Int |= 0x4;
 				VDP_Update_IRQ_Line();

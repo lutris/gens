@@ -182,6 +182,9 @@ typedef struct
 	// which causes the entire screen to disappear if paused.
 	// TODO: Don't rerun the VDP drawing functions when paused!
 	int HasVisibleLines;	// 0 if VDP was off for the whole frame.
+	
+	// Horizontal Interrupt Counter.
+	int HInt_Counter;
 } VDP_Reg_t;
 extern VDP_Reg_t VDP_Reg;
 
