@@ -423,17 +423,17 @@ int Do_VDP_Only(void)
 }
 
 
-#define CONGRATULATIONS_PRECHECK					\
+#define CONGRATULATIONS_PRECHECK()					\
 unsigned int old_pc = main68k_context.pc;				\
 do {									\
 	if (congratulations == 1 && old_pc < Rom_Size)			\
 	{								\
 		congratulations = 2;					\
 		Rom_Data.u16[old_pc >> 1] = ~Rom_Data.u16[old_pc >> 1];	\
-	}							\
+	}								\
 } while (0)
 
-#define CONGRATULATIONS_POSTCHECK					\
+#define CONGRATULATIONS_POSTCHECK()					\
 do {									\
 	if (congratulations == 2)					\
 	{								\
@@ -444,39 +444,110 @@ do {									\
 } while (0)
 
 
+typedef enum
+{
+	LINETYPE_ACTIVEDISPLAY	= 0,
+	LINETYPE_VBLANKLINE	= 1,
+	LINETYPE_BORDER		= 2,
+} LineType_t;
+
+/**
+ * T_gens_do_MD_line(): Do an MD line.
+ * @param LineType Line type.
+ * @param VDP If true, VDP is updated.
+ */
+template<LineType_t LineType, bool VDP>
+static FORCE_INLINE void T_gens_do_MD_line(void)
+{
+	int *buf[2];
+	buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+	YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+	PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+		
+	Fix_Controllers();
+	Cycles_M68K += CPL_M68K;
+	Cycles_Z80 += CPL_Z80;
+	if (VDP_Reg.DMAT_Length)
+		main68k_addCycles(VDP_Update_DMA());
+	
+	switch (LineType)
+	{
+		case LINETYPE_ACTIVEDISPLAY:
+			// In visible area.
+			VDP_Status |=  0x0004;	// HBlank = 1
+			main68k_exec(Cycles_M68K - 404);
+			VDP_Status &= ~0x0004;	// HBlank = 0
+			
+			if (--VDP_Reg.HInt_Counter < 0)
+			{
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+				VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
+			}
+			
+			break;
+		
+		case LINETYPE_VBLANKLINE:
+		{
+			// VBlank line!
+			if (--VDP_Reg.HInt_Counter < 0)
+			{
+				VDP_Int |= 0x4;
+				VDP_Update_IRQ_Line();
+			}
+			
+			CONGRATULATIONS_PRECHECK();
+			VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
+			if (VDP_Lines.NTSC_V30.VBlank_Div != 0)
+				VDP_Status &= ~0x0008;
+			
+			main68k_exec(Cycles_M68K - 360);
+			Z80_EXEC(168);
+			CONGRATULATIONS_POSTCHECK();
+			
+			VDP_Status &= ~0x0004;		// HBlank = 0
+			if (VDP_Lines.NTSC_V30.VBlank_Div == 0)
+			{
+				VDP_Status |=  0x0080;		// V Int happened
+				
+				VDP_Int |= 0x8;
+				VDP_Update_IRQ_Line();
+				mdZ80_interrupt(&M_Z80, 0xFF);
+			}
+			
+			break;
+		}
+		
+		case LINETYPE_BORDER:
+		default:
+			break;
+	}
+	
+	if (VDP)
+	{
+		// VDP needs to be updated.
+		VDP_Render_Line();
+	}
+		
+	main68k_exec(Cycles_M68K);
+	Z80_EXEC(0);
+}
+
+
 /**
  * T_gens_do_MD_frame(): Do an MD frame.
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static FORCE_INLINE int T_gens_do_MD_frame(void)
+static FORCE_INLINE void T_gens_do_MD_frame(void)
 {
-	int *buf[2];
-	
 	// Initialize VDP_Lines.Display.
 	VDP_Set_Visible_Lines();
 	
-	bool VBlank_OK = true;
-	if ((CPU_Mode == 0) && (VDP_Reg.m5.Set2 & 0x08))
-	{
-		// NTSC V30 mode. Simulate screen rolling.
-		VDP_Lines.NTSC_V30.VBlank = !VDP_Lines.NTSC_V30.VBlank;
-		if (Video.ntscV30rolling)
-		{
-			VDP_Lines.NTSC_V30.Offset += 11;	// TODO: Figure out a good offset increment.
-			VDP_Lines.NTSC_V30.Offset %= 240;	// Prevent overflow.
-		}
-		else
-		{
-			// Rolling is disabled.
-			VDP_Lines.NTSC_V30.Offset = 0;
-		}
-		
-		// If VDP_Lines.NTSC_V30.VBlank is set, we can't do a VBlank.
-		// This effectively divides VBlank into 30 Hz.
-		// See http://gendev.spritesmind.net/forum/viewtopic.php?p=8128#8128 for more information.
-		VBlank_OK = !VDP_Lines.NTSC_V30.VBlank;
-	}
+	// Check if VBlank is allowed.
+	VDP_Check_NTSC_V30_VBlank();
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;
@@ -501,95 +572,40 @@ static FORCE_INLINE int T_gens_do_MD_frame(void)
 	else
 		VDP_Status &= ~0x0010;
 	
-	/** Main execution loop. **/
-	/** TODO: Unroll the loop into four loops using a templated function:
-	 * - Loop 0: Top border.
-	 * - Loop 1: Active display.
-	 * - Loop 2: VBlank line.
-	 * - Loop 3: Bottom border.
-	 */
+	/** Main execution loops. **/
 	
+	/** Loop 0: Top border. **/
 	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Visible.Current < 0;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_MD_line<LINETYPE_BORDER, VDP>();
+	}
+	
+	/** Visible line 0. **/
+	VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;	// Initialize HInt_Counter.
+	VDP_Status &= ~0x0008;				// Clear VBlank status.
+	
+	/** Loop 1: Active display. **/
+	for (;
+	     VDP_Lines.Visible.Current < VDP_Lines.Visible.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_MD_line<LINETYPE_ACTIVEDISPLAY, VDP>();
+	}
+	
+	/** Loop 2: VBlank line. **/
+	T_gens_do_MD_line<LINETYPE_VBLANKLINE, VDP>();
+	
+	/** Loop 3: Bottom border. **/
+	for (VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++;
 	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
 	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
 	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
-		YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(VDP_Update_DMA());
-		
-		// Initialize HInt_Counter on visible line 0.
-		if (VDP_Lines.Visible.Current == 0)
-			VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
-		
-		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
-						VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
-		
-		if (inVisibleArea)
-		{
-			// In visible area.
-			
-			// Clear VBlank status.
-			// TODO: Only do this on visible line 0.
-			VDP_Status &= ~0x0008;
-			
-			VDP_Status |=  0x0004;	// HBlank = 1
-			main68k_exec(Cycles_M68K - 404);
-			VDP_Status &= ~0x0004;	// HBlank = 0
-			
-			if (--VDP_Reg.HInt_Counter < 0)
-			{
-				VDP_Int |= 0x4;
-				VDP_Update_IRQ_Line();
-				VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
-			}
-		}
-		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
-		{
-			// VBlank line!
-			if (--VDP_Reg.HInt_Counter < 0)
-			{
-				VDP_Int |= 0x4;
-				VDP_Update_IRQ_Line();
-			}
-			
-			CONGRATULATIONS_PRECHECK;
-			VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-			if (!VBlank_OK)
-				VDP_Status &= ~0x0008;
-			
-			main68k_exec(Cycles_M68K - 360);
-			Z80_EXEC(168);
-			CONGRATULATIONS_POSTCHECK;
-			
-			VDP_Status &= ~0x0004;		// HBlank = 0
-			if (VBlank_OK)
-			{
-				VDP_Status |=  0x0080;		// V Int happened
-				
-				VDP_Int |= 0x8;
-				VDP_Update_IRQ_Line();
-				mdZ80_interrupt(&M_Z80, 0xFF);
-			}
-		}
-		
-		if (VDP)
-		{
-			// VDP needs to be updated.
-			VDP_Render_Line();
-		}
-		
-		main68k_exec(Cycles_M68K);
-		Z80_EXEC(0);
+		T_gens_do_MD_line<LINETYPE_BORDER, VDP>();
 	}
 	
+	// Update the PSG and YM2612 output.
 	PSG_Special_Update();
 	YM2612_Special_Update();
 	
@@ -617,16 +633,16 @@ static FORCE_INLINE int T_gens_do_MD_frame(void)
 		post_frame.md_screen = &MD_Screen.u16[screen_offset];
 	
 	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
-	
-	return 1;
 }
 
 
 int Do_Genesis_Frame_No_VDP(void)
 {
-	return T_gens_do_MD_frame<false>();
+	T_gens_do_MD_frame<false>();
+	return 1;
 }
 int Do_Genesis_Frame(void)
 {
-	return T_gens_do_MD_frame<true>();
+	T_gens_do_MD_frame<true>();
+	return 1;
 }

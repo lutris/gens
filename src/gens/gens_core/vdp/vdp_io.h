@@ -273,7 +273,7 @@ typedef struct _VDP_Lines_t
 	struct
 	{
 		int Offset;		// Current NTSC V30 roll offset.
-		int VBlank;		// VBlank divider.
+		int VBlank_Div;		// VBlank divider. (0 == VBlank is OK; 1 == no VBlank allowed)
 	} NTSC_V30;
 } VDP_Lines_t;
 extern VDP_Lines_t VDP_Lines;
@@ -300,6 +300,7 @@ uint8_t VDP_Int_Ack(void);
 void    VDP_Update_IRQ_Line(void);
 
 void	VDP_Set_Visible_Lines(void);
+void	VDP_Check_NTSC_V30_VBlank(void);
 
 void    VDP_Set_Reg(int reg_num, uint8_t val);
 

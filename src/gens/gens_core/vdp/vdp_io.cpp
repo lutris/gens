@@ -312,6 +312,39 @@ void VDP_Set_Visible_Lines(void)
 
 
 /**
+ * VDP_Check_NTSC_V30_VBlank(): Check if VBlank is allowed in NTSC V30 mode.
+ */
+void VDP_Check_NTSC_V30_VBlank(void)
+{
+	if ((CPU_Mode == 1) || !(VDP_Reg.m5.Set2 & 0x08))
+	{
+		// Either we're in PAL mode, where V30 is allowed, or V30 isn't set.
+		// VBlank is always OK.
+		VDP_Lines.NTSC_V30.VBlank_Div = 0;
+		return;
+	}
+	
+	// NTSC V30 mode. Simulate screen rolling.
+	
+	// If VDP_Lines.NTSC_V30.VBlank is set, we can't do a VBlank.
+	// This effectively divides VBlank into 30 Hz.
+	// See http://gendev.spritesmind.net/forum/viewtopic.php?p=8128#8128 for more information.
+	VDP_Lines.NTSC_V30.VBlank_Div = !VDP_Lines.NTSC_V30.VBlank_Div;
+	
+	if (Video.ntscV30rolling)
+	{
+		VDP_Lines.NTSC_V30.Offset += 11;	// TODO: Figure out a good offset increment.
+		VDP_Lines.NTSC_V30.Offset %= 240;	// Prevent overflow.
+	}
+	else
+	{
+		// Rolling is disabled.
+		VDP_Lines.NTSC_V30.Offset = 0;
+	}
+}
+
+
+/**
  * VDP_Update_Mode(): Update VDP_Mode.
  */
 static inline void VDP_Update_Mode(void)
@@ -376,7 +409,7 @@ void VDP_Set_Reg(int reg_num, uint8_t val)
 			{
 				// V28 mode. Reset the NTSC V30 roll values.
 				VDP_Lines.NTSC_V30.Offset = 0;
-				VDP_Lines.NTSC_V30.VBlank = 0;
+				VDP_Lines.NTSC_V30.VBlank_Div = 0;
 			}
 			
 			// Update the VDP mode.
