@@ -69,22 +69,22 @@ SYM(Fast_Blur_16_x86):
 	xorl	%ebx, %ebx
 	
 	/* Default to 16-bit color. */
-	movw	MASK_DIV2_16, %dx
+	movl	MASK_DIV2_16, %edx
 	cmpb	$15, SYM(bppMD)
 	jne	0f
 	
 	/* 15-bit color is in use. */
-	movw	MASK_DIV2_15, %dx
+	movl	MASK_DIV2_15, %edx
 	jmp	0f
 	
 .p2align 4 /* 16-byte alignment */
 0: /* .Loop */
-		movw	(%esi), %ax	/* Get the current pixel. */
-		shrw	$1, %ax		/* Reduce pixel brightness by 50%. */
-		andw	%dx, %ax	/* Apply color mask. */
-		addw	%ax, %bx	/* Blur the pixel with the previous pixel. */
+		movzwl	(%esi), %eax	/* Get the current pixel. */
+		shrl	$1, %eax	/* Reduce pixel brightness by 50%. */
+		andl	%edx, %eax	/* Apply color mask. */
+		addw	%eax, %ebx	/* Blur the pixel with the previous pixel. */
 		movw	%bx, -2(%esi)	/* Write the new pixel. */
-		movw	%ax, %bx	/* Store the current pixel. */
+		movw	%eax, %ebx	/* Store the current pixel. */
 		
 		/* Next pixel. */
 		addl	$2, %esi
