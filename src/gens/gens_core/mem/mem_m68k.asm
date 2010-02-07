@@ -462,7 +462,7 @@ section .text align=64
 	
 	global M68K_Read_Byte_Bad
 	M68K_Read_Byte_Bad:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -472,7 +472,7 @@ section .text align=64
 	M68K_Read_Byte_Rom0:
 		and	ebx, 0x7FFFF
 		xor	ebx, 1
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -482,7 +482,7 @@ section .text align=64
 	M68K_Read_Byte_Rom1:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x080001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -492,7 +492,7 @@ section .text align=64
 	M68K_Read_Byte_Rom2:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x100001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -502,7 +502,7 @@ section .text align=64
 	M68K_Read_Byte_Rom3:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x180001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -525,7 +525,7 @@ section .text align=64
 		jnz	short .Custom_SRAM
 		
 		sub	ebx, [SYM(SRAM_Start)]
-		mov	al, [SYM(SRAM) + ebx]	; no byte swapped
+		movzx	eax, byte [SYM(SRAM) + ebx]	; no byte swapped
 		pop	ebx
 		ret
 	
@@ -534,14 +534,14 @@ section .text align=64
 	.Rom:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x200001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Custom_SRAM:
-		mov	al, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -551,7 +551,7 @@ section .text align=64
 	M68K_Read_Byte_Rom5:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x280001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -561,7 +561,7 @@ section .text align=64
 	M68K_Read_Byte_Rom6:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x300001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -571,7 +571,7 @@ section .text align=64
 	M68K_Read_Byte_Rom7:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x380001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -580,7 +580,7 @@ section .text align=64
 	M68K_Read_Byte_Rom8:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x400001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -589,7 +589,7 @@ section .text align=64
 	M68K_Read_Byte_Rom9:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x480001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -598,7 +598,7 @@ section .text align=64
 	M68K_Read_Byte_RomA:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x500001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -607,7 +607,7 @@ section .text align=64
 	M68K_Read_Byte_RomB:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x580001
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -617,7 +617,7 @@ section .text align=64
 	M68K_Read_Byte_RomD:
 	M68K_Read_Byte_RomE:
 	M68K_Read_Byte_RomF:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -626,8 +626,8 @@ section .text align=64
 	global M68K_Read_Byte_Ram
 	M68K_Read_Byte_Ram:
 		and	ebx, 0xFFFF
-		xor	ebx, 1
-		mov	al, [SYM(Ram_68k) + ebx]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Ram_68k) + ebx]
 		pop	ebx
 		ret
 	
@@ -655,7 +655,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -674,7 +674,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		mov	al, [SYM(Last_BUS_REQ_St)]
+		movzx	eax, byte [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -682,14 +682,14 @@ section .text align=64
 	align 4
 	
 	.bus_taken:
-		mov	al, 0x80
+		mov	eax, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.z80_on:
-		mov	al, 0x81
+		mov	eax, 0x81
 		pop	ebx
 		ret
 	
@@ -751,6 +751,7 @@ section .text align=64
 	align 8
 	
 	.Ser:
+		xor	eax, eax
 		mov	al, 0xFF
 		pop	ebx
 		ret
@@ -758,21 +759,21 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	al, [SYM(Controller_1_COM)]
+		movzx	eax, byte [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	al, [SYM(Controller_2_COM)]
+		movzx	eax, byte [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Ser:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -812,7 +813,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -825,6 +826,7 @@ section .text align=64
 		mov	al, ah			; on lit que le poids fort
 	
 	.no_swap_status:
+		movzx	eax, al			; make sure only an 8-bit result is returned.
 		pop	ebx
 		ret
 	
@@ -834,7 +836,7 @@ section .text align=64
 	
 	global M68K_Read_Word_Bad
 	M68K_Read_Word_Bad:
-		xor	ax, ax
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -843,7 +845,7 @@ section .text align=64
 	global M68K_Read_Word_Rom0
 	M68K_Read_Word_Rom0:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx]
+		movzx	eax, word [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -852,7 +854,7 @@ section .text align=64
 	global M68K_Read_Word_Rom1
 	M68K_Read_Word_Rom1:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x080000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x080000]
 		pop	ebx
 		ret
 	
@@ -861,7 +863,7 @@ section .text align=64
 	global M68K_Read_Word_Rom2
 	M68K_Read_Word_Rom2:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x100000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x100000]
 		pop	ebx
 		ret
 	
@@ -870,7 +872,7 @@ section .text align=64
 	global M68K_Read_Word_Rom3
 	M68K_Read_Word_Rom3:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x180000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x180000]
 		pop	ebx
 		ret
 	
@@ -893,7 +895,7 @@ section .text align=64
 		jnz	short .Custom_SRAM
 		
 		sub	ebx, [SYM(SRAM_Start)]
-		mov	ax, [SYM(SRAM) + ebx]	; no byte swapped
+		movzx	eax, word [SYM(SRAM) + ebx]	; no byte swapped
 		rol	ax, 8
 		pop	ebx
 		ret
@@ -902,14 +904,14 @@ section .text align=64
 	
 	.Rom:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x200000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x200000]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.Custom_SRAM:
-		mov	ax, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -918,7 +920,7 @@ section .text align=64
 	global M68K_Read_Word_Rom5
 	M68K_Read_Word_Rom5:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x280000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x280000]
 		pop	ebx
 		ret
 	
@@ -927,7 +929,7 @@ section .text align=64
 	global M68K_Read_Word_Rom6
 	M68K_Read_Word_Rom6:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x300000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x300000]
 		pop	ebx
 		ret
 	
@@ -936,7 +938,7 @@ section .text align=64
 	global M68K_Read_Word_Rom7
 	M68K_Read_Word_Rom7:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x380000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x380000]
 		pop	ebx
 		ret
 	
@@ -944,7 +946,7 @@ section .text align=64
 	
 	M68K_Read_Word_Rom8:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x400000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x400000]
 		pop	ebx
 		ret
 	
@@ -952,7 +954,7 @@ section .text align=64
 	
 	M68K_Read_Word_Rom9:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x480000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x480000]
 		pop	ebx
 		ret
 	
@@ -960,7 +962,7 @@ section .text align=64
 	
 	M68K_Read_Word_RomA:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x500000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x500000]
 		pop	ebx
 		ret
 	
@@ -968,7 +970,7 @@ section .text align=64
 	
 	M68K_Read_Word_RomB:
 		and	ebx, 0x7FFFF
-		mov	ax, [SYM(Rom_Data) + ebx + 0x580000]
+		movzx	eax, word [SYM(Rom_Data) + ebx + 0x580000]
 		pop	ebx
 		ret
 	
@@ -978,7 +980,7 @@ section .text align=64
 	M68K_Read_Word_RomD:
 	M68K_Read_Word_RomE:
 	M68K_Read_Word_RomF:
-		xor	ax, ax
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -987,7 +989,7 @@ section .text align=64
 	global M68K_Read_Word_Ram
 	M68K_Read_Word_Ram:
 		and	ebx, 0xFFFF
-		mov	ax, [SYM(Ram_68k) + ebx]
+		movzx	eax, word [SYM(Ram_68k) + ebx]
 		pop	ebx
 		ret
 	
@@ -1027,7 +1029,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		add	ah, 0x80
@@ -1038,7 +1040,7 @@ section .text align=64
 	align 16
 	
 	.bus_taken:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
@@ -1048,7 +1050,7 @@ section .text align=64
 	align 16
 	
 	.z80_on:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
@@ -1120,7 +1122,7 @@ section .text align=64
 	align 8
 	
 	.Ser:
-		mov	ax, 0xFF00
+		mov	eax, 0xFF00
 		pop	ebx
 		ret
 	
@@ -1230,7 +1232,7 @@ section .text align=64
 	global M68K_Write_Byte_Ram
 	M68K_Write_Byte_Ram:
 		and	ebx, 0xFFFF
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(Ram_68k) + ebx], al
 		pop	ecx
 		pop	ebx
@@ -1295,7 +1297,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, 8
+		add	esp, byte 8
 		pop	edx
 	
 	.already_activated:
@@ -1343,7 +1345,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, 4
+		add	esp, byte 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1579,7 +1581,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, 8
+		add	esp, byte 8
 		pop	edx
 	
 	.already_activated:
@@ -1627,7 +1629,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, 4
+		add	esp, byte 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)

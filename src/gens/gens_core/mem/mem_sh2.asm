@@ -322,40 +322,40 @@ section .text align=64
 	
 	MSH2_Read_Byte_00_Rom:
 		and	ecx, 0x07FF
-		mov	al, [SYM(_32X_MSH2_Rom) + ecx]
+		movzx	eax, byte [SYM(_32X_MSH2_Rom) + ecx]
 		ret
 	
 	align 16
 
 	SH2_Read_Byte_VDP:
-		test byte [SYM(_32X_FM)], 0xFF
-		jz short SH2_RB_Bad
-		test ecx, 0xFFBE00
-		jnz short SH2_RB_Bad
+		test	byte [SYM(_32X_FM)], 0xFF
+		jz	short SH2_RB_Bad
+		test	ecx, 0xFFBE00
+		jnz	short SH2_RB_Bad
 		
-		jmp SH2_Read_Byte_VDP_Reg
+		jmp	SH2_Read_Byte_VDP_Reg
 	
 	align 32
 	
 	DECLF SSH2_Read_Byte_00, 4
-		test ecx, 0xFFC000
-		jz short SSH2_Read_Byte_00_Rom
-		test ecx, 0xFFBF00
-		jnz short SH2_Read_Byte_VDP
+		test	ecx, 0xFFC000
+		jz	short SSH2_Read_Byte_00_Rom
+		test	ecx, 0xFFBF00
+		jnz	short SH2_Read_Byte_VDP
 		
-		jmp SSH2_Read_Byte_32X_Reg
+		jmp	SSH2_Read_Byte_32X_Reg
 	
 	align 8
 	
 	SSH2_Read_Byte_00_Rom:
 		and	ecx, 0x03FF
-		mov	al, [SYM(_32X_SSH2_Rom) + ecx]
+		movzx	eax, byte [SYM(_32X_SSH2_Rom) + ecx]
 		ret
 	
 	align 4
 	
 	SH2_RB_Bad:
-		xor	al, al
+		xor	eax, eax
 		ret
 	
 	align 32
@@ -364,7 +364,7 @@ section .text align=64
 		mov	edx, [ebp + SH2.Cycle_IO]
 		and	ecx, 0x3FFFFF
 		sub	edx, byte 6
-		mov	al, [SYM(_32X_Rom) + ecx]
+		movzx	eax, byte [SYM(_32X_Rom) + ecx]
 		mov	[ebp + SH2.Cycle_IO], edx
 		ret
 	
@@ -375,7 +375,7 @@ section .text align=64
 		mov	edx, [ebp + SH2.Cycle_IO]
 		xor	ecx, byte 1
 		sub	edx, byte 4
-		mov	al, [SYM(_32X_VDP_Ram) + ecx]
+		movzx	eax, byte [SYM(_32X_VDP_Ram) + ecx]
 		mov	[ebp + SH2.Cycle_IO], edx
 		ret
 	
@@ -386,7 +386,7 @@ section .text align=64
 		mov	edx, [ebp + SH2.Cycle_IO]
 		xor	ecx, byte 1
 		sub	edx, byte 4
-		mov	al, [SYM(_32X_VDP_Ram) + ecx + 0x20000]
+		movzx	eax, byte [SYM(_32X_VDP_Ram) + ecx + 0x20000]
 		mov	[ebp + SH2.Cycle_IO], edx
 		ret
 	
@@ -394,7 +394,7 @@ section .text align=64
 	
 	DECLF SH2_Read_Byte_Ram, 4
 		and	ecx, 0x3FFFF
-		mov	al, [SYM(_32X_Ram) + ecx]
+		movzx	eax, byte [SYM(_32X_Ram) + ecx]
 		ret
 	
 	;*********************
@@ -450,7 +450,7 @@ section .text align=64
 	align 4
 	
 	SH2_RW_Bad:
-		xor	ax, ax
+		xor	eax, eax
 		ret
 	
 	align 16
@@ -460,7 +460,7 @@ section .text align=64
 		jnz	short SH2_RW_Bad
 		
 		and	ecx, 0x1FE
-		mov	ax, [SYM(_32X_VDP_CRam) + ecx]
+		movzx	eax, word [SYM(_32X_VDP_CRam) + ecx]
 		ret
 	
 	align 32
@@ -480,7 +480,7 @@ section .text align=64
 		mov	edx, [ebp + SH2.Cycle_IO]
 		and	ecx, 0x1FFFE
 		sub	edx, byte 5
-		mov	ax, [SYM(_32X_VDP_Ram) + ecx]
+		movzx	eax, word [SYM(_32X_VDP_Ram) + ecx]
 		mov	[ebp + SH2.Cycle_IO], edx
 		ret
 	
@@ -490,7 +490,7 @@ section .text align=64
 		mov	edx, [ebp + SH2.Cycle_IO]
 		and	ecx, 0x1FFFE
 		sub	edx, byte 5
-		mov	ax, [SYM(_32X_VDP_Ram) + ecx + 0x20000]
+		movzx	eax, word [SYM(_32X_VDP_Ram) + ecx + 0x20000]
 		mov	[ebp + SH2.Cycle_IO], edx
 		ret
 	
@@ -592,7 +592,7 @@ section .text align=64
 	align 4
 	
 	SH2_RL_Bad:
-		xor eax, eax
+		xor	eax, eax
 		ret
 	
 	align 32
@@ -671,7 +671,7 @@ section .text align=64
 		test	ecx, 0xFFBE00
 		jnz	short SH2_WB_Bad
 		
-		jmp SH2_Write_Byte_VDP_Reg
+		jmp	SH2_Write_Byte_VDP_Reg
 	
 	align 4
 	
@@ -1045,7 +1045,7 @@ section .text align=64
 	
 	MSH2_Read_Byte_32X_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3F
+		and	ecx, byte 0x3F
 		sub	edx, byte 10
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_MSH2_Reg + ecx * 4]
@@ -1089,57 +1089,58 @@ section .text align=64
 	align 8
 	
 	MSH2_RB_IntC_L:
-		mov	al, [SYM(_32X_MINT)]
+		movzx	eax, byte [SYM(_32X_MINT)]
 		ret
 	
 	align 8
 	
 	SH2_RB_HCnt:
-		mov	al, [SYM(_32X_HIC)]
+		movzx	eax, byte [SYM(_32X_HIC)]
 		ret
 	
 	align 8
 	
 	SH2_RB_DREQ_H:
-		mov	al, [SYM(_32X_DREQ_ST) + 1]
+		movzx	eax, byte [SYM(_32X_DREQ_ST) + 1]
 		ret
 	
 	align 8
 	
 	SH2_RB_DREQ_L:
-		mov	al, [SYM(_32X_RV)]
+		movzx	eax, byte [SYM(_32X_RV)]	; mov al, [SYM(_32X_RV)]
 		mov	ah, [SYM(_32X_DREQ_ST)]
 		or	al, ah
+		xor	ah, ah
 		ret
 	
 	align 8
 	
 	SH2_RB_Com:
-		mov	al, [SYM(_32X_Comm + ecx -)0x20]
+		movzx	eax, byte [SYM(_32X_Comm) + ecx - 0x20]
 		ret
 	
 	align 8
 	
 	SH2_RB_PWM_Cont_H:
-		mov	al, [SYM(PWM_Mode) + 1]
+		movzx	eax, byte [SYM(PWM_Mode) + 1]
 		ret 
 	
 	align 8
 	
 	SH2_RB_PWM_Cont_L:
-		mov	al, [SYM(PWM_Mode) + 0]
+		movzx	eax, byte [SYM(PWM_Mode) + 0]
 		ret
 	
 	align 8
 	
 	SH2_RB_PWM_Cycle_H:
-		mov	al, [SYM(PWM_Cycle_Tmp) + 1]
+		movzx	eax, byte [SYM(PWM_Cycle_Tmp) + 1]
 		ret
 	
 	align 8
 	
 	SH2_RB_PWM_Cycle_L:
-		mov	al, [SYM(PWM_Cycle_Tmp) + 0]
+		movzx	eax, byte [SYM(PWM_Cycle_Tmp) + 0]
 		ret
 	
 	align 16
@@ -1147,7 +1148,7 @@ section .text align=64
 	SH2_RB_PWM_Pulse_L:
 		mov	ecx, [SYM(PWM_RP_L)]
 		mov	edx, [SYM(PWM_WP_L)]
-		mov	al, [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
 		ret
 	
 	align 16
@@ -1155,7 +1156,7 @@ section .text align=64
 	SH2_RB_PWM_Pulse_R:
 		mov	ecx, [SYM(PWM_RP_R)]
 		mov	edx, [SYM(PWM_WP_R)]
-		mov	al, [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
 		ret
 	
 	align 16
@@ -1163,14 +1164,14 @@ section .text align=64
 	SH2_RB_PWM_Pulse_C:
 		mov	ecx, [SYM(PWM_RP_L)]
 		mov	edx, [SYM(PWM_WP_L)]
-		mov	al, [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ecx * PWM_BUF_SIZE + edx]
 		ret
 	
 	align 16
 	
 	SSH2_Read_Byte_32X_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3F
+		and	ecx, byte 0x3F
 		sub	edx, byte 10
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_SSH2_Reg + ecx * 4]
@@ -1204,14 +1205,14 @@ section .text align=64
 	align 16
 	
 	SSH2_RB_IntC_L:
-		mov	al, [SYM(_32X_SINT)]
+		movzx	eax, byte [SYM(_32X_SINT)]
 		ret
 	
 	align 16
 	
 	SH2_Read_Byte_VDP_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0xF
+		and	ecx, byte 0xF
 		sub	edx, byte 3
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_VDP_Reg + ecx * 4]
@@ -1227,62 +1228,62 @@ section .text align=64
 	align 16
 	
 	SH2_RB_VDP_Mode_H:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 1]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_Mode_L:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 0]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_Shift:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 2]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_AF_Len:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Len + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Len + 0]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_AF_St_H:
-		mov	al, [SYM(_32X_VDP) + vx.AF_St + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_St + 1]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_AF_St_L:
-		mov	al, [SYM(_32X_VDP) + vx.AF_St + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_St + 0]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_AF_Data_H:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Data + 1]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_AF_Data_L:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Data + 0]
 		ret
 	
 	align 8
 	
 	SH2_RB_VDP_State_H:
-		mov	al, [SYM(_32X_VDP) + vx.State + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.State + 1]
 		ret
 	
 	align 16
 	
 	SH2_RB_VDP_State_L:
-		mov	al, [SYM(_32X_VDP) + vx.State]
-		xor	al, 2
+		movzx	eax, byte [SYM(_32X_VDP) + vx.State]
+		xor	eax, byte 2
 		mov	[SYM(_32X_VDP) + vx.State], al
 		ret
 	
@@ -1293,7 +1294,7 @@ section .text align=64
 	
 	MSH2_Read_Word_32X_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3E
+		and	ecx, byte 0x3E
 		sub	edx, byte 16
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_MSH2_Reg + ecx * 2]
@@ -1318,7 +1319,7 @@ section .text align=64
 	align 16
 	
 	MSH2_RW_IntC:
-		mov	al, [SYM(_32X_ADEN)]
+		movzx	eax, byte [SYM(_32X_ADEN)]	; mov al, [SYM(_32X_ADEN)]
 		mov	ah, [SYM(_32X_FM)]
 		add	al, al
 		or	ah, al
@@ -1328,8 +1329,7 @@ section .text align=64
 	align 8
 	
 	SH2_RW_HCnt:
-		mov	al, [SYM(_32X_HIC)]
-		xor	ah, ah
+		movzx	eax, byte [SYM(_32X_HIC)]
 		ret
 	
 	align 16
@@ -1342,7 +1342,7 @@ section .text align=64
 	align 16
 	
 	SH2_RW_DREQ:
-		mov	al, [SYM(_32X_RV)]
+		movzx	eax, byte [SYM(_32X_RV)]	; mov al, [SYM(_32X_RV)]
 		mov	ah, [SYM(_32X_DREQ_ST)]
 		or	al, ah
 		mov	ah, [SYM(_32X_DREQ_ST) + 1]
@@ -1351,45 +1351,45 @@ section .text align=64
 	align 8
 	
 	SH2_RW_DREQ_Src_H:
-		mov	ax, [SYM(_32X_DREQ_SRC) + 2]
+		movzx	eax, word [SYM(_32X_DREQ_SRC) + 2]
 		ret
 	
 	align 8
 	
 	SH2_RW_DREQ_Src_L:
-		mov	ax, [SYM(_32X_DREQ_SRC)]
+		movzx	eax, word [SYM(_32X_DREQ_SRC)]
 		ret
 	
 	align 8
 	
 	SH2_RW_DREQ_Dst_H:
-		mov	ax, [SYM(_32X_DREQ_DST) + 2]
+		movzx	eax, word [SYM(_32X_DREQ_DST) + 2]
 		ret
 	
 	align 8
 	
 	SH2_RW_DREQ_Dst_L:
-		mov	ax, [SYM(_32X_DREQ_DST)]
+		movzx	eax, word [SYM(_32X_DREQ_DST)]
 		ret
 	
 	align 8
 	
 	SH2_RW_DREQ_Len:
-		mov	ax, [SYM(_32X_DREQ_LEN)]
+		movzx	eax, word [SYM(_32X_DREQ_LEN)]
 		ret
 	
 	align 16
 	
 	SH2_RW_FIFO:
-		mov	ax, [SYM(_32X_DREQ_ST)]
+		movzx	eax, word [SYM(_32X_DREQ_ST)]
 		mov	edx, [SYM(_32X_FIFO_Read)]
 		mov	ecx, [SYM(_32X_FIFO_Block)]
-		and	ax, 0x4004
+		and	eax, 0x4004
 		xor	ecx, byte (4 * 2)
-		cmp	ax, 0x0004
+		cmp	eax, 0x0004
 		jne	short .FIFO_End
 		
-		mov	ax, [SYM(_32X_FIFO_A) + ecx + edx * 2]
+		movzx	eax, word [SYM(_32X_FIFO_A) + ecx + edx * 2]
 		
 		;pushad
 		;push	eax
@@ -1401,7 +1401,7 @@ section .text align=64
 		;popad
 		
 		inc	edx
-		cmp	edx, 4
+		cmp	edx, byte 4
 		jae	short .32X_FIFO_Empty_A
 		
 		mov	[SYM(_32X_FIFO_Read)], edx
@@ -1410,13 +1410,13 @@ section .text align=64
 	align 4
 	
 	.FIFO_End:
-		xor	ax, ax
+		xor	eax, eax
 		ret
 	
 	align 16
 	
 	.32X_FIFO_Empty_A:
-		mov	dx, [SYM(_32X_DREQ_LEN)]
+		movzx	edx, word [SYM(_32X_DREQ_LEN)]
 		push	eax
 		sub	dx, byte 4
 		mov	al, [SYM(_32X_DREQ_ST) + 1]
@@ -1457,13 +1457,13 @@ section .text align=64
 	align 8
 	
 	SH2_RW_PWM_Cont:
-		mov	ax, [SYM(PWM_Mode)]
+		movzx	eax, word [SYM(PWM_Mode)]
 		ret 
 	
 	align 8
 	
 	SH2_RW_PWM_Cycle:
-		mov	ax, [SYM(PWM_Cycle_Tmp)]
+		movzx	eax, word [SYM(PWM_Cycle_Tmp)]
 		ret
 	
 	align 16
@@ -1494,7 +1494,7 @@ section .text align=64
 	
 	SSH2_Read_Word_32X_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3E
+		and	ecx, byte 0x3E
 		sub	edx, byte 14
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_SSH2_Reg + ecx * 2]
@@ -1519,7 +1519,7 @@ section .text align=64
 	align 16
 	
 	SSH2_RW_IntC:
-		mov	al, [SYM(_32X_ADEN)]
+		movzx	eax, byte [SYM(_32X_ADEN)]	; mov al, [SYM(_32X_ADEN)]
 		mov	ah, [SYM(_32X_FM)]
 		add	al, al
 		or	ah, al
@@ -1530,7 +1530,7 @@ section .text align=64
 	
 	SH2_Read_Word_VDP_Reg:
 		mov	edx, [ebp + SH2.Cycle_IO]
-		and	ecx, 0xE
+		and	ecx, byte 0xE
 		sub	edx, byte 5
 		mov	[ebp + SH2.Cycle_IO], edx
 		jmp	[.Table_VDP_Reg + ecx * 2]
@@ -1544,40 +1544,38 @@ section .text align=64
 	align 16
 	
 	SH2_RW_VDP_Mode:
-		mov	ax, [SYM(_32X_VDP) + vx.Mode]
+		movzx	eax, word [SYM(_32X_VDP) + vx.Mode]
 		ret
 	
 	align 8
 	
 	SH2_RW_VDP_Shift:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
-		xor	ah, ah
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 2]
 		ret
 	
 	align 8
 	
 	SH2_RW_VDP_AF_Len:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Len]
-		xor	ah, ah
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Len]
 		ret
 	
 	align 8
 	
 	SH2_RW_VDP_AF_St:
-		mov	ax, [SYM(_32X_VDP) + vx.AF_St]
+		movzx	eax, word [SYM(_32X_VDP) + vx.AF_St]
 		ret
 	
 	align 8
 	
 	SH2_RW_VDP_AF_Data:
-		mov	ax, [SYM(_32X_VDP) + vx.AF_Data]
+		movzx	eax, word [SYM(_32X_VDP) + vx.AF_Data]
 		ret
 	
 	align 16
 	
 	SH2_RW_VDP_State:
-		mov	ax, [SYM(_32X_VDP) + vx.State]
-		xor	ax, byte 2
+		movzx	eax, word [SYM(_32X_VDP) + vx.State]
+		xor	eax, byte 2
 		mov	[SYM(_32X_VDP) + vx.State], ax
 		ret
 	
@@ -1596,7 +1594,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3F
+		and	ecx, byte 0x3F
 		sub	eax, byte 10
 		mov	[_MSH2_Reg + ecx], dl
 		mov	[ebp + SH2.Cycle_IO], eax
@@ -1664,7 +1662,7 @@ section .text align=64
 		mov	cl, dl
 		push	ecx
 		call	SYM(PWM_Set_Int)
-		add	esp, 4
+		add	esp, byte 4
 		ret
 	
 	align 8
@@ -1681,7 +1679,7 @@ section .text align=64
 		mov	ch, dl
 		push	ecx
 		call	SYM(PWM_Set_Cycle)
-		add	esp, 4
+		add	esp, byte 4
 		ret
 	
 	align 16
@@ -1692,7 +1690,7 @@ section .text align=64
 		mov	cl, dl
 		push	ecx
 		call	SYM(PWM_Set_Cycle)
-		add	esp, 4
+		add	esp, byte 4
 		ret
 	
 	align 8
@@ -1703,14 +1701,14 @@ section .text align=64
 
 %macro FUNC_CALL_IN 0
 %ifdef __GCC
-	push ebp
-	mov eax, ecx
+	push	ebp
+	mov	eax, ecx
 %endif
 %endmacro
 
 %macro FUNC_CALL_OUT 0
 %ifdef __GCC
-	pop ebp
+	pop	ebp
 %endif
 %endmacro
 
@@ -1829,7 +1827,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3F
+		and	ecx, byte 0x3F
 		sub	eax, byte 10
 		mov	[_SSH2_Reg + ecx], dl
 		mov	[ebp + SH2.Cycle_IO], eax
@@ -1879,7 +1877,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0xF
+		and	ecx, byte 0xF
 		sub	eax, byte 3
 		mov	[_SH2_VDP_Reg + ecx], dl
 		mov	[ebp + SH2.Cycle_IO], eax
@@ -1947,7 +1945,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3E
+		and	ecx, byte 0x3E
 		sub	eax, byte 16
 		mov	[_MSH2_Reg + ecx + 0], dh
 		mov	[ebp + SH2.Cycle_IO], eax
@@ -1997,7 +1995,7 @@ section .text align=64
 		mov	[SYM(PWM_Mode) + 1], dh
 		push	ecx
 		call	SYM(PWM_Set_Int)
-		add	esp, 4
+		add	esp, byte 4
 		ret
 	
 	align 16
@@ -2005,7 +2003,7 @@ section .text align=64
 	SH2_WW_PWM_Cycle:
 		push	edx
 		call	SYM(PWM_Set_Cycle)
-		add	esp, 4
+		add	esp, byte 4
 		ret
 	
 	align 16
@@ -2085,7 +2083,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0x3E
+		and	ecx, byte 0x3E
 		sub	eax, byte 14
 		mov	[_SSH2_Reg + ecx + 0], dh
 		mov	[ebp + SH2.Cycle_IO], eax
@@ -2132,7 +2130,7 @@ section .text align=64
 		;popad
 		
 		mov	eax, [ebp + SH2.Cycle_IO]
-		and	ecx, 0xE
+		and	ecx, byte 0xE
 		sub	eax, byte 5
 		mov	[_SH2_VDP_Reg + ecx + 0], dh
 		mov	[ebp + SH2.Cycle_IO], eax

@@ -314,7 +314,7 @@ section .text align=64
 	M68K_Read_Byte_Bios_32X:
 		and	ebx, 0x3FF
 		xor	ebx, byte 1
-		mov	al, [SYM(_32X_Genesis_Rom) + ebx]
+		movzx	eax, byte [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -325,7 +325,7 @@ section .text align=64
 		jae	short .Rom
 		
 		xor	ebx, byte 1
-		mov	al, [SYM(_32X_Genesis_Rom) + ebx]
+		movzx	eax, byte [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -333,7 +333,7 @@ section .text align=64
 	
 	.Rom:
 		xor	ebx, byte 1
-		mov	al, [SYM(Rom_Data) + ebx]
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -361,7 +361,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -380,22 +380,22 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		mov	al, [SYM(Last_BUS_REQ_St)]
+		movzx	eax, byte [SYM(Last_BUS_REQ_St)]
 		pop	ebx
-		or	al, 0x80
+		or	eax, 0x80
 		ret
 	
 	align 4
 	
 	.bus_taken:
-		mov	al, 0x80
+		mov	eax, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.z80_on:
-		mov	al, 0x81
+		mov	eax, 0x81
 		pop	ebx
 		ret
 	
@@ -418,7 +418,7 @@ section .text align=64
 	
 	._32X_ID:
 		and	ebx, 3
-		mov	al, [_32X_ID_Tab + ebx]
+		movzx	eax, byte [_32X_ID_Tab + ebx]
 		pop	ebx
 		ret
 	
@@ -471,28 +471,28 @@ section .text align=64
 	align 8
 	
 	.Ser:
-		mov	al, 0xFF
+		mov	eax, 0xFF
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_1:
-		mov	al, [SYM(Controller_1_COM)]
+		movzx	eax, byte [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	al, [SYM(Controller_2_COM)]
+		movzx	eax, byte [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Ser:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -534,39 +534,39 @@ section .text align=64
 	align 16
 	
 	._32X_ACR_H:
-		mov	al, [_32X_FM]
+		movzx	eax, byte [_32X_FM]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_ACR_L:
-		mov	al, [_32X_ADEN]
+		movzx	eax, byte [_32X_ADEN]	; mov al, [_32X_ADEN]
 		mov	ah, [_32X_RES]
 		or	al, ah
 		pop	ebx
-		or	al, 0x80
+		or	eax, 0x80
 		ret
 	
 	align 4
 	
 	._32X_Int:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_Bank:
-		mov	al, [SYM(Bank_SH2)]
+		movzx	eax, byte [SYM(Bank_SH2)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_DREQ_C:
-		mov	al, [_32X_RV]
-		mov	bl, [_32X_DREQ_ST + 0]
+		movzx	eax, byte [_32X_RV]		; mov al, [_32X_RV]
+		movzx	ebx, byte [_32X_DREQ_ST + 0]	; mov bl, byte [_32X_DREQ_ST + 0]
 		mov	ah, [_32X_DREQ_ST + 1]
 		or	al, bl
 		and	ah, 0x80
@@ -577,35 +577,35 @@ section .text align=64
 	align 8
 	
 	._32X_Comm:
-		mov	al, [_32X_Comm + ebx - 0x20]
+		movzx	eax, byte [_32X_Comm + ebx - 0x20]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_PWM_Cont_H:
-		mov	al, [SYM(PWM_Mode) + 1]
+		movzx	eax, byte [SYM(PWM_Mode) + 1]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cont_L:
-		mov	al, [SYM(PWM_Mode) + 0]
+		movzx	eax, byte [SYM(PWM_Mode) + 0]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cycle_H:
-		mov	al, [SYM(PWM_Cycle_Tmp) + 1]
+		movzx	eax, byte [SYM(PWM_Cycle_Tmp) + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_PWM_Cycle_L:
-		mov	al, [SYM(PWM_Cycle_Tmp) + 0]
+		movzx	eax, byte [SYM(PWM_Cycle_Tmp) + 0]
 		pop	ebx
 		ret
 	
@@ -614,7 +614,7 @@ section .text align=64
 	._32X_PWM_Pulse_L:
 		mov	ebx, [SYM(PWM_RP_L)]
 		mov	eax, [SYM(PWM_WP_L)]
-		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
@@ -623,7 +623,7 @@ section .text align=64
 	._32X_PWM_Pulse_R:
 		mov	ebx, [SYM(PWM_RP_R)]
 		mov	eax, [SYM(PWM_WP_R)]
-		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
@@ -632,7 +632,7 @@ section .text align=64
 	._32X_PWM_Pulse_C:
 		mov	ebx, [SYM(PWM_RP_L)]
 		mov	eax, [SYM(PWM_WP_L)]
-		mov	al, [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
+		movzx	eax, byte [SYM(PWM_FULL_TAB) + ebx * PWM_BUF_SIZE + eax]
 		pop	ebx
 		ret
 	
@@ -644,7 +644,7 @@ section .text align=64
 		cmp	ebx, 0xA15200
 		jae	near ._32X_bad
 		
-		and	ebx, 0xF
+		and	ebx, byte 0xF
 		jmp	[.Table_32X_VDP_Reg + ebx * 4]
 	
 	align 16
@@ -658,71 +658,71 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode_H:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_Mode_L:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_Shift:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Len_L:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Len + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Len + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_St_H:
-		mov	al, [SYM(_32X_VDP) + vx.AF_St + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_St + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_St_L:
-		mov	al, [SYM(_32X_VDP) + vx.AF_St + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_St + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data_H:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Data + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data_L:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Data + 0]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Data + 0]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_State_H:
-		mov	al, [SYM(_32X_VDP) + vx.State + 1]
+		movzx	eax, byte [SYM(_32X_VDP) + vx.State + 1]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_State_L:
-		mov	al, [SYM(_32X_VDP) + vx.State]
-		xor	al, 2
+		movzx	eax, byte [SYM(_32X_VDP) + vx.State]
+		xor	eax, 2
 		mov	[SYM(_32X_VDP) + vx.State], al
 		pop	ebx
 		ret
@@ -730,7 +730,7 @@ section .text align=64
 	align 4
 	
 	._32X_bad:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -740,7 +740,7 @@ section .text align=64
 	SYM(M68K_Read_Byte_32X_FB0):
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
-		mov	al, [SYM(_32X_VDP_Ram) + ebx]
+		movzx	eax, byte [SYM(_32X_VDP_Ram) + ebx]
 		pop	ebx
 		ret
 	
@@ -750,7 +750,7 @@ section .text align=64
 	SYM(M68K_Read_Byte_32X_FB1):
 		and	ebx, 0x1FFFF
 		xor	ebx, byte 1
-		mov	al, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
+		movzx	eax, byte [SYM(_32X_VDP_Ram) + ebx + 0x20000]
 		pop	ebx
 		ret
 	
@@ -761,7 +761,7 @@ section .text align=64
 	
 	M68K_Read_Word_Bios_32X:
 		and	ebx, 0xFE
-		mov	ax, [SYM(_32X_Genesis_Rom) + ebx]
+		movzx	eax, word [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
@@ -771,14 +771,14 @@ section .text align=64
 		cmp	ebx, 0x100
 		jae	short .Rom
 		
-		mov	ax, [SYM(_32X_Genesis_Rom) + ebx]
+		movzx	eax, word [SYM(_32X_Genesis_Rom) + ebx]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Rom:
-		mov	ax, [SYM(Rom_Data) + ebx]
+		movzx	eax, word [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -818,7 +818,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		add	ah, 0x80
@@ -829,7 +829,7 @@ section .text align=64
 	align 16
 	
 	.bus_taken:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
@@ -839,7 +839,7 @@ section .text align=64
 	align 16
 	
 	.z80_on:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
@@ -864,9 +864,9 @@ section .text align=64
 	align 16
 	
 	._32X_ID:
-		and ebx, 3
-		mov ax, [_32X_ID_Tab + ebx]
-		pop ebx
+		and	ebx, byte 3
+		movzx	eax, word [_32X_ID_Tab + ebx]
+		pop	ebx
 		ret
 	
 	align 16
@@ -918,7 +918,7 @@ section .text align=64
 	align 8
 	
 	.Ser:
-		mov	ax, 0xFF00
+		mov	eax, 0xFF00
 		pop	ebx
 		ret
 	
@@ -980,35 +980,34 @@ section .text align=64
 	align 16
 	
 	._32X_ACR:
-		mov	al, [_32X_ADEN]
+		movzx	eax, byte [_32X_ADEN]	; mov al, [_32X_ADEN]
 		mov	ah, [_32X_RES]
 		or	al, ah
 		mov	ah, [_32X_FM]
-		or	al, 0x80
+		or	eax, 0x80
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_INT:
-		xor	ax, ax
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_Bank:
-		mov	al, [SYM(Bank_SH2)]
-		xor	ah, ah
+		movzx	eax, byte [SYM(Bank_SH2)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_DREQ_C:
-		mov	bl, [_32X_DREQ_ST + 0]
+		movzx	ebx, byte [_32X_DREQ_ST + 0]	; mov bl, [_32X_DREQ_ST + 0]
+		movzx	eax, byte [_32X_RV]		; mov al, [_32X_RV]
 		mov	ah, [_32X_DREQ_ST + 1]
-		mov	al, [_32X_RV]
 		and	ah, 0x80
 		or	al, bl
 		or	al, ah
@@ -1019,35 +1018,35 @@ section .text align=64
 	align 8
 	
 	._32X_DREQ_Src_H:
-		mov	ax, [_32X_DREQ_SRC + 2]
+		movzx	eax, word [_32X_DREQ_SRC + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_DREQ_Src_L:
-		mov	ax, [_32X_DREQ_SRC]
+		movzx	eax, word [_32X_DREQ_SRC]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_DREQ_Dest_H:
-		mov	ax, [_32X_DREQ_DST + 2]
+		movzx	eax, word [_32X_DREQ_DST + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_DREQ_Dest_L:
-		mov	ax, [_32X_DREQ_DST]
+		movzx	eax, word [_32X_DREQ_DST]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_DREQ_Len:
-		mov	ax, [_32X_DREQ_LEN]
+		movzx	eax, word [_32X_DREQ_LEN]
 		pop	ebx
 		ret
 	
@@ -1060,22 +1059,22 @@ section .text align=64
 	align 16
 	
 	._32X_Comm:
+		movzx	eax, byte [_32X_Comm + ebx - 0x20 + 1]	; mov al, [_32X_Comm + ebx - 0x20 + 1]
 		mov	ah, [_32X_Comm + ebx - 0x20 + 0]
-		mov	al, [_32X_Comm + ebx - 0x20 + 1]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_PWM_Cont:
-		mov	ax, [SYM(PWM_Mode)]
+		movzx	eax, word [SYM(PWM_Mode)]
 		pop	ebx
 		ret 
 	
 	align 8
 	
 	._32X_PWM_Cycle:
-		mov	ax, [SYM(PWM_Cycle_Tmp)]
+		movzx	eax, word [SYM(PWM_Cycle_Tmp)]
 		pop	ebx
 		ret
 	
@@ -1114,7 +1113,7 @@ section .text align=64
 		cmp	ebx, 0xA15200
 		jae	near ._32X_CRAM
 		
-		and	ebx, 0xE
+		and	ebx, byte 0xE
 		jmp	[.Table_32X_VDP_Reg + ebx * 2]
 	
 	align 16
@@ -1127,45 +1126,43 @@ section .text align=64
 	align 16
 	
 	._32X_VDP_Mode:
-		mov	ax, [SYM(_32X_VDP) + vx.Mode]
+		movzx	eax, word [SYM(_32X_VDP) + vx.Mode]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_Shift:
-		mov	al, [SYM(_32X_VDP) + vx.Mode + 2]
-		xor	ah, ah
+		movzx	eax, byte [SYM(_32X_VDP) + vx.Mode + 2]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_AF_Len:
-		mov	al, [SYM(_32X_VDP) + vx.AF_Len]
-		xor	ah, ah
+		movzx	eax, byte [SYM(_32X_VDP) + vx.AF_Len]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_St:
-		mov	ax, [SYM(_32X_VDP) + vx.AF_St]
+		movzx	eax, word [SYM(_32X_VDP) + vx.AF_St]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	._32X_VDP_AF_Data:
-		mov	ax, [SYM(_32X_VDP) + vx.AF_Data]
+		movzx	eax, word [SYM(_32X_VDP) + vx.AF_Data]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	._32X_VDP_State:
-		mov	ax, [SYM(_32X_VDP) + vx.State]
-		xor	ax, byte 2
+		movzx	eax, word [SYM(_32X_VDP) + vx.State]
+		xor	eax, byte 2
 		mov	[SYM(_32X_VDP) + vx.State], ax
 		pop	ebx
 		ret
@@ -1173,7 +1170,7 @@ section .text align=64
 	align 4
 	
 	._32X_bad:
-		xor	ax, ax
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -1183,7 +1180,7 @@ section .text align=64
 		cmp	ebx, 0xA15400
 		jae	short ._32X_bad
 		
-		mov	ax, [SYM(_32X_VDP_CRam) + ebx - 0xA15200]
+		movzx	eax, word [SYM(_32X_VDP_CRam) + ebx - 0xA15200]
 		pop	ebx
 		ret
 	
@@ -1192,7 +1189,7 @@ section .text align=64
 	global SYM(M68K_Read_Word_32X_FB0)
 	SYM(M68K_Read_Word_32X_FB0):
 		and	ebx, 0x1FFFE
-		mov	ax, [SYM(_32X_VDP_Ram) + ebx]
+		movzx	eax, word [SYM(_32X_VDP_Ram) + ebx]
 		pop	ebx
 		ret
 	
@@ -1201,7 +1198,7 @@ section .text align=64
 	global SYM(M68K_Read_Word_32X_FB1)
 	SYM(M68K_Read_Word_32X_FB1):
 		and	ebx, 0x1FFFE
-		mov	ax, [SYM(_32X_VDP_Ram) + ebx + 0x20000]
+		movzx	eax, word [SYM(_32X_VDP_Ram) + ebx + 0x20000]
 		pop	ebx
 		ret
 	
@@ -1565,7 +1562,7 @@ section .text align=64
 		cmp	bx, 0x0004
 		jne	short .No_DREQ
 		
-		xor	al, al
+		xor	eax, eax
 		mov	byte [_32X_DREQ_ST + 1], 0x40
 		mov	[_32X_FIFO_Block], al
 		mov	[_32X_FIFO_Read], al
@@ -2179,7 +2176,7 @@ section .text align=64
 		cmp	bx, 0x0004
 		jne	short .No_DREQ
 		
-		xor	al, al
+		xor	eax, eax
 		mov	byte [_32X_DREQ_ST + 1], 0x40
 		mov	[_32X_FIFO_Block], al
 		mov	[_32X_FIFO_Read], al
@@ -2272,7 +2269,7 @@ section .text align=64
 		test	bl, 0x40
 		jz	short ._32X_FIFO_Full_B
 		
-		xor	al, al
+		xor	eax, eax
 		xor	ecx, byte (4 * 2)
 		mov	[_32X_DREQ_ST + 1], al
 		mov	[_32X_FIFO_Write], al

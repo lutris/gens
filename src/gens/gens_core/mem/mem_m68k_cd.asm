@@ -258,8 +258,8 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		xor	ebx, 1
-		mov	al, [SYM(Rom_Data) + ebx]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -273,8 +273,8 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
-		xor	ebx, 1
-		mov	al, [SYM(Ram_Prg) + ebx - 0x20000]		
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Ram_Prg) + ebx - 0x20000]		
 		pop	ebx
 		ret
 	
@@ -284,7 +284,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	eax, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	eax, 0x3
+		and	eax, byte 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
 	align 16
@@ -297,8 +297,8 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		xor	ebx, 1
-		mov	al, [SYM(Ram_Word_2M) + ebx - 0x200000]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -308,8 +308,8 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		xor	ebx, 1
-		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -319,8 +319,8 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		xor	ebx, 1
-		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -335,11 +335,10 @@ section .text align=64
 	
 	.Cell_Arranged_0:
 		shr	ebx, 1
-		mov	eax, 0
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	eax, 0	; can't be optimized to xor due to adc
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
-		and	ebx, 0xFFFF
-		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax]
+		movzx	eax, byte [SYM(Ram_Word_1M) + ebx * 2 + eax]
 		pop	ebx
 		ret
 	
@@ -347,11 +346,10 @@ section .text align=64
 	
 	.Cell_Arranged_1:
 		shr	ebx, 1
-		mov	eax, 0
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	eax, 0	; can't be optimized to xor due to adc
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
-		and	ebx, 0xFFFF
-		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax + 0x20000]
+		movzx	eax, byte [SYM(Ram_Word_1M) + ebx * 2 + eax + 0x20000]
 		pop	ebx
 		ret
 	
@@ -394,7 +392,7 @@ section .text align=64
 		xor	eax, eax
 		jne	short .bad
 		
-		mov	al, [SYM(BRAM_Ex_State)]
+		movzx	eax, byte [SYM(BRAM_Ex_State)]
 	
 	.bad:
 		pop	ebx
@@ -436,7 +434,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [SYM(Last_BUS_REQ_St)]
+		movzx	eax, byte [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -444,14 +442,14 @@ section .text align=64
 	align 4
 	
 	.bus_taken:
-		mov	al, 0x80
+		mov	eax, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.z80_on:
-		mov	al, 0x81
+		mov	eax, 0x81
 		pop	ebx
 		ret
 	
@@ -520,14 +518,14 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	al, [SYM(Controller_1_COM)]
+		movzx	eax, byte [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	al, [SYM(Controller_2_COM)]
+		movzx	eax, byte [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -561,15 +559,15 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl_L:
-		mov	al, [SYM(S68K_State)]
+		movzx	eax, byte [SYM(S68K_State)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.S68K_Ctrl_H:
-		mov	al, [SYM(Int_Mask_S68K)]
-		and	al, 4
+		movzx	eax, byte [SYM(Int_Mask_S68K)]
+		and	eax, byte 4
 		shl	al, 5
 		pop	ebx
 		ret
@@ -580,7 +578,7 @@ section .text align=64
 		mov	eax, [SYM(Bank_M68K)]
 		mov	ebx, [SYM(Ram_Word_State)]
 		shr	eax, 11
-		and	ebx, 3
+		and	ebx, byte 3
 		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
@@ -588,84 +586,84 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl_H:
-		mov	al, [SYM(S68K_Mem_WP)]
+		movzx	eax, byte [SYM(S68K_Mem_WP)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Mode_H:
-		mov	al, [SYM(CDC.RS0) + 1]
+		movzx	eax, byte [SYM(CDC.RS0) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Mode_L:
-		mov	al, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.HINT_Vector_H:
-		mov	al, [SYM(Rom_Data) + 0x73]
+		movzx	eax, byte [SYM(Rom_Data) + 0x73]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.HINT_Vector_L:
-		mov	al, [SYM(Rom_Data) + 0x72]
+		movzx	eax, byte [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Host_Data_H:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Host_Data_L:
-		xor	al, al
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Unknow:
-		mov	al, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Stop_Watch_H:
-		mov	al, [SYM(CDC.Stop_Watch) + 3]
+		movzx	eax, byte [SYM(CDC.Stop_Watch) + 3]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Stop_Watch_L:
-		mov	al, [SYM(CDC.Stop_Watch) + 2]
+		movzx	eax, byte [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_H:
-		mov	al, [SYM(COMM.Flag) + 1]
+		movzx	eax, byte [SYM(COMM.Flag) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_L:
-		mov	al, [SYM(COMM.Flag)]
+		movzx	eax, byte [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -687,8 +685,8 @@ section .text align=64
 	.Com_D6_L:
 	.Com_D7_H:
 	.Com_D7_L:
-		xor	ebx, 1
-		mov	al, [SYM(COMM.Command) + ebx - 0x10]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -710,8 +708,8 @@ section .text align=64
 	.Com_S6_L:
 	.Com_S7_H:
 	.Com_S7_L:
-		xor	ebx, 1
-		mov	al, [SYM(COMM.Status) + ebx - 0x20]
+		xor	ebx, byte 1
+		movzx	eax, byte [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -724,7 +722,7 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		mov	ax, [SYM(Rom_Data) + ebx]
+		movzx	eax, word [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -738,7 +736,7 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
-		mov	ax, [SYM(Ram_Prg) + ebx - 0x20000]
+		movzx	eax, word [SYM(Ram_Prg) + ebx - 0x20000]
 		pop	ebx
 		ret
 	
@@ -761,7 +759,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		mov	ax, [SYM(Ram_Word_2M) + ebx - 0x200000]
+		movzx	eax, word [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -771,7 +769,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000]
+		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -781,32 +779,30 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
+		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.bad:
-		mov	ax, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Cell_Arranged_0:
-		xor	eax, eax
-		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		mov	ax, [SYM(Ram_Word_1M) + eax * 2]
+		movzx	eax, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		movzx	eax, word [SYM(Ram_Word_1M) + eax * 2]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Cell_Arranged_1:
-		xor	eax, eax
-		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		mov	ax, [SYM(Ram_Word_1M) + eax * 2 + 0x20000]
+		movzx	eax, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		movzx	eax, word [SYM(Ram_Word_1M) + eax * 2 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -849,7 +845,7 @@ section .text align=64
 		xor	eax, eax
 		jne	short .bad
 		
-		mov	al, [SYM(BRAM_Ex_State)]
+		movzx	eax, byte [SYM(BRAM_Ex_State)]
 		
 	.bad:
 		pop	ebx
@@ -891,7 +887,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		or	ah, 0x80
@@ -902,7 +898,7 @@ section .text align=64
 	align 16
 	
 	.bus_taken:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
@@ -912,7 +908,7 @@ section .text align=64
 	align 16
 	
 	.z80_on:
-		mov	al, [SYM(Fake_Fetch)]
+		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
@@ -977,21 +973,21 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		mov	ax, [SYM(Controller_1_COM)]
+		movzx	eax, word [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		mov	ax, [SYM(Controller_2_COM)]
+		movzx	eax, word [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.bad:
-		xor	ax, ax
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -1019,8 +1015,8 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl:
+		movzx	eax, byte [SYM(S68K_State)]	; mov al, [SYM(S68K_State)]
 		mov	ah, [SYM(Int_Mask_S68K)]
-		mov	al, [SYM(S68K_State)]
 		and	ah, 4
 		shl	ah, 5
 		pop	ebx
@@ -1041,15 +1037,15 @@ section .text align=64
 	align 8
 	
 	.CDC_Mode:
+		xor	eax, eax
 		mov	ah, [SYM(CDC.RS0) + 1]
-		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.HINT_Vector:
-		mov	ax, [SYM(Rom_Data) + 0x72]
+		movzx	eax, word [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
@@ -1063,21 +1059,21 @@ section .text align=64
 	align 4
 	
 	.Unknow:
-		mov	ax, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Stop_Watch:
-		mov	ax, [SYM(CDC.Stop_Watch) + 2]
+		movzx	eax, word [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Com_Flag:
-		mov	ax, [SYM(COMM.Flag)]
+		movzx	eax, word [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -1091,7 +1087,7 @@ section .text align=64
 	.Com_D5:
 	.Com_D6:
 	.Com_D7:
-		mov	ax, [SYM(COMM.Command) + ebx - 0x10]
+		movzx	eax, word [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -1105,7 +1101,7 @@ section .text align=64
 	.Com_S5:
 	.Com_S6:
 	.Com_S7:
-		mov	ax, [SYM(COMM.Status) + ebx - 0x20]
+		movzx	eax, word [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -1124,7 +1120,7 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	short .bad
 		
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(Ram_Prg) + ebx - 0x20000], al
 	
 	.bad:
@@ -1138,7 +1134,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	ecx, 0x3
+		and	ecx, byte 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
 	align 16
@@ -1151,7 +1147,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(Ram_Word_2M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
@@ -1162,7 +1158,7 @@ section .text align=64
 	.Word_Ram_1M_0:
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
@@ -1174,7 +1170,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000], al
 		pop	ecx
 		pop	ebx
@@ -1183,7 +1179,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		mov	ax, 0
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -1192,9 +1188,8 @@ section .text align=64
 	.Cell_Arranged_0:
 		shr	ebx, 1
 		mov	ecx, 0
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
-		and	ebx, 0xFFFF
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx], al
 		pop	ecx
 		pop	ebx
@@ -1205,9 +1200,8 @@ section .text align=64
 	.Cell_Arranged_1:
 		shr	ebx, 1
 		mov	ecx, 0
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
-		and	ebx, 0xFFFF
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx + 0x20000], al
 		pop	ecx
 		pop	ebx
@@ -1303,7 +1297,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, 8
+		add	esp, byte 8
 		pop	edx
 	
 	.already_activated:
@@ -1351,7 +1345,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, 4
+		add	esp, byte 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1386,7 +1380,7 @@ section .text align=64
 	.Pad_1:
 		push	eax
 		call	SYM(WR_Controller_1)
-		add	esp, 4
+		add	esp, byte 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1396,7 +1390,7 @@ section .text align=64
 	.Pad_2:
 		push	eax
 		call	SYM(WR_Controller_2)
-		add	esp, 4
+		add	esp, byte 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1476,7 +1470,7 @@ section .text align=64
 		push	dword -1
 		push	dword 2
 		call	SYM(sub68k_interrupt)
-		add	esp, 8
+		add	esp, byte 8
 	
 	.No_Process_INT2:
 		pop	ecx
@@ -1637,7 +1631,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		xor	ebx, 1
+		xor	ebx, byte 1
 		mov	[SYM(COMM.Command) + ebx - 0x10], al
 		pop	ecx
 		pop	ebx
@@ -1693,7 +1687,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	ecx, 0x3
+		and	ecx, byte 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
 	align 16
@@ -1742,8 +1736,7 @@ section .text align=64
 	align 16
 	
 	.Cell_Arranged_0:
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		and	ebx, 0xFFFF
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
 		pop	ecx
 		mov	[SYM(Ram_Word_1M) + ebx * 2], ax
 		pop	ebx
@@ -1752,8 +1745,7 @@ section .text align=64
 	align 16
 	
 	.Cell_Arranged_1:
-		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		and	ebx, 0xFFFF
+		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
 		pop	ecx
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + 0x20000], ax
 		pop	ebx
@@ -1843,7 +1835,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, 8
+		add	esp, byte 8
 		pop	edx
 	
 	.already_activated:
@@ -1891,7 +1883,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, 4
+		add	esp, byte 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1912,7 +1904,7 @@ section .text align=64
 		cmp	ebx, 0xA1000D
 		ja	.no_ctrl_io
 		
-		and	ebx, 0x00000E
+		and	ebx, byte 0xE
 		jmp	[.Table_IO_WW + ebx * 2]
 	
 	align 16
@@ -1926,7 +1918,7 @@ section .text align=64
 	.Pad_1:
 		push	eax
 		call	SYM(WR_Controller_1)
-		add	esp, 4
+		add	esp, byte 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1936,7 +1928,7 @@ section .text align=64
 	.Pad_2:
 		push	eax
 		call	SYM(WR_Controller_2)
-		add	esp, 4
+		add	esp, byte 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1972,7 +1964,7 @@ section .text align=64
 		cmp	ebx, 0xA1202F
 		ja	short .bad
 		
-		and	ebx, 0x3E
+		and	ebx, byte 0x3E
 		jmp	[.Table_Extended_IO + ebx * 2]
 	
 	align 16
@@ -2010,7 +2002,7 @@ section .text align=64
 		push	dword -1
 		push	dword 2
 		call	SYM(sub68k_interrupt)
-		add	esp, 8
+		add	esp, byte 8
 	
 	.No_Process_INT2:
 		pop	ecx
