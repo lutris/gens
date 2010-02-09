@@ -333,93 +333,49 @@ int Do_32X_VDP_Only(void)
 
 
 /**
- * T_gens_do_32X_frame(): Do a 32X frame.
+ * T_gens_do_32X_line(): Do a 32X line.
+ * @param LineType Line type.
  * @param VDP If true, VDP is updated.
  */
-template<bool VDP>
-static FORCE_INLINE int T_gens_do_32X_frame(void)
+template<LineType_t LineType, bool VDP>
+static FORCE_INLINE void T_gens_do_32X_line(void)
 {
-	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
-	int CPL_PWM;
+	int *buf[2];
+	int i, j, k, l;
+	int p_i, p_j, p_k, p_l;
 	
-	// Initialize VDP_Lines.Display.
-	VDP_Set_Visible_Lines();
-	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	CPL_PWM = CPL_M68K * 3;
-	
-	PWM_Cycles = Cycles_SSH2 = Cycles_MSH2 = Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	
-	main68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	SH2_Clear_Odo(&M_SH2);
-	SH2_Clear_Odo(&S_SH2);
-	PWM_Clear_Timer();
-	
-	// Raise the MDP_EVENT_PRE_FRAME event.
-	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
-	
-	// Set the VRam flag to force a VRam update.
-	VDP_Flags.VRam = 1;
-	
-	// Interlaced frame status.
-	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
-	// This bit is cleared on even frames and if not running in interlaced mode.
-	if (VDP_Reg.m5.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	else
-		VDP_Status &= ~0x0010;
-	
-	_32X_VDP.State &= ~0x8000;
-	
+	// TODO: Precalculate these values somewhere else.
+	int CPL_PWM = CPL_M68K * 3;
 	p_i = 84;
 	p_j = (p_i * CPL_MSH2) / CPL_M68K;
 	p_k = (p_i * CPL_SSH2) / CPL_M68K;
 	p_l = p_i * 3;
 	
-	/** Main execution loop. **/
-	for (VDP_Lines.Display.Current = 0;
-	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
-	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
+	YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+	PWM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
+	YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+	PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
+	
+	i = Cycles_M68K + (p_i * 2);
+	j = Cycles_MSH2 + (p_j * 2);
+	k = Cycles_SSH2 + (p_k * 2);
+	l = PWM_Cycles + (p_l * 2);
+	
+	Fix_Controllers();
+	Cycles_M68K += CPL_M68K;
+	Cycles_MSH2 += CPL_MSH2;
+	Cycles_SSH2 += CPL_SSH2;
+	Cycles_Z80 += CPL_Z80;
+	PWM_Cycles += CPL_PWM;
+	if (VDP_Reg.DMAT_Length)
+		main68k_addCycles(VDP_Update_DMA());
+	
+	// TODO: Consolidate this code.
+	switch (LineType)
 	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current][0];
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
-		PWM_Update(buf, Sound_Extrapol[VDP_Lines.Display.Current][1]);
-		YM_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		PSG_Len += Sound_Extrapol[VDP_Lines.Display.Current][1];
-		
-		i = Cycles_M68K + (p_i * 2);
-		j = Cycles_MSH2 + (p_j * 2);
-		k = Cycles_SSH2 + (p_k * 2);
-		l = PWM_Cycles + (p_l * 2);
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_MSH2 += CPL_MSH2;
-		Cycles_SSH2 += CPL_SSH2;
-		Cycles_Z80 += CPL_Z80;
-		PWM_Cycles += CPL_PWM;
-		if (VDP_Reg.DMAT_Length)
-			main68k_addCycles(VDP_Update_DMA());
-		
-		// Initialize HInt_Counter on visible line 0.
-		if (VDP_Lines.Visible.Current == 0)
-		{
-			VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;
-			_32X_VDP.HInt_Counter = _32X_HIC;
-		}
-		
-		const bool inVisibleArea = (VDP_Lines.Visible.Current >= 0 &&
-				VDP_Lines.Visible.Current < VDP_Lines.Visible.Total);
-		
-		// TODO: Combine chunks of code here.
-		if (inVisibleArea)
-		{
+		case LINETYPE_ACTIVEDISPLAY:
 			// In visible area.
 			
 			// Clear VBlank status.
@@ -477,9 +433,10 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 			PWM_Update_Timer(PWM_Cycles);
 			
 			Z80_EXEC(0);
-		}
-		else if (VDP_Lines.Visible.Current == VDP_Lines.Visible.Total)
-		{
+			
+			break;
+		
+		case LINETYPE_VBLANKLINE:
 			// VBlank line!
 			if (--VDP_Reg.HInt_Counter < 0)
 			{
@@ -557,9 +514,10 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 			PWM_Update_Timer(PWM_Cycles);
 			
 			Z80_EXEC(0);
-		}
-		else
-		{
+			break;
+		
+		case LINETYPE_BORDER:
+		default:
 			// Not visible area.
 			// TODO: We're processing HBlank here, but we don't for MD...
 			VDP_Status |= 0x0004;	// HBlank = 1
@@ -607,9 +565,86 @@ static FORCE_INLINE int T_gens_do_32X_frame(void)
 			PWM_Update_Timer(PWM_Cycles);
 			
 			Z80_EXEC(0);
-		}
+			
+			break;
+	}
+}
+
+
+/**
+ * T_gens_do_32X_frame(): Do a 32X frame.
+ * @param VDP If true, VDP is updated.
+ */
+template<bool VDP>
+static FORCE_INLINE int T_gens_do_32X_frame(void)
+{
+	// Initialize VDP_Lines.Display.
+	VDP_Set_Visible_Lines();
+	
+	YM_Buf[0] = PSG_Buf[0] = Seg_L;
+	YM_Buf[1] = PSG_Buf[1] = Seg_R;
+	YM_Len = PSG_Len = 0;
+	
+	PWM_Cycles = Cycles_SSH2 = Cycles_MSH2 = Cycles_M68K = Cycles_Z80 = 0;
+	Last_BUS_REQ_Cnt = -1000;
+	
+	main68k_tripOdometer();
+	mdZ80_clear_odo(&M_Z80);
+	SH2_Clear_Odo(&M_SH2);
+	SH2_Clear_Odo(&S_SH2);
+	PWM_Clear_Timer();
+	
+	// Raise the MDP_EVENT_PRE_FRAME event.
+	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
+	
+	// Set the VRam flag to force a VRam update.
+	VDP_Flags.VRam = 1;
+	
+	// Interlaced frame status.
+	// Both Interlaced Modes 1 and 2 set this bit on odd frames.
+	// This bit is cleared on even frames and if not running in interlaced mode.
+	if (VDP_Reg.m5.Set4 & 0x2)
+		VDP_Status ^= 0x0010;
+	else
+		VDP_Status &= ~0x0010;
+	
+	_32X_VDP.State &= ~0x8000;
+	
+	/** Main execution loops. **/
+	
+	/** Loop 0: Top border. **/
+	for (VDP_Lines.Display.Current = 0;
+	     VDP_Lines.Visible.Current < 0;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_32X_line<LINETYPE_BORDER, VDP>();
 	}
 	
+	/** Visible line 0. **/
+	VDP_Reg.HInt_Counter = VDP_Reg.m5.H_Int;	// Initialize HInt_Counter. (MD)
+	_32X_VDP.HInt_Counter = _32X_HIC;		// Initialize HInt_Counter. (32X)
+	VDP_Status &= ~0x0008;				// Clear VBlank status.
+	
+	/** Loop 1: Active display. **/
+	for (;
+	     VDP_Lines.Visible.Current < VDP_Lines.Visible.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_32X_line<LINETYPE_ACTIVEDISPLAY, VDP>();
+	}
+	
+	/** Loop 2: VBlank line. **/
+	T_gens_do_32X_line<LINETYPE_VBLANKLINE, VDP>();
+	
+	/** Loop 3: Bottom border. **/
+	for (VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++;
+	     VDP_Lines.Display.Current < VDP_Lines.Display.Total;
+	     VDP_Lines.Display.Current++, VDP_Lines.Visible.Current++)
+	{
+		T_gens_do_32X_line<LINETYPE_BORDER, VDP>();
+	}
+	
+	// Update the PSG and YM2612 output.
 	PSG_Special_Update();
 	YM2612_Special_Update();
 	
