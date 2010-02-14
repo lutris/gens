@@ -148,6 +148,13 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Window_Pos.y = rectGensWindow.top;
 			break;
 		
+		case WM_MOVE:
+		case WM_SIZE:
+			// Update the destination rectangle.
+			if (vdraw_adjust_RectDest)
+				vdraw_adjust_RectDest();
+			break;
+		
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) != WA_INACTIVE)
 			{

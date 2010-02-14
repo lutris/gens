@@ -86,7 +86,7 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static inline void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc);
+static inline void WINAPI vdraw_ddraw_calc_RectSrc(RECT& RectSrc);
 
 
 /**
@@ -553,6 +553,9 @@ int vdraw_ddraw_init(void)
 		}
 	}
 	
+	// Initialize the destination rectangle.
+	vdraw_ddraw_adjust_RectDest();
+	
 	// Reset the render mode.
 	vdraw_reset_renderer(false);
 	
@@ -679,12 +682,78 @@ int WINAPI vdraw_ddraw_clear_back_screen(void)
 }
 
 
+static RECT RectDest;		// Destination rectangle.
+static RECT RectDest_scrDiff;	// Used to adjust in cases where it's off the edge of the screen.
 /**
- * vdraw_ddraw_calc_draw_area(): Calculate the drawing area.
- * @param RectDest [in, out] Destination rectangle.
- * @param RectSrc [out] Source rectangle.
+ * vdraw_ddraw_adjust_RectDest(): Adjust RectDest.
+ * @return
  */
-static inline void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc)
+void WINAPI vdraw_ddraw_adjust_RectDest(void)
+{
+	if (vdraw_get_fullscreen())
+	{
+		// Fullscreen.
+		RectDest.left = 0;
+		RectDest.top = 0;
+		RectDest.right = Res_X;
+		RectDest.bottom = Res_Y;
+		
+		// Clear the scrDiff rectangle.
+		memset(&RectDest_scrDiff, 0, sizeof(RectDest_scrDiff));
+		return;
+	}
+	
+	// Windowed. Get the window size.
+	GetClientRect(gens_window, &RectDest);
+	
+	// Adjust the destination rectangle for the window position.
+	POINT p = {0, 0};
+	ClientToScreen(gens_window, &p);
+	RectDest.top += p.y;
+	RectDest.bottom += p.y;
+	RectDest.left += p.x;
+	RectDest.right += p.x;
+	
+	// Clip the destination rectangle to the screen.
+	// TODO: Update for 2x hardware rendering (if we do that eventually).
+	memset(&RectDest_scrDiff, 0, sizeof(RectDest_scrDiff));
+	int diff;
+	if (RectDest.bottom > vdraw_rectDisplay.bottom)
+	{
+		// Off the bottom of the screen.
+		diff = (vdraw_rectDisplay.bottom - RectDest.bottom);
+		RectDest.bottom += diff;
+		RectDest_scrDiff.bottom = diff;
+	}
+	if (RectDest.top < vdraw_rectDisplay.top)
+	{
+		// Off the top of the screen.
+		diff = (vdraw_rectDisplay.top - RectDest.top);
+		RectDest.top += diff;
+		RectDest_scrDiff.top = diff;
+	}
+	if (RectDest.left <= vdraw_rectDisplay.left)
+	{
+		// Off the left side of the screen.
+		diff = (vdraw_rectDisplay.left - RectDest.left);
+		RectDest.left += diff;
+		RectDest_scrDiff.left = diff;
+	}
+	if (RectDest.right > vdraw_rectDisplay.right)
+	{
+		// Off the right side of the screen.
+		diff = (vdraw_rectDisplay.right - RectDest.right);
+		RectDest.right += diff;
+		RectDest_scrDiff.right = diff;
+	}
+}
+
+
+/**
+ * vdraw_ddraw_calc_draw_area(): Calculate the source rectangle.
+ * @param RectSrc	[out] Source rectangle.
+ */
+static inline void WINAPI vdraw_ddraw_calc_RectSrc(RECT& RectSrc)
 {
 	const uint8_t stretch = vdraw_get_stretch();
 	
@@ -739,50 +808,11 @@ static inline void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectS
 		}
 	}
 	
-	// Check if we're in windowed mode.
-	if (!vdraw_get_fullscreen())
-	{
-		// Windowed. Adjust for the window position.
-		POINT p = {0, 0};
-		ClientToScreen(gens_window, &p);
-		
-		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
-		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
-		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
-		RectDest.right += p.x;  //Upth-Modif - that I use to find the center
-		
-		// Clip the destination rectangle to the screen.
-		// TODO: Update for 2x hardware rendering (if we do that eventually).
-		int diff;
-		if (RectDest.bottom > vdraw_rectDisplay.bottom)
-		{
-			// Off the bottom of the screen.
-			diff = (vdraw_rectDisplay.bottom - RectDest.bottom);
-			RectDest.bottom += diff;
-			RectSrc.bottom += diff;
-		}
-		if (RectDest.top < vdraw_rectDisplay.top)
-		{
-			// Off the top of the screen.
-			diff = (vdraw_rectDisplay.top - RectDest.top);
-			RectDest.top += diff;
-			RectSrc.top += diff;
-		}
-		if (RectDest.left <= vdraw_rectDisplay.left)
-		{
-			// Off the left side of the screen.
-			diff = (vdraw_rectDisplay.left - RectDest.left);
-			RectDest.left += diff;
-			RectSrc.left += diff;
-		}
-		if (RectDest.right > vdraw_rectDisplay.right)
-		{
-			// Off the right side of the screen.
-			diff = (vdraw_rectDisplay.right - RectDest.right);
-			RectDest.right += diff;
-			RectSrc.right += diff;
-		}
-	}
+	// Add the destination screen differences.
+	RectSrc.top += RectDest_scrDiff.top;
+	RectSrc.bottom += RectDest_scrDiff.bottom;
+	RectSrc.left += RectDest_scrDiff.left;
+	RectSrc.right += RectDest_scrDiff.right;
 }
 
 
@@ -798,17 +828,14 @@ int vdraw_ddraw_flip(void)
 	HRESULT rval = DD_OK;
 	DDSURFACEDESC2 ddsd;
 	ddsd.dwSize = sizeof(ddsd);
-	RECT RectDest, RectSrc;
+	RECT RectSrc;
+	
+	// Calculate the source rectangle.
+	vdraw_ddraw_calc_RectSrc(RectSrc);
 	
 	if (vdraw_get_fullscreen())
 	{
-		RectDest.left = 0;
-		RectDest.top = 0;
-		RectDest.right = Res_X;
-		RectDest.bottom = Res_Y;
-		
-		vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
-		
+		// Fullscreen.
 		if (vdraw_ddraw_is_hw_render())
 		{
 			// Hardware rendering.
@@ -862,8 +889,6 @@ int vdraw_ddraw_flip(void)
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
-				vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
-				
 				if (Video.VSync_FS)
 				{
 					int vb;
@@ -886,9 +911,6 @@ int vdraw_ddraw_flip(void)
 	else
 	{
 		// Windowed mode.
-		GetClientRect(gens_window, &RectDest);
-		vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
-		
 		if (!vdraw_ddraw_is_hw_render())
 		{
 			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);

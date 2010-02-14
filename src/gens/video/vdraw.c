@@ -116,10 +116,11 @@ void		(*vdraw_clear_screen)(void) = NULL;
 void		(*vdraw_update_vsync)(const int data) = NULL;
 int		(*vdraw_reinit_gens_window)(void) = NULL;
 #ifdef GENS_OS_WIN32
-int WINAPI 	(*vdraw_clear_primary_screen)(void) = NULL;
-int WINAPI	 (*vdraw_clear_back_screen)(void) = NULL;
-int WINAPI	 (*vdraw_restore_primary)(void) = NULL;
-int WINAPI	 (*vdraw_set_cooperative_level)(void) = NULL;
+int WINAPI	(*vdraw_clear_primary_screen)(void) = NULL;
+int WINAPI	(*vdraw_clear_back_screen)(void) = NULL;
+int WINAPI	(*vdraw_restore_primary)(void) = NULL;
+int WINAPI	(*vdraw_set_cooperative_level)(void) = NULL;
+void WINAPI	(*vdraw_adjust_RectDest)(void) = NULL;
 #endif /* GENS_OS_WIN32 */
 
 // Render functions.
@@ -296,6 +297,7 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_clear_back_screen		= vdraw_cur_backend->clear_back_screen;
 	vdraw_restore_primary		= vdraw_cur_backend->restore_primary;
 	vdraw_set_cooperative_level	= vdraw_cur_backend->set_cooperative_level;
+	vdraw_adjust_RectDest		= vdraw_cur_backend->adjust_RectDest;
 #endif /* GENS_OS_WIN32 */
 	
 	// Set the backend flags.
@@ -360,6 +362,10 @@ void WINAPI vdraw_init_display_size(void)
 		vdraw_rectDisplay.right = vdraw_rectDisplay.left + scrn_width;
 		vdraw_rectDisplay.bottom = vdraw_rectDisplay.top + scrn_height;
 	}
+	
+	// Update the destination rectangle.
+	if (vdraw_adjust_RectDest)
+		vdraw_adjust_RectDest();
 }
 #endif
 

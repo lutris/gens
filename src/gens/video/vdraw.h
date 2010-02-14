@@ -100,6 +100,7 @@ typedef struct
 	int	WINAPI (*clear_back_screen)(void);
 	int	WINAPI (*restore_primary)(void);
 	int	WINAPI (*set_cooperative_level)(void);
+	void	WINAPI (*adjust_RectDest)(void);
 #endif /* GENS_OS_WIN32 */
 	
 } vdraw_backend_t;
@@ -136,6 +137,7 @@ extern int	WINAPI (*vdraw_clear_primary_screen)(void);
 extern int	WINAPI (*vdraw_clear_back_screen)(void);
 extern int	WINAPI (*vdraw_restore_primary)(void);
 extern int	WINAPI (*vdraw_set_cooperative_level)(void);
+extern void	WINAPI (*vdraw_adjust_RectDest)(void);
 #endif /* GENS_OS_WIN32 */
 
 // Message variables used externally.

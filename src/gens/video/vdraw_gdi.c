@@ -104,7 +104,8 @@ const vdraw_backend_t vdraw_backend_gdi =
 	.clear_primary_screen	= vdraw_gdi_clear_primary_screen,
 	.clear_back_screen	= vdraw_gdi_clear_back_screen,
 	.restore_primary	= vdraw_gdi_restore_primary,
-	.set_cooperative_level	= vdraw_gdi_set_cooperative_level
+	.set_cooperative_level	= vdraw_gdi_set_cooperative_level,
+	.adjust_RectDest	= NULL
 };
 
 
