@@ -141,9 +141,8 @@ int main(int argc, char *argv[])
 	Settings.showMenuBar = 1;
 	GensUI::init(&argc, &argv);
 	
-	// Initialize vdraw_sdl.
+	// Initialize VDraw.
 	vdraw_init();
-	vdraw_backend_init_subsystem(VDRAW_BACKEND_SDL);
 	
 	// Initialize input_sdl.
 	input_init(INPUT_BACKEND_SDL);

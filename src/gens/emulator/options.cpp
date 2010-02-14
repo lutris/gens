@@ -174,7 +174,6 @@ void Options::setBpp(uint8_t newBpp)
 		return;
 	
 	// Set the new color depth.
-	uint8_t oldBpp = bppOut;
 	vdraw_set_bpp(newBpp, true);
 	Sync_Gens_Window_GraphicsMenu();
 	

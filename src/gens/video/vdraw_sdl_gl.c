@@ -78,9 +78,6 @@ const vdraw_backend_t vdraw_backend_sdl_gl =
 	.init			= vdraw_sdl_gl_init,
 	.end			= vdraw_sdl_gl_end,
 	
-	.init_subsystem		= vdraw_sdl_common_init_subsystem,
-	.shutdown		= vdraw_sdl_common_shutdown,
-	
 	.clear_screen		= vdraw_gl_clear_screen,
 	.update_vsync		= vdraw_gl_update_vsync,
 	

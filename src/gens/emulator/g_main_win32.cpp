@@ -390,10 +390,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// (NOTE: Fonts are now initialized in gens_window_init_hWnd().)
 	gens_window_init_hWnd();
 	
-	// Initialize vdraw_ddraw.
+	// Initialize VDraw.
 	vdraw_init();
-	// TODO: This doesn't seem to be needed on Win32...
-	//vdraw_backend_init_subsystem(VDRAW_BACKEND_DDRAW);
 	
 	// Initialize the input object.
 	int rval = input_init(INPUT_BACKEND_DINPUT);

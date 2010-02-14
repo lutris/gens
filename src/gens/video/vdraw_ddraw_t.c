@@ -35,9 +35,6 @@ const vdraw_backend_t vdraw_backend_ddraw =
 	.init			= vdraw_ddraw_init,
 	.end			= vdraw_ddraw_end,
 	
-	.init_subsystem		= NULL,
-	.shutdown		= NULL,
-	
 	.clear_screen		= vdraw_ddraw_clear_screen,
 	.update_vsync		= NULL,
 	

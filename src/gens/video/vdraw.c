@@ -110,7 +110,6 @@ VDRAW_BACKEND vdraw_cur_backend_id = -1;
 uint32_t vdraw_cur_backend_flags = 0;
 
 // Function pointers.
-int		(*vdraw_shutdown)(void) = NULL;
 static int	(*vdraw_flip_backend)(void) = NULL;
 void		(*vdraw_clear_screen)(void) = NULL;
 void		(*vdraw_update_vsync)(const int data) = NULL;
@@ -210,32 +209,6 @@ int vdraw_end(void)
 
 
 /**
- * vdraw_backend_init_subsystem(): Initialize a backend's subsystem.
- * @param backend Backend to use.
- * @return 0 on success; non-zero on error.
- */
-int vdraw_backend_init_subsystem(VDRAW_BACKEND backend)
-{
-	if (backend < 0 || backend >= VDRAW_BACKEND_MAX)
-	{
-		// Invalid backend.
-		return -1;
-	}
-	if (vdraw_backends_broken[backend])
-	{
-		// Backend is broken.
-		return -2;
-	}
-	
-	if (vdraw_backends[backend]->init_subsystem)
-		vdraw_backends[backend]->init_subsystem();
-	
-	// Initialized successfully.
-	return 0;
-}
-
-
-/**
  * vdraw_backend_init(): Initialize a backend.
  * @param backend Backend to use.
  * @return 0 on success; non-zero on error.
@@ -287,7 +260,6 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_cur_backend_id = backend;
 	
 	// Copy the function pointers.
-	vdraw_shutdown			= vdraw_cur_backend->shutdown;
 	vdraw_flip_backend		= vdraw_cur_backend->flip;
 	vdraw_clear_screen		= vdraw_cur_backend->clear_screen;
 	vdraw_update_vsync		= vdraw_cur_backend->update_vsync;

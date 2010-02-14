@@ -83,9 +83,6 @@ typedef struct
 	int	(*init)(void);			// Must be set.
 	int	(*end)(void);			// May be NULL.
 	
-	int	(*init_subsystem)(void);	// May be NULL.
-	int	(*shutdown)(void);		// May be NULL.
-	
 	void	(*clear_screen)(void);			// Must be set.
 	void	(*update_vsync)(const int data);	// May be NULL.
 	
@@ -109,7 +106,6 @@ extern const vdraw_backend_t* const vdraw_backends[];
 
 int	vdraw_init(void);
 int	vdraw_end(void);
-int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
@@ -128,7 +124,6 @@ void	vdraw_set_bpp(const int new_bpp, const BOOL reset_video);
 void	vdraw_refresh_video(void);
 
 // Function pointers.
-extern int	(*vdraw_shutdown)(void);	// TODO: Make this a regular function.
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
 extern int	(*vdraw_reinit_gens_window)(void);

@@ -29,9 +29,6 @@ extern "C" {
 
 void vdraw_sdl_common_embed(const int w, const int h);
 
-int vdraw_sdl_common_init_subsystem(void);
-int vdraw_sdl_common_shutdown(void);
-
 #ifdef __cplusplus
 }
 #endif

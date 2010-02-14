@@ -89,9 +89,6 @@ const vdraw_backend_t vdraw_backend_gdi =
 	.init			= vdraw_gdi_init,
 	.end			= vdraw_gdi_end,
 	
-	.init_subsystem		= NULL,
-	.shutdown		= NULL,
-	
 	.clear_screen		= vdraw_gdi_clear_screen,
 	.update_vsync		= NULL,
 	
