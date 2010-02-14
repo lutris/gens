@@ -64,7 +64,7 @@ void gens_window_init_hWnd(void)
 		HBRUSH gens_bgcolor = CreateSolidBrush(RGB(0, 0, 0));
 		
 		// Set the window class information.
-		gens_wndclass.style = CS_HREDRAW | CS_VREDRAW;
+		gens_wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		gens_wndclass.lpfnWndProc = Gens_Window_WndProc;
 		gens_wndclass.cbClsExtra = 0;
 		gens_wndclass.cbWndExtra = 0;

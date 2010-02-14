@@ -26,7 +26,7 @@
 // VDraw Backend struct.
 const vdraw_backend_t vdraw_backend_ddraw =
 {
-	.name			= "DirectDraw 4",
+	.name			= "DirectDraw 7",
 	.flags			= VDRAW_BACKEND_FLAG_VSYNC | \
 				  VDRAW_BACKEND_FLAG_STRETCH |
 				  VDRAW_BACKEND_FLAG_FULLSCREEN |

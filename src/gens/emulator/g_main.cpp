@@ -422,7 +422,7 @@ void check_startup_mode(Gens_StartupInfo_t *startup)
 /**
  * GensLoopIteration(): One iteration of the main program loop.
  */
-void GensLoopIteration(void)
+inline void GensLoopIteration(void)
 {
 	// Update the UI.
 	GensUI::update();

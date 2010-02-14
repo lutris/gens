@@ -77,16 +77,16 @@ static int Res_X;
 static int Res_Y;
 
 // DirectDraw variables.
-static LPDIRECTDRAW4 lpDD = NULL;
-static LPDIRECTDRAWSURFACE4 lpDDS_Primary = NULL;
-static LPDIRECTDRAWSURFACE4 lpDDS_Flip = NULL;
-static LPDIRECTDRAWSURFACE4 lpDDS_Back = NULL;
-static LPDIRECTDRAWSURFACE4 lpDDS_Blit = NULL;
+static LPDIRECTDRAW7 lpDD = NULL;
+static LPDIRECTDRAWSURFACE7 lpDDS_Primary = NULL;
+static LPDIRECTDRAWSURFACE7 lpDDS_Flip = NULL;
+static LPDIRECTDRAWSURFACE7 lpDDS_Back = NULL;
+static LPDIRECTDRAWSURFACE7 lpDDS_Blit = NULL;
 static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int& Dep);
+static inline void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc);
 
 
 /**
@@ -111,7 +111,7 @@ static bool WINAPI vdraw_ddraw_is_hw_render(void)
 }
 
 
-static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
+static inline void WINAPI vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE7 lpDDS_Surface, const BOOL lock)
 {
 	if (lock)
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
@@ -257,7 +257,7 @@ int vdraw_ddraw_init(void)
 		return -2;
 	}
 	
-	rval = lpDD_Init->QueryInterface(IID_IDirectDraw4, (LPVOID*)&lpDD);
+	rval = lpDD_Init->QueryInterface(IID_IDirectDraw7, (LPVOID*)&lpDD);
 	if (FAILED(rval))
 	{
 		if (lpDD_Init)
@@ -683,9 +683,8 @@ int WINAPI vdraw_ddraw_clear_back_screen(void)
  * vdraw_ddraw_calc_draw_area(): Calculate the drawing area.
  * @param RectDest [in, out] Destination rectangle.
  * @param RectSrc [out] Source rectangle.
- * @param Dep [out] Horizontal border.
  */
-static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int& Dep)
+static inline void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc)
 {
 	const uint8_t stretch = vdraw_get_stretch();
 	
@@ -711,7 +710,8 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int
 		Flag_Clr_Scr = Clr_Cmp_Val;
 	}
 	
-	Dep = (320 - HPix);
+	// Check for horizontal stretch.
+	int Dep = vdp_getHPixBegin();
 	if (Dep == 0 || !(stretch & STRETCH_H))
 	{
 		if (vdraw_ddraw_is_hw_render())
@@ -729,13 +729,13 @@ static void WINAPI vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, int
 	{
 		if (vdraw_ddraw_is_hw_render())
 		{
-			RectSrc.left = 8 + (Dep / 2);
-			RectSrc.right = 8 + (Dep / 2) + HPix;
+			RectSrc.left = 8 + Dep;
+			RectSrc.right = 8 + Dep + HPix;
 		}
 		else
 		{
-			RectSrc.left = (Dep / 2) * vdraw_scale;
-			RectSrc.right = ((Dep / 2) + HPix) * vdraw_scale;
+			RectSrc.left = Dep * vdraw_scale;
+			RectSrc.right = (Dep + HPix) * vdraw_scale;
 		}
 	}
 	
@@ -799,7 +799,6 @@ int vdraw_ddraw_flip(void)
 	DDSURFACEDESC2 ddsd;
 	ddsd.dwSize = sizeof(ddsd);
 	RECT RectDest, RectSrc;
-	int Dep = 0;
 	
 	if (vdraw_get_fullscreen())
 	{
@@ -808,7 +807,7 @@ int vdraw_ddraw_flip(void)
 		RectDest.right = Res_X;
 		RectDest.bottom = Res_Y;
 		
-		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
+		vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
 		
 		if (vdraw_ddraw_is_hw_render())
 		{
@@ -834,7 +833,7 @@ int vdraw_ddraw_flip(void)
 		else
 		{
 			// Software rendering.
-			LPDIRECTDRAWSURFACE4 curBlit = lpDDS_Blit;
+			LPDIRECTDRAWSURFACE7 curBlit = lpDDS_Blit;
 			rval = curBlit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			
 			if (FAILED(rval))
@@ -863,7 +862,7 @@ int vdraw_ddraw_flip(void)
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
-				vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
+				vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
 				
 				if (Video.VSync_FS)
 				{
@@ -888,7 +887,7 @@ int vdraw_ddraw_flip(void)
 	{
 		// Windowed mode.
 		GetClientRect(gens_window, &RectDest);
-		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Dep);
+		vdraw_ddraw_calc_draw_area(RectDest, RectSrc);
 		
 		if (!vdraw_ddraw_is_hw_render())
 		{

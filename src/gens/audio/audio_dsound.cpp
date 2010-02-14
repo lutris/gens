@@ -229,7 +229,7 @@ int audio_dsound_end(void)
  * audio_dsound_get_current_seg(): Get the current DSound segment.
  * @return DSound segment.
  */
-static int WINAPI audio_dsound_get_current_seg(void)
+static inline int WINAPI audio_dsound_get_current_seg(void)
 {
 	DWORD R;
 	
