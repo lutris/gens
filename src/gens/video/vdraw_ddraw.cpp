@@ -235,7 +235,6 @@ int vdraw_ddraw_init(void)
 		return -1;
 	const int w = 320 * scale;
 	const int h = 240 * scale;
-	const int mdW = 336 * scale;
 	
 	if (vdraw_get_fullscreen())
 	{
@@ -429,7 +428,7 @@ int vdraw_ddraw_init(void)
 	{
 		// Larger than 1x.
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
-		ddsd.dwWidth = mdW;
+		ddsd.dwWidth = w;
 		ddsd.dwHeight = h;
 	}
 	
