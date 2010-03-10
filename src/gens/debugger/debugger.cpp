@@ -574,6 +574,8 @@ static void Refresh_SH2_Mem(void)
 	Adr = adr_mem >> 1;
 	Print_Text("** SH2 CPU MEM **", 24, 130, TEXT_GREEN);
 	
+	// NOTE: SH2 memory is currently stored internally as BE16.
+	// It will eventually be changed to LE16.
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
 		// TODO: Optimize this to use _32X_Ram.u16[].
@@ -581,12 +583,12 @@ static void Refresh_SH2_Mem(void)
 		PrintF_Text(1, 146 + (k << 3), TEXT_WHITE,
 				"%05X: %04X %04X %04X %04X %04X %04X",
 				i, // current address
-				_32X_Ram.u8[i] + (_32X_Ram.u8[i + 1] << 8),
-				_32X_Ram.u8[i + 2] + (_32X_Ram.u8[i + 3] << 8),
-				_32X_Ram.u8[i + 4] + (_32X_Ram.u8[i + 5] << 8),
-				_32X_Ram.u8[i + 6] + (_32X_Ram.u8[i + 7] << 8),
-				_32X_Ram.u8[i + 8] + (_32X_Ram.u8[i + 9] << 8),
-				_32X_Ram.u8[i + 10] + (_32X_Ram.u8[i + 11] << 8));
+				((_32X_Ram.u8[i] << 8) | _32X_Ram.u8[i + 1]),
+				((_32X_Ram.u8[i + 2] << 8) | _32X_Ram.u8[i + 3]),
+				((_32X_Ram.u8[i + 4] << 8) | _32X_Ram.u8[i + 5]),
+				((_32X_Ram.u8[i + 6] << 8) | _32X_Ram.u8[i + 7]),
+				((_32X_Ram.u8[i + 8] << 8) | _32X_Ram.u8[i + 9]),
+				((_32X_Ram.u8[i + 10] << 8) | _32X_Ram.u8[i + 11]));
 	}
 }
 
