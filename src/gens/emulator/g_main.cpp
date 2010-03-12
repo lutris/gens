@@ -448,11 +448,15 @@ inline void GensLoopIteration(void)
 			else
 				Update_Emulation();
 			
-#ifdef GENS_OS_UNIX
+#ifdef GENS_OS_WIN32
+			// Relinquish the time slice for other processes.
+			Sleep(0);
+#else
 			// Prevent 100% CPU usage.
 			// The CPU scheduler will take away CPU time from Gens/GS if
 			// it notices that the process is eating up too much CPU time.
-			GensUI::sleep(1, true);
+			//GensUI::sleep(1, true);
+			usleep(1000);
 #endif
 		}
 		else
