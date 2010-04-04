@@ -210,7 +210,10 @@ static int audio_sdl_write_sound_buffer(short *dump_buf)
 			audio_write_sound_mono((short*)(audio_sdl_audiobuf + audio_sdl_len), audio_seg_length);
 	}
 	
-	audio_sdl_len += audio_seg_length * 4;
+	if (audio_get_stereo())
+		audio_sdl_len += audio_seg_length * 4;
+	else
+		audio_sdl_len += audio_seg_length * 2;
 	
 	SDL_UnlockAudio();
 	
