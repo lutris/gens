@@ -3,11 +3,14 @@
 /FOR FUTURE USE/
 /aclocal.m4
 /compile
+/config.status
 /config.guess
 /config.sub
+/config.h
 /config.h.in
 /config.log
 /configure
+/git_version.h
 /depcomp
 /Doxyfile
 /gens_gs.kdev*
@@ -16,11 +19,27 @@
 /ltmain.sh
 /missing
 /mkinstalldirs
+/stamp-h1
 
+/src/cbob/cbob
+/src/starscream/*.asm
+/src/starscream/star_s68k
+/src/starscream/star_m68k
+
+Makefile
 Makefile.in
 
 /debug-*/
 /release-*/
 /m4/*.m4
 
+.libs
+.dirstamp
 .directory
+.deps
+
+*.bin.c
+*.bin.h
+*.la
+*.lo
+*.o
