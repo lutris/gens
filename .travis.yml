@@ -1,26 +1,35 @@
 dist: bionic
 language: c
-sudo: false
+#sudo: false
 branches:
   only:
     - master
     - /^\d+\.\d+(\.\d+)?(-\S*)?$/
-addons:
-  apt:
-    packages:
-    - texinfo
-cache:
-  directories:
-  - build
+services:
+  - docker
+
+
+before_install:
+  - docker pull ubuntu:bionic
+
+
+#addons:
+#  apt:
+#    packages:
+#    - texinfo
 jobs:
   include:
   - stage: setup
     script:
-      - ./setup.sh
+    - pwd
+    - ls
+    - mkdir gen_src
+    - mv . gen_src/.
   - stage: build
     script:
-    - export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
-    - dpkg-buildpackage -v $TRAVIS_TAG
+    - docker run -w /code/gens_src -it --rm -v `pwd`:/code ubuntu:bionic /bin/bash -c "cd gen_src && build.sh"
+      #- export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
+      #- dpkg-buildpackage -v $TRAVIS_TAG
   - stage: release to github
     if: tag IS present
     deploy:
@@ -29,7 +38,7 @@ jobs:
       skip_cleanup: true
       file_glob: true
       file:
-        - ../gens_*.deb
+        - ./gens_*.deb
       on:
         tags: true
         repo: kubilus1/gens
