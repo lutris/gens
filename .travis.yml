@@ -1,0 +1,35 @@
+dist: bionic
+language: c
+sudo: false
+branches:
+  only:
+    - master
+    - /^\d+\.\d+(\.\d+)?(-\S*)?$/
+addons:
+  apt:
+    packages:
+    - texinfo
+cache:
+  directories:
+  - build
+jobs:
+  include:
+  - stage: setup
+    script:
+      - ./setup.sh
+  - stage: build
+    script:
+    - export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
+    - dpkg-buildpackage -v $TRAVIS_TAG
+  - stage: release to github
+    if: tag IS present
+    deploy:
+      provider: releases
+      api_key: "$GITHUB_OAUTH_TOKEN"
+      skip_cleanup: true
+      file_glob: true
+      file:
+        - ../gens_*.deb
+      on:
+        tags: true
+        repo: kubilus1/gens
