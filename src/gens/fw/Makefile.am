@@ -8,7 +8,7 @@ noinst_LTLIBRARIES = libgens_fw.la
 CBOB = $(top_builddir)/src/cbob/cbob$(EXEEXT)
 
 libgens_fw_la_CFLAGS		= $(AM_CFLAGS)
-libgens_fw_la_LDFLAG	S	= $(AM_LDFLAGS)
+libgens_fw_la_LDFLAGS		= $(AM_LDFLAGS)
 libgens_fw_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
 
 # TODO: Write macros to make this easier to maintain.
