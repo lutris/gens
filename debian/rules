@@ -7,14 +7,16 @@
 # This special exception was added by Craig Small in version 0.37 of dh-make.
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+#DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+#DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+DEB_HOST_GNU_TYPE = i686-linux-gnu
+DEB_BUILD_GNU_TYPE = i686-linux-gnu
 
 config.status: configure
 	dh_testdir
@@ -25,7 +27,9 @@ endif
 ifneq "$(wildcard /usr/share/misc/config.guess)" ""
 	cp -f /usr/share/misc/config.guess config.guess
 endif
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs" --disable-debug --enable-x86-asm --enable-debugger --enable-cdrom --enable-mp3 --with-opengl --with-zlib --with-png --enable-shared --disable-static
+	./configure --host=i686-linux-gnu "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	#./configure --host=i686-linux-gnu "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="-m32 $(CFLAGS)" LDFLAGS="-Wl,-z,defs" --disable-debug --enable-x86-asm --enable-debugger --enable-cdrom --enable-mp3 --with-opengl --with-zlib --with-png --enable-shared --disable-static
+	#./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs" --disable-debug --enable-x86-asm --enable-debugger --enable-cdrom --enable-mp3 --with-opengl --with-zlib --with-png --enable-shared --disable-static
 
 
 build: build-stamp

@@ -1,6 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 AUTOMAKE_OPTIONS = foreign subdir-objects
+AM_LDFLAGS = -ldl -lX11
 
 SUBDIRS = plugins fw
 
