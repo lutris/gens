@@ -22,12 +22,10 @@ jobs:
   - stage: setup
     script:
     - pwd
-    - ls
-    - mkdir gen_src
-    - mv . gen_src/.
+    - ls ../
   - stage: build
     script:
-    - docker run -w /code/gens_src -it --rm -v `pwd`:/code ubuntu:bionic /bin/bash -c "cd gen_src && build.sh"
+    - docker run -w /code/gens_src -it --rm -v `pwd`/..:/code ubuntu:bionic /bin/bash -c "./build.sh"
       #- export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
       #- dpkg-buildpackage -v $TRAVIS_TAG
   - stage: release to github
