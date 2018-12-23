@@ -29,6 +29,8 @@ jobs:
       #- export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
       #- dpkg-buildpackage -v $TRAVIS_TAG
   - stage: release to github
+    script: 
+    - echo "Deploying to github..."
     if: tag IS present
     deploy:
       provider: releases
