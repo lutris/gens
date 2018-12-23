@@ -25,7 +25,7 @@ jobs:
     - ls ../
   - stage: build
     script:
-    - docker run -w /code/gens_src -it --rm -v `pwd`/..:/code ubuntu:bionic /bin/bash -c "./build.sh"
+    - docker run -w /code/gens -it --rm -v `pwd`/..:/code ubuntu:bionic /bin/bash -c "./build.sh"
       #- export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
       #- dpkg-buildpackage -v $TRAVIS_TAG
   - stage: release to github
@@ -36,7 +36,7 @@ jobs:
       skip_cleanup: true
       file_glob: true
       file:
-        - ./gens_*.deb
+        - ../gens_*.deb
       on:
         tags: true
         repo: kubilus1/gens
