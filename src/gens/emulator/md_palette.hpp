@@ -42,7 +42,6 @@ typedef enum _ColorScaleMethod_t
 extern ColorScaleMethod_t ColorScaleMethod;
 
 void Recalculate_Palettes(void);
-void Adjust_CRam_32X(void);
 
 #ifdef __cplusplus
 }

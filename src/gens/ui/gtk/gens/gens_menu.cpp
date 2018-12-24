@@ -97,10 +97,10 @@ static const gens_gtk_menu_icon_t gens_gtk_menu_icons[] =
 /**
  * gens_menu_parse(): Parse the menu structs.
  * @param menu First item of the array of menu structs to parse.
- * @param parent Parent menu.
+ * @param container Container to add the menu items to.
  * @param accel_group Accelerator group to add accelerators to.
  */
-void gens_menu_parse(const GensMenuItem_t *menu, GtkMenuShell *parent, GtkAccelGroup *accel_group)
+void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelGroup *accel_group)
 {
 	GtkWidget *mnuItem, *subMenu;
 	GtkWidget *icon;
@@ -183,7 +183,7 @@ void gens_menu_parse(const GensMenuItem_t *menu, GtkMenuShell *parent, GtkAccelG
 		}
 		
 		gtk_widget_show(mnuItem);
-		gtk_menu_shell_append(parent, mnuItem);
+		gtk_container_add(GTK_CONTAINER(container), mnuItem);
 		
 		// Check if an icon is specified.
 		if (bMenuHasIcon)
@@ -290,7 +290,7 @@ void gens_menu_parse(const GensMenuItem_t *menu, GtkMenuShell *parent, GtkAccelG
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuItem), subMenu);
 			
 			// Parse the submenu.
-			gens_menu_parse(menu->submenu, GTK_MENU_SHELL(subMenu), accel_group);
+			gens_menu_parse(menu->submenu, subMenu, accel_group);
 		}
 		
 		if (bSetCallbackHandler)

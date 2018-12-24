@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 	{
 		// Don't run Gens/GS as root!
 		static const char gensRootErr[] =
-				"Error: " GENS_APPNAME " should not be run as root.\n"
+				"Error: Gens/GS should not be run as root.\n"
 				"Please log in as a regular user.";
 		
 		fprintf(stderr, "%s\n", gensRootErr);
@@ -141,8 +141,9 @@ int main(int argc, char *argv[])
 	Settings.showMenuBar = 1;
 	GensUI::init(&argc, &argv);
 	
-	// Initialize VDraw.
+	// Initialize vdraw_sdl.
 	vdraw_init();
+	vdraw_backend_init_subsystem(VDRAW_BACKEND_SDL);
 	
 	// Initialize input_sdl.
 	input_init(INPUT_BACKEND_SDL);
@@ -177,11 +178,6 @@ int main(int argc, char *argv[])
 	// Update the UI.
 	GensUI::update();
 	
-	// Reset the renderer.
-	// This should be done before initializing the backend
-	// to make sure vdraw_rInfo is initialized.
-	vdraw_reset_renderer(true);
-	
 	// Initialize the video backend.
 	if ((int)vdraw_cur_backend_id < 0)
 	{
@@ -198,6 +194,9 @@ int main(int argc, char *argv[])
 	check_startup_mode(startup);
 	free(startup);
 	
+	// Reset the renderer.
+	vdraw_reset_renderer(true);
+	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
@@ -212,7 +211,7 @@ int main(int argc, char *argv[])
 #ifndef PACKAGE_NAME
 #error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Save_Path) + PACKAGE_NAME + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
 	Config::save(cfg_filename);
 	
 	End_All();

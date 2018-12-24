@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -23,32 +23,15 @@
 #include "vdp_rend.h"
 #include "vdp_io.h"
 
-// VDP rendering includes.
-#include "vdp_rend_err.hpp"	// Error message drawing.
-#include "vdp_rend_m5.hpp"	// Mode 5 renderer.
-
 // bppMD
 #include "emulator/g_main.hpp"
 
 // C includes.
 #include <stdint.h>
 
-// Palettes.
-Palette_t Palette;
-MD_Palette_t MD_Palette;
-// Screen buffer.
-Screen_t MD_Screen;
-
-// VDP layer control.
-// TODO: Figure out 32X and Mode 4 layer assignments.
-unsigned int VDP_Layers = VDP_LAYER_DEFAULT;
-
-// Sprite structs.
-Sprite_Struct_t Sprite_Struct[128];
-unsigned int Sprite_Visible[128];
-
-// Sprite Limit toggle.
-int Sprite_Over;
+// Full MD palettes.
+uint16_t Palette[0x1000];
+uint32_t Palette32[0x1000];
 
 
 /**
@@ -63,19 +46,22 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 	if (VDP_Layers & VDP_LAYER_PALETTE_LOCK)
 		return;
 	
-	// Clear the CRam flag, since the palette is being updated.
-	VDP_Flags.CRam = 0;
+	// Disable the CRAM flag, since the palette is being updated.
+	CRam_Flag = 0;
+	
+	// 16-bit CRAM pointer.
+	const uint16_t *cram_16 = (uint16_t*)CRam;
 	
 	// Color mask. Depends on VDP register 0, bit 2 (Palette Select).
 	// If set, allows full MD palette.
 	// If clear, only allows the LSB of each color component.
-	const uint16_t color_mask = (VDP_Reg.m5.Set1 & 0x04) ? 0x0EEE : 0x0222;
+	const uint16_t color_mask = (VDP_Reg.Set1 & 0x04) ? 0x0EEE : 0x0222;
 	
 	// Update all 64 colors.
 	for (int i = 62; i >= 0; i -= 2)
 	{
-		uint16_t color1_raw = CRam.u16[i] & color_mask;
-		uint16_t color2_raw = CRam.u16[i + 1] & color_mask;
+		uint16_t color1_raw = cram_16[i] & color_mask;
+		uint16_t color2_raw = cram_16[i + 1] & color_mask;
 		
 		// Get the palette color.
 		pixel color1 = palette[color1_raw];
@@ -103,28 +89,27 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
 			MD_palette[i + 64]	= palette[color1_raw];
 			MD_palette[i + 1 + 64]	= palette[color2_raw];
 			
-			// Highlight color. (1xxx - 0001)
-			MD_palette[i + 128]	= palette[(0x888 | color1_raw) - 0x111];
-			MD_palette[i + 1 + 128]	= palette[(0x888 | color2_raw) - 0x111];
+			// Highlight color. (1xxx)
+			MD_palette[i + 128]	= palette[0x888 | color1_raw];
+			MD_palette[i + 1 + 128]	= palette[0x888 | color2_raw];
 		}
 	}
 	
 	// Update the background color.
-	unsigned int BG_Color = (VDP_Reg.m5.BG_Color & 0x3F);
-	MD_palette[0] = MD_palette[BG_Color];
+	MD_palette[0] = MD_palette[VDP_Reg.BG_Color & 0x3F];
 	
 	if (hs)
 	{
 		// Update the background color for highlight and shadow.
 		
 		// Normal color.
-		MD_palette[192] = MD_palette[BG_Color];
+		MD_palette[192] = MD_palette[VDP_Reg.BG_Color & 0x3F];
 		
 		// Shadow color.
-		MD_palette[64] = MD_palette[BG_Color + 64];
+		MD_palette[64] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 64];
 		
 		// Highlight color.
-		MD_palette[128] = MD_palette[BG_Color + 128];
+		MD_palette[128] = MD_palette[(VDP_Reg.BG_Color & 0x3F) + 128];
 	}
 }
 
@@ -134,10 +119,8 @@ static inline void T_VDP_Update_Palette(pixel *MD_palette, const pixel *palette)
  */
 void VDP_Update_Palette(void)
 {
-	if (bppMD != 32)
-		T_VDP_Update_Palette<false>(MD_Palette.u16, Palette.u16);
-	else
-		T_VDP_Update_Palette<false>(MD_Palette.u32, Palette.u32);
+	T_VDP_Update_Palette<false>(MD_Palette, Palette);
+	T_VDP_Update_Palette<false>(MD_Palette32, Palette32);
 }
 
 /**
@@ -145,33 +128,6 @@ void VDP_Update_Palette(void)
  */
 void VDP_Update_Palette_HS(void)
 {
-	if (bppMD != 32)
-		T_VDP_Update_Palette<true>(MD_Palette.u16, Palette.u16);
-	else
-		T_VDP_Update_Palette<true>(MD_Palette.u32, Palette.u32);
-}
-
-
-/**
- * VDP_Render_Line(): Render a line.
- */
-void VDP_Render_Line(void)
-{
-	// TODO: 32X-specific function.
-	if (VDP_Mode & VDP_MODE_M5)
-	{
-		// Mode 5.
-		if (_32X_Started)
-			VDP_Render_Line_m5_32X();
-		else
-			VDP_Render_Line_m5();
-	}
-	else
-	{
-		// Unsupported mode.
-		VDP_Render_Error();
-	}
-	
-	// Update the VDP render error cache.
-	VDP_Render_Error_Update();
+	T_VDP_Update_Palette<true>(MD_Palette, Palette);
+	T_VDP_Update_Palette<true>(MD_Palette32, Palette32);
 }

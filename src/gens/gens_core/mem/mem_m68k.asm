@@ -83,9 +83,9 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Bad,		; 0xB00000 - 0xB7FFFF
 		dd	M68K_Read_Byte_Bad,		; 0xB80000 - 0xBFFFFF
 		dd	M68K_Read_Byte_VDP,		; 0xC00000 - 0xC7FFFF
-		dd	M68K_Read_Byte_VDP,		; 0xC80000 - 0xCFFFFF
-		dd	M68K_Read_Byte_VDP,		; 0xD00000 - 0xD7FFFF
-		dd	M68K_Read_Byte_VDP,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD80000 - 0xDFFFFF
 		dd	M68K_Read_Byte_Ram,		; 0xE00000 - 0xE7FFFF
 		dd	M68K_Read_Byte_Ram,		; 0xE80000 - 0xEFFFFF
 		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
@@ -118,9 +118,9 @@ section .rodata align=64
 		dd	M68K_Read_Word_Bad,		; 0xB00000 - 0xB7FFFF
 		dd	M68K_Read_Word_Bad,		; 0xB80000 - 0xBFFFFF
 		dd	M68K_Read_Word_VDP,		; 0xC00000 - 0xC7FFFF
-		dd	M68K_Read_Word_VDP,		; 0xC80000 - 0xCFFFFF
-		dd	M68K_Read_Word_VDP,		; 0xD00000 - 0xD7FFFF
-		dd	M68K_Read_Word_VDP,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xD80000 - 0xDFFFFF
 		dd	M68K_Read_Word_Ram,		; 0xE00000 - 0xE7FFFF
 		dd	M68K_Read_Word_Ram,		; 0xE80000 - 0xEFFFFF
 		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
@@ -141,7 +141,7 @@ section .rodata align=64
 		dd	M68K_Write_Byte_Misc,		; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
 		dd	M68K_Write_Byte_VDP,		; 0xC00000 - 0xCFFFFF
-		dd	M68K_Write_Byte_VDP,		; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
 	
@@ -160,7 +160,7 @@ section .rodata align=64
 		dd	M68K_Write_Word_Misc,		; 0xA00000 - 0xAFFFFF
 		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
 		dd	M68K_Write_Word_VDP,		; 0xC00000 - 0xCFFFFF
-		dd	M68K_Write_Word_VDP,		; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
 		dd	M68K_Write_Word_Ram,		; 0xE00000 - 0xEFFFFF
 		dd	M68K_Write_Word_Ram,		; 0xF00000 - 0xFFFFFF
 	
@@ -256,6 +256,9 @@ section .bss align=64
 	global SYM(Gen_Mode)	; NOTE: This is unused! (except in GSXv7)
 	SYM(Gen_Mode):
 		resd 1
+	global SYM(Gen_Version)
+	SYM(Gen_Version):
+		resd 1
 	
 	global SYM(CPL_M68K)
 	SYM(CPL_M68K):
@@ -275,13 +278,13 @@ section .text align=64
 	extern SYM(Z80_ReadB_Table)
 	extern SYM(Z80_WriteB_Table)
 	
-	extern SYM(VDP_Read_Data)
-	extern SYM(VDP_Read_Status)
-	extern SYM(VDP_Read_V_Counter) 
-	extern SYM(VDP_Read_H_Counter)
-	extern SYM(VDP_Write_Data_Byte)
-	extern SYM(VDP_Write_Data_Word)
-	extern SYM(VDP_Write_Ctrl)
+	extern SYM(Read_VDP_Data)
+	extern SYM(Read_VDP_Status)
+	extern SYM(Read_VDP_V_Counter) 
+	extern SYM(Read_VDP_H_Counter)
+	extern SYM(Write_Byte_VDP_Data)
+	extern SYM(Write_Word_VDP_Data)
+	extern SYM(Write_VDP_Ctrl)
 	
 	extern SYM(main68k_readOdometer)
 	extern SYM(mdZ80_reset)
@@ -462,7 +465,7 @@ section .text align=64
 	
 	global M68K_Read_Byte_Bad
 	M68K_Read_Byte_Bad:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
@@ -472,7 +475,7 @@ section .text align=64
 	M68K_Read_Byte_Rom0:
 		and	ebx, 0x7FFFF
 		xor	ebx, 1
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -482,7 +485,7 @@ section .text align=64
 	M68K_Read_Byte_Rom1:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x080001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -492,7 +495,7 @@ section .text align=64
 	M68K_Read_Byte_Rom2:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x100001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -502,7 +505,7 @@ section .text align=64
 	M68K_Read_Byte_Rom3:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x180001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -525,7 +528,7 @@ section .text align=64
 		jnz	short .Custom_SRAM
 		
 		sub	ebx, [SYM(SRAM_Start)]
-		movzx	eax, byte [SYM(SRAM) + ebx]	; no byte swapped
+		mov	al, [SYM(SRAM) + ebx]	; no byte swapped
 		pop	ebx
 		ret
 	
@@ -534,14 +537,14 @@ section .text align=64
 	.Rom:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x200001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Custom_SRAM:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
@@ -551,7 +554,7 @@ section .text align=64
 	M68K_Read_Byte_Rom5:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x280001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -561,7 +564,7 @@ section .text align=64
 	M68K_Read_Byte_Rom6:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x300001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -571,7 +574,7 @@ section .text align=64
 	M68K_Read_Byte_Rom7:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x380001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -580,7 +583,7 @@ section .text align=64
 	M68K_Read_Byte_Rom8:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x400001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -589,7 +592,7 @@ section .text align=64
 	M68K_Read_Byte_Rom9:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x480001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -598,7 +601,7 @@ section .text align=64
 	M68K_Read_Byte_RomA:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x500001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -607,7 +610,7 @@ section .text align=64
 	M68K_Read_Byte_RomB:
 		and	ebx, 0x7FFFF
 		xor	ebx, 0x580001
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -617,7 +620,7 @@ section .text align=64
 	M68K_Read_Byte_RomD:
 	M68K_Read_Byte_RomE:
 	M68K_Read_Byte_RomF:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
@@ -626,8 +629,8 @@ section .text align=64
 	global M68K_Read_Byte_Ram
 	M68K_Read_Byte_Ram:
 		and	ebx, 0xFFFF
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_68k) + ebx]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_68k) + ebx]
 		pop	ebx
 		ret
 	
@@ -655,7 +658,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
@@ -674,7 +677,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		movzx	eax, byte [SYM(Last_BUS_REQ_St)]
+		mov	al, [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -682,14 +685,14 @@ section .text align=64
 	align 4
 	
 	.bus_taken:
-		mov	eax, 0x80
+		mov	al, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.z80_on:
-		mov	eax, 0x81
+		mov	al, 0x81
 		pop	ebx
 		ret
 	
@@ -711,27 +714,12 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
-		; Genesis version register.
-		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
-		; MODE: Region. (0 == East; 1 == West)
-		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
-		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
-		; RSV: Reserved. (I think this is used for SegaCD.)
-		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
-		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
-		
-		; Set region and video mode.
-		mov	eax, [SYM(Game_Mode)]
-		add	eax, eax
-		or	eax, [SYM(CPU_Mode)]
-		shl	eax, 6
-		
-		; Mark floppy drive as not connected.
-		or	eax, byte 0x20
-		
-		; Mask off any high bits and return.
+		mov	al, [SYM(Game_Mode)]
+		add	al, al
+		or	al, [SYM(CPU_Mode)]
+		shl	al, 6
 		pop	ebx
-		and	eax, 0xFF
+		or	al, [SYM(Gen_Version)]
 		ret
 	
 	align 8
@@ -751,7 +739,6 @@ section .text align=64
 	align 8
 	
 	.Ser:
-		xor	eax, eax
 		mov	al, 0xFF
 		pop	ebx
 		ret
@@ -759,21 +746,21 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		movzx	eax, byte [SYM(Controller_1_COM)]
+		mov	al, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		movzx	eax, byte [SYM(Controller_2_COM)]
+		mov	al, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Ser:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
@@ -781,17 +768,11 @@ section .text align=64
 	
 	global M68K_Read_Byte_VDP
 	M68K_Read_Byte_VDP:
-		; Valid address: ((address & 0xE700E0) == 0xC00000)
-		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
-		test	ebx, 0x700E0
-		jnz	short .bad
-		and	ebx, byte 0x1F	; only check low 5 bits.
-		
-		cmp	ebx, byte 0x04
+		cmp	ebx, 0xC00004
 		jb	short .bad
-		cmp	ebx, byte 0x08
+		cmp	ebx, 0xC00008
 		jb	short .vdp_status
-		cmp	ebx, byte 0x09
+		cmp	ebx, 0xC00009
 		ja	short .bad
 	
 	.vdp_counter:
@@ -799,34 +780,33 @@ section .text align=64
 		jnz	short .vdp_h_counter
 	
 	.vdp_v_counter:
-		call	SYM(VDP_Read_V_Counter)
+		call	SYM(Read_VDP_V_Counter)
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.vdp_h_counter:
-		call	SYM(VDP_Read_H_Counter)
+		call	SYM(Read_VDP_H_Counter)
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.vdp_status:
-		call	SYM(VDP_Read_Status)
+		call	SYM(Read_VDP_Status)
 		test	ebx, 1
 		jnz	.no_swap_status
 		mov	al, ah			; on lit que le poids fort
 	
 	.no_swap_status:
-		movzx	eax, al			; make sure only an 8-bit result is returned.
 		pop	ebx
 		ret
 	
@@ -836,7 +816,7 @@ section .text align=64
 	
 	global M68K_Read_Word_Bad
 	M68K_Read_Word_Bad:
-		xor	eax, eax
+		xor	ax, ax
 		pop	ebx
 		ret
 	
@@ -845,7 +825,7 @@ section .text align=64
 	global M68K_Read_Word_Rom0
 	M68K_Read_Word_Rom0:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx]
+		mov	ax, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -854,7 +834,7 @@ section .text align=64
 	global M68K_Read_Word_Rom1
 	M68K_Read_Word_Rom1:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x080000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x080000]
 		pop	ebx
 		ret
 	
@@ -863,7 +843,7 @@ section .text align=64
 	global M68K_Read_Word_Rom2
 	M68K_Read_Word_Rom2:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x100000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x100000]
 		pop	ebx
 		ret
 	
@@ -872,7 +852,7 @@ section .text align=64
 	global M68K_Read_Word_Rom3
 	M68K_Read_Word_Rom3:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x180000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x180000]
 		pop	ebx
 		ret
 	
@@ -895,7 +875,7 @@ section .text align=64
 		jnz	short .Custom_SRAM
 		
 		sub	ebx, [SYM(SRAM_Start)]
-		movzx	eax, word [SYM(SRAM) + ebx]	; no byte swapped
+		mov	ax, [SYM(SRAM) + ebx]	; no byte swapped
 		rol	ax, 8
 		pop	ebx
 		ret
@@ -904,14 +884,14 @@ section .text align=64
 	
 	.Rom:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x200000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x200000]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.Custom_SRAM:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
@@ -920,7 +900,7 @@ section .text align=64
 	global M68K_Read_Word_Rom5
 	M68K_Read_Word_Rom5:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x280000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x280000]
 		pop	ebx
 		ret
 	
@@ -929,7 +909,7 @@ section .text align=64
 	global M68K_Read_Word_Rom6
 	M68K_Read_Word_Rom6:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x300000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x300000]
 		pop	ebx
 		ret
 	
@@ -938,7 +918,7 @@ section .text align=64
 	global M68K_Read_Word_Rom7
 	M68K_Read_Word_Rom7:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x380000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x380000]
 		pop	ebx
 		ret
 	
@@ -946,7 +926,7 @@ section .text align=64
 	
 	M68K_Read_Word_Rom8:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x400000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x400000]
 		pop	ebx
 		ret
 	
@@ -954,7 +934,7 @@ section .text align=64
 	
 	M68K_Read_Word_Rom9:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x480000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x480000]
 		pop	ebx
 		ret
 	
@@ -962,7 +942,7 @@ section .text align=64
 	
 	M68K_Read_Word_RomA:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x500000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x500000]
 		pop	ebx
 		ret
 	
@@ -970,7 +950,7 @@ section .text align=64
 	
 	M68K_Read_Word_RomB:
 		and	ebx, 0x7FFFF
-		movzx	eax, word [SYM(Rom_Data) + ebx + 0x580000]
+		mov	ax, [SYM(Rom_Data) + ebx + 0x580000]
 		pop	ebx
 		ret
 	
@@ -980,7 +960,7 @@ section .text align=64
 	M68K_Read_Word_RomD:
 	M68K_Read_Word_RomE:
 	M68K_Read_Word_RomF:
-		xor	eax, eax
+		xor	ax, ax
 		pop	ebx
 		ret
 	
@@ -989,7 +969,7 @@ section .text align=64
 	global M68K_Read_Word_Ram
 	M68K_Read_Word_Ram:
 		and	ebx, 0xFFFF
-		movzx	eax, word [SYM(Ram_68k) + ebx]
+		mov	ax, [SYM(Ram_68k) + ebx]
 		pop	ebx
 		ret
 	
@@ -1029,7 +1009,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_GENESIS
 		ja	short .bus_taken
 		
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		add	ah, 0x80
@@ -1040,7 +1020,7 @@ section .text align=64
 	align 16
 	
 	.bus_taken:
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
@@ -1050,7 +1030,7 @@ section .text align=64
 	align 16
 	
 	.z80_on:
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
@@ -1082,27 +1062,12 @@ section .text align=64
 	align 16
 	
 	.MD_Spec:
-		; Genesis version register.
-		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
-		; MODE: Region. (0 == East; 1 == West)
-		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
-		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
-		; RSV: Reserved. (TODO: I think this is used for SegaCD, but I'm not sure.)
-		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
-		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
-		
-		; Set region and video mode.
 		mov	eax, [SYM(Game_Mode)]
 		add	eax, eax
 		or	eax, [SYM(CPU_Mode)]
 		shl	eax, 6
-		
-		; Mark floppy drive as not connected.
-		or	eax, byte 0x20
-		
-		; Mask off any high bits and return.
 		pop	ebx
-		and	eax, 0xFF
+		or	eax, [SYM(Gen_Version)]		; on recupere les infos hardware de la machine
 		ret
 	
 	align 8
@@ -1122,7 +1087,7 @@ section .text align=64
 	align 8
 	
 	.Ser:
-		mov	eax, 0xFF00
+		mov	ax, 0xFF00
 		pop	ebx
 		ret
 	
@@ -1151,38 +1116,31 @@ section .text align=64
 	
 	global M68K_Read_Word_VDP
 	M68K_Read_Word_VDP:
-		; Valid address: ((address & 0xE700E0) == 0xC00000)
-		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
-		test	ebx, 0x700E0
-		jnz	short .bad
-		and	ebx, byte 0x1F	; only check low 5 bits.
-		
-		; TODO: $C00008 == HV counter.
-		cmp	ebx, byte 0x03
+		cmp	ebx, 0xC00003
 		ja	short .no_vdp_data
 		
-		call	SYM(VDP_Read_Data)
+		call	SYM(Read_VDP_Data)
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.no_vdp_data:
-		cmp	ebx, byte 0x07
+		cmp	ebx, 0xC00007
 		ja	.no_vdp_status
 		
-		call	SYM(VDP_Read_Status)
+		call	SYM(Read_VDP_Status)
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.no_vdp_status:
-		cmp	ebx, byte 0x09
+		cmp	ebx, 0xC00009
 		ja	short .bad
-		call	SYM(VDP_Read_V_Counter)
+		call	SYM(Read_VDP_V_Counter)
 		mov	bl, al
-		call	SYM(VDP_Read_H_Counter)
+		call	SYM(Read_VDP_H_Counter)
 		mov	ah, bl
 		pop	ebx
 		ret
@@ -1232,7 +1190,7 @@ section .text align=64
 	global M68K_Write_Byte_Ram
 	M68K_Write_Byte_Ram:
 		and	ebx, 0xFFFF
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_68k) + ebx], al
 		pop	ecx
 		pop	ebx
@@ -1297,7 +1255,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, byte 8
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:
@@ -1345,7 +1303,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, byte 4
+		add	esp, 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1449,17 +1407,11 @@ section .text align=64
 	
 	global M68K_Write_Byte_VDP
 	M68K_Write_Byte_VDP:
-		; Valid address: ((address & 0xE700E0) == 0xC00000)
-		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
-		test	ebx, 0x700E0
-		jnz	short .bad
-		and	ebx, byte 0x1F	; only check low 5 bits.
-		
-		cmp	ebx, byte 0x03
+		cmp	ebx, 0xC00003
 		ja	short .no_data_port
 		
 		push	eax
-		call	SYM(VDP_Write_Data_Byte)
+		call	SYM(Write_Byte_VDP_Data)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1468,8 +1420,8 @@ section .text align=64
 	align 16
 	
 	.no_data_port:
-		cmp	ebx, byte 0x11
-		jne	short .bad
+		cmp	ebx, 0xC00011
+		jne	.bad
 		
 		push	eax
 		call	SYM(PSG_Write)
@@ -1581,7 +1533,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, byte 8
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:
@@ -1629,7 +1581,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, byte 4
+		add	esp, 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1740,17 +1692,11 @@ section .text align=64
 	
 	global M68K_Write_Word_VDP
 	M68K_Write_Word_VDP:
-		; Valid address: ((address & 0xE700E0) == 0xC00000)
-		; Information from vdppin.txt, (c) 2008 Charles MacDonald.
-		test	ebx, 0x700E0
-		jnz	short .bad
-		and	ebx, byte 0x1F	; only check low 5 bits.
-		
-		cmp	ebx, byte 0x03
+		cmp	ebx, 0xC00003
 		ja	short .no_data_port
 		
 		push	eax
-		call	SYM(VDP_Write_Data_Word)
+		call	SYM(Write_Word_VDP_Data)
 		pop	eax
 		pop	ecx
 		pop	ebx
@@ -1759,11 +1705,11 @@ section .text align=64
 	align 16
 	
 	.no_data_port:
-		cmp	ebx, byte 0x07
+		cmp	ebx, 0xC00007
 		ja	short .bad
 		
 		push	eax
-		call	SYM(VDP_Write_Ctrl)
+		call	SYM(Write_VDP_Ctrl)
 		pop	eax
 		pop	ecx
 		pop	ebx

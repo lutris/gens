@@ -24,7 +24,11 @@
 #define GENS_UI_WIN32_BIOS_MISC_FILES_WINDOW_HPP
 
 // Win32 includes.
-#include "libgsft/w32u/w32u.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
 
 #ifdef __cplusplus
 extern "C" {

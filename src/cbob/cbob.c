@@ -34,14 +34,9 @@ do { \
 	dest[n-1] = 0x00; \
 } while (0)
 
-/**
- * Version history:
- * 0.1.1 (2010/01/17): Fixed generated output on MinGW/Win32.
- * 0.1.0 (2009/10/10): First public release.
- */
 #define CBOB_VERSION_MAJOR 0
 #define CBOB_VERSION_MINOR 1
-#define CBOB_VERSION_REVISION 1
+#define CBOB_VERSION_REVISION 0
 //#define CBOB_VERSION_DEVELOPMENT
 
 #define _QUOTEME(x) #x
@@ -96,10 +91,6 @@ int main(int argc, char *argv[])
 	// Filename without full path.
 	char in_filename[PATH_MAX];
 	const char *slash = strrchr(argv[1], DIR_SEP_CHR);
-#ifdef _WIN32
-	if (!slash)
-		slash = strrchr(argv[1], '/');
-#endif
 	if (!slash)
 	{
 		// No path separator found. Copy the entire filename.
@@ -140,6 +131,7 @@ int main(int argc, char *argv[])
 	
 	// Concatenate ".h".
 	strcat(out_filename_h, ".h");
+	printf("Filename: %s\n", out_filename_h);
 	
 	// Open the C output file.
 	FILE *f_out_c = fopen(out_filename_c, "wb");

@@ -27,23 +27,17 @@
 #include "imageutil.hpp"
 #include "bmp.h"
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 // Message logging.
 #include "macros/log_msg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <cstring>
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/TAB336.h"
 
 // libgsft includes.
 #include "libgsft/gsft_byteswap.h"
@@ -481,13 +475,12 @@ int ImageUtil::ScreenShot(void)
 		return 1;
 	
 	// Variables used:
-	// VDP_Lines.Visible.Total: Number of lines visible on the screen. (bitmap height)
+	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
 	// MD_Screen: MD screen buffer.
-	// vdp_getHPix(): Number of pixels horizontally.
+	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
 	// TODO: Use macros in video/v_inline.h
-	const int w = vdp_getHPix();
-	const int h = VDP_Lines.Visible.Total;
-	const int start = TAB336[VDP_Lines.Visible.Border_Size] + 8 + vdp_getHPixBegin();
+	const int w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
+	const int h = VDP_Num_Vis_Lines;
 	
 	// Build the filename.
 	int num = -1;
@@ -515,13 +508,13 @@ int ImageUtil::ScreenShot(void)
 	{
 		num++;
 		szprintf(filename, sizeof(filename), "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Filename, num, ext);
-	} while (!access(filename, F_OK));
+	} while (gsft_file_exists(filename));
 	
 	void *screen;
 	if (bppMD == 15 || bppMD == 16)
-		screen = (void*)(&MD_Screen.u16[start]);
+		screen = (void*)(&MD_Screen[8]);
 	else //if (bppMD == 32)
-		screen = (void*)(&MD_Screen.u32[start]);
+		screen = (void*)(&MD_Screen32[8]);
 	
 	// Attempt to save the screenshot.
 	int rval = WriteImage(filename, fmt, w, h, 336, screen, bppMD);

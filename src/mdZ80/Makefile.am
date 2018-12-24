@@ -1,6 +1,6 @@
 # mdZ80: Z80 emulator.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 

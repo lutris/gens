@@ -1,12 +1,11 @@
 # zlib: Deflate compression library.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LTLIBRARIES = libz.la
 
-libz_la_CFLAGS		= $(AM_CFLAGS) -O3 -funroll-loops
-libz_la_LDFLAGS		= $(AM_LDFLAGS)
-libz_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
+libz_la_CFLAGS		= $(AM_CFLAGS) -static -O3 -funroll-loops
+libz_la_LDFLAGS		= $(AM_LDFLAGS) -static
 
 libz_la_SOURCES = \
 		adler32.c \

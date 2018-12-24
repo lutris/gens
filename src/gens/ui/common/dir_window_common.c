@@ -24,13 +24,9 @@
 
 // Includes with directory defines.
 // TODO: Consolidate these into Settings.PathNames
+#include "util/file/save.hpp"
 #include "util/gfx/imageutil.hpp"
 #include "util/file/rom.hpp"
-
-// Save file handlers.
-#include "util/file/save.hpp"
-#include "util/file/sram.h"
-#include "util/file/mcd_bram.h"
 
 
 // Directory entries.

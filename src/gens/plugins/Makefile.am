@@ -1,5 +1,5 @@
 ## Internal MDP plugins Makefile.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = render

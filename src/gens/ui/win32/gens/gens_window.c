@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -34,13 +34,17 @@
 #include "video/vdraw.h"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_shellapi.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
+#include <shellapi.h>
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
-#include "libgsft/gsft_win32_gdi.h"
 
 
 // Window.
@@ -64,28 +68,25 @@ void gens_window_init_hWnd(void)
 		HBRUSH gens_bgcolor = CreateSolidBrush(RGB(0, 0, 0));
 		
 		// Set the window class information.
-		gens_wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		gens_wndclass.style = CS_HREDRAW | CS_VREDRAW;
 		gens_wndclass.lpfnWndProc = Gens_Window_WndProc;
 		gens_wndclass.cbClsExtra = 0;
 		gens_wndclass.cbWndExtra = 0;
 		gens_wndclass.hInstance = ghInstance;
-		gens_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		gens_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
+		gens_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		gens_wndclass.hCursor = NULL;
 		gens_wndclass.hbrBackground = gens_bgcolor;
 		gens_wndclass.lpszMenuName = NULL;
-		gens_wndclass.lpszClassName = "Gens";
+		gens_wndclass.lpszClassName = TEXT("Gens");
 		
-		pRegisterClassU(&gens_wndclass);
+		RegisterClass(&gens_wndclass);
 	}
 	
 	// Create the window.
-	gens_window = pCreateWindowU("Gens", "Gens",
-					WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-					320 * 2, 240 * 2,
-					NULL, NULL, ghInstance, NULL);
-	
-	// Initialize libgsft_win32_gdi. (Fonts)
-	gsft_win32_gdi_init(gens_window);
+	gens_window = CreateWindow(TEXT("Gens"), TEXT("Gens"),
+				   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+				   320 * 2, 240 * 2,
+				   NULL, NULL, ghInstance, NULL);
 	
 	// Accept dragged files.
 	DragAcceptFiles(gens_window, TRUE);
@@ -172,9 +173,9 @@ void gens_window_reinit(void)
 		while (ShowCursor(FALSE) >= 0) { }
 		
 		// Hide the window borders.
-		lStyle = pGetWindowLongPtrU(gens_window, GWL_STYLE);
+		lStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
 		lStyle &= ~(WS_POPUPWINDOW | WS_OVERLAPPEDWINDOW);
-		pSetWindowLongPtrU(gens_window, GWL_STYLE, lStyle);
+		SetWindowLongPtr(gens_window, GWL_STYLE, lStyle);
 		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else
@@ -184,7 +185,7 @@ void gens_window_reinit(void)
 		while (ShowCursor(TRUE) < 1) { }
 		
 		// Adjust the window style.
-		lStyle = pGetWindowLongPtrU(gens_window, GWL_STYLE);
+		lStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
 		if (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_WINRESIZE)
 		{
 			// Backend supports resizable windows.
@@ -197,7 +198,7 @@ void gens_window_reinit(void)
 			lStyle &= ~WS_OVERLAPPEDWINDOW;
 			lStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS;
 		}
-		pSetWindowLongPtrU(gens_window, GWL_STYLE, lStyle);
+		SetWindowLongPtr(gens_window, GWL_STYLE, lStyle);
 		
 		// Reposition the window.
 		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,

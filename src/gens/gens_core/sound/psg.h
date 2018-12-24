@@ -32,12 +32,14 @@ extern "C" {
 /* Gens */
 
 extern int PSG_Enable;
+extern int PSG_Improv;
 extern int *PSG_Buf[2];
 extern int PSG_Len;
 
 /* end */
 
 void PSG_Write(int data);
+void PSG_Update_SIN(int **buffer, int length);
 void PSG_Update(int **buffer, int length);
 void PSG_Init(int clock, int rate);
 

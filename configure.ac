@@ -2,14 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.5])
-AC_INIT(gens, 2.17.0, gerbilsoft@verizon.net)
+AC_INIT(gens, 2.16.7, gerbilsoft@verizon.net)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Gens/GS version numbers.
-AC_DEFINE(GENS_VERSION_WIN32, [2,17,0,0], Gens Win32 Version Number)
-AC_DEFINE(GENS_GS_VERSION, "r7+", Gens/GS Version Number)
+AC_DEFINE(GENS_VERSION_WIN32, [2,16,7,0], Gens Win32 Version Number)
+AC_DEFINE(GENS_GS_VERSION, "r7", Gens/GS Version Number)
 
 # Automake build features.
 AC_CANONICAL_BUILD
@@ -17,10 +17,18 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 # Initialize automake.
-AM_INIT_AUTOMAKE([1.15])
+AM_INIT_AUTOMAKE([1.10])
 
 # Disable the Fortran check.
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
+
+# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
+if test "$CFLAGS" = "-g -O2"; then
+	CFLAGS=""
+fi
+if test "$CXXFLAGS" = "-g -O2"; then
+	CXXFLAGS=""
+fi
 
 # Check for programs.
 AM_PROG_AS
@@ -39,17 +47,6 @@ AC_PROG_LIBTOOL
 # Enable C99.
 AC_PROG_CC_C99
 
-# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
-if test "$CFLAGS" = "-g -O2"; then
-	CFLAGS=""
-fi
-if test "$CXXFLAGS" = "-g -O2"; then
-	CXXFLAGS=""
-fi
-if test "$CCASFLAGS" = "-g -O2"; then
-	CCASFLAGS=""
-fi
-
 # Check operating system.
 nasm_debug=""
 yasm_debug=""
@@ -59,24 +56,23 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
-		cflags_platform="-fshort-wchar ${cflags_platform}"
-		ldflags_platform="-static-libgcc ${ldflags_platform}"
+		ldflags_win32="-static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	i?86*cygwin*)
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		AC_DEFINE(GENS_PLATFORM, "Win32", Platform ID)
-		cflags_platform="-fshort-wchar -mno-cygwin -mwin32 ${cflags_platform}"
-		ldflags_platform="-mno-cygwin -mwin32 -static-libgcc ${ldflags_platform}"
+		cflags_win32="-mno-cygwin -mwin32 ${cflags_win32}";
+		ldflags_win32="-mno-cygwin -mwin32 -static-libgcc ${ldflags_win32}"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	i?86*darwin*)
 		os=macosx;
@@ -84,12 +80,10 @@ case $host in
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "MacOS X", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F null";
 		yasm_debug="-g null";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	i?86*linux*)
 		os=linux;
@@ -97,46 +91,37 @@ case $host in
 		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "Linux", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	i?86*haiku*)
 		os=haiku
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_HAIKU, 1, Haiku operating system)
 		AC_DEFINE(GENS_PLATFORM, "Haiku", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb";
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	i?86*)
 		os=unix;
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		AC_DEFINE(GENS_PLATFORM, "Unix", Platform ID)
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization="-march=i586 -mtune=i686"
+		cflags_optimization="-march=i686"
 		;;
 	x86_64*)
 		obj_format=elf64;
 		AC_MSG_ERROR([64-bit is currently not supported.]);
-		cflags_platform=""
-		ldflags_platform=""
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
-		cflags_optimization=""
 		;;
 	*)
 		AC_MSG_ERROR([Unsupported system architecture: $host]);
@@ -211,7 +196,7 @@ ifdef(
 AC_DEFINE(GENS_UI_GTK, 1, Enable the GTK+ UI)
 
 # TODO: Disable deprecated GTK+ features.
-# GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED -DDISABLE_DEPRECATED -DGSEAL_ENABLE"
+GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED -DDISABLE_DEPRECATED -DGSEAL_ENABLE"
 
 #elif test x$ui = xqt4; then
 #
@@ -240,32 +225,6 @@ ifdef(
 	[AC_MSG_WARN([[*** AM_PATH_SDL is not defined. Assuming SDL is installed.]])]
 )
 
-# D-Bus
-AC_ARG_WITH(dbus, AC_HELP_STRING([--without-dbus], [Do not build the D-Bus IRC Reporter plugin [[default=no]]]), with_dbus=$withval, with_dbus=yes)
-if test x$with_dbus = xyes; then
-	PKG_CHECK_MODULES([DBUS], [dbus-1], [has_dbus=yes], [has_dbus=no])
-	if test x$has_dbus = xyes; then
-		AC_DEFINE(HAVE_DBUS, 1, Define to 1 if you have the `DBUS' library (-ldbus-1).)
-		PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1], [has_dbus_glib=yes], [has_dbus_glib=no])
-		if test x$has_dbus_glib = xyes; then
-			AC_DEFINE(HAVE_DBUS_GLIB, 1, Define to 1 if you have the `DBUS_GLIB' library (-ldbus-1).)
-			
-			# Search for the D-Bus binding tool.
-			AC_PATH_PROG(DBUS_BINDING_TOOL, dbus-binding-tool, no)
-			if test x$DBUS_BINDING_TOOL = xno; then
-				AC_MSG_WARN([*** dbus-binding-tool not found, disabling D-Bus support.])
-				has_dbus=no
-				has_dbus_glib=no
-			fi
-		fi
-	else
-		has_dbus_glib=no
-	fi
-else
-	has_dbus=no
-	has_dbus_glib=no
-fi
-
 # END: Unix / Linux (and MacOS X for now)
 
 elif test x$os = xwin32; then
@@ -293,17 +252,6 @@ fi
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
-
-# D-Bus conditional and substitutions.
-AM_CONDITIONAL([HAVE_DBUS], [test x$has_dbus = xyes])
-AC_SUBST(DBUS_CFLAGS)
-AC_SUBST(DBUS_LIBS)
-AC_SUBST(DBUS_BINDING_TOOL)
-
-# D-Bus GLib conditional and substitutions.
-AM_CONDITIONAL([HAVE_DBUS_GLIB], [test x$has_dbus_glib = xyes])
-AC_SUBST(DBUS_GLIB_CFLAGS)
-AC_SUBST(DBUS_GLIB_LIBS)
 
 # X11 conditional and substitutions.
 AM_CONDITIONAL([HAVE_LIBX11], [test x$has_libX11 = xyes])
@@ -452,8 +400,6 @@ AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
 AC_ARG_WITH(internal_zlib, AC_HELP_STRING([--with-internal-zlib], [Use internal zlib [[default=no]]]), with_internal_zlib=$withval, with_internal_zlib=no)
 
-ZLIB_LIBS=""
-
 # If internal zlib was enabled, but zlib was disabled, enable zlib.
 # The user may have thought that the plain zlib option was for shared zlib.
 if test x$with_internal_zlib = xyes; then
@@ -465,29 +411,25 @@ if test x$with_zlib = xno; then
 	with_internal_zlib=no
 else
 	# zlib enabled; check if internal zlib library is eanbled.
-	if test x$with_internal_zlib = xno; then
-		AC_MSG_CHECKING(for system zlib)
-		with_zlib=no
-		AC_TRY_COMPILE([
-			#include <zlib.h>
-		],[
-			gzFile gzfd;
-		],[
-			with_zlib=yes
-		])
-		AC_MSG_RESULT($with_zlib)
-		if test x$with_zlib = xyes; then
-			# External zlib found.
-			ZLIB_LIBS="-lz"
-		else
-			# External zlib not found. Use the internal version.
-			with_zlib=yes
-			with_internal_zlib=yes
-		fi
+if test x$with_internal_zlib = xno; then
+AC_MSG_CHECKING(for system zlib)
+	with_zlib=no
+	AC_TRY_COMPILE([
+		#include <zlib.h>
+	],[
+		gzFile gzfd;
+	],[
+		with_zlib=yes
+	])
+	AC_MSG_RESULT($with_zlib)
+	if test x$with_zlib = xno; then
+		# External zlib not found. Use the internal version.
+		with_zlib=yes
+		with_internal_zlib=yes
 	fi
 fi
 
-AC_SUBST(ZLIB_LIBS)
+fi
 
 if test x$with_zlib = xyes; then
 AC_DEFINE(GENS_ZLIB, 1, Compression support via zlib)
@@ -511,57 +453,53 @@ if test x$with_internal_png = xyes; then
 	with_png=yes
 fi
 
-PNG_CFLAGS=""
 PNG_LIBS=""
 with_png_dlopen=no
 if test x$with_png = xno; then
 	# libpng disabled; disable internal libpng library.
 	with_internal_png=no
 else
-	# libpng enabled.
-	PNG_CFLAGS="-DPNG_PEDANTIC_WARNINGS"
+	# libpng enabled; check if internal libpng library is eanbled.
+if test x$with_internal_png = xno; then
+AC_MSG_CHECKING(for system libpng)
+	with_png=no
+	AC_TRY_COMPILE([
+		#include <png.h>
+	],[
+		png_structp png_ptr;
+	],[
+		with_png=yes
+	])
+	AC_MSG_RESULT($with_png)
 	
-	# Check if the internal libpng library is eanbled.
-	if test x$with_internal_png = xno; then
-		AC_MSG_CHECKING(for system libpng)
-		with_png=no
-		AC_TRY_COMPILE([
-			#include <png.h>
-		],[
-			png_structp png_ptr;
-		],[
-			with_png=yes
-		])
-		AC_MSG_RESULT($with_png)
+	if test x$with_png = xno; then
+		# External libpng not found. Use the internal version.
+		with_png=yes
+		with_internal_png=yes
+		with_png_dlopen=no
+	else
+		# External libpng found.
 		
-		if test x$with_png = xno; then
-			# External libpng not found. Use the internal version.
-			with_png=yes
-			with_internal_png=yes
+		# Check if libpng should be linked at compile time.
+		# On Win32, do not link at compile time; instead, libpng will be dlopen()'d.
+		AC_MSG_CHECKING(if libpng should be linked at compile time)
+		if test x$os != xwin32; then
+			# Not Win32. Link at compile time.
+			AC_MSG_RESULT(yes);
+			PNG_LIBS="-lpng"
 			with_png_dlopen=no
 		else
-			# External libpng found.
-			
-			# Check if libpng should be linked at compile time.
-			# On Win32, do not link at compile time; instead, libpng will be dlopen()'d.
-			AC_MSG_CHECKING(if libpng should be linked at compile time)
-			if test x$os != xwin32; then
-				# Not Win32. Link at compile time.
-				AC_MSG_RESULT(yes);
-				PNG_LIBS="-lpng"
-				with_png_dlopen=no
-			else
-				# Win32. Use dlopen().
-				AC_MSG_RESULT(no);
-				with_png_dlopen=yes
-				AC_DEFINE(GENS_PNG_DLOPEN, 1, [Use dlopen(), or LoadLibrary() on Win32, to load libpng.])
-			fi
+			# Win32. Use dlopen().
+			AC_MSG_RESULT(no);
+			with_png_dlopen=yes
+			AC_DEFINE(GENS_PNG_DLOPEN, 1, [Use dlopen(), or LoadLibrary() on Win32, to load libpng.])
 		fi
 	fi
+fi
 
-	AC_SUBST(PNG_CFLAGS)
-	AC_SUBST(PNG_LIBS)
-	AM_CONDITIONAL([GENS_PNG_DLOPEN], [test x$with_png_dlopen = xyes])
+AC_SUBST(PNG_LIBS)
+AM_CONDITIONAL([GENS_PNG_DLOPEN], [test x$with_png_dlopen = xyes])
+
 fi
 
 if test x$with_png = xyes; then
@@ -687,6 +625,26 @@ AC_LANG(C)
 # Miscellaneous
 ###
 
+# Windows-specific options.
+if test x$os = xwin32; then
+	# Check if the Windows console should be enabled.
+	if test x$enable_win32_console = xyes; then
+		# Enable the Windows console.
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,console"
+	else
+		# Disable the Windows console.
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,windows"
+	fi
+	
+	# Windows NT target version and MSIE target version.
+	# (Seriously, MSIE target version?)
+	cflags_win32="${cflags_win32} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
+else
+	# Not Win32.
+	ldflags_win32=""
+	cflags_win32=""
+fi
+
 # gcc CFLAGS check function.
 # References:
 # - http://www.nabble.com/Compiler-characteristics-td25316247.html
@@ -743,12 +701,6 @@ AC_DEFUN([GSFT_CXXFLAGS_GCC_OPTION], [
 	AS_VAR_POPDEF([FLAGS])
 ])
 
-# gcc CFLAGS/CXXFLAGS check function.
-AC_DEFUN([GSFT_CFLAGS_CXXFLAGS_GCC_OPTION], [
-	GSFT_CFLAGS_GCC_OPTION($1, $2)
-	GSFT_CXXFLAGS_GCC_OPTION($1, $3)
-])
-
 # gcc LDFLAGS check function.
 # References:
 # - http://www.nabble.com/Compiler-characteristics-td25316247.html
@@ -777,103 +729,22 @@ AC_DEFUN([GSFT_LDFLAGS_GCC_OPTION], [
 	AS_VAR_POPDEF([FLAGS])
 ])
 
-
 # Check if the compiler supports various warning flags.
-if test x$GCC = xyes; then
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wall], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wextra], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wformat=2], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wstrict-aliasing=2], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wwrite-strings], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wundef], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wshadow], AM_CFLAGS, AM_CXXFLAGS)
+if test "x$GCC" = "xyes"; then
+	GSFT_CFLAGS_GCC_OPTION([-Wall], AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION([-Wall], AM_CXXFLAGS)
 	
-	# C-only flags.
-	GSFT_CFLAGS_GCC_OPTION([-Wc++-compat], AM_CFLAGS)
-	
-	if test x$enable_debug = xyes; then
-		# Additional warning flags for the debug build.
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Winit-self], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wmissing-include-dirs], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wswitch], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wswitch-default], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wswitch-enum], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wfloat-equal], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wunsafe-loop-optimizations], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wcast-qual], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wcast-align], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wmissing-declarations], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wnormalized=nfc], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wredundant-decls], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Winline], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wlogical-op], AM_CFLAGS, AM_CXXFLAGS)
-		GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-Wunused], AM_CFLAGS, AM_CXXFLAGS)
-		
-		# C-only flags.
-		GSFT_CFLAGS_GCC_OPTION([-Wstrict-prototypes], AM_CFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wold-style-definition], AM_CFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wmissing-prototypes], AM_CFLAGS)
-		GSFT_CFLAGS_GCC_OPTION([-Wnested-externs], AM_CFLAGS)
-	fi
-fi
-
-# Stack-smashing protection. (Not supported on MinGW.)
-if test x$os != xwin32; then
-	AM_CFLAGS="$AM_CFLAGS -D_FORTIFY_SOURCE=2"
-	AM_CXXFLAGS="$AM_CXXFLAGS -D_FORTIFY_SOURCE=2"
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector], AM_CFLAGS, AM_CXXFLAGS)
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-fstack-protector-all], AM_CFLAGS, AM_CXXFLAGS)
-fi
-
-
-# Check for various optimization flags.
-if test x$enable_debug != xyes; then
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-ftree-vectorize], AM_CFLAGS, AM_CXXFLAGS)
-fi
-
-if test xobj_format = xelf32 -o xobj_format = xelf64; then
-	# Enable -rdynamic on ELF platforms.
-	# This allows for more extensive backtraces.
-	GSFT_CFLAGS_CXXFLAGS_GCC_OPTION([-rdynamic], AM_CFLAGS, AM_CXXFLAGS)
-	
-	# HACK: This might not work properly on some systems.
-	AM_LDFLAGS="$AM_LDFLAGS -rdynamic"
+	GSFT_CFLAGS_GCC_OPTION([-Wextra], AM_CFLAGS)
+	GSFT_CXXFLAGS_GCC_OPTION([-Wextra], AM_CXXFLAGS)
 fi
 
 # Check for various linker flags.
-GSFT_LDFLAGS_GCC_OPTION([-O1], AM_LDFLAGS)
-GSFT_LDFLAGS_GCC_OPTION([--sort-common], AM_LDFLAGS)
-GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
 GSFT_LDFLAGS_GCC_OPTION([--as-needed], AM_LDFLAGS)
+GSFT_LDFLAGS_GCC_OPTION([--hash-style=both], AM_LDFLAGS)
 
-# Windows-specific CFLAGS and LDFLAGS.
-if test x$os = xwin32; then
-	# Check if the Windows console should be enabled.
-	if test x$enable_win32_console = xyes; then
-		# Enable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,console"
-	else
-		# Disable the Windows console.
-		ldflags_platform="${ldflags_platform} -Wl,-subsystem,windows"
-	fi
-	
-	# Windows NT target version and MSIE target version.
-	# (Seriously, MSIE target version?)
-	cflags_platform="${cflags_platform} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
-	
-	# Disable stdcall fixups.
-	# stdcall fixups usually happen if an stdcall function is called using cdecl,
-	# which will end up crashing the program.
-	GSFT_LDFLAGS_GCC_OPTION([--disable-stdcall-fixup], ldflags_platform)
-	
-	# PE flags. These require GNU ld-2.20 or later.
-	GSFT_LDFLAGS_GCC_OPTION([--dynamicbase], ldflags_platform)	# Allow WinNT 6.0+ to relocate the image base using ASLR.
-	GSFT_LDFLAGS_GCC_OPTION([--nxcompat], ldflags_platform)		# Mark the images as NX-compatible. (XP SP2+)
-fi
-
-AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug}"
-AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_platform} ${cflags_debug} ${cxxflags_visibility}"
-AM_LDFLAGS="${AM_LDFLAGS} ${ldflags_as_needed} ${ldflags_platform}"
+AM_CFLAGS="${AM_CFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32}"
+AM_CXXFLAGS="${AM_CXXFLAGS} ${cflags_optimization} ${cflags_debug} ${cflags_win32} ${cxxflags_visibility}"
+AM_LDFLAGS="${AM_LDFLAGS} ${ldflags_as_needed} ${ldflags_win32}"
 
 # Check for clock_gettime.
 AC_CHECK_LIB(rt, clock_gettime, has_librt=yes, has_librt=no)
@@ -891,12 +762,12 @@ fi
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE
-AC_C_RESTRICT
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
 AC_TYPE_INT8_T
 AC_TYPE_MODE_T
+AC_C_RESTRICT
 AC_TYPE_SIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -921,19 +792,16 @@ AM_CONDITIONAL([HAVE_STRLCAT], [test x$has_strlcat = xyes])
 AC_CHECK_FUNCS(sigaction, has_sigaction=yes, has_sigaction=no)
 AM_CONDITIONAL([HAVE_SIGACTION], [test x$has_sigaction = xyes])
 
-# Check for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h wchar.h])
-if test x$os != xwin32; then
-# Headers for non-Win32 operating systems.
-	AC_CHECK_HEADERS([sys/ioctl.h])
-fi
+# Checks for header files.
+AC_PATH_X
+AC_CHECK_HEADERS([fcntl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/time.h unistd.h wchar.h])
 
-# Check for library functions.
+# Checks for library functions.
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_ALLOCA
-AC_CHECK_FUNCS([memset memmove strcasecmp strncasecmp strchr strerror])
-AC_CHECK_FUNCS([strrchr strstr strtol strtoul])
-AC_CHECK_FUNCS([getcwd gettimeofday mkdir pow rint setenv unsetenv])
+AC_CHECK_FUNCS([getcwd gettimeofday memmove memset mkdir pow rint])
+AC_CHECK_FUNCS([setenv sqrt strcasecmp strchr strerror strncasecmp])
+AC_CHECK_FUNCS([strpbrk strrchr strspn strstr strtol strtoul])
 
 # Check for iconv().
 # First, check for iconv() in the C library.
@@ -969,12 +837,10 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
-AC_SUBST(LIBTOOLFLAGS)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
 AC_SUBST(AM_CPPFLAGS)
-AC_SUBST(AM_LIBTOOLFLAGS)
 AC_SUBST(libdir)
 
 AC_CONFIG_FILES([
@@ -992,7 +858,6 @@ AC_CONFIG_FILES([
 	src/starscream/Makefile
 	src/mdZ80/Makefile
 	src/libgsft/Makefile
-	src/libgsft/w32u/Makefile
 	src/cbob/Makefile
 	src/gens/Makefile
 	src/gens/plugins/Makefile
@@ -1007,8 +872,6 @@ AC_CONFIG_FILES([
 	src/mdp/misc/ips_patcher/Makefile
 	src/mdp/misc/sgens/Makefile
 	src/mdp/misc/vdp_layer_options/Makefile
-	src/mdp/misc/irc_reporter/Makefile
-	src/mdp/misc/vdp_debugger/Makefile
 	src/mdp/render/2xsai/Makefile
 	src/mdp/render/Makefile
 	src/mdp/render/blargg_ntsc/Makefile

@@ -34,25 +34,22 @@
 #endif
 
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u_windows.h"
 #include "ui/win32/resource.h"
 #endif
 
 #include "v_effects.hpp"
 #include "gens_core/gfx/fastblur.hpp"
-#include "macros/force_inline.h"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/TAB336.h"
 
 
 /**
  * T_Update_Gens_Logo(): Update the Gens logo.
  */
 template<typename pixel, int trans_min, int trans_max>
-static FORCE_INLINE void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
+static inline void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 {
 	// The Gens logo is 260x180.
 	// Thus, in 16-bit color, it's 93,600 bytes,
@@ -72,12 +69,12 @@ static FORCE_INLINE void T_Update_Gens_Logo(pixel *screen, const pixel *logo)
 	zoom_x = (1.0f / zoom_x);
 	zoom_y = 1;
 	
-	const int w = vdp_getHPix();
+	const int w = (vdp_isH40() ? 320 : 256);
 	const int w_div2 = (w / 2);
-	const int h = vdp_getVPix();
+	const int h = VDP_Num_Vis_Lines;
 	const int h_div2 = (h / 2);
 	
-	for (j = h + VDP_Lines.Visible.Border_Size; j != VDP_Lines.Visible.Border_Size; j--)
+	for (j = h; j != 0; j--)
 	{
 		for (i = w; i != 0; i--)
 		{
@@ -200,16 +197,16 @@ int Update_Gens_Logo(void)
 		
 		// TODO: LoadBitmap() uses the desktop color depth,
 		// which may not be the same as bppMD.
-		HBITMAP hbmpLogo = LoadBitmapA(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
+		HBITMAP hbmpLogo = LoadBitmap(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_BIG));
 		GetBitmapBits(hbmpLogo, logo_size, logo_data);
 		lastBpp = bppMD;
 #endif
 	}
 	
 	if (bppMD != 32)
-		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen.u16, (uint16_t*)logo_data);
+		T_Update_Gens_Logo<uint16_t, 5, 31>(MD_Screen, (uint16_t*)logo_data);
 	else
-		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen.u32, (uint32_t*)logo_data);
+		T_Update_Gens_Logo<uint32_t, 40, 248>(MD_Screen32, (uint32_t*)logo_data);
 	
 	return 0;
 }
@@ -221,7 +218,7 @@ int Update_Gens_Logo(void)
  */
 template<typename pixel, pixel Rmask, pixel Gmask, pixel Bmask,
 		  pixel Radd, pixel Gadd, pixel Badd>
-static FORCE_INLINE void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
+static inline void T_Update_Crazy_Effect(int introEffectColor, pixel *screen)
 {
 	if (introEffectColor == 0)
 	{
@@ -304,17 +301,17 @@ void Update_Crazy_Effect(int introEffectColor)
 	{
 		case 15:
 			T_Update_Crazy_Effect<uint16_t, 0x7C00, 0x03E0, 0x001F,
-					      0x0400, 0x0020, 0x0001>(introEffectColor, MD_Screen.u16);
+					      0x0400, 0x0020, 0x0001>(introEffectColor, MD_Screen);
 			break;
 		
 		case 16:
 			T_Update_Crazy_Effect<uint16_t, 0xF800, 0x07C0, 0x001F,
-					      0x0800, 0x0040, 0x0001>(introEffectColor, MD_Screen.u16);
+					      0x0800, 0x0040, 0x0001>(introEffectColor, MD_Screen);
 			break;
 		
 		case 32:
-			T_Update_Crazy_Effect<uint32_t, 0xF80000, 0x00F800, 0x0000F8,
-					      0x080000, 0x000800, 0x000008>(introEffectColor, MD_Screen.u32);
+			T_Update_Crazy_Effect<uint32_t, (uint32_t)0xF80000, (uint32_t)0x00F800, (uint32_t)0x0000F8,
+					      (uint32_t)0x080000, (uint32_t)0x000800, (uint32_t)0x000008>(introEffectColor, MD_Screen32);
 			break;
 	}
 }
@@ -322,7 +319,7 @@ void Update_Crazy_Effect(int introEffectColor)
 
 /**
  * T_veffect_pause_tint(): Tint the screen a purple hue to indicate that emulation is paused.
- * @param pixel Type of pixel.
+ * @param mdScreen Pointer to the MD screen buffer.
  * @param RMask Red component mask.
  * @param GMask Green component mask.
  * @param BMask Blue component mask.
@@ -331,22 +328,24 @@ void Update_Crazy_Effect(int introEffectColor)
  * @param BShift Blue component shift.
  * @param rInfo Rendering information.
  * @param scale Scaling value.
- * @param mdScreen Pointer to the MD screen buffer.
  */
-template<typename pixel, pixel RMask, pixel GMask, pixel BMask,
+template<typename pixel, pixel *mdScreen,
+	 pixel RMask, pixel GMask, pixel BMask,
 	 unsigned int RShift, unsigned int GShift, unsigned int BShift>
-static void T_veffect_pause_tint(pixel *mdScreen)
+static void T_veffect_pause_tint(void)
 {
 	// TODO: Adjust this function for RGB Color Scaling.
 	uint8_t r, g, b, nr, ng, nb;
 	uint16_t sum;
 	
+	pixel *pos = mdScreen;
+	
 	for (unsigned int i = (336*240); i != 0; i--)
 	{
 		// Get the color components.
-		r = (uint8_t)((*mdScreen & RMask) >> RShift);
-		g = (uint8_t)((*mdScreen & GMask) >> GShift);
-		b = (uint8_t)((*mdScreen & BMask) >> BShift);
+		r = (uint8_t)((*pos & RMask) >> RShift);
+		g = (uint8_t)((*pos & GMask) >> GShift);
+		b = (uint8_t)((*pos & BMask) >> BShift);
 		
 		// Add the components together.
 		sum = r + g + b;
@@ -364,7 +363,7 @@ static void T_veffect_pause_tint(pixel *mdScreen)
 		nb &= 0x1E;
 		
 		// Put the new pixel.
-		*mdScreen++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
+		*pos++ = (nr << RShift) | (ng << GShift) | (nb << BShift);
 	}
 }
 
@@ -378,15 +377,21 @@ void veffect_pause_tint(void)
 	{
 		case 32:
 			// 32-bit color.
-			T_veffect_pause_tint<uint32_t, 0xFF0000, 0x00FF00, 0x0000FF, 16+3, 8+3, 0+3>(MD_Screen.u32);
+			T_veffect_pause_tint<uint32_t, MD_Screen32,
+					     (uint32_t)0xFF0000, (uint32_t)0x00FF00, (uint32_t)0x0000FF,
+					     16+3, 8+3, 0+3>();
 			break;
 		case 16:
 			// 16-bit color.
-			T_veffect_pause_tint<uint16_t, 0xF800, 0x07C0, 0x001F, 11, 6, 0>(MD_Screen.u16);
+			T_veffect_pause_tint<uint16_t, MD_Screen,
+					     (uint16_t)0xF800, (uint16_t)0x07C0, (uint16_t)0x001F,
+					     11, 6, 0>();
 			break;
 		case 15:
 			// 15-bit color.
-			T_veffect_pause_tint<uint16_t, 0x7C00, 0x03E0, 0x001F, 10, 5, 0>(MD_Screen.u16);
+			T_veffect_pause_tint<uint16_t, MD_Screen,
+					     (uint16_t)0x7C00, (uint16_t)0x03E0, (uint16_t)0x001F,
+					     10, 5, 0>();
 			break;
 	}
 }

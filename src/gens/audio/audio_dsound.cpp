@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -27,19 +27,13 @@
 #include "audio.h"
 #include "audio_dsound.hpp"
 
-// Update functions.
-#include "debugger/debugger.hpp"
-#include "video/vdraw.h"
-#include "emulator/g_main.hpp"
-
-// Input Handler: Update Controllers.
-#include "input/input_update.h"
-
 // Message logging.
 #include "macros/log_msg.h"
 
-// Audio write functions.
-#include "audio_write.h"
+// MMX audio functions.
+#ifdef GENS_X86_ASM
+#include "audio_mmx.h"
+#endif /* GENS_X86_ASM */
 
 // Gens includes.
 #include "gens/gens_window.h"
@@ -47,6 +41,9 @@
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"
 #include "mdp/mdp_cpuflags.h"
+
+// Input Handler - Update Controllers.
+#include "input/input_update.h"
 
 // C includes.
 #include <string.h>
@@ -64,12 +61,10 @@
 
 // DirectSound variables.
 static LPDIRECTSOUND lpDS = NULL;
-static LPDIRECTSOUNDBUFFER lpDSPrimary = NULL;
-static LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
-
-// TODO: These variables are only used in audio_dsound_init();
 static WAVEFORMATEX MainWfx;
 static DSBUFFERDESC dsbdesc;
+static LPDIRECTSOUNDBUFFER lpDSPrimary = NULL;
+static LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
 
 static int Bytes_Per_Unit;
 static int Sound_Segs = 8;
@@ -78,11 +73,11 @@ static int Sound_Segs = 8;
 static int WP, RP;
 
 // DirectSound functions.
-static int WINAPI audio_dsound_get_current_seg(void);
+static int audio_dsound_get_current_seg(void);
 int audio_dsound_check_sound_timing(void);
 
-// Cooperative level. (Win32)
-static void WINAPI audio_dsound_set_cooperative_level(void);
+// Cooperative level (Win32)
+static void audio_dsound_set_cooperative_level(void);
 
 
 /**
@@ -103,29 +98,18 @@ int audio_dsound_init(void)
 	// Attempt to initialize DirectSound.
 	rval = DirectSoundCreate(NULL, &lpDS, NULL);
 	if (rval != DS_OK)
-	{
-		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
-			"DirectSoundCreate() failed: 0x%08X",
-			(unsigned int)rval);
 		return -1;
-	}
 	
 	// Set the DirectSound cooperative level.
 	audio_dsound_set_cooperative_level();
 	
-	// DSBUFFERDESC1 is required for Windows NT 4.0.
-	// DSBUFFERDESC only adds 3D audio support, which isn't needed.
-	// TODO: NT4 crashes, so we'll use DSBUFFERDESC to prevent NT4 from being used.
-	memset(&dsbdesc, 0, sizeof(dsbdesc));
+	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC);
 	dsbdesc.dwFlags = DSBCAPS_PRIMARYBUFFER;
 	
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSPrimary, NULL);
 	if (rval != DS_OK)
 	{
-		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
-			"lpDS->CreateSoundBuffer(&lpDSPrimary) failed: 0x%08X",
-			(unsigned int)rval);
 		lpDS->Release();
 		lpDS = NULL;
 		return -2;
@@ -144,9 +128,6 @@ int audio_dsound_init(void)
 	rval = lpDSPrimary->SetFormat(&wfx);
 	if (rval != DS_OK)
 	{
-		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
-			"lpDSPrimary->SetFormat() failed: 0x%08X",
-			(unsigned int)rval);
 		lpDSPrimary->Release();
 		lpDSPrimary = NULL;
 		lpDS->Release();
@@ -162,10 +143,7 @@ int audio_dsound_init(void)
 	MainWfx.nBlockAlign = Bytes_Per_Unit;
 	MainWfx.nAvgBytesPerSec = MainWfx.nSamplesPerSec * Bytes_Per_Unit;
 	
-	// DSBUFFERDESC1 is required for Windows NT 4.0.
-	// DSBUFFERDESC only adds 3D audio support, which isn't needed.
-	// TODO: NT4 crashes, so we'll use DSBUFFERDESC to prevent NT4 from being used.
-	memset(&dsbdesc, 0, sizeof(dsbdesc));
+	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC);
 	dsbdesc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME | DSBCAPS_GLOBALFOCUS;
 	dsbdesc.dwBufferBytes = audio_seg_length * Sound_Segs * Bytes_Per_Unit;
@@ -177,18 +155,13 @@ int audio_dsound_init(void)
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSBuffer, NULL);
 	if (rval != DS_OK)
 	{
-		LOG_MSG(audio, LOG_MSG_LEVEL_ERROR,
-			"lpDS->CreateFoundBuffer(&lpDSBuffer) failed: 0x%08X",
-			(unsigned int)rval);
-		lpDSPrimary->Release();
-		lpDSPrimary = NULL;
 		lpDS->Release();
 		lpDS = NULL;
 		return -4;
 	}
 	
 	// Sound is initialized.
-	audio_initialized = true;
+	audio_initialized = TRUE;
 	return 0;
 }
 
@@ -199,8 +172,8 @@ int audio_dsound_init(void)
  */
 int audio_dsound_end(void)
 {
-	audio_sound_is_playing = false;
-	audio_initialized = false;
+	audio_sound_is_playing = FALSE;
+	audio_initialized = FALSE;
 	
 	if (lpDSPrimary)
 	{
@@ -229,7 +202,7 @@ int audio_dsound_end(void)
  * audio_dsound_get_current_seg(): Get the current DSound segment.
  * @return DSound segment.
  */
-static inline int WINAPI audio_dsound_get_current_seg(void)
+static int audio_dsound_get_current_seg(void)
 {
 	DWORD R;
 	
@@ -382,7 +355,7 @@ int audio_dsound_play_sound(void)
 	if (rval != DS_OK)
 		return -2;
 	
-	audio_sound_is_playing = true;
+	audio_sound_is_playing = TRUE;
 	return 0;
 }
 
@@ -400,7 +373,7 @@ int audio_dsound_stop_sound(void)
 	if (rval != DS_OK)
 		return -1;
 	
-	audio_sound_is_playing = false;
+	audio_sound_is_playing = FALSE;
 	return 0;
 }
 
@@ -410,11 +383,8 @@ void audio_dsound_wp_seg_wait(void)
 	while (WP == audio_dsound_get_current_seg())
 	{
 		// NOTE: This while loop MUST be empty.
-		// Adding a non-zero Sleep() causes Gens/GS to lag
+		// Adding a Sleep() causes Gens/GS to lag
 		// horribly on some systems.
-		
-		// Relinquish the time slice for other processes.
-		Sleep(0);
 	}
 }
 
@@ -433,22 +403,12 @@ void audio_dsound_wp_inc(void)
  */
 void audio_dsound_wait_for_audio_buffer(void)
 {
-	// Updated code ported from Gens Plus.
 	RP = audio_dsound_get_current_seg();
 	while (WP != RP)
 	{
 		audio_write_sound_buffer(NULL);
 		WP = (WP + 1) & (Sound_Segs - 1);
 		input_update_controllers();
-		
-		if (WP != RP)
-			Update_Frame_Fast();
-		else
-		{
-			Update_Frame();
-			if (!IS_DEBUGGING())
-				vdraw_flip(true);
-		}
 	}
 }
 
@@ -456,7 +416,7 @@ void audio_dsound_wait_for_audio_buffer(void)
 /**
  * audio_dsound_set_cooperative_level(): Sets the cooperative level.
  */
-static void WINAPI audio_dsound_set_cooperative_level(void)
+static void audio_dsound_set_cooperative_level(void)
 {
 	if (!gens_window || !lpDS)
 		return;

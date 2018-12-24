@@ -1,17 +1,15 @@
 # MDP Render Plugin: Normal renderer.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LTLIBRARIES = libmdp_render_1x.la
-noinst_DIST = mdp_render_1x.txt
 
 INCLUDES = -I@top_srcdir@/src/
 libmdp_render_1x_la_CCASFLAGS	= $(INCLUDES)
 
-libmdp_render_1x_la_CFLAGS		= $(AM_CFLAGS)
-libmdp_render_1x_la_CXXFLAGS		= $(AM_CXXFLAGS)
-libmdp_render_1x_la_LDFLAGS		= $(AM_LDFLAGS)
-libmdp_render_1x_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
+libmdp_render_1x_la_CFLAGS	= $(AM_CFLAGS) -static
+libmdp_render_1x_la_CXXFLAGS	= $(AM_CXXFLAGS) -static
+libmdp_render_1x_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 libmdp_render_1x_la_SOURCES = \
 		mdp_render_1x_plugin.c \

@@ -1,9 +1,9 @@
 /***************************************************************************
- * MDP: VDP Layer Options. (Window Code) (Win32)                           *
+ * Gens: [MDP] VDP Layer Options. (Window Code) (Win32)                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,9 +21,13 @@
  ***************************************************************************/
 
 // Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_windowsx.h"
-#include "libgsft/w32u/w32u_commctrl.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
 
 // C includes.
 #include <stdio.h>
@@ -50,7 +54,6 @@
 // Window.
 static HWND vlopt_window = NULL;
 static WNDCLASS vlopt_window_wndclass;
-static BOOL vlopt_window_child_windows_created;
 
 // Checkboxes.
 static HWND vlopt_window_checkboxes[VLOPT_OPTIONS_COUNT];
@@ -60,14 +63,18 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 
 // Create Child Windows function.
 static void vlopt_window_create_child_windows(HWND hWnd);
+static BOOL vlopt_window_child_windows_created;
 
 // Option handling functions.
 static void vlopt_window_load_options(void);
 static void vlopt_window_save_options(void);
 
-// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
-#define VLOPT_WINDOW_WIDTH  125
-#define VLOPT_WINDOW_HEIGHT 115
+// Font.
+static HFONT vlopt_hfont = NULL;
+
+// Window size.
+#define VLOPT_WINDOW_WIDTH  216
+#define VLOPT_WINDOW_HEIGHT 192
 
 // Command values.
 #define IDC_VLOPT_CHECKBOX 	0x1000
@@ -88,14 +95,11 @@ void vlopt_window_show(void *parent)
 		return;
 	}
 	
-	// Initialize the Win32 Unicode Translation Layer.
-	w32u_init();
-	
 	vlopt_window_child_windows_created = FALSE;
 	
 	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
 	if (!vlopt_hInstance)
-		vlopt_hInstance = pGetModuleHandleU(NULL);
+		vlopt_hInstance = GetModuleHandle(NULL);
 	
 	// Create the window class.
 	if (vlopt_window_wndclass.lpfnWndProc != vlopt_window_wndproc)
@@ -105,24 +109,27 @@ void vlopt_window_show(void *parent)
 		vlopt_window_wndclass.cbClsExtra = 0;
 		vlopt_window_wndclass.cbWndExtra = 0;
 		vlopt_window_wndclass.hInstance = vlopt_hInstance;
-		vlopt_window_wndclass.hIcon = LoadIconA(vlopt_hInstance, MAKEINTRESOURCE(IDI_VLOPT));
-		vlopt_window_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
+		vlopt_window_wndclass.hIcon = LoadIcon(vlopt_hInstance, MAKEINTRESOURCE(IDI_VLOPT));
+		vlopt_window_wndclass.hCursor = NULL;
 		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		vlopt_window_wndclass.lpszMenuName = NULL;
-		vlopt_window_wndclass.lpszClassName = "vlopt_window_wndclass";
+		vlopt_window_wndclass.lpszClassName = TEXT("vlopt_window_wndclass");
 		
-		pRegisterClassU(&vlopt_window_wndclass);
+		RegisterClass(&vlopt_window_wndclass);
 	}
 	
+	// Create the font.
+	vlopt_hfont = gsft_win32_gdi_get_message_font();
+	
 	// Create the window.
-	vlopt_window = pCreateWindowU("vlopt_window_wndclass", "VDP Layer Options",
-					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-					CW_USEDEFAULT, CW_USEDEFAULT,
-					DLU_X(VLOPT_WINDOW_WIDTH), DLU_Y(VLOPT_WINDOW_HEIGHT),
-					(HWND)parent, NULL, vlopt_hInstance, NULL);
+	vlopt_window = CreateWindow(TEXT("vlopt_window_wndclass"), TEXT("VDP Layer Options"),
+				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				    CW_USEDEFAULT, CW_USEDEFAULT,
+				    VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT,
+				    (HWND)parent, NULL, vlopt_hInstance, NULL);
 	
 	// Window adjustment.
-	gsft_win32_set_actual_window_size(vlopt_window, DLU_X(VLOPT_WINDOW_WIDTH), DLU_Y(VLOPT_WINDOW_HEIGHT));
+	gsft_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
 	gsft_win32_center_on_window(vlopt_window, (HWND)parent);
 	
 	UpdateWindow(vlopt_window);
@@ -149,11 +156,9 @@ void vlopt_window_close(void)
 	vlopt_window = NULL;
 	DestroyWindow(tmp);
 	
-	// Shut down libgsft_win32_gdi.
-	gsft_win32_gdi_end();
-	
-	// Shut down the Win32 Unicode Translation Layer.
-	w32u_end();
+	// Delete the font.
+	DeleteFont(vlopt_hfont);
+	vlopt_hfont = NULL;
 }
 
 
@@ -213,9 +218,17 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 	}
 	
-	return pDefWindowProcU(hWnd, message, wParam, lParam);
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+
+// Grid size constants.
+#define VLOPT_GRID_COL1 56
+#define VLOPT_GRID_COLX 40
+#define VLOPT_GRID_ROW  20
+
+// Assume a checkbox is 16x16.
+#define VLOPT_CHECKBOX_SIZE 16
 
 /**
  * vlopt_window_create_child_windows(): Create child windows.
@@ -226,57 +239,47 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	if (vlopt_window_child_windows_created)
 		return;
 	
-	// Initialize libgsft_win32_gdi.
-	gsft_win32_gdi_init(hWnd);
-	
-	HWND grpBox = pCreateWindowU(WC_BUTTON, "VDP Layer Options",
-					WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					DLU_X(5), DLU_Y(5),
-					DLU_X(VLOPT_WINDOW_WIDTH-10), DLU_Y(VLOPT_WINDOW_HEIGHT-5-14-10),
-					hWnd, NULL, vlopt_hInstance, NULL);
-	SetWindowFontU(grpBox, w32_fntMessage, TRUE);
+	HWND grpBox = CreateWindow(WC_BUTTON, TEXT("VDP Layer Options"),
+			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-8-16-24,
+			      hWnd, NULL, vlopt_hInstance, NULL);
+	SetWindowFont(grpBox, vlopt_hfont, TRUE);
 	
 	// Counter variable.
 	unsigned int i;
 	
 	// Create the column and row headers.
-	const int sz_Grid_Col1  = DLU_X(30);
-	const int sz_Grid_ColX  = DLU_X(25);
-	const int sz_Grid_Row   = DLU_Y(12);
-	const int sz_CheckBox_W = DLU_X(10);
-	const int sz_CheckBox_H = DLU_Y(10);
-	
 	for (i = 0; i < 3; i++)
 	{
 		HWND lblColHeader, lblRowHeader;
 		
-		lblColHeader = pCreateWindowU(WC_STATIC, vlopt_options[i].sublayer,
-						WS_CHILD | WS_VISIBLE | SS_CENTER,
-						DLU_X(5)+sz_Grid_Col1+(sz_Grid_ColX*i), DLU_Y(10),
-						sz_Grid_ColX, sz_Grid_Row,
-						grpBox, NULL, vlopt_hInstance, NULL);
-		SetWindowFontU(lblColHeader, w32_fntMessage, TRUE);
+		lblColHeader = CreateWindow(WC_STATIC, vlopt_options[i].sublayer,
+					    WS_CHILD | WS_VISIBLE | SS_CENTER,
+					    8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*i), 16,
+					    VLOPT_GRID_COLX, VLOPT_GRID_ROW,
+					    grpBox, NULL, vlopt_hInstance, NULL);
+		SetWindowFont(lblColHeader, vlopt_hfont, TRUE);
 		
-		lblRowHeader = pCreateWindowU(WC_STATIC, vlopt_options[i * 3].layer,
-						WS_CHILD | WS_VISIBLE | SS_RIGHT,
-						DLU_X(5), DLU_Y(10)+(sz_Grid_Row*(i+1)),
-						sz_Grid_Col1, sz_Grid_Row,
-						grpBox, NULL, vlopt_hInstance, NULL);
-		SetWindowFontU(lblRowHeader, w32_fntMessage, TRUE);
+		lblRowHeader = CreateWindow(WC_STATIC, vlopt_options[i * 3].layer,
+					    WS_CHILD | WS_VISIBLE | SS_RIGHT,
+					    8, 16+(VLOPT_GRID_ROW*(i+1)),
+					    VLOPT_GRID_COL1, VLOPT_GRID_ROW,
+					    grpBox, NULL, vlopt_hInstance, NULL);
+		SetWindowFont(lblRowHeader, vlopt_hfont, TRUE);
 	}
 	
 	// Create the VDP Layer Options checkboxes.
 	uint8_t row = 1, col = 0;
 	for (i = 0; i < 9; i++)
 	{
-		vlopt_window_checkboxes[i] = pCreateWindowU(
+		vlopt_window_checkboxes[i] = CreateWindow(
 				WC_BUTTON, NULL,
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-				DLU_X(5+5)+sz_Grid_Col1+(sz_Grid_ColX*col)+((sz_Grid_ColX-sz_CheckBox_W)/2),
-				DLU_Y(5+10)+(sz_Grid_Row*row),
-				sz_CheckBox_W, sz_CheckBox_H,
+				8+8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*col)+((VLOPT_GRID_COLX-VLOPT_CHECKBOX_SIZE)/2),
+				8+16+(VLOPT_GRID_ROW*row),
+				VLOPT_CHECKBOX_SIZE, VLOPT_CHECKBOX_SIZE,
 				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
-		SetWindowFontU(vlopt_window_checkboxes[i], w32_fntMessage, TRUE);
+		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
 		
 		// Next cell.
 		col++;
@@ -290,38 +293,32 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	// Create the checkboxes for the remaining VDP Layer Options.
 	for (i = 9; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		vlopt_window_checkboxes[i] = pCreateWindowU(
+		vlopt_window_checkboxes[i] = CreateWindow(
 				WC_BUTTON, vlopt_options[i].layer,
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-				DLU_X(5+5+5), DLU_Y(5+10)+(sz_Grid_Row*(i-5)),
-				DLU_X(VLOPT_WINDOW_WIDTH-10-10-10), sz_Grid_Row,
+				8+8+8, 8+16+(VLOPT_GRID_ROW*(i-5)),
+				VLOPT_WINDOW_WIDTH-16-16-16, VLOPT_GRID_ROW,
 				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
-		SetWindowFontU(vlopt_window_checkboxes[i], w32_fntMessage, TRUE);
+		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
 	}
 	
 	// Load the options.
 	vlopt_window_load_options();
 	
 	// Center the buttons within the window.
-	const int btnTop = DLU_Y(VLOPT_WINDOW_HEIGHT-5-14);
-	int btnLeft = DLU_X(VLOPT_WINDOW_WIDTH-50-5-50) / 2;
+	const int posBtnLeft = (VLOPT_WINDOW_WIDTH - 75 - 75 - 8) / 2;
 	
 	// Create the "Reset" button.
-	HWND btnReset = pCreateWindowU(WC_BUTTON, "&Reset",
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, btnTop,
-					DLU_X(50), DLU_Y(14),
-					hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hInstance, NULL);
-	SetWindowFontU(btnReset, w32_fntMessage, TRUE);
+	HWND btnReset = CreateWindow(WC_BUTTON, TEXT("&Reset"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     posBtnLeft, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
+				     hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hInstance, NULL);
+	SetWindowFont(btnReset, vlopt_hfont, TRUE);
 	
 	// Create the "Close" button.
-	btnLeft += DLU_X(50+5);
-	HWND btnClose = pCreateWindowU(WC_BUTTON, "&Close",
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, btnTop,
-					DLU_X(50), DLU_Y(14),
-					hWnd, (HMENU)IDCLOSE, vlopt_hInstance, NULL);
-	SetWindowFontU(btnClose, w32_fntMessage, TRUE);
+	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     posBtnLeft+75+8, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
+				     hWnd, (HMENU)IDCLOSE, vlopt_hInstance, NULL);
+	SetWindowFont(btnClose, vlopt_hfont, TRUE);
 	
 	// Child windows created.
 	vlopt_window_child_windows_created = TRUE;
@@ -345,7 +342,7 @@ static void vlopt_window_load_options(void)
 	for (i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
 		unsigned int flag_enabled = ((vdp_layer_options & vlopt_options[i].flag) ? BST_CHECKED : BST_UNCHECKED);
-		Button_SetCheckU(vlopt_window_checkboxes[i], flag_enabled);
+		Button_SetCheck(vlopt_window_checkboxes[i], flag_enabled);
 	}
 }
 
@@ -361,7 +358,7 @@ static void vlopt_window_save_options(void)
 	unsigned int i;
 	for (i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		if (Button_GetCheckU(vlopt_window_checkboxes[i]) == BST_CHECKED)
+		if (Button_GetCheck(vlopt_window_checkboxes[i]) == BST_CHECKED)
 			vdp_layer_options |= vlopt_options[i].flag;
 	}
 	

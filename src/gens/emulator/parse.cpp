@@ -33,13 +33,9 @@
 #include <ctype.h>
 
 #include "g_main.hpp"
+#include "util/file/save.hpp"
 #include "md_palette.hpp"
 #include "util/file/rom.hpp"
-
-// Save file handlers.
-#include "util/file/save.hpp"
-#include "util/file/sram.h"
-#include "util/file/mcd_bram.h"
 
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
@@ -169,9 +165,6 @@ static const opt0arg_str_t opt0arg_str[] =
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	{"debug",	"Enable debug console"},
 #endif
-#if defined(GENS_OS_WIN32)
-	{"ansi",	"Force ANSI mode"},
-#endif
 	{NULL, NULL}
 };
 
@@ -186,9 +179,6 @@ enum opt0arg_enum
 #endif
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	OPT0_DEBUG_CONSOLE,
-#endif
-#if defined(GENS_OS_WIN32)
-	OPT0_ANSI,
 #endif
 	OPT0_TOTAL
 };
@@ -209,9 +199,7 @@ struct optBarg_str_t
 static const optBarg_str_t optBarg_str[] =
 {
 	OPTBARG_STR("stretch",		"Stretch mode"),
-#ifdef GENS_OS_WIN32
 	OPTBARG_STR("swblit",		"Software blitting"),
-#endif /* GENS_OS_WIN32 */
 	OPTBARG_STR("greyscale",	"Greyscale"),
 	OPTBARG_STR("invert",		"Invert color"),
 	OPTBARG_STR("scale-colors",	"Scale colors to full RGB"),
@@ -223,6 +211,7 @@ static const optBarg_str_t optBarg_str[] =
 	OPTBARG_STR("ym2612-improved",	"YM2612 Improved"),
 	OPTBARG_STR("dac",		"DAC"),
 	OPTBARG_STR("psg",		"PSG"),
+	OPTBARG_STR("psg-sine",		"PSG (Sine Wave)"),
 	OPTBARG_STR("pcm",		"PCM"),
 	OPTBARG_STR("pwm",		"PWM"),
 	OPTBARG_STR("cdda",		"CDDA"),
@@ -239,9 +228,7 @@ static const optBarg_str_t optBarg_str[] =
 enum optBarg_enum
 {
 	OPTB_STRETCH = 0,
-#ifdef GENS_OS_WIN32
 	OPTB_SWBLIT,
-#endif /* GENS_OS_WIN32 */
 	OPTB_GREYSCALE,
 	OPTB_INVERT,
 	OPTB_SCALE,
@@ -253,6 +240,7 @@ enum optBarg_enum
 	OPTB_YM2612_IMPROVED,
 	OPTB_DAC,
 	OPTB_PSG,
+	OPTB_PSG_SINE,
 	OPTB_PCM,
 	OPTB_PWM,
 	OPTB_CDDA,
@@ -313,15 +301,10 @@ static const struct option long_options[] =
 #if defined(GENS_OS_WIN32) && !defined(GENS_WIN32_CONSOLE)
 	LONGOPT_0ARG(OPT0_DEBUG_CONSOLE),
 #endif
-#if defined(GENS_OS_WIN32)
-	LONGOPT_0ARG(OPT0_ANSI),
-#endif
 	
 	// Boolean parameters.
 	LONGOPT_BARG(OPTB_STRETCH),
-#ifdef GENS_OS_WIN32
 	LONGOPT_BARG(OPTB_SWBLIT),
-#endif /* GENS_OS_WIN32 */
 	LONGOPT_BARG(OPTB_GREYSCALE),
 	LONGOPT_BARG(OPTB_INVERT),
 	LONGOPT_BARG(OPTB_SCALE),
@@ -333,6 +316,7 @@ static const struct option long_options[] =
 	LONGOPT_BARG(OPTB_YM2612_IMPROVED),
 	LONGOPT_BARG(OPTB_DAC),
 	LONGOPT_BARG(OPTB_PSG),
+	LONGOPT_BARG(OPTB_PSG_SINE),
 	LONGOPT_BARG(OPTB_PCM),
 	LONGOPT_BARG(OPTB_PWM),
 	LONGOPT_BARG(OPTB_CDDA),
@@ -546,6 +530,7 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_YM2612_IMPROVED], YM2612_Improv);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_DAC], DAC_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG], PSG_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG_SINE], PSG_Improv);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PCM], PCM_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PWM], PWM_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_CDDA], CDDA_Enable);
@@ -586,7 +571,6 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			audio_set_stereo(false);
 		}
-#ifdef GENS_OS_WIN32
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT].enable))
 		{
 			vdraw_set_sw_render(true);
@@ -595,7 +579,6 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			vdraw_set_sw_render(false);
 		}
-#endif /* GENS_OS_WIN32 */
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR].enable))
 		{
 			vdraw_set_fast_blur(true);
@@ -658,13 +641,6 @@ Gens_StartupInfo_t* parse_args(int argc, char *argv[])
 		{
 			// Enable Debug console.
 			startup->enable_debug_console = 1;
-		}
-#endif
-#if defined(GENS_OS_WIN32)
-		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_ANSI].option))
-		{
-			// ANSI mode. This is checked by libgsft_w32u,
-			// so we don't have to do anything here.
 		}
 #endif
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP].option))

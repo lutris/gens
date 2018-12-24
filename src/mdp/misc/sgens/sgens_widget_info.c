@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Sonic Gens. (Window Code) (Information)                            *
+ * Gens: [MDP] Sonic Gens. (Window Code) (Information)                     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *

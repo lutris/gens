@@ -98,19 +98,19 @@ int MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address, uint8_t *ret_val
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
-			*ret_value = MEM_RW_8_BE(Rom_Data.u8, address);
+			*ret_value = MEM_RW_8_BE(Rom_Data, address);
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
-			*ret_value = MEM_RW_8_BE(Ram_68k.u8, address);
+			*ret_value = MEM_RW_8_BE(Ram_68k, address);
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
-			*ret_value = MEM_RW_8_BE(VRam.u8, address);
+			*ret_value = MEM_RW_8_BE(VRam, address);
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7F;
-			*ret_value = MEM_RW_8_BE(CRam.u8, address);
+			*ret_value = MEM_RW_8_BE(CRam, address);
 			break;
 		default:
 			/* Unknown memory ID. */
@@ -133,19 +133,19 @@ int MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address, uint16_t *ret_v
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			*ret_value = MEM_RW_16(Rom_Data.u16, address);
+			*ret_value = MEM_RW_16(Rom_Data, address);
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			*ret_value = MEM_RW_16(Ram_68k.u16, address);
+			*ret_value = MEM_RW_16(Ram_68k, address);
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			*ret_value = MEM_RW_16(VRam.u16, address);
+			*ret_value = MEM_RW_16(VRam, address);
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			*ret_value = MEM_RW_16(CRam.u16, address);
+			*ret_value = MEM_RW_16(CRam, address);
 			break;
 		default:
 			/* Unknown memory ID. */
@@ -168,19 +168,19 @@ int MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address, uint32_t *ret_v
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			*ret_value = MEM_READ_32_BE(Rom_Data.u16, address);
+			*ret_value = MEM_READ_32_BE(Rom_Data, address);
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			*ret_value = MEM_READ_32_BE(Ram_68k.u16, address);
+			*ret_value = MEM_READ_32_BE(Ram_68k, address);
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			*ret_value = MEM_READ_32_BE(VRam.u16, address);
+			*ret_value = MEM_READ_32_BE(VRam, address);
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			*ret_value = MEM_READ_32_BE(CRam.u16, address);
+			*ret_value = MEM_READ_32_BE(CRam, address);
 			break;
 		default:
 			/* Unknown memory ID. */
@@ -205,22 +205,22 @@ int MDP_FNCALL mdp_host_mem_write_8(mdp_t *plugin, int memID, uint32_t address, 
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
-			MEM_RW_8_BE(Rom_Data.u8, address) = data;
-			MEM_RW_8_LE(_32X_Rom.u8, address) = data;
+			MEM_RW_8_BE(Rom_Data, address) = data;
+			MEM_RW_8_LE(_32X_Rom, address) = data;
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
-			MEM_RW_8_BE(Ram_68k.u8, address) = data;
+			MEM_RW_8_BE(Ram_68k, address) = data;
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
-			MEM_RW_8_BE(VRam.u8, address) = data;
-			VDP_Flags.VRam = 1;
+			MEM_RW_8_BE(VRam, address) = data;
+			VRam_Flag = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7F;
-			MEM_RW_8_BE(CRam.u8, address) = data;
-			VDP_Flags.CRam = 1;
+			MEM_RW_8_BE(CRam, address) = data;
+			CRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -244,22 +244,22 @@ int MDP_FNCALL mdp_host_mem_write_16(mdp_t *plugin, int memID, uint32_t address,
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			MEM_RW_16(Rom_Data.u16, address) = data;
-			MEM_RW_16(_32X_Rom.u16, address) = data;
+			MEM_RW_16(Rom_Data, address) = data;
+			MEM_RW_16(_32X_Rom, address) = data;
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			MEM_RW_16(Ram_68k.u8, address) = data;
+			MEM_RW_16(Ram_68k, address) = data;
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			MEM_RW_16(VRam.u8, address) = data;
-			VDP_Flags.VRam = 1;
+			MEM_RW_16(VRam, address) = data;
+			VRam_Flag = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			MEM_RW_16(CRam.u8, address) = data;
-			VDP_Flags.CRam = 1;
+			MEM_RW_16(CRam, address) = data;
+			CRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -283,22 +283,22 @@ int MDP_FNCALL mdp_host_mem_write_32(mdp_t *plugin, int memID, uint32_t address,
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			MEM_WRITE_32_BE(Rom_Data.u16, address, data);
-			MEM_WRITE_32_LE(_32X_Rom.u16, address, data);
+			MEM_WRITE_32_BE(Rom_Data, address, data);
+			MEM_WRITE_32_LE(_32X_Rom, address, data);
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			MEM_WRITE_32_BE(Ram_68k.u16, address, data);
+			MEM_WRITE_32_BE(Ram_68k, address, data);
 			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			MEM_WRITE_32_BE(VRam.u16, address, data);
-			VDP_Flags.VRam = 1;
+			MEM_WRITE_32_BE(VRam, address, data);
+			VRam_Flag = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			MEM_WRITE_32_BE(CRam.u16, address, data);
-			VDP_Flags.CRam = 1;
+			MEM_WRITE_32_BE(CRam, address, data);
+			CRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -387,22 +387,22 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
-			ptr = Rom_Data.u8;
+			ptr = Rom_Data;
 			mem_size = 0x400000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_RAM:
-			ptr = Ram_68k.u8;
+			ptr = Ram_68k;
 			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_VRAM:
-			ptr = VRam.u8;
+			ptr = VRam;
 			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam.u8;
+			ptr = (uint8_t*)CRam;
 			mem_size = 0x80;
 			big_endian = 1;
 			break;
@@ -440,19 +440,19 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
-			ptr = Rom_Data.u16;
+			ptr = (uint16_t*)Rom_Data;
 			mem_size = 0x400000;
 			break;
 		case MDP_MEM_MD_RAM:
-			ptr = Ram_68k.u16;
+			ptr = (uint16_t*)Ram_68k;
 			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_VRAM:
-			ptr = VRam.u16;
+			ptr = (uint16_t*)VRam;
 			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam.u16;
+			ptr = (uint16_t*)CRam;
 			mem_size = 0x80;
 			break;
 		default:
@@ -574,22 +574,22 @@ int MDP_FNCALL mdp_host_mem_write_block_8(mdp_t *plugin, int memID, uint32_t add
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
-			ptr = Rom_Data.u8;
+			ptr = Rom_Data;
 			mem_size = 0x400000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_RAM:
-			ptr = Ram_68k.u8;
+			ptr = Ram_68k;
 			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_VRAM:
-			ptr = VRam.u8;
+			ptr = VRam;
 			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam.u8;
+			ptr = (uint8_t*)CRam;
 			mem_size = 0x80;
 			big_endian = 1;
 			break;
@@ -613,13 +613,13 @@ int MDP_FNCALL mdp_host_mem_write_block_8(mdp_t *plugin, int memID, uint32_t add
 	{
 		// MD ROM, and 32X is active.
 		// Write to the 32X ROM, too.
-		mdp_host_mem_write_block_8_le(_32X_Rom.u8, address, data, length);
+		mdp_host_mem_write_block_8_le(_32X_Rom, address, data, length);
 	}
 	
 	if (memID == MDP_MEM_MD_VRAM)
-		VDP_Flags.VRam = 1;
+		VRam_Flag = 1;
 	else if (memID == MDP_MEM_MD_CRAM)
-		VDP_Flags.CRam = 1;
+		CRam_Flag = 1;
 	
 	/* The block has been written. */
 	return MDP_ERR_OK;
@@ -642,19 +642,19 @@ int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t ad
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
-			ptr = Rom_Data.u16;
+			ptr = (uint16_t*)Rom_Data;
 			mem_size = 0x400000;
 			break;
 		case MDP_MEM_MD_RAM:
-			ptr = Ram_68k.u16;
+			ptr = (uint16_t*)Ram_68k;
 			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_VRAM:
-			ptr = VRam.u16;
+			ptr = (uint16_t*)VRam;
 			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam.u16;
+			ptr = (uint16_t*)CRam;
 			mem_size = 0x80;
 			break;
 		default:
@@ -674,17 +674,10 @@ int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t ad
 	/* Copy the block. */
 	memcpy(ptr, data, length);
 	
-	if (memID == MDP_MEM_MD_ROM && _32X_Started)
-	{
-		// MD ROM, and 32X is active.
-		// Write to the 32X ROM, too.
-		memcpy(&_32X_Rom.u8[address], data, length);
-	}
-	
 	if (memID == MDP_MEM_MD_VRAM)
-		VDP_Flags.VRam = 1;
+		VRam_Flag = 1;
 	else if (memID == MDP_MEM_MD_VRAM)
-		VDP_Flags.CRam = 1;
+		CRam_Flag = 1;
 	
 	/* The block has been written. */
 	return MDP_ERR_OK;
@@ -755,14 +748,14 @@ static int mdp_host_mem_size_set_MD_ROM(unsigned int size)
 		int erase_size = size;
 		if (Rom_Size & 1)
 		{
-			MEM_RW_8_BE(Rom_Data.u8, Rom_Size) = 0x00;
+			MEM_RW_8_BE(Rom_Data, Rom_Size) = 0x00;
 			Rom_Size++;
 			erase_size++;
 			if (erase_size >= 0x400000)
 				erase_size = 0x400000;
 		}
 		
-		memset(&Rom_Data.u8[Rom_Size], 0x00, (erase_size - Rom_Size));
+		memset(&Rom_Data[Rom_Size], 0x00, (erase_size - Rom_Size));
 	}
 	else if (size < Rom_Size)
 	{

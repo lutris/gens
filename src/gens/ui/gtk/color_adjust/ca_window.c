@@ -280,12 +280,12 @@ static void ca_window_save(void)
 	Recalculate_Palettes();
 	if (Game)
 	{
-		// Emulation is running. Update the palette.
-		VDP_Flags.CRam = 1;
+		// Emulation is running. Update the CRAM.
+		CRam_Flag = 1;
 		
 		if (!Settings.Paused)
 		{
-			// TODO: Just update the palette. Don't update the frame.
+			// TODO: Just update CRAM. Don't update the frame.
 			Update_Emulation_One();
 #ifdef GENS_DEBUGGER
 			if (IS_DEBUGGING())

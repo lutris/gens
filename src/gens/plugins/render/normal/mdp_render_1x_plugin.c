@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"
 
@@ -64,7 +60,7 @@ mdp_t mdp_render_1x =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_VERSION(1, 0, 0),
-	.pluginVersion = MDP_VERSION(1, 0, 1),
+	.pluginVersion = MDP_VERSION(1, 0, 0),
 	
 	// CPU flags.
 #ifdef GENS_X86_ASM

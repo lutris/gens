@@ -94,16 +94,16 @@ extern void	(*audio_wp_seg_wait)(void);
 extern void	(*audio_wp_inc)(void);
 #endif /* GENS_OS_WIN32 */
 
+// Write sound data.
+void	audio_write_sound_stereo(short *dest, int length);
+void	audio_dump_sound_stereo(short *dest, int length);
+void	audio_write_sound_mono(short *dest, int length);
+void	audio_dump_sound_mono(short *dest, int length);
+
 // Audio data.
 extern int Seg_L[882], Seg_R[882];
-
-/**
- * Sound_Extrapol[][]: Sound extrapolation data.
- * [312]: Line number.
- * [1]: 0 == start position; 1 == length.
- * TODO: This restricts DAC frequency to a maximum of 15,720 Hz on NTSC.
- */
 extern unsigned int Sound_Extrapol[312][2];
+extern unsigned int Sound_Interpol[882];
 
 // External values. (TODO: Make these properties.)
 extern int	audio_seg_length;

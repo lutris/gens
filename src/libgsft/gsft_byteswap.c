@@ -22,9 +22,9 @@
 #include "gsft_byteswap.h"
 
 /**
- * __byte_swap_16_array(): 16-bit byteswap function.
- * @param Pointer to array to swap.
- * @param n Number of bytes to swap. (Must be divisible by 2; an extra odd byte will be ignored.)
+ * __byte_swap_16_array(): Swaps an array of bytes in 16-bit chunks.
+ * @param ptr Pointer to bytes.
+ * @param n Number of bytes to swap.
  */
 void __byte_swap_16_array(void *ptr, unsigned int n)
 {
@@ -34,37 +34,10 @@ void __byte_swap_16_array(void *ptr, unsigned int n)
 	// Don't allow uneven lengths.
 	n &= ~1;
 	
-	// TODO: Add an x86-optimized version, possibly using SSE.
 	for (; n != 0; n -= 2, cptr += 2)
 	{
 		x = *cptr;
 		*cptr = *(cptr + 1);
 		*(cptr + 1) = x;
-	}
-}
-
-/**
- * __byte_swap_32_array(): 32-bit byteswap function.
- * @param Pointer to array to swap.
- * @param n Number of bytes to swap. (Must be divisible by 4; extra bytes will be ignored.)
- */
-void __byte_swap_32_array(void *ptr, unsigned int n)
-{
-	unsigned char *cptr = (unsigned char*)ptr;
-	unsigned char x, y;
-	
-	// Don't allow lengths that aren't divisible by 4.
-	n &= ~3;
-	
-	// TODO: Add an x86-optimized version using bswap and/or SSE.
-	for (; n != 0; n -= 4, cptr += 4)
-	{
-		x = *cptr;
-		y = *(cptr + 1);
-		
-		*cptr = (*cptr + 3);
-		*(cptr + 1) = (*cptr + 2);
-		*(cptr + 2) = y;
-		*(cptr + 3) = x;
 	}
 }

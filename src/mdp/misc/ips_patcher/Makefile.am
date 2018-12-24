@@ -1,6 +1,6 @@
 # MDP Miscellaneous Plugin: IPS Patcher.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
@@ -10,7 +10,6 @@ mdp_LTLIBRARIES = mdp_misc_ips_patcher.la
 mdp_misc_ips_patcher_la_CFLAGS		= $(AM_CFLAGS)
 mdp_misc_ips_patcher_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_misc_ips_patcher_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_misc_ips_patcher_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 mdp_misc_ips_patcher_la_LIBADD		= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_ips_patcher_la_SOURCES = \
@@ -25,8 +24,3 @@ noinst_HEADERS = \
 		ips.h		\
 		ips_file.hpp
 #ups_file.hpp
-
-if GENS_UI_WIN32
-mdp_misc_ips_patcher_la_LIBADD += \
-		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
-endif

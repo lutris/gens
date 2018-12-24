@@ -1,7 +1,6 @@
 ## Process this file with automake to create Makefile.in
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
-AM_LDFLAGS = -ldl -lX11
+AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = plugins fw
 
@@ -10,9 +9,10 @@ gens_x86_asm_o =
 gens_x86_asm_src = \
 		gens_core/gfx/fastblur_16_x86.S \
 		gens_core/gfx/fastblur_32_x86.S \
-		audio/audio_write_mmx.S
+		audio/audio_mmx.S
 gens_x86_asm_h = \
-		gens_core/gfx/fastblur_x86.h
+		gens_core/gfx/fastblur_x86.h \
+		audio/audio_mmx.h
 else
 gens_x86_asm_o =
 gens_x86_asm_src =
@@ -29,7 +29,10 @@ ASMFILES = \
 		gens_core/mem/mem_sh2.o \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
-		gens_core/cpu/sh2/sh2_io.o
+		gens_core/cpu/sh2/sh2_io.o \
+		gens_core/vdp/vdp_32x_x86.o \
+		gens_core/vdp/vdp_io_x86.o \
+		gens_core/vdp/vdp_rend_x86.o
 
 NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
@@ -94,19 +97,19 @@ gens_SOURCES = \
 		gens_core/mem/mem_sh2.asm \
 		gens_core/mem/mem_z80.c \
 		gens_core/misc/misc.asm \
-		gens_core/misc/cpuflags.c \
-		gens_core/misc/print_text.cpp \
-		$(gens_x86_asm_src) \
 		gens_core/gfx/fastblur.cpp \
+		gens_core/misc/cpuflags.c \
+		$(gens_x86_asm_src) \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
-		gens_core/vdp/vdp_io.cpp \
-		gens_core/vdp/TAB336.c \
+		gens_core/vdp/vdp_io_x86.asm \
+		gens_core/vdp/vdp_io.c \
+		gens_core/vdp/vdp_rend_x86.asm \
 		gens_core/vdp/vdp_rend.cpp \
-		gens_core/vdp/vdp_rend_err.cpp \
-		gens_core/vdp/vdp_rend_m5.cpp \
+		gens_core/vdp/vdp_32x_x86.asm \
 		gens_core/vdp/vdp_32x.c \
+		gens_core/vdp/vdp_32x_32bit.c \
 		macros/log_msg.c \
 		port/ini.cpp \
 		segacd/cd_file.c \
@@ -123,17 +126,16 @@ gens_SOURCES = \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
-		util/file/sram.c \
-		util/file/mcd_bram.c \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
 		util/file/decompressor/dummy.c \
+		util/file/decompressor/md_rar.cpp \
+		util/file/decompressor/md_rar_t.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
-		video/VGA_charset.c \
+		video/C64_charset.c \
 		video/osd_charset.cpp \
-		video/osd_font.c \
 		video/vdraw.c \
 		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
@@ -142,7 +144,6 @@ gens_SOURCES = \
 		input/input.c \
 		input/input_update.c \
 		audio/audio.c \
-		audio/audio_write.c \
 		plugins/pluginmgr.cpp \
 		plugins/rendermgr.cpp \
 		plugins/mdp_host_gens.c \
@@ -172,8 +173,7 @@ gens_SOURCES += \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c \
-		debugger/mcd_cell_dump.asm \
-		debugger/fb_32x.cpp
+		debugger/mcd_cell_dump.asm
 ASMFILES += \
 		debugger/mcd_cell_dump.o
 endif
@@ -220,22 +220,18 @@ noinst_HEADERS = \
 		gens_core/mem/mem_sh2.h \
 		gens_core/mem/mem_z80.h \
 		gens_core/misc/misc.h \
-		gens_core/misc/cpuflags.h \
-		gens_core/misc/print_text.hpp \
-		$(gens_x86_asm_h) \
 		gens_core/gfx/fastblur.hpp \
+		gens_core/misc/cpuflags.h \
+		$(gens_x86_asm_h) \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
 		gens_core/io/io_teamplayer.h \
 		gens_core/vdp/vdp_io.h \
-		gens_core/vdp/TAB336.h \
 		gens_core/vdp/vdp_rend.h \
-		gens_core/vdp/vdp_rend_err.hpp \
-		gens_core/vdp/vdp_rend_m5.hpp \
 		gens_core/vdp/vdp_32x.h \
+		gens_core/vdp/vdp_32x_32bit.h \
 		macros/git.h \
 		macros/log_msg.h \
-		macros/force_inline.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
@@ -251,20 +247,20 @@ noinst_HEADERS = \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
-		util/file/sram.h \
-		util/file/mcd_bram.h \
 		util/file/file.hpp \
 		util/file/gsx_struct.h \
 		util/file/gsx_v6.h \
 		util/file/gsx_v7.h \
 		util/file/decompressor/decompressor.h \
+		util/file/decompressor/popen_wrapper.h \
 		util/file/decompressor/dummy.h \
+		util/file/decompressor/md_rar.hpp \
+		util/file/decompressor/md_rar_t.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
-		video/VGA_charset.h \
+		video/C64_charset.h \
 		video/osd_charset.hpp \
-		video/osd_font.h \
 		video/vdraw.h \
 		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
@@ -273,7 +269,6 @@ noinst_HEADERS = \
 		input/input.h \
 		input/input_update.h \
 		audio/audio.h \
-		audio/audio_write.h \
 		plugins/pluginmgr.hpp \
 		plugins/rendermgr.hpp \
 		plugins/mdp_host_gens.h \
@@ -303,8 +298,7 @@ noinst_HEADERS += \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h \
-		debugger/mcd_cell_dump.h \
-		debugger/fb_32x.hpp
+		debugger/mcd_cell_dump.h
 endif
 
 if GENS_CDROM
@@ -353,7 +347,7 @@ gens_LDADD += $(top_builddir)/src/extlib/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
 gens_LDADD += $(top_builddir)/src/extlib/zlib/libz.la
 else
-gens_LDADD += @ZLIB_LIBS@
+gens_LDADD += -lz
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
@@ -367,12 +361,6 @@ endif # GENS_PNG
 if GENS_LZMA
 gens_LDADD += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
-
-if !GENS_OS_WIN32
-if HAVE_ICONV
-gens_LDADD += $(top_builddir)/src/libgsft/libgsft_iconv.la
-endif # HAVE_ICONV
-endif # !GENS_OS_WIN32
 
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
@@ -408,23 +396,12 @@ if GENS_LZMA
 gens_DEPENDENCIES += $(top_builddir)/src/extlib/lzma/liblzma.la
 endif # GENS_LZMA
 
-if !GENS_OS_WIN32
-if HAVE_ICONV
-gens_DEPENDENCIES += $(top_builddir)/src/libgsft/libgsft_iconv.la
-endif # HAVE_ICONV
-endif # !GENS_OS_WIN32
-
 CLEANFILES = ${ASMFILES}
 
 # Initialize CFLAGS, CXXFLAGS, and LDFLAGS.
 gens_CFLAGS	= $(AM_CFLAGS)
 gens_CXXFLAGS	= $(AM_CXXFLAGS)
 gens_LDFLAGS	= $(AM_LDFLAGS)
-
-if GENS_PNG
-gens_CFLAGS	+= @PNG_CFLAGS@
-gens_CXXFLAGS	+= @PNG_CFLAGS@
-endif
 
 # OS-specific includes
 

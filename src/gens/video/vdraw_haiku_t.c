@@ -33,6 +33,9 @@ const vdraw_backend_t vdraw_backend_haiku =
 	.init			= vdraw_haiku_init,
 	.end			= vdraw_haiku_end,
 	
+	.init_subsystem		= NULL,
+	.shutdown		= NULL,
+	
 	.clear_screen		= vdraw_haiku_clear_screen,
 	.update_vsync		= vdraw_haiku_update_vsync,
 	

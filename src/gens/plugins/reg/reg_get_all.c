@@ -74,10 +74,12 @@ static int mdp_host_reg_get_all_vdp(void *reg_struct)
 {
 	mdp_reg_vdp_t *reg_vdp = (mdp_reg_vdp_t*)reg_struct;
 	
+	// VDP_Reg is an array of 24 unsigned ints.
+	unsigned int *vdp_reg_int = (unsigned int*)(&VDP_Reg);
 	int i;
 	for (i = 0; i < 24; i++)
 	{
-		reg_vdp->data[i] = VDP_Reg.reg[i];
+		reg_vdp->data[i] = vdp_reg_int[i] & 0xFF;
 	}
 	
 	return MDP_ERR_OK;

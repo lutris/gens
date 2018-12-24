@@ -175,8 +175,12 @@ int Init_Settings(void)
 	bppOut = 32;
 	
 	// Old code from InitParameters().
-	
+	VDP_Num_Vis_Lines = 224;
+#if 0	// TODO: Replace with MDP "exclusive mode" later.
+	Net_Play = 0;
+#endif
 	Sprite_Over = 1;
+	
 	GYM_Dumping = 0;
 	
 	Game = NULL;
@@ -186,22 +190,12 @@ int Init_Settings(void)
 	CPU_Mode = 0;
 	STOP_DEBUGGING();
 	
-#if 0	// TODO: Replace with MDP "exclusive mode" later.
-	Net_Play = 0;
-#endif
-	
-	// Initialize VDP_Lines.
-	VDP_Set_Visible_Lines();
-	
 	// Get the default save path.
-	get_default_save_path(PathNames.Gens_Save_Path, sizeof(PathNames.Gens_Save_Path));
+	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
 	
 	// Create default language filename.
-	// TODO: Implement proper multilingual support.
-#if 0
 	szprintf(PathNames.Language_Path, sizeof(PathNames.Language_Path),
 		 "%s%s", PathNames.Gens_Path, "language.dat");
-#endif
 	
 	// Get the CPU flags.
 	getCPUFlags();
@@ -224,7 +218,7 @@ int Init_Settings(void)
 #ifndef PACKAGE_NAME
 #error PACKAGE_NAME not defined!
 #endif
-	string cfg_filename = string(PathNames.Gens_Save_Path) + PACKAGE_NAME + ".cfg";
+	string cfg_filename = string(PathNames.Gens_Path) + PACKAGE_NAME + ".cfg";
 	Config::load(cfg_filename, NULL);
 	
 	// Success.
@@ -308,6 +302,8 @@ void End_All(void)
 	
 	// Shut down the video subsystem.
 	vdraw_backend_end();
+	if (vdraw_shutdown)
+		vdraw_shutdown();
 }
 
 
@@ -352,7 +348,8 @@ int W_VSync;
 int ice = 0;
 void Clear_Screen_MD(void)
 {
-	memset(&MD_Screen, 0x00, sizeof(MD_Screen));
+	memset(MD_Screen, 0x00, sizeof(MD_Screen));
+	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
 }
 
 
@@ -420,7 +417,7 @@ void check_startup_mode(Gens_StartupInfo_t *startup)
 /**
  * GensLoopIteration(): One iteration of the main program loop.
  */
-inline void GensLoopIteration(void)
+void GensLoopIteration(void)
 {
 	// Update the UI.
 	GensUI::update();
@@ -448,15 +445,11 @@ inline void GensLoopIteration(void)
 			else
 				Update_Emulation();
 			
-#ifdef GENS_OS_WIN32
-			// Relinquish the time slice for other processes.
-			Sleep(0);
-#else
+#ifdef GENS_OS_UNIX
 			// Prevent 100% CPU usage.
 			// The CPU scheduler will take away CPU time from Gens/GS if
 			// it notices that the process is eating up too much CPU time.
-			//GensUI::sleep(1, true);
-			usleep(1000);
+			GensUI::sleep(1, true);
 #endif
 		}
 		else

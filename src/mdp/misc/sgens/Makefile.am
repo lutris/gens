@@ -4,7 +4,7 @@
 .rc.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
@@ -13,7 +13,6 @@ mdp_LTLIBRARIES = mdp_misc_sgens.la
 
 mdp_misc_sgens_la_CFLAGS	= $(AM_CFLAGS)
 mdp_misc_sgens_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_misc_sgens_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 mdp_misc_sgens_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_sgens_la_SOURCES = \
@@ -44,8 +43,7 @@ mdp_misc_sgens_la_SOURCES	+= sgens_window_win32.c sgens_dllmain.c resource.rc
 mdp_misc_sgens_la_LIBADD	+= \
 		-lgdi32 \
 		$(top_builddir)/src/libgsft/libgsft_win32.la \
-		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la \
-		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
 noinst_HEADERS += \
 		sgens.ico \
 		sgens_dllmain.h \

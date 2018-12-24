@@ -42,17 +42,6 @@ void Check_Country_Order(void);
 
 void Set_Clock_Freq(const int system);
 
-/**
- * LineType_t: Line types.
- */
-typedef enum
-{
-	LINETYPE_ACTIVEDISPLAY	= 0,
-	LINETYPE_VBLANKLINE	= 1,
-	LINETYPE_BORDER		= 2,
-} LineType_t;
-
-
 #ifdef __cplusplus
 }
 #endif

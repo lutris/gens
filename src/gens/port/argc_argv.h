@@ -46,7 +46,7 @@ typedef struct
 	char** v;
 } argc_argv;
 
-void convertCmdLineToArgv(const char *lpCmdLine, argc_argv* arg, int add_exe);
+void convertCmdLineToArgv(LPSTR lpCmdLine, argc_argv* arg);
 void deleteArgcArgv(argc_argv* arg);
 
 #ifdef __cplusplus

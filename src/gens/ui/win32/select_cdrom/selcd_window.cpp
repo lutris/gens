@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (Win32) Select CD-ROM Drive Window.                               *
+ * Gens: (GTK+) Select CD-ROM Drive Window.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -30,14 +30,18 @@
 #include <string.h>
 
 // Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_windowsx.h"
-#include "libgsft/w32u/w32u_commctrl.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // libgsft includes.
 #include "libgsft/gsft_win32.h"
-#include "libgsft/gsft_win32_gdi.h"
 
 // Gens includes.
 #include "gens/gens_window.h"
@@ -59,9 +63,9 @@ HWND selcd_window = NULL;
 // Window class.
 static WNDCLASS selcd_wndclass;
 
-// Window size. (NOTE: THESE ARE IN DIALOG UNITS, and must be converted to pixels using DLU_X() / DLU_Y().)
-#define SELCD_WINDOW_WIDTH  200
-#define SELCD_WINDOW_HEIGHT 44
+// Window size.
+#define SELCD_WINDOW_WIDTH  320
+#define SELCD_WINDOW_HEIGHT 72
 
 // Window procedure.
 static LRESULT CALLBACK selcd_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -72,10 +76,10 @@ static HWND	btnOK, btnCancel, btnApply;
 #define IDC_SELCD_CBODEVICENAME 0x2000
 
 // Widget creation functions.
-static void WINAPI selcd_window_create_child_windows(HWND hWnd);
+static void	selcd_window_create_child_windows(HWND hWnd);
 // Select CD-ROM Drive load/save functions.
-static void WINAPI selcd_window_init(void);
-static int WINAPI selcd_window_save(void);
+static void	selcd_window_init(void);
+static int	selcd_window_save(void);
 
 
 /**
@@ -99,24 +103,24 @@ void selcd_window_show(void)
 		selcd_wndclass.cbClsExtra = 0;
 		selcd_wndclass.cbWndExtra = 0;
 		selcd_wndclass.hInstance = ghInstance;
-		selcd_wndclass.hIcon = LoadIconA(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
-		selcd_wndclass.hCursor = LoadCursorA(NULL, IDC_ARROW);
+		selcd_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_GENS_APP));
+		selcd_wndclass.hCursor = NULL;
 		selcd_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		selcd_wndclass.lpszMenuName = NULL;
-		selcd_wndclass.lpszClassName = "selcd_window";
+		selcd_wndclass.lpszClassName = TEXT("selcd_window");
 		
-		pRegisterClassU(&selcd_wndclass);
+		RegisterClass(&selcd_wndclass);
 	}
 	
 	// Create the window.
-	selcd_window = pCreateWindowU("selcd_window", "Select CD-ROM Drive",
-					WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-					CW_USEDEFAULT, CW_USEDEFAULT,
-					DLU_X(SELCD_WINDOW_WIDTH), DLU_Y(SELCD_WINDOW_HEIGHT),
-					gens_window, NULL, ghInstance, NULL);
+	selcd_window = CreateWindow(TEXT("selcd_window"), TEXT("Select CD-ROM Drive"),
+				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				 CW_USEDEFAULT, CW_USEDEFAULT,
+				 SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT,
+				 gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	gsft_win32_set_actual_window_size(selcd_window, DLU_X(SELCD_WINDOW_WIDTH), DLU_Y(SELCD_WINDOW_HEIGHT));
+	gsft_win32_set_actual_window_size(selcd_window, SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT);
 	
 	// Center the window on the parent window.
 	gsft_win32_center_on_window(selcd_window, gens_window);
@@ -129,47 +133,38 @@ void selcd_window_show(void)
  * selcd_window_create_child_windows(): Create child windows.
  * @param hWnd HWND of the parent window.
  */
-static void WINAPI selcd_window_create_child_windows(HWND hWnd)
+static void selcd_window_create_child_windows(HWND hWnd)
 {
-	HWND lblDeviceName = pCreateWindowU(WC_STATIC, "CD-ROM Drive:",
-						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						DLU_X(5), DLU_Y(5+1),
-						DLU_X(50), DLU_Y(10),
-						hWnd, NULL, ghInstance, NULL);
-	SetWindowFontU(lblDeviceName, w32_fntMessage, true);
+	HWND lblDeviceName = CreateWindow(WC_STATIC, TEXT("CD-ROM Drive:"),
+					  WS_CHILD | WS_VISIBLE | SS_LEFT,
+					  8, 8+3, 96, 16,
+					  hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(lblDeviceName, fntMain, true);
 	
 	// CD-ROM Drive dropdown box
-	cboDeviceName = pCreateWindowU(WC_COMBOBOX, NULL,
-					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					DLU_X(5+50+5), DLU_Y(5),
-					DLU_X(SELCD_WINDOW_WIDTH-5-5-50-5), DLU_Y(14*5),
-					hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
-	SetWindowFontU(cboDeviceName, w32_fntMessage, true);
+	cboDeviceName = CreateWindow(WC_COMBOBOX, NULL,
+				     WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+				     16+96-8, 8, SELCD_WINDOW_WIDTH-8-96-16+8, 23*5,
+				     hWnd, (HMENU)(IDC_SELCD_CBODEVICENAME), ghInstance, NULL);
+	SetWindowFont(cboDeviceName, fntMain, true);
 	
 	// Buttons
-	int btnLeft = DLU_X(SELCD_WINDOW_WIDTH-5-50-5-50-5-50);
-	int btnInc = DLU_X(5+50);
-	const int btnTop = DLU_Y(SELCD_WINDOW_HEIGHT-5-14);
+	const unsigned short btnTop = SELCD_WINDOW_HEIGHT-8-24;
 	
-	btnOK = pCreateWindowU(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				btnLeft, btnTop,
-				DLU_X(50), DLU_Y(14),
-				hWnd, (HMENU)IDOK, ghInstance, NULL);
-	SetWindowFontU(btnOK, w32_fntMessage, true);
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"), WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+			     SELCD_WINDOW_WIDTH-8-75-8-75-8-75, btnTop, 75, 23,
+			     hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, true);
 	
-	btnLeft += btnInc;
-	btnCancel = pCreateWindowU(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, btnTop,
-					DLU_X(50), DLU_Y(14),
-					hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
-	SetWindowFontU(btnCancel, w32_fntMessage, true);
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				 SELCD_WINDOW_WIDTH-8-75-8-75, btnTop, 75, 23,
+				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	SetWindowFont(btnCancel, fntMain, true);
 	
-	btnLeft += btnInc;
-	btnApply = pCreateWindowU(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, btnTop,
-					DLU_X(50), DLU_Y(14),
-					hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFontU(btnApply, w32_fntMessage, true);
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				SELCD_WINDOW_WIDTH-8-75, btnTop, 75, 23,
+				hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	SetWindowFont(btnApply, fntMain, true);
 	
 	// Disable the "Apply" button initially.
 	Button_Enable(btnApply, false);
@@ -196,18 +191,18 @@ void selcd_window_close(void)
 /**
  * selcd_window_init(): Initialize the Select CD-ROM Drive window.
  */
-static void WINAPI selcd_window_init(void)
+static void selcd_window_init(void)
 {
 	// Clear the CD-ROM device name dropdown.
-	ComboBox_ResetContentU(cboDeviceName);
+	ComboBox_ResetContent(cboDeviceName);
 	
 	if (Num_CD_Drive == 0)
 	{
 		// No CD-ROM drives detected.
-		ComboBox_AddStringU(cboDeviceName, "No CD-ROM drives detected.");
-		ComboBox_SetCurSelU(cboDeviceName, 0);
+		ComboBox_AddString(cboDeviceName, TEXT("No CD-ROM drives detected."));
 		Button_Enable(btnOK, false);
 		Button_Enable(btnApply, false);
+		
 		return;
 	}
 	
@@ -216,15 +211,15 @@ static void WINAPI selcd_window_init(void)
 	for (int i = 0; i < Num_CD_Drive; i++)
 	{
 		ASPI_Get_Drive_Info(i, (unsigned char*)driveName);
-		ComboBox_AddStringU(cboDeviceName, &driveName[8]);
+		ComboBox_AddString(cboDeviceName, &driveName[8]);
 	}
 	
 	// Set the current CD-ROM drive.
-	ComboBox_SetCurSelU(cboDeviceName, cdromDeviceID);
-	if (ComboBox_GetCurSelU(cboDeviceName) == -1)
+	ComboBox_SetCurSel(cboDeviceName, cdromDeviceID);
+	if (ComboBox_GetCurSel(cboDeviceName) == -1)
 	{
 		// Invalid CD-ROM drive ID. Select the first drive.
-		ComboBox_SetCurSelU(cboDeviceName, 0);
+		ComboBox_SetCurSel(cboDeviceName, 0);
 	}
 	
 	// Disable the "Apply" button initially.
@@ -236,7 +231,7 @@ static void WINAPI selcd_window_init(void)
  * selcd_window_save(): Save the CD-ROM device name.
  * @return 0 if the settings were saved; non-zero on error.
  */
-static int WINAPI selcd_window_save(void)
+static int selcd_window_save(void)
 {
 	if (Num_CD_Drive == 0)
 	{
@@ -248,7 +243,7 @@ static int WINAPI selcd_window_save(void)
 	bool restartCD = false;
 	
 	// CD-ROM drive
-	int tmpDrive = ComboBox_GetCurSelU(cboDeviceName);
+	int tmpDrive = ComboBox_GetCurSel(cboDeviceName);
 	
 	// Check if the drive ID was changed.
 	if (tmpDrive == cdromDeviceID)
@@ -362,5 +357,5 @@ static LRESULT CALLBACK selcd_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 	}
 	
-	return pDefWindowProcU(hWnd, message, wParam, lParam);
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }

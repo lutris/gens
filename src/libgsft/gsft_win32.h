@@ -43,7 +43,7 @@ extern "C" {
  * @param hWnd_top Window to center on top.
  * @param hWnd_bottom Window to be centered over.
  */
-DLL_LOCAL void WINAPI gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom);
+DLL_LOCAL void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom);
 
 /**
  * gsft_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
@@ -51,7 +51,7 @@ DLL_LOCAL void WINAPI gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_botto
  * @param cx Requested width.
  * @param cy Requested height.
  */
-DLL_LOCAL void WINAPI gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy);
+DLL_LOCAL void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int cx, const int cy);
 
 #ifdef __cplusplus
 }

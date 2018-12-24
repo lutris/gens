@@ -1,6 +1,6 @@
 # MDP Render Plugin: 2xSaI renderer.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_2xsai.la
@@ -8,9 +8,8 @@ mdp_LTLIBRARIES = mdp_render_2xsai.la
 INCLUDES = -I@top_srcdir@/src/
 mdp_render_2xsai_la_CCASFLAGS	= $(INCLUDES)
 
-mdp_render_2xsai_la_CFLAGS		= $(AM_CFLAGS)
-mdp_render_2xsai_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_render_2xsai_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
+mdp_render_2xsai_la_CFLAGS	= $(AM_CFLAGS)
+mdp_render_2xsai_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 NASM += -I@srcdir@/../
 

@@ -225,15 +225,11 @@ uint8_t FASTCALL Z80_ReadB_Bank(uint32_t address)
  */
 uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t address)
 {
-	// According to the Genesis Software Manual, all four addresses return
-	// the same value for YM2612_Read().
+	// NOTE: The original asm specified an address,
+	// but YM2612_Read() doesn't accept any parameters...
 	GSFT_UNUSED_PARAMETER(address);
 	
-	// The YM2612's RESET line is tied to the Z80's RESET line.
-	// TODO: Determine the correct return value.
-	if (Z80_State & Z80_STATE_RESET)
-		return 0xFF;
-	
+	//return YM2612_Read(address & 0x03);
 	return YM2612_Read();
 }
 
@@ -254,7 +250,7 @@ uint8_t FASTCALL Z80_ReadB_PSG(uint32_t address)
 	if (address < 0x7F08)
 	{
 		// VDP status.
-		int rval = VDP_Read_Status();
+		int rval = Read_VDP_Status();
 		if (address & 1)
 			return (rval & 0xFF);
 		else
@@ -264,9 +260,9 @@ uint8_t FASTCALL Z80_ReadB_PSG(uint32_t address)
 	{
 		// VDP counter.
 		if (address & 1)
-			return VDP_Read_H_Counter();
+			return Read_VDP_H_Counter();
 		else
-			return VDP_Read_V_Counter();
+			return Read_VDP_V_Counter();
 	}
 }
 
@@ -332,15 +328,11 @@ uint16_t FASTCALL Z80_ReadW_Bank(uint32_t address)
  */
 uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t address)
 {
-	// According to the Genesis Software Manual, all four addresses return
-	// the same value for YM2612_Read().
+	// NOTE: The original asm specified an address,
+	// but YM2612_Read() doesn't accept any parameters...
 	GSFT_UNUSED_PARAMETER(address);
 	
-	// The YM2612's RESET line is tied to the Z80's RESET line.
-	// TODO: Determine the correct return value.
-	if (Z80_State & Z80_STATE_RESET)
-		return 0xFF;
-	
+	//return (YM2612_Read(address & 0x03) & 0xFF);
 	return (YM2612_Read() & 0xFF);
 }
 
@@ -358,12 +350,12 @@ uint16_t FASTCALL Z80_ReadW_PSG(uint32_t address)
 	if (address < 0x7F08)
 	{
 		// VDP status.
-		return VDP_Read_Status();
+		return Read_VDP_Status();
 	}
 	else //if (address >= 0x7F08 && address <= 0x7F09)
 	{
 		// VDP counter.
-		return ((VDP_Read_V_Counter() << 8) | (VDP_Read_H_Counter()));
+		return ((Read_VDP_V_Counter() << 8) | (Read_VDP_H_Counter()));
 	}
 }
 
@@ -439,10 +431,6 @@ void FASTCALL Z80_WriteB_Bank(uint32_t address, uint8_t data)
  */
 void FASTCALL Z80_WriteB_YM2612(uint32_t address, uint8_t data)
 {
-	// The YM2612's RESET line is tied to the Z80's RESET line.
-	if (Z80_State & Z80_STATE_RESET)
-		return;
-	
 	YM2612_Write((address & 0x03), data);
 }
 
@@ -468,7 +456,7 @@ void FASTCALL Z80_WriteB_PSG(uint32_t address, uint8_t data)
 	}
 	
 	// VDP register.
-	VDP_Write_Data_Byte(data);
+	Write_Byte_VDP_Data(data);
 }
 
 
@@ -545,11 +533,8 @@ void FASTCALL Z80_WriteW_Bank(uint32_t address, uint16_t data)
  */
 void FASTCALL Z80_WriteW_YM2612(uint32_t address, uint16_t data)
 {
-	// The YM2612's RESET line is tied to the Z80's RESET line.
-	if (Z80_State & Z80_STATE_RESET)
-		return;
-	
 	address &= 0x03;
+	
 	YM2612_Write(address, data);
 	YM2612_Write(address + 1, data);
 }
@@ -576,7 +561,7 @@ void FASTCALL Z80_WriteW_PSG(uint32_t address, uint16_t data)
 	}
 	
 	// VDP register.
-	VDP_Write_Data_Word(data);
+	Write_Word_VDP_Data(data);
 }
 
 

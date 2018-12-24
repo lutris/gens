@@ -4,17 +4,16 @@
 .rc.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_misc_vdp_layer_options.la
 
-mdp_misc_vdp_layer_options_la_CFLAGS		= $(AM_CFLAGS)
-mdp_misc_vdp_layer_options_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_misc_vdp_layer_options_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
-mdp_misc_vdp_layer_options_la_LIBADD		= $(top_builddir)/src/libgsft/libgsft.la
+mdp_misc_vdp_layer_options_la_CFLAGS	= $(AM_CFLAGS)
+mdp_misc_vdp_layer_options_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_misc_vdp_layer_options_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_vdp_layer_options_la_SOURCES = \
 		vlopt_plugin.c \
@@ -42,8 +41,7 @@ mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_win32.c vlopt_dllmain.c re
 mdp_misc_vdp_layer_options_la_LIBADD	+= \
 		-lgdi32 \
 		$(top_builddir)/src/libgsft/libgsft_win32.la \
-		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la \
-		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
 noinst_HEADERS += \
 		vlopt.ico \
 		vlopt_dllmain.h \

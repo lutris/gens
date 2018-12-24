@@ -77,27 +77,29 @@ extern uint8_t vdraw_backends_broken[VDRAW_BACKEND_MAX];
 // VDraw backend function pointers.
 typedef struct
 {
-	const char* const name;			// Must be set.
-	const uint32_t flags;			// Must be set.
+	const char* const name;
+	const uint32_t flags;
 	
-	int	(*init)(void);			// Must be set.
-	int	(*end)(void);			// May be NULL.
+	int	(*init)(void);
+	int	(*end)(void);
 	
-	void	(*clear_screen)(void);			// Must be set.
-	void	(*update_vsync)(const int data);	// May be NULL.
+	int	(*init_subsystem)(void);
+	int	(*shutdown)(void);
 	
-	int	(*flip)(void);			// Must be set.
-	void	(*stretch_adjust)(void);	// May be NULL.
-	void	(*update_renderer)(void);	// May be NULL.
-	int	(*reinit_gens_window)(void);	// Must be set.
+	void	(*clear_screen)(void);
+	void	(*update_vsync)(const int data);
+	
+	int	(*flip)(void);
+	void	(*stretch_adjust)(void);
+	void	(*update_renderer)(void);
+	int	(*reinit_gens_window)(void);
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
-	int	WINAPI (*clear_primary_screen)(void);
-	int	WINAPI (*clear_back_screen)(void);
-	int	WINAPI (*restore_primary)(void);
-	int	WINAPI (*set_cooperative_level)(void);
-	void	WINAPI (*adjust_RectDest)(void);
+	int	(*clear_primary_screen)(void);
+	int	(*clear_back_screen)(void);
+	int	(*restore_primary)(void);
+	int	(*set_cooperative_level)(void);
 #endif /* GENS_OS_WIN32 */
 	
 } vdraw_backend_t;
@@ -106,13 +108,9 @@ extern const vdraw_backend_t* const vdraw_backends[];
 
 int	vdraw_init(void);
 int	vdraw_end(void);
+int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
-
-#ifdef GENS_OS_WIN32
-extern RECT vdraw_rectDisplay;
-void WINAPI vdraw_init_display_size(void);
-#endif
 
 // Current backend.
 extern const vdraw_backend_t *vdraw_cur_backend;
@@ -124,15 +122,16 @@ void	vdraw_set_bpp(const int new_bpp, const BOOL reset_video);
 void	vdraw_refresh_video(void);
 
 // Function pointers.
+extern int	(*vdraw_init_subsystem)(void);
+extern int	(*vdraw_shutdown)(void);
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
-extern int	(*vdraw_reinit_gens_window)(void);
 #ifdef GENS_OS_WIN32
-extern int	WINAPI (*vdraw_clear_primary_screen)(void);
-extern int	WINAPI (*vdraw_clear_back_screen)(void);
-extern int	WINAPI (*vdraw_restore_primary)(void);
-extern int	WINAPI (*vdraw_set_cooperative_level)(void);
-extern void	WINAPI (*vdraw_adjust_RectDest)(void);
+extern int	(*vdraw_reinit_gens_window)(void);
+extern int	(*vdraw_clear_primary_screen)(void);
+extern int	(*vdraw_clear_back_screen)(void);
+extern int	(*vdraw_restore_primary)(void);
+extern int	(*vdraw_set_cooperative_level)(void);
 #endif /* GENS_OS_WIN32 */
 
 // Message variables used externally.
@@ -144,10 +143,8 @@ extern vdraw_style_t vdraw_msg_style;
 // Properties.
 uint8_t	vdraw_get_stretch(void);
 void	vdraw_set_stretch(const uint8_t new_stretch);
-#ifdef GENS_OS_WIN32
 BOOL	vdraw_get_sw_render(void);
 void	vdraw_set_sw_render(const BOOL new_sw_render);
-#endif /* GENS_OS_WIN32 */
 BOOL	vdraw_get_msg_enabled(void);
 void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
 BOOL	vdraw_get_fps_enabled(void);
@@ -162,10 +159,6 @@ uint8_t	vdraw_get_msg_style(void);
 void	vdraw_set_msg_style(const uint8_t new_msg_style);
 uint8_t	vdraw_get_fps_style(void);
 void	vdraw_set_fps_style(const uint8_t new_fps_style);
-uint32_t vdraw_get_msg_color(void);
-void	 vdraw_set_msg_color(const uint32_t new_msg_color);
-uint32_t vdraw_get_fps_color(void);
-void	 vdraw_set_fps_color(const uint32_t new_fps_color);
 uint8_t	vdraw_get_intro_effect_color(void);
 void	vdraw_set_intro_effect_color(const uint8_t new_intro_effect_color);
 
@@ -181,6 +174,8 @@ extern int vdraw_scale;
 
 // Screen border.
 extern int vdraw_border_h, vdraw_border_h_old;
+extern uint16_t vdraw_border_color_16;
+extern uint32_t vdraw_border_color_32;
 
 // RGB color conversion variables.
 extern BOOL vdraw_needs_conversion;

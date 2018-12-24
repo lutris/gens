@@ -83,6 +83,31 @@ void Init_Controllers(void)
 }
 
 
+// These are only for io_old.asm compatibility.
+#define CREATE_CONTROLLER_OLD_VARIABLES(player)			\
+	unsigned int Controller_ ## player ## _Up	= 1;	\
+	unsigned int Controller_ ## player ## _Down	= 1;	\
+	unsigned int Controller_ ## player ## _Left	= 1;	\
+	unsigned int Controller_ ## player ## _Right	= 1;	\
+	unsigned int Controller_ ## player ## _Start	= 1;	\
+	unsigned int Controller_ ## player ## _A	= 1;	\
+	unsigned int Controller_ ## player ## _B	= 1;	\
+	unsigned int Controller_ ## player ## _C	= 1;	\
+	unsigned int Controller_ ## player ## _Mode	= 1;	\
+	unsigned int Controller_ ## player ## _X	= 1;	\
+	unsigned int Controller_ ## player ## _Y	= 1;	\
+	unsigned int Controller_ ## player ## _Z	= 1;
+
+CREATE_CONTROLLER_OLD_VARIABLES(1);
+CREATE_CONTROLLER_OLD_VARIABLES(1B);
+CREATE_CONTROLLER_OLD_VARIABLES(1C);
+CREATE_CONTROLLER_OLD_VARIABLES(1D);
+
+CREATE_CONTROLLER_OLD_VARIABLES(2);
+CREATE_CONTROLLER_OLD_VARIABLES(2B);
+CREATE_CONTROLLER_OLD_VARIABLES(2C);
+CREATE_CONTROLLER_OLD_VARIABLES(2D);
+
 // Select Line status
 enum SelectLine
 {
@@ -97,6 +122,23 @@ enum SelectLine
 };
 
 
+#define CREATE_CONTROLLER_OLD(player)											\
+{															\
+	Controller_ ## player ## _Up		= (Controller_ ## player ## _Buttons & CONTROLLER_UP) ? 1 : 0;		\
+	Controller_ ## player ## _Down		= (Controller_ ## player ## _Buttons & CONTROLLER_DOWN) ? 1 : 0;	\
+	Controller_ ## player ## _Left		= (Controller_ ## player ## _Buttons & CONTROLLER_LEFT) ? 1 : 0;	\
+	Controller_ ## player ## _Right		= (Controller_ ## player ## _Buttons & CONTROLLER_RIGHT) ? 1 : 0;	\
+	Controller_ ## player ## _Start		= (Controller_ ## player ## _Buttons & CONTROLLER_START) ? 1 : 0;	\
+	Controller_ ## player ## _A		= (Controller_ ## player ## _Buttons & CONTROLLER_A) ? 1 : 0;		\
+	Controller_ ## player ## _B		= (Controller_ ## player ## _Buttons & CONTROLLER_B) ? 1 : 0;		\
+	Controller_ ## player ## _C		= (Controller_ ## player ## _Buttons & CONTROLLER_C) ? 1 : 0;		\
+	Controller_ ## player ## _Mode		= (Controller_ ## player ## _Buttons & CONTROLLER_MODE) ? 1 : 0;	\
+	Controller_ ## player ## _X		= (Controller_ ## player ## _Buttons & CONTROLLER_X) ? 1 : 0;		\
+	Controller_ ## player ## _Y		= (Controller_ ## player ## _Buttons & CONTROLLER_Y) ? 1 : 0;		\
+	Controller_ ## player ## _Z		= (Controller_ ## player ## _Buttons & CONTROLLER_Z) ? 1 : 0;		\
+}
+
+
 unsigned char RD_Controller_1(void)
 {
 	// Read controller 1.
@@ -104,6 +146,14 @@ unsigned char RD_Controller_1(void)
 	if (Controller_1_Type & 0x10)
 	{
 		// TeamPlayer.
+		CREATE_CONTROLLER_OLD(1);
+		CREATE_CONTROLLER_OLD(1B);
+		CREATE_CONTROLLER_OLD(1C);
+		CREATE_CONTROLLER_OLD(1D);
+		CREATE_CONTROLLER_OLD(2);
+		CREATE_CONTROLLER_OLD(2B);
+		CREATE_CONTROLLER_OLD(2C);
+		CREATE_CONTROLLER_OLD(2D);
 		return RD_Controller_1_TP();
 	}
 	
@@ -127,6 +177,14 @@ unsigned char RD_Controller_2(void)
 	if (Controller_2_Type & 0x10)
 	{
 		// TeamPlayer.
+		CREATE_CONTROLLER_OLD(1);
+		CREATE_CONTROLLER_OLD(1B);
+		CREATE_CONTROLLER_OLD(1C);
+		CREATE_CONTROLLER_OLD(1D);
+		CREATE_CONTROLLER_OLD(2);
+		CREATE_CONTROLLER_OLD(2B);
+		CREATE_CONTROLLER_OLD(2C);
+		CREATE_CONTROLLER_OLD(2D);
 		return RD_Controller_2_TP();
 	}
 	

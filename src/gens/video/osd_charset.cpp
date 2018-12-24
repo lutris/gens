@@ -20,57 +20,41 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "osd_charset.hpp"
-#include "osd_font.h"
+#include "C64_charset.h"
 
 // C includes.
 #include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#ifdef GENS_ZLIB
-#include <zlib.h>
-#endif
 
 // Character used if a character cannot be found.
-static const uint8_t chr_err[16] =
-	{0x00, 0x38, 0x7C, 0x7C, 0xC6, 0x92, 0xF2, 0xE6,
-	 0xFE, 0xE6, 0x7C, 0x7C, 0x38, 0x00, 0x00, 0x00};
+static const uint8_t chr_err[8] = {0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
+
+// Hashtable.
+#include "libgsft/gsft_hashtable.hpp"
+typedef GSFT_HASHTABLE<wchar_t, const uint8_t*> mapOsdCharSet_t;
+typedef std::pair<wchar_t, const uint8_t*> pairOsdCharSet_t;
+static mapOsdCharSet_t mapOsdCharSet;
 
 
 /**
- * osd_init(): Initialize the OSD font.
+ * osd_charset_init(): Initialize the character set hashtable.
+ * @param charset Character set to use.
  */
-void osd_init(void)
+void osd_charset_init(const osd_char_t *charset)
 {
-	// Initialize character data with the internal VGA character set.
-	osd_font_init_ASCII();
+	if (!charset)
+		return;
 	
-	// Load font data from "osd_font.bin"
-	// TODO: Make it customizable?
-	int ret = -1;
+	mapOsdCharSet.clear();
 	
-#ifdef GENS_ZLIB
-	if (!access("osd_font.bin.gz", R_OK))
-		ret = osd_font_load("osd_font.bin.gz");
-#endif
-	
-	if (ret != 0)
-		osd_font_load("osd_font.bin");
-}
-
-
-/**
- * osd_end(): Shut down the OSD font.
- */
-void osd_end(void)
-{
-	// Clear the OSD font data.
-	osd_font_clear();
+	// Add all characters to the map.
+	for (; charset->chr != (wchar_t)-1; charset++)
+	{
+		if (charset->data == NULL)
+			continue;
+		
+		mapOsdCharSet.insert(pairOsdCharSet_t(charset->chr, charset->data));
+	}
 }
 
 
@@ -85,19 +69,21 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 	if (!str || !prerender_buf)
 		return 0;
 	
-	osd_ptr_t osd_data;
+	if (mapOsdCharSet.empty())
+		osd_charset_init(&C64_charset[0]);
+	
+	const uint8_t *chr_data;
 	const unsigned char *utf8str = reinterpret_cast<const unsigned char*>(str);
 	unsigned int chr_num = 0;
 	
-	while (*utf8str && chr_num < 1023)
+	while (*utf8str)
 	{
 		wchar_t wchr;
-		bool is_fullwidth = false;
 		
 		// Check if this is the start of a UTF-8 sequence.
 		if (!(*utf8str & 0x80))
 		{
-			// Not the start of a UTF-8 sequence. Assume it's ASCII.
+			// Not the start of UTF-8. Assume it's ASCII.
 			wchr = *utf8str++;
 		}
 		else
@@ -145,68 +131,21 @@ int osd_charset_prerender(const char *str, uint8_t prerender_buf[8][1024])
 			}
 		}
 		
-		// Check if the character exists.
-		if (wchr > 0xFFFF)
-		{
-			// Outside of BMP. Not found.
-			osd_data.p_u8 = (uint8_t*)&chr_err[0];
-		}
-		else if (osd_font_data[wchr].p_v == NULL)
+		mapOsdCharSet_t::iterator chrIter = mapOsdCharSet.find(wchr);
+		if (chrIter == mapOsdCharSet.end())
 		{
 			// Character not found.
-			osd_data.p_u8 = (uint8_t*)&chr_err[0];
+			chr_data = &chr_err[0];
 		}
 		else
 		{
 			// Character found.
-			osd_data = osd_font_data[wchr];
-			is_fullwidth = (osd_font_flags[wchr] & OSD_FLAG_FULLWIDTH);
+			chr_data = &(*chrIter).second[0];
 		}
 		
-		// Check for combining characters.
-		// Unicode has the following combining characters:
-		// * Combining Diacritical Marks (0300–036F)
-		// * Combining Diacritical Marks Supplement (1DC0–1DFF)
-		// * Combining Diacritical Marks for Symbols (20D0–20FF)
-		// * Combining Half Marks (FE20–FE2F)
-		// Reference: http://en.wikipedia.org/wiki/Combining_character
-		if (chr_num > 0 &&
-		    ((wchr >= 0x0300 && wchr <= 0x036F) ||
-		     (wchr >= 0x1DC0 && wchr <= 0x1DFF) ||
-		     (wchr >= 0x20D0 && wchr <= 0x20FF) ||
-		     (wchr >= 0xFE20 && wchr <= 0xFE2F)))
+		for (unsigned int row = 0; row < 8; row++)
 		{
-			// Unicode combining character.
-			// OR the glyph with the previous character.
-			// TODO: This isn't the perfect method, but it's good enough for now.
-			// TODO: Check for fullwidth combining characters.
-			chr_num--;
-			for (unsigned int row = 0; row < 16; row++)
-			{
-				prerender_buf[row][chr_num] |= osd_data.p_u8[row];
-			}
-		}
-		else
-		{
-			// Regular character.
-			if (!is_fullwidth)
-			{
-				// Halfwidth character.
-				for (unsigned int row = 0; row < 16; row++)
-				{
-					prerender_buf[row][chr_num] = osd_data.p_u8[row];
-				}
-			}
-			else
-			{
-				// Fullwidth character.
-				for (unsigned int row = 0; row < 16; row++)
-				{
-					prerender_buf[row][chr_num] = osd_data.p_u16[row] >> 8;
-					prerender_buf[row][chr_num + 1] = osd_data.p_u16[row] & 0xFF;
-				}
-				chr_num++;
-			}
+			prerender_buf[row][chr_num] = chr_data[row];
 		}
 		
 		// Next character.

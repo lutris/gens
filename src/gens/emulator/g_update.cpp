@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -73,13 +73,12 @@ int Update_Emulation(void)
 
 	if (Frame_Skip != -1)
 	{
+#ifdef GENS_OS_UNIX
 		if (audio_get_enabled())
 		{
-#ifdef GENS_OS_WIN32
-			audio_wp_inc();
-#endif
 			audio_write_sound_buffer(NULL);
 		}
+#endif /* GENS_OS_UNIX */
 		
 		input_update_controllers();
 		
@@ -89,6 +88,13 @@ int Update_Emulation(void)
 		}
 		else
 		{
+#ifdef GENS_OS_WIN32
+			if (audio_get_enabled())
+			{
+				audio_wp_inc();
+				audio_write_sound_buffer(NULL);
+			}
+#endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
 			if (!IS_DEBUGGING())
@@ -105,19 +111,18 @@ int Update_Emulation(void)
 			// cycles ahead of the graphics.
 			
 #ifdef GENS_OS_WIN32
-			// Win32-specific.
+			// Win32 specific.
 			audio_wp_seg_wait();
 #endif /* GENS_OS_WIN32 */
 			
-			/**
-			 * Wait for the audio buffer to empty out.
-			 * NOTE: This function calls the following functions:
-			 * - input_update_controllers()
-			 * - Update_Frame()
-			 * - vdraw_flip()
-			 * - Update_Frame_Fast() (if necessary)
-			 */
+			// Wait for the audio buffer to empty out.
 			audio_wait_for_audio_buffer();
+			
+			// Audio buffer is empty.
+			input_update_controllers();
+			Update_Frame();
+			if (!IS_DEBUGGING())
+				vdraw_flip(1);
 		}
 		else
 		{
@@ -157,9 +162,9 @@ int Update_Emulation(void)
 		if (ice >= 3)
 			ice = 1;
 #if GSFT_BYTEORDER == GSFT_LIL_ENDIAN
-		if (Ram_68k.u8[0xFFB0] == 7)
+		if (Ram_68k[0xFFB0] == 7)
 #else // GSFT_BYTEORDER == GSFT_BIG_ENDIAN
-		if (Ram_68k.u8[0xFFB1] == 7)
+		if (Ram_68k[0xFFB1] == 7)
 #endif
 		{
 			if (ice == 1)
@@ -170,7 +175,7 @@ int Update_Emulation(void)
 			if (ice > 1)
 				ice = 1;
 		}
-		if (Ram_68k.u32[0xFFD4 >> 2])
+		if (*((unsigned int*)&Ram_68k[0xFFD4]))
 			ice = 0;
 	}
 

@@ -27,11 +27,15 @@
 #include "log_msg.h"
 
 #if defined(GENS_UI_WIN32)
-#   include "libgsft/w32u/w32u_windows.h"
+	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+	#include <windows.h>
 #elif defined(GENS_UI_GTK)
-#   include <gtk/gtk.h>
+	#include <gtk/gtk.h>
 #else
-#   warning No UI defined. log_msgbox() will do nothing.
+	#warning No UI defined. log_msgbox() will do nothing.
 #endif
 
 // Needed for the parent window.
@@ -45,25 +49,25 @@
  */
 void log_msgbox(const char* msg, const char* title)
 {
-#if defined(GENS_UI_WIN32)
-	pMessageBoxU(gens_window, msg, title, MB_ICONSTOP);
-#elif defined(GENS_UI_GTK)
-	// Make sure GTK+ is initialized.
-	if (!gtk_init_check(NULL, NULL))
-	{
-		// Could not initialize GTK+. Print the message to the console.
-		return;
-	}
-	
-	// GTK+ initialized.
-	GtkWidget *msgbox = gtk_message_dialog_new(
-				GTK_WINDOW(gens_window),
-				GTK_DIALOG_MODAL,
-				GTK_MESSAGE_ERROR,
-				GTK_BUTTONS_OK,
-				"%s", msg);
-	gtk_window_set_title(GTK_WINDOW(msgbox), title);
-	gtk_dialog_run(GTK_DIALOG(msgbox));
-	gtk_widget_destroy(msgbox);
-#endif
+	#if defined(GENS_UI_WIN32)
+		MessageBox(gens_window, msg, title, MB_ICONSTOP);
+	#elif defined(GENS_UI_GTK)
+		// Make sure GTK+ is initialized.
+		if (!gtk_init_check(NULL, NULL))
+		{
+			// Could not initialize GTK+. Print the message to the console.
+			return;
+		}
+		
+		// GTK+ initialized.
+		GtkWidget *msgbox = gtk_message_dialog_new(
+					GTK_WINDOW(gens_window),
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_ERROR,
+					GTK_BUTTONS_OK,
+					"%s", msg);
+		gtk_window_set_title(GTK_WINDOW(msgbox), title);
+		gtk_dialog_run(GTK_DIALOG(msgbox));
+		gtk_widget_destroy(msgbox);
+	#endif
 }

@@ -28,6 +28,8 @@
 
 #include <string.h>
 
+// TODO: Add wrappers for _sntprintf() [Win32 TCHAR].
+
 
 /**
  * szprintf(): snprintf() wrapper with automatic NULL termination.

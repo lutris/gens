@@ -29,16 +29,12 @@
 // C includes.
 #include <stdio.h>
 #include <ctype.h>
-#include <stdlib.h>
 
 // C++ includes.
 #include <sstream>
 #include <string>
 using std::stringstream;
 using std::string;
-
-// libgsft includes.
-#include "libgsft/gsft_space_elim.h"
 
 
 // Full Screen Minization counters.
@@ -78,25 +74,43 @@ void GensUI::setWindowTitle_Idle(void)
 void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName,
 				 const string& emptyGameName)
 {
+	stringstream ss;
 	string condGameName;
+	char curChar = 0x00;
 	
-	if (gameName.empty())
+	// Condense the game name by removing excess spaces.
+	for (unsigned int cpos = 0; cpos < gameName.length(); cpos++)
 	{
-		// Specified game name is empty. Use the empty game name.
-		condGameName = emptyGameName;
+		if (!isgraph(curChar) && isspace(gameName.at(cpos)))
+			continue;
+		curChar = gameName.at(cpos);
+		ss << curChar;
 	}
-	else
+	
+	// Trim any excess spaces.
+	condGameName = ss.str();
+	
+	if (condGameName.length() > 0 &&
+	    isspace(condGameName.at(condGameName.length() - 1)))
 	{
-		// Specified game name is not empty.
-		// Run it through the space elimination algorithm.
-		char *buf = (char*)malloc(gameName.size() + 1);
-		gsft_space_elim(gameName.c_str(), gameName.size(), buf);
-		condGameName = (buf[0] != 0x00 ? string(buf) : emptyGameName);
-		free(buf);
+		condGameName = condGameName.substr(0, condGameName.length() - 1);
+	}
+	
+	if (condGameName.length() > 0 && isspace(condGameName.at(0)))
+	{
+		condGameName = condGameName.substr(1, condGameName.length() - 1);
+	}
+	
+	// Check if the condensed game name is empty.
+	if (condGameName.empty())
+	{
+		// Condensed game name is empty.
+		// Replace it with emptyGameName.
+		condGameName = emptyGameName;
 	}
 	
 	// Set the title.
-	setWindowTitle_withAppVersion(systemName + ": " + string(condGameName));
+	setWindowTitle_withAppVersion(systemName + ": " + condGameName);
 }
 
 
@@ -138,5 +152,7 @@ void GensUI_wakeup(void)
 void GensUI_setWindowVisibility(const int visibility)
 {
 	// TODO: Implement GensUI::setWindowVisibility() on Win32.
+#ifndef GENS_OS_WIN32
 	GensUI::setWindowVisibility(visibility);
+#endif
 }

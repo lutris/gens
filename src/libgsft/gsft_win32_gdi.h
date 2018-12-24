@@ -39,34 +39,16 @@ extern "C" {
 #endif
 
 /**
- * gsft_win32_gdi_init(): Initialize (or reinitialize) font handling.
- * @param hWnd hWnd for setting up dialog unit conversion.
+ * gsft_win32_gdi_get_message_font(): Get the message font.
+ * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-DLL_LOCAL void WINAPI gsft_win32_gdi_init(HWND hWnd);
+DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_gdi_get_message_font(void);
 
 /**
- * gsft_win32_gdi_end(): Shut down font handling.
+ * gsft_win32_gdi_get_title_font(): Get the title font.
+ * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-DLL_LOCAL void WINAPI gsft_win32_gdi_end(void);
-
-/**
- * Fonts. DO NOT modify these externally!
- */
-extern HFONT w32_fntMessage;		// Message font.
-extern HFONT w32_fntTitle;		// Title font.
-extern HFONT w32_fntMonospaced;		// Monospaced font.
-
-/**
- * Dialog unit conversion.
- * DO NOT modify these externally!
- */
-extern int w32_dlu_x;
-extern int w32_dlu_y;
-
-// 4 == horizontal dialog template units.
-// 8 == vertical dialog template units.
-#define DLU_X(dlu) ((w32_dlu_x * (dlu)) / 4)
-#define DLU_Y(dlu) ((w32_dlu_y * (dlu)) / 8)
+DLL_LOCAL HFONT GSFT_FNCALL gsft_win32_gdi_get_title_font(void);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -31,11 +31,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdint.h>
 
 // GTK+ includes.
 #include <gtk/gtk.h>
-#include "gtk-compat.h"
 
 // Main settings.
 #include "emulator/g_main.hpp"
@@ -45,9 +43,8 @@
 #include "libgsft/gsft_unused.h"
 #include "libgsft/gsft_szprintf.h"
 
-// Video and Audio functions.
+// Video Drawing.
 #include "video/vdraw.h"
-#include "audio/audio.h"
 
 
 typedef struct _gtk_color_t
@@ -59,6 +56,15 @@ typedef struct _gtk_color_t
 	const char color_selected[8];
 	const char color_insensitive[8];
 } gtk_color_t;
+
+// On-Screen Display colors.
+static const gtk_color_t genopt_colors_OSD[4] =
+{
+	{"white", "#FFFFFF", "#E0E0E0", "#FFFFFF", "#FFFFFF", "#C0C0C0"},
+	{"blue",  "#0000FF", "#0000E0", "#8080FF", "#0000FF", "#1C1C1C"},
+	{"green", "#00FF00", "#00E000", "#80FF80", "#00FF00", "#979797"},
+	{"red",   "#FF0000", "#E00000", "#FF8080", "#FF0000", "#4C4C4C"},
+};
 
 // Intro effect colors.
 static const gtk_color_t genopt_colors_IntroEffect[8] =
@@ -83,8 +89,8 @@ static GtkWidget	*btnCancel, *btnApply, *btnSave;
 // Widgets: On-Screen Display.
 static GtkWidget	*chkOSD_Enable[2];
 static GtkWidget	*chkOSD_DoubleSized[2];
-static GtkWidget	*btnColor[2];
-static uint32_t		osd_colors[2];
+static GtkWidget	*chkOSD_Transparency[2];
+static GtkWidget	*optOSD_Color[2][4];
 
 // Widgets: Intro Effect.
 static GtkWidget	*cboIntroEffect;
@@ -97,7 +103,6 @@ static GtkWidget	*chkMisc_FastBlur;
 static GtkWidget	*chkMisc_SegaCDLEDs;
 static GtkWidget	*chkMisc_BorderColorEmulation;
 static GtkWidget	*chkMisc_PauseTint;
-static GtkWidget	*chkMisc_ntscV30rolling;
 
 // Widget creation functions.
 static void	genopt_window_create_osd_frame(GtkWidget *container, const char* title, int index);
@@ -115,9 +120,6 @@ static void	genopt_window_save(void);
 static gboolean	genopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	genopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	genopt_window_callback_widget_changed(void);
-static void	genopt_window_callback_btnColor_clicked(GtkButton *button, gpointer user_data);
-
-static void	genopt_window_set_button_color(GtkWidget *widget, uint32_t color);
 
 
 /**
@@ -250,24 +252,22 @@ static void genopt_window_create_osd_frame(GtkWidget *container, const char* tit
 	g_signal_connect(GTK_OBJECT(chkOSD_DoubleSized[index]), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
+	// Transparency
+	chkOSD_Transparency[index] = gtk_check_button_new_with_label("Transparency");
+	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Transparency[index]), 2);
+	gtk_widget_show(chkOSD_Transparency[index]);
+	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Transparency[index], false, false, 0);
+	g_signal_connect(GTK_OBJECT(chkOSD_Transparency[index]), "toggled",
+			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
+	
 	// Color HBox
 	GtkWidget *hboxOSD_Color = gtk_hbox_new(false, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(hboxOSD_Color), 8);
 	gtk_widget_show(hboxOSD_Color);
 	gtk_container_add(GTK_CONTAINER(vboxOSD), hboxOSD_Color);
 	
-	// Color label.
-	GtkWidget *lblColor = gtk_label_new("Color:");
-	gtk_widget_show(lblColor);
-	gtk_box_pack_start(GTK_BOX(hboxOSD_Color), lblColor, false, false, 0);
-	
-	// Color button.
-	btnColor[index] = gtk_button_new_with_label("Change...");
-	gtk_widget_show(btnColor[index]);
-	gtk_box_pack_end(GTK_BOX(hboxOSD_Color), btnColor[index], false, false, 0);
-	g_signal_connect((gpointer)(btnColor[index]), "clicked",
-			  G_CALLBACK(genopt_window_callback_btnColor_clicked),
-			  GINT_TO_POINTER(index));
+	// Color Radio Buttons
+	genopt_window_create_color_radio_buttons(hboxOSD_Color, "Color:", genopt_colors_OSD, index);
 }
 
 
@@ -286,7 +286,13 @@ static void genopt_window_create_color_radio_buttons(GtkWidget* container,
 	int numColors = 0;
 	
 	// Make sure a valid button set is specified.
-	if (colors == genopt_colors_IntroEffect)
+	if (colors == genopt_colors_OSD)
+	{
+		if (buttonSet < 0 || buttonSet > 1)
+			return;
+		numColors = 4;
+	}
+	else if (colors == genopt_colors_IntroEffect)
 	{
 		if (buttonSet != 0)
 			return;
@@ -352,7 +358,12 @@ static void genopt_window_create_color_radio_buttons(GtkWidget* container,
 				 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 		
 		// Save the color button.
-		if (colors == genopt_colors_IntroEffect)
+		if (colors == genopt_colors_OSD)
+		{
+			// OSD color button.
+			optOSD_Color[buttonSet][i] = optColorButton;
+		}
+		else //if (colors == genopt_colors_IntroEffect)
 		{
 			// Intro Effect color button.
 			optIntroEffectColor[i] = optColorButton;
@@ -435,14 +446,6 @@ static void genopt_window_create_misc_settings_frame(GtkWidget *container)
 	g_signal_connect(GTK_OBJECT(chkMisc_PauseTint), "toggled",
 			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
 	
-	// NTSC V30 Rolling
-	chkMisc_ntscV30rolling = gtk_check_button_new_with_label("NTSC V30 Rolling");
-	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_ntscV30rolling), 2);
-	gtk_widget_show(chkMisc_ntscV30rolling);
-	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_ntscV30rolling, false, false, 0);
-	g_signal_connect(GTK_OBJECT(chkMisc_ntscV30rolling), "toggled",
-			 G_CALLBACK(genopt_window_callback_widget_changed), NULL);
-	
 	// VBox for intro effect.
 	GtkWidget *vboxIntroEffect = gtk_vbox_new(false, 4);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffect), 8);
@@ -508,23 +511,22 @@ static void genopt_window_init(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation), Video.borderColorEmulation);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint), Video.pauseTint);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_ntscV30rolling), Video.ntscV30rolling);
 	
 	// FPS counter
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), vdraw_get_fps_enabled());
 	
 	unsigned char curFPSStyle = vdraw_get_fps_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0]), (curFPSStyle & 0x10));
-	osd_colors[0] = vdraw_get_fps_color();
-	genopt_window_set_button_color(btnColor[0], osd_colors[0]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0]), (curFPSStyle & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][(curFPSStyle & 0x06) >> 1]), true);
 	
 	// Message
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1]), vdraw_get_msg_enabled());
 	
 	unsigned char curMsgStyle = vdraw_get_msg_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1]), (curMsgStyle & 0x10));
-	osd_colors[1] = vdraw_get_msg_color();
-	genopt_window_set_button_color(btnColor[1], osd_colors[1]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1]), (curMsgStyle & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][(curMsgStyle & 0x06) >> 1]), true);
 	
 	// Intro effect.
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cboIntroEffect), Intro_Style);
@@ -549,29 +551,50 @@ static void genopt_window_save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
-	Video.ntscV30rolling = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_ntscV30rolling));
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
 	Settings.Active = !Auto_Pause;
 	
-	// FPS counter.
+	// FPS counter
 	vdraw_set_fps_enabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
 	
 	unsigned char curFPSStyle = vdraw_get_fps_style() & ~0x18;
 	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0])) ? 0x10 : 0x00);
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0])) ? 0x08 : 0x00);
+	
+	// FPS counter color
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][i])))
+		{
+			curFPSStyle &= ~0x06;
+			curFPSStyle |= (i << 1);
+			break;
+		}
+	}
 	
 	vdraw_set_fps_style(curFPSStyle);
-	vdraw_set_fps_color(osd_colors[0]);
 	
 	// Message
 	vdraw_set_msg_enabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1])));
 	
 	unsigned char curMsgStyle = vdraw_get_msg_style() & ~0x18;
 	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1])) ? 0x10 : 0x00);
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1])) ? 0x08 : 0x00);
+	
+	// Message color
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][i])))
+		{
+			curMsgStyle &= ~0x06;
+			curMsgStyle |= (i << 1);
+			break;
+		}
+	}
 	
 	vdraw_set_msg_style(curMsgStyle);
-	vdraw_set_msg_color(osd_colors[1]);
 	
 	// Intro effect.
 	Intro_Style = gtk_combo_box_get_active(GTK_COMBO_BOX(cboIntroEffect));
@@ -588,7 +611,7 @@ static void genopt_window_save(void)
 	}
 		
 	// Disable the "Apply" button.
-	gtk_widget_set_sensitive(btnApply, false);
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -597,7 +620,7 @@ static void genopt_window_save(void)
  * @param widget
  * @param event
  * @param user_data
- * @return false to continue processing events; true to stop processing events.
+ * @return FALSE to continue processing events; TRUE to stop processing events.
  */
 static gboolean genopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
@@ -606,7 +629,7 @@ static gboolean genopt_window_callback_close(GtkWidget *widget, GdkEvent *event,
 	GSFT_UNUSED_PARAMETER(user_data);
 	
 	genopt_window_close();
-	return false;
+	return FALSE;
 }
 
 
@@ -649,137 +672,5 @@ static void genopt_window_callback_response(GtkDialog *dialog, gint response_id,
 static void genopt_window_callback_widget_changed(void)
 {
 	// Enable the "Apply" button.
-	gtk_widget_set_sensitive(btnApply, true);
-}
-
-
-/**
- * genopt_window_callback_btnColor_clicked(): "Change..." button for a color was clicked.
- * @param button Button.
- * @param user_data Color index.
- */
-static void genopt_window_callback_btnColor_clicked(GtkButton *button, gpointer user_data)
-{
-	GSFT_UNUSED_PARAMETER(button);
-	
-	int btn = GPOINTER_TO_INT(user_data);
-	if (btn < 0 || btn >= 2)
-		return;
-	
-	// Select a new color.
-	GdkColor tmpColor;
-	char buf[16];
-	
-	// Get the current color.
-	snprintf(buf, sizeof(buf), "#%06X", osd_colors[btn]);
-	gdk_color_parse(buf, &tmpColor);
-	
-	// Create a color selection dialog.
-	GtkWidget *color_dialog = gtk_color_selection_dialog_new("Select Color");
-	gtk_window_set_transient_for(GTK_WINDOW(color_dialog), GTK_WINDOW(genopt_window));
-	
-	// Set the initial color.
-	GtkWidget *color_sel = gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(color_dialog));
-	gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(color_sel), &tmpColor);
-	
-	// Run the dialog.
-	audio_clear_sound_buffer();
-	gint dialogResponse = gtk_dialog_run(GTK_DIALOG(color_dialog));
-	if (dialogResponse != GTK_RESPONSE_OK)
-	{
-		// No color was selected.
-		gtk_widget_destroy(color_dialog);
-		return;
-	}
-	
-	// Color was selected. Get it.
-	gtk_color_selection_get_current_color(GTK_COLOR_SELECTION(color_sel), &tmpColor);
-	gtk_widget_destroy(color_dialog);
-	
-	uint32_t color_tmp = ((tmpColor.red << 8) & 0xFF0000) |
-			     ((tmpColor.green & 0xFF00)) |
-			     ((tmpColor.blue >> 8) & 0xFF);
-	if (color_tmp == osd_colors[btn])
-		return;
-	
-	// Set the new color.
-	osd_colors[btn] = color_tmp;
-	genopt_window_set_button_color(btnColor[btn], osd_colors[btn]);
-	
-	// Enable the "Apply" button.
-	gtk_widget_set_sensitive(btnApply, true);
-}
-
-
-/**
- * genopt_window_set_button_color(): Set the color of a button.
- * @param widget Button.
- * @param color Color.
- */
-static void genopt_window_set_button_color(GtkWidget *widget, uint32_t color)
-{
-	GdkColor tmpColor;
-	char buf[16];
-	
-	// Normal/Selected color.
-	snprintf(buf, sizeof(buf), "#%06X", color);
-	gdk_color_parse(buf, &tmpColor);
-	gtk_widget_modify_bg(widget, GTK_STATE_NORMAL, &tmpColor);
-	gtk_widget_modify_bg(widget, GTK_STATE_SELECTED, &tmpColor);
-	
-	// Active color.
-	snprintf(buf, sizeof(buf), "#%06X", color & 0xEEEEEE);
-	gdk_color_parse(buf, &tmpColor);
-	gtk_widget_modify_bg(widget, GTK_STATE_ACTIVE, &tmpColor);
-	
-	// Prelight color.
-	int r = (0xFF + ((color >> 16) & 0xFF)) / 2;
-	int g = (0xFF + ((color >> 8) & 0xFF)) / 2;
-	int b = (0xFF + (color & 0xFF)) / 2;
-	
-	if (r > 0xFF)
-		r = 0xFF;
-	if (g > 0xFF)
-		g = 0xFF;
-	if (b > 0xFF)
-		b = 0xFF;
-	
-	snprintf(buf, sizeof(buf), "#%02X%02X%02X", r, g, b);
-	gdk_color_parse(buf, &tmpColor);
-	gtk_widget_modify_bg(widget, GTK_STATE_PRELIGHT, &tmpColor);
-	
-	// Insensitive color. (3/4 brightness; grayscale.)
-	r = ((color >> 16) & 0xFF);
-	g = ((color >> 8) & 0xFF);
-	b = (color & 0xFF);
-	int Y = (int)(((float)r * 0.30f) + ((float)g * 0.59f) + ((float)b * 0.11f));
-	Y = (Y * 3) / 4;
-	if (Y < 0)
-		Y = 0;
-	else if (Y > 0xFF)
-		Y = 0xFF;
-	
-	snprintf(buf, sizeof(buf), "#%02X%02X%02X", Y, Y, Y);
-	gdk_color_parse(buf, &tmpColor);
-	gtk_widget_modify_bg(widget, GTK_STATE_INSENSITIVE, &tmpColor);
-	
-	// Text color.
-	if (Y >= 0x60)	// Using 0x60 because 0x80 doesn't seem to work at some high brightnesses.
-	{
-		// Text color should be black.
-		strcpy(buf, "#000000");
-	}
-	else
-	{
-		// Text color should be white.
-		strcpy(buf, "#FFFFFF");
-	}
-	
-	gdk_color_parse(buf, &tmpColor);
-	GtkWidget *label = gtk_bin_get_child(GTK_BIN(widget));
-	gtk_widget_modify_fg(label, GTK_STATE_NORMAL, &tmpColor);
-	gtk_widget_modify_fg(label, GTK_STATE_ACTIVE, &tmpColor);
-	gtk_widget_modify_fg(label, GTK_STATE_PRELIGHT, &tmpColor);
-	gtk_widget_modify_fg(label, GTK_STATE_SELECTED, &tmpColor);
-	gtk_widget_modify_fg(label, GTK_STATE_INSENSITIVE, &tmpColor);
+	gtk_widget_set_sensitive(btnApply, TRUE);
 }

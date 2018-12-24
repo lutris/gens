@@ -54,6 +54,10 @@ using std::list;
 
 // OSD character set.
 #include "osd_charset.hpp"
+#include "C64_charset.h"
+
+ // Text drawing values.
+static uint32_t m_Transparency_Mask;
 
 // Message timer.
 #include "port/timer.h"
@@ -64,37 +68,24 @@ char vdraw_msg_text[1024];
 
 // Prerendered text for the on-screen display.
 // Each byte represents 8 pixels, or one line for a character.
-static uint8_t vdraw_msg_prerender[16][1024];
+static uint8_t vdraw_msg_prerender[8][1024];
 static unsigned int vdraw_msg_prerender_len;
 
 
 template<typename pixel, unsigned int charSize, bool do2x>
 static inline void drawStr_preRender(pixel *screen, const int pitch, const int x, const int y,
 					const unsigned int msgWidth, const unsigned int numLines,
-					const vdraw_style_t *style)
+					const vdraw_style_t *style, const pixel transparentMask)
 {
 	pixel *screen_start = &screen[y*pitch + x];
 	const unsigned int chars_per_line = (msgWidth / charSize);
 	unsigned int chr_offset = 0;
 	
-	for (unsigned int line = 0; line < (numLines * charSize * 2); line += (charSize * 2))
+	for (unsigned int line = 0; line < (numLines * charSize); line += charSize)
 	{
-		for (unsigned int cy = 0; cy < (charSize * 2); cy++)
+		for (unsigned int cy = 0; cy < charSize; cy++)
 		{
-			pixel *screen_pos, *screen_pos_sh;
-			if (do2x)
-			{
-				// 2x text drawing.
-				screen_pos = screen_start - 1 + ((cy + line - 1) * pitch);
-				screen_pos_sh = screen_start + 1 + ((cy + line + 1) * pitch);
-			}
-			else
-			{
-				// 1x text drawing.
-				screen_pos = screen_start + ((cy + line) * pitch);
-				screen_pos_sh = screen_start + 1 + ((cy + line + 1) * pitch);
-			}
-			
+			pixel *screen_pos = screen_start + ((cy + line) * pitch);
 			for (unsigned int cx = 0; cx < chars_per_line; cx++)
 			{
 				if (cx + chr_offset >= vdraw_msg_prerender_len)
@@ -108,7 +99,6 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 				{
 					// Empty line.
 					screen_pos += charSize;
-					screen_pos_sh += charSize;
 					continue;
 				}
 				
@@ -117,32 +107,39 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 					if (cRow & 0x80)
 					{
 						// Dot is opaque. Draw it.
+						// TODO: Original asm version had transparency in a separate function for performance.
+						// See if that would actually help.
+						
+						// TODO: The transparency method used here might be slow on DDraw when using video memory.
 						if (do2x)
 						{
-							*screen_pos = style->dot_color;
-							*(screen_pos + 1) = style->dot_color;
-							*screen_pos_sh = 0;
-							*(screen_pos_sh + 1) = 0;
+							if (!style->transparent)
+							{
+								*screen_pos = style->dot_color;
+								*(screen_pos + 1) = style->dot_color;
+							}
+							else
+							{
+								*screen_pos = ((style->dot_color & transparentMask) >> 1) +
+									      ((*screen_pos & transparentMask) >> 1);
+								*(screen_pos + 1) = ((style->dot_color & transparentMask) >> 1) +
+										    ((*(screen_pos + 1) & transparentMask) >> 1);
+							}
 						}
 						else
 						{
-							*screen_pos = style->dot_color;
-							*screen_pos_sh = 0;
+							if (!style->transparent)
+								*screen_pos = style->dot_color;
+							else
+								*screen_pos = ((style->dot_color & transparentMask) >> 1) +
+									      ((*screen_pos & transparentMask) >> 1);
 						}
 					}
 					
 					cRow <<= 1;
-					
+					screen_pos++;
 					if (do2x)
-					{
-						screen_pos += 2;
-						screen_pos_sh += 2;
-					}
-					else
-					{
 						screen_pos++;
-						screen_pos_sh++;
-					}
 				}
 			}
 		}
@@ -154,7 +151,8 @@ static inline void drawStr_preRender(pixel *screen, const int pitch, const int x
 
 template<typename pixel>
 static inline void T_drawText(pixel *screen, const int pitch, const int w, const int h,
-			      const char *msg, const vdraw_style_t *style)
+			      const char *msg, const pixel transparentMask, const vdraw_style_t *style,
+			      const bool isDDraw)
 {
 	unsigned int x, y;
 	unsigned int charSize;
@@ -177,13 +175,51 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	x = 8;
 	y = h;
 	
-	// Character size is 8x16 normal, 16x32 double.
-	y -= (8 + (charSize * 2));
+#if defined(GENS_OS_WIN32)
+	if (isDDraw)
+	{
+		// Check if the text position needs to be adjusted.
+		if (vdraw_scale == 1)
+		{
+			// With the DirectDraw renderer, the vertical shift is weird
+			// in normal (1x) rendering.
+			
+			if (vdraw_get_fullscreen() && vdraw_get_sw_render())
+			{
+				// Software rendering.
+				x = (vdp_isH40() ? 0 : (32 * vdraw_scale));
+				
+				// Adjust the vertical position, if necessary.
+				if (VDP_Num_Vis_Lines < 240)
+				{
+					y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+				}
+			}
+		}
+		else
+		{
+			// 2x or higher.
+			
+			// For whatever reason, text is always shifted over 8 pixels
+			// when not using Normal rendering.
+			x = (vdp_isH40() ? 0 : (32 * vdraw_scale));
+			
+			// Adjust the vertical position, if necessary.
+			if (VDP_Num_Vis_Lines < 240)
+			{
+				y += (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+			}
+		}
+	}
+#endif /* defined(GENS_OS_WIN32) */
+	
+	// Character size is 8x8 normal, 16x16 double.
+	y -= (8 + charSize);
 	
 	// Determine how many linebreaks are needed.
 	const unsigned int msgWidth = w - 16;
 	const unsigned short lineBreaks = ((vdraw_msg_prerender_len - 1) * charSize) / msgWidth;
-	y -= (lineBreaks * (charSize * 2));
+	y -= (lineBreaks * charSize);
 	
 	vdraw_style_t textShadowStyle = *style;
 	textShadowStyle.dot_color = 0;
@@ -191,13 +227,26 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	if (style->double_size)
 	{
 		// 2x text rendering.
-		drawStr_preRender<pixel, 16, true>(screen, pitch, x, y, msgWidth, (lineBreaks + 1), style);
+		// TODO: Make text shadow an option.
+		drawStr_preRender<pixel, 16, true>
+					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
+					 &textShadowStyle, transparentMask);
+		
+		drawStr_preRender<pixel, 16, true>
+					(screen, pitch, x-1, y-1, msgWidth, (lineBreaks + 1),
+					 style, transparentMask);
 	}
 	else
 	{
 		// 1x text rendering.
 		// TODO: Make text shadow an option.
-		drawStr_preRender<pixel, 8, false>(screen, pitch, x, y, msgWidth, (lineBreaks + 1), style);
+		drawStr_preRender<pixel, 8, false>
+					(screen, pitch, x+1, y+1, msgWidth, (lineBreaks + 1),
+					 &textShadowStyle, transparentMask);
+		
+		drawStr_preRender<pixel, 8, false>
+					(screen, pitch, x, y, msgWidth, (lineBreaks + 1),
+					 style, transparentMask);
 	}
 }
 
@@ -210,9 +259,11 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
  * @param h Height of the viewable area of the screen surface (in pixels).
  * @param msg Text to draw to the screen.
  * @param style Pointer to style information.
+ * @param DDRAW_adjustForScreenSize
  */
 void draw_text(void *screen, const int pitch, const int w, const int h,
-	       const char *msg, const vdraw_style_t *style)
+	       const char *msg, const vdraw_style_t *style,
+	       const BOOL isDDraw)
 {
 	if (!style)
 		return;
@@ -220,12 +271,16 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
-		T_drawText((uint16_t*)screen, pitch, w, h, msg, style);
+		T_drawText((uint16_t*)screen, pitch, w, h, msg,
+			   (uint16_t)m_Transparency_Mask, style,
+			   (isDDraw ? true : false));
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		T_drawText((uint32_t*)screen, pitch, w, h, msg, style);
+		T_drawText((uint32_t*)screen, pitch, w, h, msg,
+			   (uint32_t)m_Transparency_Mask, style,
+			   (isDDraw ? true : false));
 	}
 }
 
@@ -239,29 +294,78 @@ void calc_text_style(vdraw_style_t *style)
 	if (!style)
 		return;
 	
-	// If we're not using 32-bit color, calculate the 15-bit or 16-bit dot color.
-	uint32_t color32 = style->color;
+	// Calculate the dot color.
 	if (bppOut == 15)
 	{
-		// 15-bit. (RGB555)
-		style->dot_color = ((color32 >> 9) & 0x7C00) |
-				   ((color32 >> 6) & 0x03E0) |
-				   ((color32 >> 3) & 0x001F);
+		switch (style->style & 0x07)
+		{
+			case STYLE_COLOR_RED:
+				style->dot_color = 0x7C00;
+				break;
+			case STYLE_COLOR_GREEN:
+				style->dot_color = 0x03E0;
+				break;
+			case STYLE_COLOR_BLUE:
+				style->dot_color = 0x001F;
+				break;
+			default: // STYLE_COLOR_WHITE
+				style->dot_color = 0x7FFF;
+				break;
+		}
 	}
 	else if (bppOut == 16)
 	{
-		// 16-bit. (RGB565)
-		style->dot_color = ((color32 >> 8) & 0xF800) |
-				   ((color32 >> 5) & 0x07E0) |
-				   ((color32 >> 3) & 0x001F);
+		switch (style->style & 0x07)
+		{
+			case STYLE_COLOR_RED:
+				style->dot_color = 0xF800;
+				break;
+			case STYLE_COLOR_GREEN:
+				style->dot_color = 0x7E00;
+				break;
+			case STYLE_COLOR_BLUE:
+				style->dot_color = 0x001F;
+				break;
+			default: // STYLE_COLOR_WHITE
+				style->dot_color = 0xFFFF;
+				break;
+		}
 	}
-	else
+	else //if (bppOut == 32)
 	{
-		// 32-bit. Use the original color.
-		style->dot_color = color32;
+		switch (style->style & 0x07)
+		{
+			case STYLE_COLOR_RED:
+				style->dot_color = 0xFF0000;
+				break;
+			case STYLE_COLOR_GREEN:
+				style->dot_color = 0x00FF00;
+				break;
+			case STYLE_COLOR_BLUE:
+				style->dot_color = 0x0000FF;
+				break;
+			default: // STYLE_COLOR_WHITE
+				style->dot_color = 0xFFFFFF;
+				break;
+		}
 	}
 	
 	style->double_size = ((style->style & STYLE_DOUBLESIZE) ? TRUE : FALSE);
+	style->transparent = ((style->style & STYLE_TRANSPARENT) ? TRUE : FALSE);
+}
+
+
+/**
+ * calc_transparency_mask(): Calculate the transparency mask.
+ */
+void calc_transparency_mask(void)
+{
+	if (bppOut == 15)
+		m_Transparency_Mask = 0x7BDE;
+	else if (bppOut == 16)
+		m_Transparency_Mask = 0xF7DE;
+	else //if (bppOut == 32)
+		m_Transparency_Mask = 0xFEFEFE;
 }
 
 
@@ -338,27 +442,16 @@ void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 
 
 /**
- * vdraw_text_clear(): Clear the message text.
- */
-void vdraw_text_clear(void)
-{
-	vdraw_msg_text[0] = 0x00;
-	vdraw_msg_prerender_len = 0;
-}
-
-
-/**
  * vdraw_msg_timer_update(): Update the message timer.
  */
 void vdraw_msg_timer_update(void)
 {
-	if (GetTickCount() <= vdraw_msg_time)
-		return;
-	
-	// Message timer has expired. Clear the message.
-	vdraw_msg_visible = false;
-	vdraw_text_clear();
-	
-	// Force a wakeup.
-	GensUI::wakeup();
+	if (GetTickCount() > vdraw_msg_time)
+	{
+		vdraw_msg_visible = false;
+		vdraw_msg_text[0] = 0x00;
+		
+		// Force a wakeup.
+		GensUI::wakeup();
+	}
 }

@@ -85,7 +85,7 @@ section .bss align=64
 	
 	global SYM(Ram_Backup_Ex)
 	SYM(Ram_Backup_Ex):
-		resb 512 * 1024
+		resb 64 * 1024
 	
 section .data align=64
 	
@@ -120,7 +120,7 @@ section .rodata align=64
 		dd	M68K_Read_Byte_Bad,		; 0x500000 - 0x57FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x580000 - 0x5FFFFF
 		dd	M68K_Read_Byte_BRAM,		; 0x600000 - 0x67FFFF
-		dd	M68K_Read_Byte_BRAM,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
 		dd	M68K_Read_Byte_BRAM_W,		; 0x780000 - 0x7FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x800000 - 0x87FFFF
@@ -155,7 +155,7 @@ section .rodata align=64
 		dd	M68K_Read_Word_Bad,		; 0x500000 - 0x57FFFF
 		dd	M68K_Read_Word_Bad,		; 0x580000 - 0x5FFFFF
 		dd	M68K_Read_Word_BRAM,		; 0x600000 - 0x67FFFF
-		dd	M68K_Read_Word_BRAM,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x700000 - 0x77FFFF
 		dd	M68K_Read_Word_BRAM_W,		; 0x780000 - 0x7FFFFF
 		dd	M68K_Read_Word_Bad,		; 0x800000 - 0x87FFFF
@@ -258,8 +258,8 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Rom_Data) + ebx]
+		xor	ebx, 1
+		mov	al, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -273,8 +273,8 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Prg) + ebx - 0x20000]		
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Prg) + ebx - 0x20000]		
 		pop	ebx
 		ret
 	
@@ -284,7 +284,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	eax, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	eax, byte 0x3
+		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
 	align 16
@@ -297,8 +297,8 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_2M) + ebx - 0x200000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -308,8 +308,8 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x200000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -319,15 +319,15 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
@@ -335,10 +335,11 @@ section .text align=64
 	
 	.Cell_Arranged_0:
 		shr	ebx, 1
-		mov	eax, 0	; can't be optimized to xor due to adc
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	eax, 0
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx * 2 + eax]
+		and	ebx, 0xFFFF
+		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax]
 		pop	ebx
 		ret
 	
@@ -346,10 +347,11 @@ section .text align=64
 	
 	.Cell_Arranged_1:
 		shr	ebx, 1
-		mov	eax, 0	; can't be optimized to xor due to adc
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	eax, 0
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	eax, 0
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx * 2 + eax + 0x20000]
+		and	ebx, 0xFFFF
+		mov	al, [SYM(Ram_Word_1M) + ebx * 2 + eax + 0x20000]
 		pop	ebx
 		ret
 	
@@ -357,12 +359,10 @@ section .text align=64
 	
 	M68K_Read_Byte_BRAM_L:
 		cmp	ebx, 0x400001
-		xor	eax, eax
+		mov	al, 0
 		jne	short .bad
 		
-		; Get the BRAM size identifier.
-		mov	eax, [SYM(BRAM_Ex_Size)]
-		and	eax, byte 7
+		mov	al, [SYM(BRAM_Ex_Size)]
 		
 	.bad:
 		pop	ebx
@@ -371,15 +371,16 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Byte_BRAM:
-		; TODO: Restrict accessible area based on BRAM size.
+		cmp	ebx, 0x61FFFF
+		mov	al, 0
+		ja	short .bad
+		
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
-		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
+		mov	al, [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -389,10 +390,10 @@ section .text align=64
 	
 	M68K_Read_Byte_BRAM_W:
 		cmp	ebx, 0x7FFFFF
-		xor	eax, eax
+		mov	al, 0
 		jne	short .bad
 		
-		movzx	eax, byte [SYM(BRAM_Ex_State)]
+		mov	al, [SYM(BRAM_Ex_State)]
 	
 	.bad:
 		pop	ebx
@@ -434,7 +435,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		movzx	eax, byte [SYM(Last_BUS_REQ_St)]
+		mov	al, [SYM(Last_BUS_REQ_St)]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -442,14 +443,14 @@ section .text align=64
 	align 4
 	
 	.bus_taken:
-		mov	eax, 0x80
+		mov	al, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.z80_on:
-		mov	eax, 0x81
+		mov	al, 0x81
 		pop	ebx
 		ret
 	
@@ -471,34 +472,19 @@ section .text align=64
 	align 16
 	
 	.bad:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.MD_Spec:
-		; Genesis version register.
-		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
-		; MODE: Region. (0 == East; 1 == West)
-		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
-		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
-		; RSV: Reserved. (TODO: I think this is used for SegaCD, but I'm not sure.)
-		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
-		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
-		
-		; Set region and video mode.
-		mov	eax, [SYM(Game_Mode)]
-		add	eax, eax
-		or	eax, [SYM(CPU_Mode)]
-		shl	eax, 6
-		
-		; Mark floppy drive as not connected.
-		or	eax, byte 0x20
-		
-		; Mask off any high bits and return.
+		mov	al, [SYM(Game_Mode)]
+		add	al, al
+		or	al, [SYM(CPU_Mode)]
+		shl	al, 6
 		pop	ebx
-		and	eax, 0xFF
+		or	al, [SYM(Gen_Version)]
 		ret
 	
 	align 8
@@ -518,14 +504,14 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		movzx	eax, byte [SYM(Controller_1_COM)]
+		mov	al, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		movzx	eax, byte [SYM(Controller_2_COM)]
+		mov	al, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
@@ -559,15 +545,15 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl_L:
-		movzx	eax, byte [SYM(S68K_State)]
+		mov	al, [SYM(S68K_State)]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.S68K_Ctrl_H:
-		movzx	eax, byte [SYM(Int_Mask_S68K)]
-		and	eax, byte 4
+		mov	al, [SYM(Int_Mask_S68K)]
+		and	al, 4
 		shl	al, 5
 		pop	ebx
 		ret
@@ -578,7 +564,7 @@ section .text align=64
 		mov	eax, [SYM(Bank_M68K)]
 		mov	ebx, [SYM(Ram_Word_State)]
 		shr	eax, 11
-		and	ebx, byte 3
+		and	ebx, 3
 		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
@@ -586,84 +572,84 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl_H:
-		movzx	eax, byte [SYM(S68K_Mem_WP)]
+		mov	al, [SYM(S68K_Mem_WP)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Mode_H:
-		movzx	eax, byte [SYM(CDC.RS0) + 1]
+		mov	al, [SYM(CDC.RS0) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Mode_L:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.HINT_Vector_H:
-		movzx	eax, byte [SYM(Rom_Data) + 0x73]
+		mov	al, [SYM(Rom_Data) + 0x73]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.HINT_Vector_L:
-		movzx	eax, byte [SYM(Rom_Data) + 0x72]
+		mov	al, [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Host_Data_H:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.CDC_Host_Data_L:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Unknow:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Stop_Watch_H:
-		movzx	eax, byte [SYM(CDC.Stop_Watch) + 3]
+		mov	al, [SYM(CDC.Stop_Watch) + 3]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Stop_Watch_L:
-		movzx	eax, byte [SYM(CDC.Stop_Watch) + 2]
+		mov	al, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_H:
-		movzx	eax, byte [SYM(COMM.Flag) + 1]
+		mov	al, [SYM(COMM.Flag) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Com_Flag_L:
-		movzx	eax, byte [SYM(COMM.Flag)]
+		mov	al, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -685,8 +671,8 @@ section .text align=64
 	.Com_D6_L:
 	.Com_D7_H:
 	.Com_D7_L:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(COMM.Command) + ebx - 0x10]
+		xor	ebx, 1
+		mov	al, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -708,8 +694,8 @@ section .text align=64
 	.Com_S6_L:
 	.Com_S7_H:
 	.Com_S7_L:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(COMM.Status) + ebx - 0x20]
+		xor	ebx, 1
+		mov	al, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -722,7 +708,7 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		movzx	eax, word [SYM(Rom_Data) + ebx]
+		mov	ax, [SYM(Rom_Data) + ebx]
 		pop	ebx
 		ret
 	
@@ -736,7 +722,7 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
-		movzx	eax, word [SYM(Ram_Prg) + ebx - 0x20000]
+		mov	ax, [SYM(Ram_Prg) + ebx - 0x20000]
 		pop	ebx
 		ret
 	
@@ -759,7 +745,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		movzx	eax, word [SYM(Ram_Word_2M) + ebx - 0x200000]
+		mov	ax, [SYM(Ram_Word_2M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -769,7 +755,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
 		
-		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x200000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000]
 		pop	ebx
 		ret
 	
@@ -779,30 +765,32 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Cell_Arranged_0:
-		movzx	eax, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		movzx	eax, word [SYM(Ram_Word_1M) + eax * 2]
+		xor	eax, eax
+		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	ax, [SYM(Ram_Word_1M) + eax * 2]
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Cell_Arranged_1:
-		movzx	eax, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
-		movzx	eax, word [SYM(Ram_Word_1M) + eax * 2 + 0x20000]
+		xor	eax, eax
+		mov	ax, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	ax, [SYM(Ram_Word_1M) + eax * 2 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -810,12 +798,10 @@ section .text align=64
 
 	M68K_Read_Word_BRAM_L:
 		cmp	ebx, 0x400000
-		xor	eax, eax
+		mov	ax, 0
 		jne	short .bad
 		
-		; Get the BRAM size identifier.
-		mov	eax, [SYM(BRAM_Ex_Size)]
-		and	eax, byte 7
+		mov	ax, [SYM(BRAM_Ex_Size)]
 	
 	.bad:
 		pop	ebx
@@ -824,15 +810,16 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Word_BRAM:
-		; TODO: Restrict accessible area based on BRAM size.
+		cmp	ebx, 0x61FFFF
+		mov	ax, 0
+		ja	short .bad
+		
 		test	word [SYM(BRAM_Ex_State)], 0x100
 		jz	short .bad
 		
-		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		movzx	eax, byte [SYM(Ram_Backup_Ex) + ebx]
+		mov	ax, [SYM(Ram_Backup_Ex) + ebx]
 	
 	.bad:
 		pop	ebx
@@ -842,10 +829,11 @@ section .text align=64
 	
 	M68K_Read_Word_BRAM_W:
 		cmp	ebx, 0x7FFFFE
-		xor	eax, eax
+		mov	ax, 0
 		jne	short .bad
 		
-		movzx	eax, byte [SYM(BRAM_Ex_State)]
+		xor	ah, ah
+		mov	al, [SYM(BRAM_Ex_State)]
 		
 	.bad:
 		pop	ebx
@@ -887,7 +875,7 @@ section .text align=64
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, [SYM(Last_BUS_REQ_St)]
 		xor	al, 0xFF
 		or	ah, 0x80
@@ -898,7 +886,7 @@ section .text align=64
 	align 16
 	
 	.bus_taken:
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
@@ -908,7 +896,7 @@ section .text align=64
 	align 16
 	
 	.z80_on:
-		movzx	eax, byte [SYM(Fake_Fetch)]	; mov al, [SYM(Fake_Fetch)]
+		mov	al, [SYM(Fake_Fetch)]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
@@ -933,27 +921,12 @@ section .text align=64
 	align 8
 	
 	.MD_Spec:
-		; Genesis version register.
-		; Format: [MODE VMOD DISK RSV VER3 VER2 VER1 VER0]
-		; MODE: Region. (0 == East; 1 == West)
-		; VMOD: Video mode. (0 == NTSC; 1 == PAL)
-		; DISK: Floppy disk drive. (0 == connected; 1 == not connected.)
-		; RSV: Reserved. (TODO: I think this is used for SegaCD, but I'm not sure.)
-		; VER 3-0: HW version. (0 == no TMSS; 1 = TMSS)
-		; TODO: Set VER to 1 once TMSS support is added, if TMSS is enabled.
-		
-		; Set region and video mode.
-		mov	eax, [SYM(Game_Mode)]
-		add	eax, eax
-		or	eax, [SYM(CPU_Mode)]
-		shl	eax, 6
-		
-		; Mark floppy drive as not connected.
-		or	eax, byte 0x20
-		
-		; Mask off any high bits and return.
+		mov	ax, [SYM(Game_Mode)]
+		add	ax, ax
+		or	ax, [SYM(CPU_Mode)]
+		shl	ax, 6
 		pop	ebx
-		and	eax, 0xFF
+		or	ax, [SYM(Gen_Version)]		; on recupere les infos hardware de la machine
 		ret
 	
 	align 8
@@ -973,21 +946,21 @@ section .text align=64
 	align 8
 	
 	.CT_Pad_1:
-		movzx	eax, word [SYM(Controller_1_COM)]
+		mov	ax, [SYM(Controller_1_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.CT_Pad_2:
-		movzx	eax, word [SYM(Controller_2_COM)]
+		mov	ax, [SYM(Controller_2_COM)]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.bad:
-		xor	eax, eax
+		xor	ax, ax
 		pop	ebx
 		ret
 	
@@ -1015,8 +988,8 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl:
-		movzx	eax, byte [SYM(S68K_State)]	; mov al, [SYM(S68K_State)]
 		mov	ah, [SYM(Int_Mask_S68K)]
+		mov	al, [SYM(S68K_State)]
 		and	ah, 4
 		shl	ah, 5
 		pop	ebx
@@ -1037,15 +1010,15 @@ section .text align=64
 	align 8
 	
 	.CDC_Mode:
-		xor	eax, eax
 		mov	ah, [SYM(CDC.RS0) + 1]
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.HINT_Vector:
-		movzx	eax, word [SYM(Rom_Data) + 0x72]
+		mov	ax, [SYM(Rom_Data) + 0x72]
 		pop	ebx
 		ret
 	
@@ -1059,21 +1032,21 @@ section .text align=64
 	align 4
 	
 	.Unknow:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Stop_Watch:
-		movzx	eax, word [SYM(CDC.Stop_Watch) + 2]
+		mov	ax, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 8
 	
 	.Com_Flag:
-		movzx	eax, word [SYM(COMM.Flag)]
+		mov	ax, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -1087,7 +1060,7 @@ section .text align=64
 	.Com_D5:
 	.Com_D6:
 	.Com_D7:
-		movzx	eax, word [SYM(COMM.Command) + ebx - 0x10]
+		mov	ax, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -1101,7 +1074,7 @@ section .text align=64
 	.Com_S5:
 	.Com_S6:
 	.Com_S7:
-		movzx	eax, word [SYM(COMM.Status) + ebx - 0x20]
+		mov	ax, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
@@ -1120,7 +1093,7 @@ section .text align=64
 		cmp	byte [SYM(S68K_State)], 1		; BUS available ?
 		je	short .bad
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Prg) + ebx - 0x20000], al
 	
 	.bad:
@@ -1134,7 +1107,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	ecx, byte 0x3
+		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
 	align 16
@@ -1147,7 +1120,7 @@ section .text align=64
 	align 16
 	
 	.Word_Ram_2M:
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_2M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
@@ -1158,7 +1131,7 @@ section .text align=64
 	.Word_Ram_1M_0:
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_0
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x200000], al
 		pop	ecx
 		pop	ebx
@@ -1170,7 +1143,7 @@ section .text align=64
 		cmp	ebx, 0x21FFFF
 		ja	short .Cell_Arranged_1
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x200000 + 0x20000], al
 		pop	ecx
 		pop	ebx
@@ -1179,7 +1152,7 @@ section .text align=64
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
@@ -1188,8 +1161,9 @@ section .text align=64
 	.Cell_Arranged_0:
 		shr	ebx, 1
 		mov	ecx, 0
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
+		and	ebx, 0xFFFF
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx], al
 		pop	ecx
 		pop	ebx
@@ -1200,8 +1174,9 @@ section .text align=64
 	.Cell_Arranged_1:
 		shr	ebx, 1
 		mov	ecx, 0
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx * 2 - 0x220000]
 		adc	ecx, 0
+		and	ebx, 0xFFFF
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + ecx + 0x20000], al
 		pop	ecx
 		pop	ebx
@@ -1210,13 +1185,13 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Byte_BRAM:
-		; TODO: Restrict accessible area based on BRAM size.
+		cmp	ebx, 0x61FFFF
+		ja	short .bad
+		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
-		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		and	ebx, 0x1FFFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup_Ex) + ebx], al
 	
@@ -1297,7 +1272,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, byte 8
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:
@@ -1345,7 +1320,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, byte 4
+		add	esp, 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1380,7 +1355,7 @@ section .text align=64
 	.Pad_1:
 		push	eax
 		call	SYM(WR_Controller_1)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1390,7 +1365,7 @@ section .text align=64
 	.Pad_2:
 		push	eax
 		call	SYM(WR_Controller_2)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1470,7 +1445,7 @@ section .text align=64
 		push	dword -1
 		push	dword 2
 		call	SYM(sub68k_interrupt)
-		add	esp, byte 8
+		add	esp, 8
 	
 	.No_Process_INT2:
 		pop	ecx
@@ -1631,7 +1606,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(COMM.Command) + ebx - 0x10], al
 		pop	ecx
 		pop	ebx
@@ -1687,7 +1662,7 @@ section .text align=64
 		cmp	ebx, 0x23FFFF
 		mov	ecx, [SYM(Ram_Word_State)]
 		ja	short .bad
-		and	ecx, byte 0x3
+		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
 	align 16
@@ -1736,7 +1711,8 @@ section .text align=64
 	align 16
 	
 	.Cell_Arranged_0:
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		and	ebx, 0xFFFF
 		pop	ecx
 		mov	[SYM(Ram_Word_1M) + ebx * 2], ax
 		pop	ebx
@@ -1745,7 +1721,8 @@ section .text align=64
 	align 16
 	
 	.Cell_Arranged_1:
-		movzx	ebx, word [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		mov	bx, [SYM(Cell_Conv_Tab) + ebx - 0x220000]
+		and	ebx, 0xFFFF
 		pop	ecx
 		mov	[SYM(Ram_Word_1M) + ebx * 2 + 0x20000], ax
 		pop	ebx
@@ -1754,15 +1731,15 @@ section .text align=64
 	align 16
 	
 	M68K_Write_Word_BRAM:
-		; TODO: Restrict accessible area based on BRAM size.
+		cmp	ebx, 0x61FFFF
+		ja	short .bad
+		
 		cmp	word [SYM(BRAM_Ex_State)], 0x101
 		jne	short .bad
 		
-		; BRAM is written on odd (?) addresses only.
-		; Thus, for 512 KB, a mask of 0xFFFFF (1 MB) is needed.
-		and	ebx, 0xFFFFF
+		and	ebx, 0x1FFFE
 		shr	ebx, 1
-		mov	[SYM(Ram_Backup_Ex) + ebx], al
+		mov	[SYM(Ram_Backup_Ex) + ebx], ax
 		
 	.bad:
 		pop	ecx
@@ -1835,7 +1812,7 @@ section .text align=64
 		push	edx
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_set_odo)
-		add	esp, byte 8
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:
@@ -1883,7 +1860,7 @@ section .text align=64
 		
 		push	SYM(M_Z80)
 		call	SYM(mdZ80_reset)
-		add	esp, byte 4
+		add	esp, 4
 		
 		or	byte [SYM(Z80_State)], Z80_STATE_RESET
 		call	SYM(YM2612_Reset)
@@ -1904,7 +1881,7 @@ section .text align=64
 		cmp	ebx, 0xA1000D
 		ja	.no_ctrl_io
 		
-		and	ebx, byte 0xE
+		and	ebx, 0x00000E
 		jmp	[.Table_IO_WW + ebx * 2]
 	
 	align 16
@@ -1918,7 +1895,7 @@ section .text align=64
 	.Pad_1:
 		push	eax
 		call	SYM(WR_Controller_1)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1928,7 +1905,7 @@ section .text align=64
 	.Pad_2:
 		push	eax
 		call	SYM(WR_Controller_2)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1964,7 +1941,7 @@ section .text align=64
 		cmp	ebx, 0xA1202F
 		ja	short .bad
 		
-		and	ebx, byte 0x3E
+		and	ebx, 0x3E
 		jmp	[.Table_Extended_IO + ebx * 2]
 	
 	align 16
@@ -2002,7 +1979,7 @@ section .text align=64
 		push	dword -1
 		push	dword 2
 		call	SYM(sub68k_interrupt)
-		add	esp, byte 8
+		add	esp, 8
 	
 	.No_Process_INT2:
 		pop	ecx

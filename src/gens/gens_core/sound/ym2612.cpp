@@ -241,9 +241,7 @@ static int int_cnt;	// Interpolation calculation
 
 #include "audio/audio.h"
 #include "util/sound/gym.hpp"
-
-// Needed for VDP line number.
-#include "gens_core/vdp/vdp_io.h"
+extern int VDP_Current_Line;
 
 int YM2612_Enable;
 int YM2612_Improv;
@@ -1563,7 +1561,7 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		
 		// We recalculate rate and frequence after interpolation
 		
-		YM2612.Rate = YM2612.Clock / 144.0;
+		YM2612.Rate = YM2612.Clock / 144;
 		YM2612.Frequence = 1.0;
 	}
 	else
@@ -1872,48 +1870,27 @@ int YM2612_Reset(void)
 }
 
 
-uint8_t YM2612_Read(void)
+int YM2612_Read(void)
 {
-#if 0
-	static int cnt = 0;
-	
+/*	static int cnt = 0;
+
 	if (cnt++ == 50)
 	{
 		cnt = 0;
 		return YM2612.Status;
 	}
 	else return YM2612.Status | 0x80;
-#endif
-	
-	/**
-	 * READ DATA is the same for all four addresses.
-	 * Format: [BUSY X X X X X OVRA OVRB]
-	 * BUSY: If 1, YM2612 is busy and cannot accept new data.
-	 * OVRA: If 1, timer A has overflowed.
-	 * OVRB: If 1, timer B has overflowed.
-	 */
-	return (uint8_t)YM2612.status;
+*/
+	return YM2612.status;
 }
 
 
-/**
- * YM2612_Write(): Write to a YM2612 register.
- * @param adr Address.
- * @param data Data.
- * @return 0 on success; non-zero on error. (TODO: This isn't used by anything!)
- */
-int YM2612_Write(unsigned int adr, uint8_t data)
+int YM2612_Write(unsigned char adr, unsigned char data)
 {
-	/**
-	 * Possible addresses:
-	 * - 0: Part 1 register number.
-	 * - 1: Part 1 data.
-	 * - 2: Part 2 register number.
-	 * - 3: Part 2 data.
-	 */
-	
 	int d;
-	switch (adr & 0x03)
+	adr &= 0x3;
+	
+	switch (adr)
 	{
 		case 0:
 			YM2612.OPNAadr = data;
@@ -1924,7 +1901,7 @@ int YM2612_Write(unsigned int adr, uint8_t data)
 			
 			if (YM2612.OPNAadr == 0x2A)
 			{
-				YM2612.DACdata = ((int)data - 0x80) << 7;
+				YM2612.DACdata = ((int) data - 0x80) << 7;
 				return 0;
 			}
 			
@@ -1982,11 +1959,11 @@ int YM2612_Write(unsigned int adr, uint8_t data)
 				
 				if (d < 0xA0)		// SLOT
 				{
-					SLOT_SET(YM2612.OPNBadr + 0x100, data);
+					SLOT_SET (YM2612.OPNBadr + 0x100, data);
 				}
 				else			// CHANNEL
 				{
-					CHANNEL_SET(YM2612.OPNBadr + 0x100, data);
+					CHANNEL_SET (YM2612.OPNBadr + 0x100, data);
 				}
 			}
 			else
@@ -2002,7 +1979,7 @@ void YM2612_Update(int **buf, int length)
 {
 	int i, j, algo_type;
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG4,
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
 		"Starting generating sound...");
 	
 	// Mise à jour des pas des compteurs-fréquences s'ils ont été modifiés
@@ -2093,7 +2070,7 @@ void YM2612_Update(int **buf, int length)
 	
 	YM2612.Inter_Cnt = int_cnt;
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG4,
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
 		"Finishing generating sound...");
 
 }
@@ -2220,7 +2197,7 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be normalized to an offset.
-			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&Rate_Tabs.DT_TAB[0][0]));
+			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&Rate_Tabs.DT_TAB));
 			
 			// Regular ints.
 			slotGSX->MUL		= cpu_to_le32(slotYM->MUL);
@@ -2233,10 +2210,10 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&Rate_Tabs.AR_TAB[0]));
-			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
-			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
-			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&Rate_Tabs.DR_TAB[0]));
+			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&Rate_Tabs.AR_TAB));
+			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&Rate_Tabs.DR_TAB));
+			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&Rate_Tabs.DR_TAB));
+			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&Rate_Tabs.DR_TAB));
 			
 			// Regular ints.
 			slotGSX->Fcnt		= cpu_to_le32(slotYM->Fcnt);
@@ -2355,7 +2332,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be converted from an offset.
-			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&Rate_Tabs.DT_TAB[0][0];
+			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&Rate_Tabs.DT_TAB;
 			
 			// Regular ints.
 			slotYM->MUL		= le32_to_cpu(slotGSX->MUL);
@@ -2368,10 +2345,10 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&Rate_Tabs.AR_TAB[0];
-			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
-			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
-			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&Rate_Tabs.DR_TAB[0];
+			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&Rate_Tabs.AR_TAB;
+			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&Rate_Tabs.DR_TAB;
+			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&Rate_Tabs.DR_TAB;
+			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&Rate_Tabs.DR_TAB;
 			
 			// Regular ints.
 			slotYM->Fcnt		= le32_to_cpu(slotGSX->Fcnt);
@@ -2459,8 +2436,8 @@ void YM2612_Special_Update(void)
 	{
 		YM2612_Update(YM_Buf, YM_Len);
 		
-		YM_Buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
-		YM_Buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
+		YM_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
+		YM_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
 		YM_Len = 0;
 	}
 }

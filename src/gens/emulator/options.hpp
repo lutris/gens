@@ -28,9 +28,6 @@ class Options
 		static int saveSlot(void);
 		static void setSaveSlot(const int newSaveSlot);
 		
-		static int bpp(void);
-		static void setBpp(uint8_t newBpp);
-		
 		static int frameSkip(void);
 		static void setFrameSkip(const int newFrameSkip);
 		
@@ -64,6 +61,9 @@ class Options
 		
 		static bool soundPSG(void);
 		static void setSoundPSG(const bool newSoundPSG);
+		
+		static bool soundPSG_Sine(void);
+		static void setSoundPSG_Sine(const bool newSoundPSG_Sine);
 		
 		static bool soundPCM(void);
 		static void setSoundPCM(const bool newSoundPCM);
@@ -113,13 +113,7 @@ class Options
 		
 		static bool OpenGL_LinearFilter(void);
 		static void setOpenGL_LinearFilter(const bool newFilter);
-		
-		static bool OpenGL_OrthographicProjection(void);
-		static void setOpenGL_OrthographicProjection(const bool newOrthoProj);
 #endif /* GENS_OPENGL */
-		
-		static int IntRend_Mode(void);
-		static void setIntRend_Mode(const int newIntRend_Mode);
 		
 		/** Renderer selection. **/
 		static void rendererNext(void);

@@ -8,8 +8,7 @@ gens_SOURCES += \
 		emulator/g_main_unix.cpp \
 		port/ini_old.c \
 		port/timer.c \
-		util/file/decompressor/md_rar.cpp \
-		util/file/decompressor/md_rar_t.c \
+		charset/iconv_string.cpp \
 		video/vdraw_sdl_common.c \
 		video/vdraw_sdl.c \
 		input/input_sdl.c \
@@ -46,7 +45,6 @@ gens_SOURCES += \
 
 if GENS_OPENGL
 gens_SOURCES += \
-		video/vdraw_gl.c \
 		video/vdraw_sdl_gl.c \
 		ui/gtk/opengl_resolution/glres_window.cpp
 if GENS_OS_MACOSX
@@ -68,8 +66,7 @@ noinst_HEADERS += \
 		emulator/g_main_unix.hpp \
 		port/ini_old.h \
 		port/timer.h \
-		util/file/decompressor/md_rar.hpp \
-		util/file/decompressor/md_rar_t.h \
+		charset/iconv_string.hpp \
 		video/vdraw_sdl_common.h \
 		video/vdraw_sdl.h \
 		input/input_sdl.h \
@@ -107,8 +104,8 @@ noinst_HEADERS += \
 
 if GENS_OPENGL
 noinst_HEADERS += \
-		video/vdraw_gl.h \
 		video/vdraw_sdl_gl.h \
+		video/vdraw_gl.h \
 		ui/gtk/opengl_resolution/glres_window.hpp
 endif # GENS_OPENGL
 

@@ -335,8 +335,15 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F11:
-			if (IS_KMOD_NONE(mod))
+			if (IS_KMOD_SHIFT(mod))
+			{
+				Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
+				Sync_Gens_Window_SoundMenu();
+			}
+			else if (IS_KMOD_NONE(mod))
+			{
 				Options::rendererPrev();
+			}
 			break;
 		
 		case GENS_KEY_F12:
@@ -426,7 +433,7 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_g:
 			if (IS_KMOD_CTRL(mod))
 			{
-				//if (Check_If_Kaillera_Running()) return 0;
+				//if (Check_If_Kaillera_Running()) return 0;                                            
 				MINIMIZE;
 				// TODO: Re-enable this when the GTK+ GUI is rewritten.
 				//open_game_genie();
@@ -469,26 +476,14 @@ void input_sdl_event_key_down(int key)
 		
 		case GENS_KEY_r:
 		{
-			// NOTE: Even though this is set as a GTK+ accelerator,
-			// it isn't actually processed by GTK+.
 			if (!IS_KMOD_SHIFT(mod))
 				break;
-			
-			int old_mod = mod;
 			
 			int curBackend = vdraw_cur_backend_id;
 			curBackend++;
 			if (curBackend >= VDRAW_BACKEND_MAX)
 				curBackend = 0;
 			Options::setBackend((VDRAW_BACKEND)curBackend);
-			
-			// If we're not in fullscreen, restore the modifier state.
-			// Key modifiers are reset in vdraw_sdl_reinit_gens_window() and 
-			// vdraw_sdl_gl_reinit_gens_window(), so we have to restore them
-			// after changing the vdraw backend.
-			if (!vdraw_get_fullscreen())
-				mod = old_mod;
-			
 			break;
 		}
 		

@@ -1,17 +1,15 @@
 # MDP Render Plugin: Double renderer.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LTLIBRARIES = libmdp_render_2x.la
-noinst_DIST = mdp_render_2x.txt
 
 INCLUDES = -I@top_srcdir@/src/
 libmdp_render_2x_la_CCASFLAGS	= $(INCLUDES)
 
-libmdp_render_2x_la_CFLAGS		= $(AM_CFLAGS)
-libmdp_render_2x_la_CXXFLAGS		= $(AM_CXXFLAGS)
-libmdp_render_2x_la_LDFLAGS		= $(AM_LDFLAGS)
-libmdp_render_2x_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
+libmdp_render_2x_la_CFLAGS	= $(AM_CFLAGS) -static
+libmdp_render_2x_la_CXXFLAGS	= $(AM_CXXFLAGS) -static
+libmdp_render_2x_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 libmdp_render_2x_la_SOURCES = \
 		mdp_render_2x_plugin.c \

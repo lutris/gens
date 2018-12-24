@@ -23,26 +23,14 @@
 #ifndef GENS_MEM_M68K_H
 #define GENS_MEM_M68K_H
 
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern union
-{
-	uint8_t  u8[64*1024];
-	uint16_t u16[(64*1024)>>1];
-	uint32_t u32[(64*1024)>>2];
-} Ram_68k;
-extern union
-{
-	uint8_t  u8[6*1024*1024];
-	uint16_t u16[(6*1024*1024)>>1];
-	uint32_t u32[(6*1024*1024)>>2];
-} Rom_Data;
+extern unsigned char Ram_68k[64 * 1024];
+extern unsigned char Rom_Data[6 * 1024 * 1024];
 extern unsigned char SRAM[64 * 1024];
-extern unsigned char Ram_Backup_Ex[512 * 1024];	// Sega CD
+extern unsigned char Ram_Backup_Ex[64 * 1024];	// Sega CD
 extern unsigned char Genesis_Rom[2 * 1024];
 
 extern unsigned int M68K_Read_Byte_Table[0x20];
@@ -80,6 +68,7 @@ extern int Cycles_Z80;
 extern int Game_Mode;
 extern int CPU_Mode;
 extern int Gen_Mode;
+extern int Gen_Version;
 
 void Init_Memory_M68K(int System_ID);
 unsigned char M68K_RB(unsigned int Adr);

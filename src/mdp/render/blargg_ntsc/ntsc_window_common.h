@@ -26,21 +26,11 @@
 
 #include "md_ntsc.hpp"
 
-/**
- * NOTE: The separate Win32 define isn't needed anymore,
- * since Gens/GS (and Blargg's NTSC Filter) now use UTF-8
- * via the Win32 Unicode Translation Layer.
- * It's left here for historical purposes, in case it's
- * ever needed again for some reason.
- */
-#if 0
 #ifdef _WIN32
 #define NTSC_DEGREE_SYMBOL "\xB0"
 #else
 #define NTSC_DEGREE_SYMBOL "°"
 #endif
-#endif
-#define NTSC_DEGREE_SYMBOL "°"
 
 #ifdef __cplusplus
 extern "C" {

@@ -117,7 +117,7 @@ int MDP_FNCALL gg_init(const mdp_host_t *host_srv)
 	// If this fails, gg_dir_id will be less than 0.
 	gg_dir_id = gg_host_srv->dir_register(&mdp, "Patch Codes", gg_dir_get, gg_dir_set);
 	
-	// Register the event handlers.
+	// Register the event handler.
 	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
 	gg_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, gg_event_handler);
 	
@@ -151,10 +151,6 @@ int MDP_FNCALL gg_end(void)
 		gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
 		gg_menuItemID = -1;
 	}
-	
-	// Unregister the event handlers.
-	gg_host_srv->event_unregister(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
-	gg_host_srv->event_unregister(&mdp, MDP_EVENT_CLOSE_ROM, gg_event_handler);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;

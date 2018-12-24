@@ -90,9 +90,6 @@ int MDP_FNCALL mdp_render_blargg_ntsc_end(void)
 	if (!ntsc_host_srv)
 		return MDP_ERR_OK;
 	
-	// Make sure the window is closed.
-	ntsc_window_close();
-	
 	// Unregister configuration load/save events.
 	ntsc_host_srv->event_unregister(&mdp, MDP_EVENT_LOAD_CONFIG, ntsc_event_handler);
 	ntsc_host_srv->event_unregister(&mdp, MDP_EVENT_SAVE_CONFIG, ntsc_event_handler);

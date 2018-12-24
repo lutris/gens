@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Sonic Gens.                                                        *
+ * Gens: [MDP] Sonic Gens.                                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #ifndef _MDP_MISC_SGENS_H
-#define _MDP_MISC_SGENS_H
+#define _MDP_MISC_SGENS_HPP
 
 #ifdef __cplusplus
 extern "C" {

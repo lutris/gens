@@ -80,7 +80,7 @@ BOOL			(*input_check_key_pressed)(uint16_t key) = NULL;
 uint16_t		(*input_get_key)(void) = NULL;
 const input_keymap_t	*input_keymap_default = NULL;
 #ifdef GENS_OS_WIN32
-int WINAPI		(*input_set_cooperative_level)(HWND hWnd);
+int			(*input_set_cooperative_level)(HWND hWnd);
 #endif /* GENS_OS_WIN32 */
 
 // Current keymap.

@@ -42,10 +42,6 @@ const bmf_entry_t bmf_entries[] =
 	{"Europe",			ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan",			ROMFile, BIOS_Filenames.MegaCD_JP},
 	{"Compression Utilities",	0, NULL},
-#ifdef _WIN32
-	{"UnRAR DLL",			DllFile, Misc_Filenames.RAR_Binary},
-#else
-	{"RAR Binary",			ExeFile, Misc_Filenames.RAR_Binary},
-#endif
+	{"RAR Binary",			AnyFile, Misc_Filenames.RAR_Binary},
 	{NULL, 0, NULL},
 };

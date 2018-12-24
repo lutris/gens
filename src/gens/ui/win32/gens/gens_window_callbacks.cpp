@@ -90,16 +90,19 @@ extern "C"
 #include "input/input_dinput.hpp"
 
 // Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_shellapi.h"
-#include "libgsft/w32u/w32u_libc.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <shellapi.h>
 
 static bool paintsEnabled = true;
 
-static void WINAPI on_gens_window_close(void);
-static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer);
-static void WINAPI dragDropFile(HDROP hDrop);
+static void on_gens_window_close(void);
+static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void showPopupMenu(HWND hWnd, bool adjustMousePointer);
+static void dragDropFile(HDROP hDrop);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -119,7 +122,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 	HMENU mnuCallback;
 	bool state;
 	
-	switch (message)
+	switch(message)
 	{
 		case WM_CLOSE:
 			on_gens_window_close();
@@ -146,13 +149,6 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			GetWindowRect(hWnd, &rectGensWindow);
 			Window_Pos.x = rectGensWindow.left;
 			Window_Pos.y = rectGensWindow.top;
-			break;
-		
-		case WM_MOVE:
-		case WM_SIZE:
-			// Update the destination rectangle.
-			if (vdraw_adjust_RectDest)
-				vdraw_adjust_RectDest();
 			break;
 		
 		case WM_ACTIVATE:
@@ -240,22 +236,16 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// A file was dragged onto the Gens window.
 			dragDropFile((HDROP)wParam);
 			break;
-		
-		case WM_SETTINGCHANGE:
-			// System settings were changed.
-			// TODO: Redo fonts.
-			vdraw_init_display_size();
-			break;
 	}
 	
-	return pDefWindowProcU(hWnd, message, wParam, lParam);
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 
 /**
  * Window is closed.
  */
-static void WINAPI on_gens_window_close(void)
+static void on_gens_window_close(void)
 {
 	//Modif N - making sure sound doesn't stutter on exit
 	if (audio_initialized)
@@ -272,7 +262,7 @@ static void WINAPI on_gens_window_close(void)
  * @param wParam LOWORD(wParam) == Command.
  * @param lParam
  */
-static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GSFT_UNUSED_PARAMETER(hWnd);
 	GSFT_UNUSED_PARAMETER(message);
@@ -386,6 +376,11 @@ static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wPa
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
+		case IDCMD_PSG_IMPROVED:
+			Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
 		case IDCMD_FPS:
 			vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			break;
@@ -461,7 +456,7 @@ static void WINAPI on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wPa
  * @param hWnd Window handle.
  * @param adjustMousePointer If true, adjusts the mouse pointer.
  */
-static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer)
+static void showPopupMenu(HWND hWnd, bool adjustMousePointer)
 {
 	// Clear the sound buffer to prevent stuttering.
 	audio_clear_sound_buffer();
@@ -475,7 +470,7 @@ static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer)
 	
 	POINT pt;
 	GetCursorPos(&pt);
-	pSendMessageU(hWnd, WM_PAINT, 0, 0);
+	SendMessage(hWnd, WM_PAINT, 0, 0);
 	
 	// Disable painting while the popup menu is open.
 	paintsEnabled = false;
@@ -494,18 +489,17 @@ static void WINAPI showPopupMenu(HWND hWnd, bool adjustMousePointer)
 /**
  * dragDropFile(): Called when a file is dragged onto the Gens window.
  */
-static void WINAPI dragDropFile(HDROP hDrop)
+static void dragDropFile(HDROP hDrop)
 {
-	char filename[GENS_PATH_MAX];
+	TCHAR filename[GENS_PATH_MAX];
 	unsigned int rval;
 	
-	rval = pDragQueryFileU(hDrop, 0, filename, sizeof(filename));
+	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));
 	
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
-		// TODO: Port this to Unicode.
-		if (!access(filename, F_OK))
+		if (gsft_file_exists(filename))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

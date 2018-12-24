@@ -1,15 +1,14 @@
 # MDP Render Plugin: Scale4x renderer.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 mdpdir = $(libdir)/mdp
 mdp_LTLIBRARIES = mdp_render_scale4x.la
 
 INCLUDES = -I@top_srcdir@/src/
 
-mdp_render_scale4x_la_CFLAGS		= $(AM_CFLAGS)
-mdp_render_scale4x_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_render_scale4x_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
+mdp_render_scale4x_la_CFLAGS	= $(AM_CFLAGS)
+mdp_render_scale4x_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 mdp_render_scale4x_la_SOURCES = \
 		mdp_render_scale4x_plugin.c \

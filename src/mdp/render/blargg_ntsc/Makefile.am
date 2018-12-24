@@ -1,6 +1,6 @@
 # MDP Render Plugin: Blargg's NTSC Filter.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
 
@@ -10,7 +10,6 @@ mdp_LTLIBRARIES = mdp_render_blargg_ntsc.la
 mdp_render_blargg_ntsc_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_blargg_ntsc_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_render_blargg_ntsc_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
-mdp_render_blargg_ntsc_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-static
 mdp_render_blargg_ntsc_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_render_blargg_ntsc_la_SOURCES = \
@@ -33,8 +32,8 @@ mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_gtk2.c
 mdp_render_blargg_ntsc_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_render_blargg_ntsc_la_LIBADD	+= @GTK_LIBS@
 #noinst_HEADERS += \
-#		ntsc_16x16.xpm \
-#		ntsc_32x32.xpm
+#		vlopt_16x16.xpm \
+#		vlopt_32x32.xpm
 endif
 
 if GENS_UI_WIN32
@@ -43,11 +42,10 @@ mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_win32.c
 mdp_render_blargg_ntsc_la_LIBADD	+= \
 		-lgdi32 \
 		$(top_builddir)/src/libgsft/libgsft_win32.la \
-		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la \
-		$(top_builddir)/src/libgsft/w32u/libgsft_w32u.la
+		$(top_builddir)/src/libgsft/libgsft_win32_gdi.la
 #noinst_HEADERS += \
-#		ntsc.ico \
-#		ntsc_dllmain.h \
+#		vlopt.ico \
+#		vlopt_dllmain.h \
 #		resource.h
 endif
 

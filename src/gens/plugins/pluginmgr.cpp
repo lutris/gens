@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -52,12 +52,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <errno.h>
-
-#ifdef _WIN32
-// Win32 includes.
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_libc.h"
-#endif
 
 // mingw doesn't provide S_ISLNK.
 #ifndef S_ISLNK
@@ -146,14 +140,10 @@ void PluginMgr::init(void)
 	
 #if !defined(GENS_OS_WIN32)
 	// Linux/UNIX: Load external plugins from the user's ~/.gens directory first.
-	scanExternalPlugins(string(PathNames.Gens_Save_Path) + GSFT_DIR_SEP_STR + "plugins");
+	scanExternalPlugins(string(PathNames.Gens_Path) + GSFT_DIR_SEP_STR + "plugins");
 #else	
-	// Win32: Load external plugins from the save path first.
-	scanExternalPlugins(string(PathNames.Gens_Save_Path) + GSFT_DIR_SEP_STR + "plugins");
-	
-	// If the save path isn't the same as the EXE path, load external plugins from the EXE path.
-	if (strncmp(PathNames.Gens_EXE_Path, PathNames.Gens_Save_Path, sizeof(PathNames.Gens_EXE_Path)) != 0)
-		scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GSFT_DIR_SEP_STR + "plugins");
+	// Win32: Load external plugins from the Gens directory.
+	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GSFT_DIR_SEP_STR + "plugins");
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_MDP_DIR
@@ -385,12 +375,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 {
 	const char *err;
 	
-#ifdef GENS_OS_WIN32
-	// Use pLoadLibraryU() for Unicode filename support.
-	void *dlhandle = pLoadLibraryU(filename.c_str());
-#else
 	void *dlhandle = mdp_dlopen(filename.c_str());
-#endif
 	
 	if (!dlhandle)
 	{

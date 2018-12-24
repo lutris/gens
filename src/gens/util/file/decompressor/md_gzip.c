@@ -28,12 +28,6 @@
 // C includes.
 #include <stdlib.h>
 
-// Win32 Unicode Translation Layer.
-#ifdef _WIN32
-#include "libgsft/w32u/w32u.h"
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 // MDP includes.
 #include "mdp/mdp_error.h"
 
@@ -45,10 +39,10 @@
 // GZip decompressor functions.
 static int decompressor_gzip_detect_format(FILE *zF);
 static int decompressor_gzip_get_file_info(FILE *zF, const char* filename,
-						mdp_z_entry_t** z_entry_out);
-static int decompressor_gzip_get_file(FILE *zF, const char* filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size);
+					   mdp_z_entry_t** z_entry_out);
+static size_t decompressor_gzip_get_file(FILE *zF, const char* filename,
+					 mdp_z_entry_t *z_entry,
+					 void *buf, const size_t size);
 
 // GZip decompressor struct.
 const decompressor_t decompressor_gzip =
@@ -85,16 +79,13 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// GZip-compressed files can only have one file.
-	unsigned char buf[4096];
+	gzFile gzfd;
+	unsigned char buf[1024];
 	
-	FILE *f = fopen(filename, "rb");
-	if (!f)
-		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
-	
-	gzFile gzfd = gzdopen(fileno(f), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
-		fclose(f);
+		// Error obtaining a GZip file descriptor.
 		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
 	}
 	
@@ -102,7 +93,7 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 	int filesize = 0;
 	while (!gzeof(gzfd))
 	{
-		filesize += gzread(gzfd, buf, sizeof(buf));
+		filesize += gzread(gzfd, buf, 1024);
 	}
 	
 	// Close the GZip fd.
@@ -124,39 +115,36 @@ static int decompressor_gzip_get_file_info(FILE *zF, const char* filename, mdp_z
 
 /**
  * decompressor_gzip_get_file(): Get a file from the archive.
- * @param zF		[in] Open file handle.
- * @param filename	[in] Filename of the archive.
- * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
- * @param buf		[in] Buffer to read the file into.
- * @param size		[in] Size of buf (in bytes).
- * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
- * @return MDP error code.
+ * @param zF Open file handle. (Unused in the GZip handler.)
+ * @param filename Filename of the archive. (Unused in the GZip handler.)
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
+ * @param buf Buffer to read the file into.
+ * @param size Size of buf (in bytes).
+ * @return Number of bytes read, or 0 on error.
  */
-static int decompressor_gzip_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size)
+static size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
+					 mdp_z_entry_t *z_entry,
+					 void *buf, const size_t size)
 {
 	// Unused parameters.
 	GSFT_UNUSED_PARAMETER(zF);
 	GSFT_UNUSED_PARAMETER(z_entry);
 	
 	// All parameters (except zF and z_entry) must be specified.
-	if (!filename || !buf || !size || !ret_size)
-		return -MDP_ERR_INVALID_PARAMETERS;
+	if (!filename || !buf || !size)
+		return 0;
 	
-	FILE *f = fopen(filename, "rb");
-	if (!f)
-		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+	gzFile gzfd;
 	
-	gzFile gzfd = gzdopen(fileno(f), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
-		fclose(f);
-		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+		// Error obtaining a GZip file descriptor.
+		return -1;
 	}
 	
 	// Decompress the GZip file into memory.
-	*ret_size = gzread(gzfd, buf, size);
+	size_t retval = gzread(gzfd, buf, size);
 	gzclose(gzfd);
-	return MDP_ERR_OK;
+	return retval;
 }

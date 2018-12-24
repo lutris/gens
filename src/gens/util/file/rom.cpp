@@ -31,8 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-
 #include <ctype.h>
 #include <fcntl.h>
 
@@ -43,10 +41,6 @@
 using std::string;
 using std::list;
 using std::deque;
-
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
 
 #include "rom.hpp"
 
@@ -64,11 +58,7 @@ using std::deque;
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-
-// Save file handlers.
 #include "util/file/save.hpp"
-#include "util/file/sram.h"
-#include "util/file/mcd_bram.h"
 
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -87,17 +77,13 @@ using std::deque;
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/dummy.h"
 #ifdef GENS_ZLIB
-#	include "util/file/decompressor/md_gzip.h"
-#	include "util/file/decompressor/md_zip.h"
+	#include "util/file/decompressor/md_gzip.h"
+	#include "util/file/decompressor/md_zip.h"
 #endif
 #ifdef GENS_LZMA
-#	include "util/file/decompressor/md_7z.h"
+	#include "util/file/decompressor/md_7z.h"
 #endif
-#ifdef _WIN32
-#	include "util/file/decompressor/md_rar_win32_t.h"
-#else
-#	include "util/file/decompressor/md_rar_t.h"
-#endif
+#include "util/file/decompressor/md_rar_t.h"
 
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
@@ -116,12 +102,9 @@ using std::deque;
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+#ifdef HAVE_ICONV
 // String conversion.
-#if defined(HAVE_ICONV)
-#include "libgsft/gsft_iconv.h"
-#elif defined(_WIN32)
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_charset.h"
+#include "charset/iconv_string.hpp"
 #endif
 
 
@@ -267,13 +250,12 @@ void ROM::updateCDROMName(const unsigned char *cdromHeader, bool overseas)
 	}
 	ROM_Filename[i + 1] = 0;
 	
-	// TODO: Move character set conversion to a different module.
-#if defined(HAVE_ICONV) || defined(_WIN32)
+#ifdef HAVE_ICONV
 	// If overseas is false (Japan), convert from Shift-JIS to UTF-8, if necessary.
 	if (!overseas)
 	{
 		// Attempt to convert the ROM name.
-		string romNameJP = SJIStoUTF8(ROM_Filename, sizeof(ROM_Filename));
+		string romNameJP = gens_iconv(ROM_Filename, sizeof(ROM_Filename), "SHIFT-JIS", "");
 		if (!romNameJP.empty())
 		{
 			// The ROM name was converted successfully.
@@ -373,7 +355,7 @@ void ROM::deinterleaveSMD(void)
 	// The second 8 KB of each 16 KB block are the even bytes.
 	
 	// Start at 0x200 bytes (after the SMD header).
-	Src = &Rom_Data.u8[0x200];
+	Src = &Rom_Data[0x200];
 	
 	// Subtract the SMD header length from the ROM size.
 	Rom_Size -= 0x200;
@@ -391,9 +373,9 @@ void ROM::deinterleaveSMD(void)
 		for (j = 0; j < 0x2000; j++)
 		{
 			// Odd byte; first 8 KB.
-			Rom_Data.u8[ptr + (j << 1) + 1] = buf[j];
+			Rom_Data[ptr + (j << 1) + 1] = buf[j];
 			// Even byte; second 8 KB.
-			Rom_Data.u8[ptr + (j << 1)] = buf[j + 0x2000];
+			Rom_Data[ptr + (j << 1)] = buf[j + 0x2000];
 		}
 	}
 }
@@ -409,7 +391,7 @@ void ROM::fillROMInfo(ROM_t *rom)
 		return;
 	
 	// Load the ROM header.
-	memcpy(rom, &Rom_Data.u8[0x100], sizeof(*rom));
+	memcpy(rom, &Rom_Data[0x100], sizeof(*rom));
 	
 	// TODO: Make sure this is correct.
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
@@ -567,18 +549,14 @@ unsigned int ROM::loadROM(const string& filename,
 	// Array of decompressors.
 	static const decompressor_t* const decompressors[] =
 	{
-#ifdef GENS_ZLIB
-		&decompressor_gzip,
-		&decompressor_zip,
-#endif
-#ifdef GENS_LZMA
-		&decompressor_7z,
-#endif
-#ifdef _WIN32
-		&decompressor_rar_win32,
-#else
+		#ifdef GENS_ZLIB
+			&decompressor_gzip,
+			&decompressor_zip,
+		#endif
+		#ifdef GENS_LZMA
+			&decompressor_7z,
+		#endif
 		&decompressor_rar,
-#endif
 		
 		// Last decompressor is the Dummy decompressor.
 		&decompressor_dummy,
@@ -587,7 +565,6 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	const decompressor_t *cmp = NULL;
 	unsigned int romType;
-	int ret;
 	
 	// Reset the ROM byteswap state.
 	ROM_ByteSwap_State = 0;
@@ -597,9 +574,6 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!fROM)
 	{
 		// Error opening the file.
-		Game = NULL;
-		out_ROM = NULL;
-		
 		char msg[512];
 		szprintf(msg, sizeof(msg), "The file '%s' could not be opened.",
 			 File::GetNameFromPath(filename.c_str()).c_str());
@@ -618,6 +592,9 @@ unsigned int ROM::loadROM(const string& filename,
 #endif
 		
 		GensUI::msgBox(msg, "Cannot Open File", GensUI::MSGBOX_ICON_ERROR);
+		
+		Game = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -653,20 +630,13 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	// Get the file information.
 	mdp_z_entry_t *z_list = NULL;
-	ret = cmp->get_file_info(fROM, filename.c_str(), &z_list);
+	int rval = cmp->get_file_info(fROM, filename.c_str(), &z_list);
 	
 	// Check how many files are available.
-	if (ret != MDP_ERR_OK || !z_list)
+	if (rval != MDP_ERR_OK || !z_list)
 	{
 		// An error occurred while trying to open the file.
-		if (z_list)
-			z_entry_t_free(z_list);
-		
-		fclose(fROM);
-		Game = NULL;
-		out_ROM = NULL;
-		
-		switch (ret)
+		switch (rval)
 		{
 			case -MDP_ERR_Z_ARCHIVE_NOT_FOUND:
 				// Archive wasn't found.
@@ -705,7 +675,7 @@ unsigned int ROM::loadROM(const string& filename,
 			{
 				// Unknown error.
 				char err_code[16];
-				szprintf(err_code, sizeof(err_code), "0x%08X", ret);
+				szprintf(err_code, sizeof(err_code), "0x%08X", rval);
 				
 				GensUI::msgBox("An unknown error occurred while attempting to open this file.\n"
 						"Please report this as a bug to the Gens/GS developers.\n\n"
@@ -715,6 +685,12 @@ unsigned int ROM::loadROM(const string& filename,
 			}
 		}
 		
+		if (z_list)
+			z_entry_t_free(z_list);
+		
+		fclose(fROM);
+		Game = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	else if (!z_list->next)
@@ -820,22 +796,8 @@ unsigned int ROM::loadROM(const string& filename,
 	
 	// Determine the ROM type.
 	// TODO: Show an error if the ROM can't be opened.
-	uint8_t detectBuf[2048];
-	memset(detectBuf, 0x00, sizeof(detectBuf));
-	
-	size_t bytes_read;
-	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf), &bytes_read);
-	if (bytes_read == 0)
-	{
-		// Couldn't read the header.
-		z_entry_t_free(z_list);
-		fclose(fROM);
-		Game = NULL;
-		out_ROM = NULL;
-		GensUI::setMousePointer(false);
-		return ROMTYPE_SYS_NONE;
-	}
-	
+	unsigned char detectBuf[2048];
+	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf));
 	romType = detectFormat(detectBuf);
 	unsigned int romSys = romType & ROMTYPE_SYS_MASK;
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
@@ -852,13 +814,12 @@ unsigned int ROM::loadROM(const string& filename,
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (sel_file->filesize > ((6 * 1024 * 1024) + 512))
 	{
+		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
 		z_entry_t_free(z_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
 		GensUI::setMousePointer(false);
-		
-		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -875,30 +836,16 @@ unsigned int ROM::loadROM(const string& filename,
 	}
 	
 	// Clear the ROM buffer and load the ROM.
-	memset(Rom_Data.u8, 0x00, sizeof(Rom_Data));
-	ret = cmp->get_file(fROM, filename.c_str(),
-				sel_file, Rom_Data.u8,
-				sel_file->filesize, &bytes_read);
-	
-	if (ret != MDP_ERR_OK)
-	{
-		// Error loading the file.
-		z_entry_t_free(z_list);
-		fclose(fROM);
-		free(myROM);
-		myROM = NULL;
-		Game = NULL;
-		out_ROM = NULL;
-		GensUI::setMousePointer(false);
-		
-		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-			"Error loading the file from the archive: 0x%08X", ret);
-		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
-		return ROMTYPE_SYS_NONE;
-	}
-	else if (bytes_read != sel_file->filesize)
+	memset(Rom_Data, 0x00, sizeof(Rom_Data));
+	size_t loaded_size = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
+	if (loaded_size != sel_file->filesize)
 	{
 		// Incorrect filesize.
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Incorrect filesize. Got %d; expected %d.",
+			loaded_size, sel_file->filesize);
+		
+		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
 		z_entry_t_free(z_list);
 		fclose(fROM);
 		free(myROM);
@@ -906,11 +853,6 @@ unsigned int ROM::loadROM(const string& filename,
 		Game = NULL;
 		out_ROM = NULL;
 		GensUI::setMousePointer(false);
-		
-		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
-			"Incorrect filesize. Got %d; expected %d.",
-			bytes_read, sel_file->filesize);
-		GensUI::msgBox("Error loading the ROM file: Incorrect filesize.", "ROM File Error");
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -923,7 +865,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (Rom_Size < sizeof(Rom_Data) && (Rom_Size & 1))
 	{
 		// Odd ROM length. Increment the size and NULL the last byte.
-		Rom_Data.u8[Rom_Size++] = 0x00;
+		Rom_Data[Rom_Size++] = 0x00;
 	}
 	
 	// Set the compressed ROM filename.
@@ -966,7 +908,7 @@ unsigned short ROM::calcChecksum(void)
 		return 0;
 	
 	// Checksum starts at 0x200, past the vector table and ROM header.
-	uint8_t *Rom_Ptr = &Rom_Data.u8[0x200];
+	uint8_t *Rom_Ptr = &Rom_Data[0x200];
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
 		// ROM is byteswapped. (little-endian)
@@ -1008,14 +950,14 @@ void ROM::fixChecksum(void)
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_MD_ROM)
 	{
 		// ROM is byteswapped. (little-endian)
-		Rom_Data.u8[0x18E] = (checksum & 0xFF);
-		Rom_Data.u8[0x18F] = (checksum >> 8);
+		Rom_Data[0x18E] = (checksum & 0xFF);
+		Rom_Data[0x18F] = (checksum >> 8);
 	}
 	else
 	{
 		// ROM is not byteswapped. (big-endian)
-		Rom_Data.u8[0x18E] = (checksum >> 8);
-		Rom_Data.u8[0x18F] = (checksum & 0xFF);
+		Rom_Data[0x18E] = (checksum >> 8);
+		Rom_Data[0x18F] = (checksum & 0xFF);
 	}
 	
 	// SH2 checksum.
@@ -1024,14 +966,14 @@ void ROM::fixChecksum(void)
 	if (ROM_ByteSwap_State & ROM_BYTESWAPPED_32X_ROM)
 	{
 		// ROM is byteswapped. (big-endian)
-		_32X_Rom.u8[0x18E] = (checksum >> 8);
-		_32X_Rom.u8[0x18F] = (checksum & 0xFF);
+		_32X_Rom[0x18E] = (checksum >> 8);
+		_32X_Rom[0x18F] = (checksum & 0xFF);
 	}
 	else
 	{
 		// ROM is not byteswapped. (little-endian)
-		_32X_Rom.u8[0x18E] = (checksum & 0xFF);
-		_32X_Rom.u8[0x18F] = (checksum >> 8);
+		_32X_Rom[0x18E] = (checksum & 0xFF);
+		_32X_Rom[0x18F] = (checksum >> 8);
 	}
 }
 
@@ -1048,9 +990,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	STOP_DEBUGGING();
 	
 	if (SegaCD_Started)
-		BRAM_Save();
-	else
-		SRAM_Save();
+		Savestate::SaveBRAM();
+	
+	Savestate::SaveSRAM();
 	
 	// Audio dumping.
 	if (WAV_Dumping)
@@ -1071,8 +1013,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	// Reset the ROM byteswap state.
 	ROM_ByteSwap_State = 0;
 	
-	// Clear the border color palette entry.
-	MD_Palette.u32[0] = 0;	// also clears MD_Palette.u16[0].
+	// Clear the border color palette entries.
+	MD_Palette[0] = 0;
+	MD_Palette32[0] = 0;
 	
 	Game = NULL;
 	ice = 0;
@@ -1140,58 +1083,19 @@ string ROM::getRomName(ROM_t *rom, bool overseas)
 	memcpy(RomName, romNameToUse, sizeof(rom->ROM_Name_US));
 	RomName[sizeof(RomName)-1] = 0x00;
 	
-#if defined(HAVE_ICONV) || defined(_WIN32)
+#ifdef HAVE_ICONV
 	// If this was ROM_Name_JP, convert from Shift-JIS to UTF-8, if necessary.
 	if (romNameToUse == rom->ROM_Name_JP)
 	{
-		string s_utf8 = SJIStoUTF8(RomName, sizeof(RomName));
-		if (!s_utf8.empty())
-			return s_utf8;
+		// Attempt to convert the ROM name.
+		string romNameJP = gens_iconv(RomName, sizeof(RomName), "SHIFT-JIS", "");
+		if (!romNameJP.empty())
+		{
+			// The ROM name was converted successfully.
+			return romNameJP;
+		}
 	}
 #endif
 	
 	return string(RomName);
 }
-
-
-#if defined(HAVE_ICONV) || defined(_WIN32)
-/**
- * SJIStoUTF8(): Convert a Shift-JIS string to UTF-8.
- * @param sjis Shift-JIS string.
- * @param len Shift-JIS string length.
- * @return UTF-8 string.
- */
-string ROM::SJIStoUTF8(const char *sjis, unsigned int len)
-{
-#if defined(HAVE_ICONV)
-	// libiconv-based Shift-JIS to UTF-8 conversion code.
-	char *mbs = gsft_iconv(sjis, len, "SHIFT-JIS", "");
-	if (!mbs)
-		return "";
-	
-	string s_utf8 = string(mbs);
-	free(mbs);
-	return s_utf8;
-#elif defined(_WIN32)
-	// Win32-based Shift-JIS to UTF-8 conversion code.
-	// NOTE: w32u_mbstombs_alloc() requires a NULL-terminated string;
-	// however, sjis is *not* NULL-terminated.
-	char *sjis_tmp = (char*)malloc(len + 1);
-	memcpy(sjis_tmp, sjis, len);
-	sjis_tmp[len] = 0x00;
-	
-	// Convert the string from Shift-JIS to UTF-8.
-	char *mbs = w32u_mbstombs_alloc(sjis_tmp, 0, 932, CP_UTF8);
-	if (!mbs)
-		return "";
-	
-	// Return the string.
-	string s_utf8 = string(mbs);
-	free(mbs);
-	return s_utf8;
-#endif
-	
-	// This shouldn't happen...
-	return "";
-}
-#endif

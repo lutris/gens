@@ -40,10 +40,10 @@
 // Dummy decompressor functions.
 static int decompressor_dummy_detect_format(FILE *zF);
 static int decompressor_dummy_get_file_info(FILE *zF, const char* filename,
-						mdp_z_entry_t** z_entry_out);
-static int decompressor_dummy_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size);
+					    mdp_z_entry_t** z_entry_out);
+static size_t decompressor_dummy_get_file(FILE *zF, const char* filename,
+					  mdp_z_entry_t *z_entry,
+					  void *buf, const size_t size);
 
 // Dummy decompressor struct.
 const decompressor_t decompressor_dummy =
@@ -104,29 +104,28 @@ static int decompressor_dummy_get_file_info(FILE *zF, const char* filename, mdp_
 
 /**
  * decompressor_dummy_get_file(): Get a file from the archive.
- * @param zF		[in] Open file handle.
- * @param filename	[in] Filename of the archive.
- * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
- * @param buf		[in] Buffer to read the file into.
- * @param size		[in] Size of buf (in bytes).
- * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
- * @return MDP error code.
+ * @param zF Open file handle. (Unused in the GZip handler.)
+ * @param filename Filename of the archive. (Unused in the GZip handler.)
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
+ * @param buf Buffer to read the file into.
+ * @param size Size of buf (in bytes).
+ * @return Number of bytes read, or 0 on error.
  */
-static int decompressor_dummy_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size)
+size_t decompressor_dummy_get_file(FILE *zF, const char *filename,
+				   mdp_z_entry_t *z_entry,
+				   void *buf, const size_t size)
 {
 	GSFT_UNUSED_PARAMETER(filename);
 	GSFT_UNUSED_PARAMETER(z_entry);
 	
 	// All parameters (except filename and file_list) must be specified.
-	if (!zF || !buf || !size || !ret_size)
-		return -MDP_ERR_INVALID_PARAMETERS;
+	if (!zF || !buf || !size)
+		return 0;
 	
 	// Seek to the beginning of the file.
 	fseek(zF, 0, SEEK_SET);
 	
 	// Read the file into the buffer.
-	*ret_size = fread(buf, 1, size, zF);
-	return MDP_ERR_OK;
+	size_t retval = fread(buf, 1, size, zF);
+	return retval;
 }

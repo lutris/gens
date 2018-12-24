@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -24,10 +24,8 @@
 #include <config.h>
 #endif
 
-// C includes.
 //#include <stdio.h>
 #include <string.h>
-#include <stdint.h>
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -125,7 +123,7 @@ void LC89510_Reset(void)
 void Update_CDC_TRansfert(void)
 {
 	unsigned int dep, length, add_dest;
-	uint8_t *dest;
+	unsigned char *dest;
 	
 	if ((SCD.Status_CDC & 0x08) == 0)
 		return;
@@ -146,7 +144,7 @@ void Update_CDC_TRansfert(void)
 			break;
 		
 		case 0x0500:		// PRG RAM
-			dest = &Ram_Prg.u8[0];
+			dest = (unsigned char *) Ram_Prg;
 			dep = (CDC.DMA_Adr & 0xFFFF) << 3;
 			add_dest = 2;
 			
@@ -157,7 +155,7 @@ void Update_CDC_TRansfert(void)
 		case 0x0700:		// WORD RAM
 			if (Ram_Word_State >= 2)
 			{
-				dest = &Ram_Word_1M.u8[0];
+				dest = (unsigned char*)Ram_Word_1M;
 				add_dest = 2;
 				if (Ram_Word_State & 1)
 					dep = ((CDC.DMA_Adr & 0x3FFF) << 3);
@@ -166,7 +164,7 @@ void Update_CDC_TRansfert(void)
 			}
 			else
 			{
-				dest = &Ram_Word_2M.u8[0];
+				dest = (unsigned char*)Ram_Word_2M;
 				dep = ((CDC.DMA_Adr & 0x7FFF) << 3);
 				add_dest = 2;
 			}

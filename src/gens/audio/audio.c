@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008 by David Korth                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -68,14 +68,8 @@ void	(*audio_wp_inc)(void) = NULL;
 
 // Audio data.
 int Seg_L[882], Seg_R[882];
-
-/**
- * Sound_Extrapol[][]: Sound extrapolation data.
- * [312]: Line number.
- * [1]: 0 == start position; 1 == length.
- * TODO: This restricts DAC frequency to a maximum of 15,720 Hz on NTSC.
- */
 unsigned int Sound_Extrapol[312][2];
+unsigned int Sound_Interpol[882];
 
 // External values. (TODO: Make these properties.)
 int	audio_seg_length;
@@ -134,6 +128,8 @@ int audio_init(AUDIO_BACKEND backend)
 		Sound_Extrapol[i][0] = ((audio_seg_length * i) / videoLines);
 		Sound_Extrapol[i][1] = (((audio_seg_length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
 	}
+	for (i = 0; i < audio_seg_length; i++)
+		Sound_Interpol[i] = ((videoLines * i) / audio_seg_length);
 	
 	// Clear the segment buffers.
 	memset(Seg_L, 0x00, sizeof(Seg_L));
@@ -197,6 +193,123 @@ void audio_calc_segment_length(void)
 		case 44100:
 			audio_seg_length = (CPU_Mode ? 882 : 735);
 			break;
+	}
+}
+
+
+/**
+ * audio_write_sound_stereo(): Write a stereo sound segment.
+ * @param dest Destination buffer.
+ * @param length Length of the sound segment. (TODO: Unused?)
+ */
+void audio_write_sound_stereo(short *dest, int length)
+{
+	int i, out_L, out_R;
+
+	for (i = 0; i < audio_seg_length; i++)
+	{
+		// Left channel
+		out_L = Seg_L[i];
+		Seg_L[i] = 0;
+		
+		if (out_L < -0x7FFF)
+			*dest++ = -0x7FFF;
+		else if (out_L > 0x7FFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out_L);
+		
+		// Right channel
+		out_R = Seg_R[i];
+		Seg_R[i] = 0;
+		
+		if (out_R < -0x7FFF)
+			*dest++ = -0x7FFF;
+		else if (out_R > 0x7FFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out_R);
+	}
+}
+
+
+/**
+ * audio_dump_sound_stereo(): Dump a stereo sound segment.
+ * @param dest Destination buffer.
+ * @param length Length of the sound segment. (TODO: Unused?)
+ */
+void audio_dump_sound_stereo(short *dest, int length)
+{
+	int i, out_L, out_R;
+	
+	for (i = 0; i < audio_seg_length; i++)
+	{
+		// Left channel
+		out_L = Seg_L[i];
+		
+		if (out_L < -0x7FFF)
+			*dest++ = -0x7FFF;
+		else if (out_L > 0x7FFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out_L);
+		
+		// Right channel
+		out_R = Seg_R[i];
+		
+		if (out_R < -0x7FFF)
+			*dest++ = -0x7FFF;
+		else if (out_R > 0x7FFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out_R);
+	}
+}
+
+
+/**
+ * audio_write_sound_mono(): Write a mono sound segment.
+ * @param dest Destination buffer.
+ * @param length Length of the sound segment. (TODO: Unused?)
+ */
+void audio_write_sound_mono(short *dest, int length)
+{
+	int i, out;
+	
+	for (i = 0; i < audio_seg_length; i++)
+	{
+		out = Seg_L[i] + Seg_R[i];
+		Seg_L[i] = Seg_R[i] = 0;
+		
+		if (out < -0xFFFF)
+			*dest++ = -0x7FFF;
+		else if (out > 0xFFFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out >> 1);
+	}
+}
+
+
+/**
+ * audio_dump_sound_mono(): Dump a mono sound segment.
+ * @param dest Destination buffer.
+ * @param length Length of the sound segment. (TODO: Unused?)
+ */
+void audio_dump_sound_mono(short *dest, int length)
+{
+	int i, out;
+	
+	for (i = 0; i < audio_seg_length; i++)
+	{
+		out = Seg_L[i] + Seg_R[i];
+		
+		if (out < -0xFFFF)
+			*dest++ = -0x7FFF;
+		else if (out > 0xFFFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out >> 1);
 	}
 }
 

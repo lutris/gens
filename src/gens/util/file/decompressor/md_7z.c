@@ -47,10 +47,10 @@
 // 7z decompressor functions.
 static int decompressor_7z_detect_format(FILE *zF);
 static int decompressor_7z_get_file_info(FILE *zF, const char* filename,
-						mdp_z_entry_t** z_entry_out);
-static int decompressor_7z_get_file(FILE *zF, const char* filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size);
+					 mdp_z_entry_t** z_entry_out);
+static size_t decompressor_7z_get_file(FILE *zF, const char* filename,
+				       mdp_z_entry_t *z_entry,
+				       void *buf, const size_t size);
 
 // 7z decompressor struct.
 const decompressor_t decompressor_7z =
@@ -178,23 +178,22 @@ static int decompressor_7z_get_file_info(FILE *zF, const char* filename, mdp_z_e
 
 /**
  * decompressor_7z_get_file(): Get a file from the archive.
- * @param zF		[in] Open file handle.
- * @param filename	[in] Filename of the archive.
- * @param file_list	[in] Pointer to decompressor_file_list_t element to get from the archive.
- * @param buf		[in] Buffer to read the file into.
- * @param size		[in] Size of buf (in bytes).
- * @param ret_size	[in] Pointer to size_t to store the number of bytes read.
- * @return MDP error code.
+ * @param zF Open file handle. (Unused in the GZip handler.)
+ * @param filename Filename of the archive. (Unused in the GZip handler.)
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
+ * @param buf Buffer to read the file into.
+ * @param size Size of buf (in bytes).
+ * @return Number of bytes read, or 0 on error.
  */
-static int decompressor_7z_get_file(FILE *zF, const char *filename,
-					mdp_z_entry_t *z_entry, void *buf,
-					const size_t size, size_t *ret_size)
+static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
+				       mdp_z_entry_t *z_entry,
+				       void *buf, const size_t size)
 {
 	GSFT_UNUSED_PARAMETER(zF);
 	
 	// All parameters (except zF) must be specified.
-	if (!filename || !z_entry || !buf || !size || !ret_size)
-		return -MDP_ERR_INVALID_PARAMETERS;
+	if (!filename || !z_entry || !buf || !size)
+		return -1;
 	
 	CFileInStream archiveStream;
 	CLookToRead lookStream;
@@ -205,7 +204,7 @@ static int decompressor_7z_get_file(FILE *zF, const char *filename,
 	
 	// Open the 7z file.
 	if (InFile_Open(&archiveStream.file, filename))
-		return -MDP_ERR_Z_ARCHIVE_NOT_FOUND;
+		return 0;
 	
 	FileInStream_CreateVTable(&archiveStream);
 	LookToRead_CreateVTable(&lookStream, False);
@@ -228,7 +227,7 @@ static int decompressor_7z_get_file(FILE *zF, const char *filename,
 		// Error opening the file.
 		SzArEx_Free(&db, &allocImp);
 		File_Close(&archiveStream.file);
-		return -MDP_ERR_Z_CANT_OPEN_ARCHIVE;
+		return 0;
 	}
 	
 	UInt32 blockIndex = 0xFFFFFFFF;	/* it can have any value before first call (if outBuffer = 0) */
@@ -238,6 +237,7 @@ static int decompressor_7z_get_file(FILE *zF, const char *filename,
 	// Extract the specified file.
 	unsigned int i;
 	const unsigned int numFiles = db.db.NumFiles;
+	size_t extracted_size = 0;
 	
 	for (i = 0; i < numFiles; i++)
 	{
@@ -271,8 +271,8 @@ static int decompressor_7z_get_file(FILE *zF, const char *filename,
 		}
 		
 		// Copy the 7z buffer to the output buffer.
-		*ret_size = (size < outSizeProcessed ? size : outSizeProcessed);
-		memcpy(buf, outBuffer + offset, *ret_size);
+		extracted_size = (size < outSizeProcessed ? size : outSizeProcessed);
+		memcpy(buf, outBuffer + offset, extracted_size);
 		
 		// Free the 7z buffer.
 		IAlloc_Free(&allocImp, outBuffer);
@@ -286,8 +286,7 @@ static int decompressor_7z_get_file(FILE *zF, const char *filename,
 	File_Close(&archiveStream.file);
 	
 	if (i >= numFiles)
-		return -MDP_ERR_Z_FILE_NOT_FOUND_IN_ARCHIVE;
+		return 0;
 	
-	// File extracted successfully.
-	return MDP_ERR_OK;
+	return extracted_size;
 }

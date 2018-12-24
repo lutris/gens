@@ -40,14 +40,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifndef PURE
-#ifdef __GNUC__
-#define PURE __attribute__ ((pure))
-#else
-#define PURE
-#endif /* __GNUC__ */
-#endif /* PURE */
-
 /** Defines **/
 
 #ifndef PI
@@ -58,11 +50,12 @@
 
 #define MAX_OUTPUT 0x4FFF
 
-// NOTE: SMS/GG/MD all have 16-bit LFSRs.
-// SG-1000 has a 15-bit LFSR.
-#define LFSR_MASK_WHITE		0x0009
-#define LFSR_MASK_PERIODIC	0x0001
-#define LFSR_INIT		0x8000
+#define W_NOISE 0x12000
+#define P_NOISE 0x08000
+
+//#define NOISE_DEF 0x0f35
+//#define NOISE_DEF 0x0001
+#define NOISE_DEF 0x4000
 
 
 /**
@@ -76,15 +69,14 @@ typedef struct _psg_chip_t
 	unsigned int Counter[4];
 	unsigned int CntStep[4];
 	int Volume[4];
-	
-	/* Noise channel variables. */
-	unsigned int LFSR_Mask;		// Linear Feedback Shift Register mask.
-	unsigned int LFSR;		// Linear Feedback Shift Register contents.
+	unsigned int Noise_Type;
+	unsigned int Noise;
 } psg_chip_t;
 
 
 /** Variables **/
 
+static unsigned int PSG_SIN_Table[16][512];
 static unsigned int PSG_Step_Table[1024];
 static unsigned int PSG_Volume_Table[16];
 static unsigned int PSG_Noise_Step_Table[4];
@@ -105,12 +97,11 @@ psg_chip_t PSG;
 /* GYM dumping. */
 #include "util/sound/gym.hpp"
 
-// Needed for VDP line number.
-#include "gens_core/vdp/vdp_io.h"
-
 #include "audio/audio.h"
+extern int VDP_Current_Line;
 
 int PSG_Enable;
+int PSG_Improv;
 int PSG_Len = 0;
 
 // Pointers to segment buffers.
@@ -133,108 +124,159 @@ void PSG_Write(int data)
 	
 	if (data & 0x80)
 	{
-		// LATCH/DATA byte.
 		PSG.Current_Register = (data & 0x70) >> 4;
 		PSG.Current_Channel = PSG.Current_Register >> 1;
 		
-		// Save the data value in the register.
+		data &= 0x0F;
+		
 		PSG.Register[PSG.Current_Register] =
-			(PSG.Register[PSG.Current_Register] & 0x3F0) | (data & 0x0F);
-	}
-	else
-	{
-		// DATA byte.
-		if (!(PSG.Current_Register & 1) && PSG.Current_Channel != 3)
+			(PSG.Register[PSG.Current_Register] & 0x3F0) | data;
+		
+		if (PSG.Current_Register & 1)
 		{
-			// TONE channel: Upper 6 bits.
-			PSG.Register[PSG.Current_Register] =
-				(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
+			// Volume
+			PSG_Special_Update();
+			PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
+			
+			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+				"channel %d    volume = %.8X",
+				PSG.Current_Channel,
+				PSG.Volume[PSG.Current_Channel]);
 		}
 		else
 		{
-			// NOISE channel or Volume Register: Lower 4 bits.
-			PSG.Register[PSG.Current_Register] = (data & 0x0F);
+			// Frequency
+			PSG_Special_Update();
+			
+			if (PSG.Current_Channel != 3)
+			{
+				// Normal channel
+				PSG.CntStep[PSG.Current_Channel] =
+					PSG_Step_Table[PSG.Register[PSG.Current_Register]];
+				
+				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
+					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
+				
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel %d    step = %.8X",
+					PSG.Current_Channel,
+					PSG.CntStep[PSG.Current_Channel]);
+			}
+			else
+			{
+				// Noise channel
+				PSG.Noise = NOISE_DEF;
+				PSG_Noise_Step_Table[3] = PSG.CntStep[2] >> 1;
+				PSG.CntStep[3] = PSG_Noise_Step_Table[data & 3];
+				
+				if (data & 4)
+					PSG.Noise_Type = W_NOISE;
+				else
+					PSG.Noise_Type = P_NOISE;
+				
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel N    type = %.2X", data);
+			}
+		}
+	}
+	else
+	{
+		if (!(PSG.Current_Register & 1))
+		{
+			// Frequency
+			if (PSG.Current_Channel != 3)
+			{
+				PSG_Special_Update();
+				
+				PSG.Register[PSG.Current_Register] =
+					(PSG.Register[PSG.Current_Register] & 0x0F) | ((data & 0x3F) << 4);
+				
+				PSG.CntStep[PSG.Current_Channel] =
+					PSG_Step_Table[PSG.Register[PSG.Current_Register]];
+				
+				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
+					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
+				
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel %d    step = %.8X",
+					PSG.Current_Channel,
+					PSG.CntStep[PSG.Current_Channel]);
+			}
+		}
+	}
+}
+
+
+/**
+ * PSG_Update_SIN(): Update the PSG audio output using sine waves.
+ * @param buffer
+ * @param length
+ */
+void PSG_Update_SIN(int **buffer, int length)
+{
+	int i, j, out;
+	int cur_cnt, cur_step, cur_vol;
+	unsigned int *sin_t;
+	
+	// Channels 0-2 (in reverse order)
+	for (j = 2; j >= 0; j--)
+	{
+		if (PSG.Volume[j])
+		{
+			cur_cnt = PSG.Counter[j];
+			cur_step = PSG.CntStep[j];
+			sin_t = PSG_SIN_Table[PSG.Register[(j << 1) + 1]];
+			
+			for (i = 0; i < length; i++)
+			{
+				out = sin_t[(cur_cnt = (cur_cnt + cur_step) & 0x1FFFF) >> 8];
+				
+				buffer[0][i] += out;
+				buffer[1][i] += out;
+			}
+			
+			PSG.Counter[j] = cur_cnt;
+		}
+		else
+		{
+			PSG.Counter[j] += PSG.CntStep[j] * length;
 		}
 	}
 	
-	if (PSG.Current_Register & 1)
+	// Channel 3 - Noise
+	if ((cur_vol = PSG.Volume[3]))
 	{
-		// Volume register.
-		PSG_Special_Update();
-		PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data & 0x0F];
+		cur_cnt = PSG.Counter[3];
+		cur_step = PSG.CntStep[3];
 		
-		LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-			"channel %d    volume = %.8X",
-			PSG.Current_Channel,
-			PSG.Volume[PSG.Current_Channel]);
+		for (i = 0; i < length; i++)
+		{
+			cur_cnt += cur_step;
+			
+			if (PSG.Noise & 1)
+			{
+				buffer[0][i] += cur_vol;
+				buffer[1][i] += cur_vol;
+				
+				if (cur_cnt & 0x10000)
+				{
+					cur_cnt &= 0xFFFF;
+					PSG.Noise = (PSG.Noise ^ PSG.Noise_Type) >> 1;
+				}
+			}
+			else if (cur_cnt & 0x10000)
+			{
+				cur_cnt &= 0xFFFF;
+				PSG.Noise >>= 1;
+			}
+		}
+		
+		PSG.Counter[3] = cur_cnt;
 	}
 	else
 	{
-		// Frequency
-		PSG_Special_Update();
-		
-		if (PSG.Current_Channel != 3)
-		{
-			// Normal channel
-			PSG.CntStep[PSG.Current_Channel] =
-				PSG_Step_Table[PSG.Register[PSG.Current_Register]];
-			
-			if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
-				PSG.CntStep[3] = PSG.CntStep[2] >> 1;
-			
-			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-				"channel %d    step = %.8X",
-				PSG.Current_Channel,
-				PSG.CntStep[PSG.Current_Channel]);
-		}
-		else
-		{
-			// Noise channel
-			PSG.LFSR = LFSR_INIT;
-			PSG_Noise_Step_Table[3] = PSG.CntStep[2] >> 1;
-			PSG.CntStep[3] = PSG_Noise_Step_Table[data & 3];
-			
-			// Check if we should use white noise or periodic noise.
-			if (data & 4)
-				PSG.LFSR_Mask = LFSR_MASK_WHITE;
-			else
-				PSG.LFSR_Mask = LFSR_MASK_PERIODIC;
-			
-			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
-				"channel N    type = %.2X", data);
-		}
+		PSG.Counter[3] += PSG.CntStep[3] * length;
 	}
-}
-
-
-/** parity16() and LFSR16_Shift() from http://www.smspower.org/dev/docs/wiki/Sound/PSG#noisegeneration */
-
-/**
- * parity16(): Get the parity of a 16-bit value.
- * @param n Value to check.
- * @return Parity.
- */
-static inline unsigned int PURE parity16(unsigned int n)
-{
-	n ^= n >> 8;
-	n ^= n >> 4;
-	n ^= n >> 2;
-	n ^= n >> 1;
-	return (n & 1);
-}
-
-/**
- * LFSR16_Shift(): Shift the Linear Feedback Shift Register. (16-bit LFSR)
- * @param LFSR Current LFSR contents.
- * @param LFSR_Mask LFSR mask.
- * @return Shifted LFSR value.
- */
-static inline unsigned int PURE LFSR16_Shift(unsigned int LFSR, unsigned int LFSR_Mask)
-{
-	return (LFSR >> 1) |
-		(((LFSR_Mask > 1)
-			? parity16(LFSR & LFSR_Mask)
-			: (LFSR & LFSR_Mask)) << 15);
 }
 
 
@@ -311,17 +353,21 @@ void PSG_Update(int **buffer, int length)
 		{
 			cur_cnt += cur_step;
 			
-			if (PSG.LFSR & 1)
+			if (PSG.Noise & 1)
 			{
 				buffer[0][i] += cur_vol;
 				buffer[1][i] += cur_vol;
+				
+				if (cur_cnt & 0x10000)
+				{
+					cur_cnt &= 0xFFFF;
+					PSG.Noise = (PSG.Noise ^ PSG.Noise_Type) >> 1;
+				}
 			}
-			
-			// Check if the LFSR should be shifted.
-			if (cur_cnt & 0x10000)
+			else if (cur_cnt & 0x10000)
 			{
 				cur_cnt &= 0xFFFF;
-				PSG.LFSR = LFSR16_Shift(PSG.LFSR, PSG.LFSR_Mask);
+				PSG.Noise >>= 1;
 			}
 		}
 		
@@ -341,7 +387,7 @@ void PSG_Update(int **buffer, int length)
  */
 void PSG_Init(int clock, int rate)
 {
-	int i;
+	int i, j;
 	double out;
 	
 	// Step calculation
@@ -375,11 +421,23 @@ void PSG_Init(int clock, int rate)
 	}
 	PSG_Volume_Table[15] = 0;
 	
+	// SIN table calculation
+	for (i = 0; i < 512; i++)
+	{
+		out = sin((2.0 * PI) * ((double)(i) / 512.0));
+		
+		for (j = 0; j < 16; j++)
+		{
+			PSG_SIN_Table[j][i] =
+				(unsigned int)(out * (double)PSG_Volume_Table[j]);
+		}
+	}
+	
 	// Clear PSG registers.
 	PSG.Current_Register = 0;
 	PSG.Current_Channel = 0;
-	PSG.LFSR = 0;		// TODO: Should this be LFSR_INIT?
-	PSG.LFSR_Mask = 0;	// TODO: Should this be LFSR_MASK_WHITE or LFSR_MASK_PERIODIC?
+	PSG.Noise = 0;
+	PSG.Noise_Type = 0;
 	
 	for (i = 0; i < 4; i++)
 	{
@@ -418,11 +476,7 @@ void PSG_Restore_State(const uint32_t *buf)
 	for (i = 0; i < 8; i++)
 	{
 		PSG_Write(0x80 | (i << 4) | (buf[i] & 0xF));
-		
-		// Only write DATA bytes for tone registers.
-		// Don't write DATA bytes for volume or noise registers.
-		if (!(i & 1) && i < 6)
-			PSG_Write((buf[i] >> 4) & 0x3F);
+		PSG_Write((buf[i] >> 4) & 0x3F);
 	}
 }
 
@@ -441,17 +495,21 @@ int PSG_Get_Reg(int regID)
 
 /**
  * PSG_Special_Update(): Update the PSG buffer.
+ * Calls the appropriate function depending on the "PSG Improved" setting.
  */
 void PSG_Special_Update(void)
 {
 	if (!(PSG_Len && PSG_Enable))
 		return;
 	
-	PSG_Update(PSG_Buf, PSG_Len);
+	if (PSG_Improv)
+		PSG_Update_SIN(PSG_Buf, PSG_Len);
+	else
+		PSG_Update(PSG_Buf, PSG_Len);
 	
 	// NOTE: Seg_L and Seg_R are arrays. This is pointer arithmetic.
-	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
-	PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Lines.Display.Current + 1][0];
+	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
+	PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
 	PSG_Len = 0;
 }
 
@@ -495,8 +553,8 @@ void PSG_Save_State_GSX_v7(struct _gsx_v7_psg *save)
 	save->volume[2]		= cpu_to_le32(PSG.Volume[2]);
 	save->volume[3]		= cpu_to_le32(PSG.Volume[3]);
 	
-	save->noise_type	= cpu_to_le32(PSG.LFSR_Mask == LFSR_MASK_PERIODIC ? 0x08000 : 0x12000);
-	save->noise		= cpu_to_le32(PSG.LFSR);
+	save->noise_type	= cpu_to_le32(PSG.Noise_Type);
+	save->noise		= cpu_to_le32(PSG.Noise);
 }
 
 
@@ -533,10 +591,8 @@ void PSG_Restore_State_GSX_v7(struct _gsx_v7_psg *save)
 	PSG.Volume[2]		= le32_to_cpu(save->volume[2]);
 	PSG.Volume[3]		= le32_to_cpu(save->volume[3]);
 	
-	PSG.LFSR_Mask		= (le32_to_cpu(save->noise_type) == 0x08000
-					? LFSR_MASK_PERIODIC
-					: LFSR_MASK_WHITE);
-	PSG.LFSR		= le32_to_cpu(save->noise);
+	PSG.Noise_Type		= le32_to_cpu(save->noise_type);
+	PSG.Noise		= le32_to_cpu(save->noise);
 }
 
 

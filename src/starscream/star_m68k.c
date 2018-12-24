@@ -946,32 +946,10 @@ emit("js near execquit\n");
 	if(use_stack) {
 		emit("mov al,[esp+4]\n");  /* al = level  */
 	}
-	
-	/*
-	** HACK by David Korth. (2010/01/31)
-	** If the CPU is stopped and the interrupt is masked,
-	** don't do anything.
-	*/
-	emit("test byte[__interrupts],0x10\n");
-	emit("jz short .notstopped\n");
-	
-	// Check if the interrupt is masked.
-	emit("mov cl,[__sr+1]\n");
-	emit("mov ch,al\n");
-	emit("and cl,byte 7\n");
-	emit("cmp ch,byte 7\n");
-	emit("je short .notstopped\n");
-	emit("cmp cl,ch\n");
-	emit("jb short .notstopped\n");
-	
-	// Interrupt is masked. Don't do anything.
-	emit("xor eax, eax\n");
-	emit("ret\n");
-	
+
 	/*
 	** Commit the given interrupt and vector number.
 	*/
-	emit(".notstopped:\n");
 	emit("mov [__interrupts],al\n");
 	emit("mov eax,[__io_cycle_counter]\n");
 	emit("inc eax\n");

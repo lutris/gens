@@ -48,16 +48,19 @@ extern "C" {
 // VDraw styles.
 typedef struct
 {
-	uint32_t	color;		// RGB color value. (32-bit)
-	uint32_t	dot_color;	// RGB color value. (Screen color depth.)
-	uint8_t		style;		// Old Gens style byte.
-	uint8_t		double_size;	// 0 == 1x; non-zero == 2x.
+	uint8_t		style;
+	uint8_t		color;		// STYLE_COLOR_* values
+	uint32_t	dot_color;	// Actual RGB color value.
+	BOOL		double_size;
+	BOOL		transparent;
 } vdraw_style_t;
 
 void draw_text(void *screen, const int pitch, const int w, const int h,
-	       const char *msg, const vdraw_style_t *style);
+	       const char *msg, const vdraw_style_t *style,
+	       const BOOL isDDraw);
 
 void calc_text_style(vdraw_style_t *style);
+void calc_transparency_mask(void);
 
 // Text write functions.
 void vdraw_text_write(const char* msg, const int duration);
@@ -65,7 +68,6 @@ void vdraw_text_printf(const int duration, const char* msg, ...)
 	__attribute__ ((format (printf, 2, 3)));
 void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	__attribute__ ((format (printf, 2, 0)));
-void vdraw_text_clear(void);
 void vdraw_msg_timer_update(void);
 
 // Text buffer.

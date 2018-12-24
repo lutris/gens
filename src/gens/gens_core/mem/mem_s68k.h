@@ -1,8 +1,6 @@
 #ifndef GENS_MEM_S68K_H
 #define GENS_MEM_S68K_H
 
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,27 +12,9 @@ extern struct
 	unsigned short Status[8];
 } COMM;
 
-extern union
-{
-	uint8_t  u8[512*1024];
-	uint16_t u16[(512*1024)>>1];
-	uint32_t u32[(512*1024)>>1];
-} Ram_Prg;
-
-extern union
-{
-	uint8_t  u8[256*1024];
-	uint16_t u16[(256*1024)>>1];
-	uint32_t u32[(256*1024)>>2];
-} Ram_Word_2M;
-
-extern union
-{
-	uint8_t  u8[256*1024];
-	uint16_t u16[(256*1024)>>1];
-	uint32_t u32[(256*1024)>>2];
-} Ram_Word_1M;
-
+extern unsigned char Ram_Prg[512 * 1024];
+extern unsigned char Ram_Word_2M[256 * 1024];
+extern unsigned char Ram_Word_1M[256 * 1024];
 extern unsigned short Cell_Conv_Tab[64 * 1024];
 extern unsigned char Ram_Backup[8 * 1024];
 extern unsigned int LED_Status;

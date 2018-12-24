@@ -68,19 +68,15 @@ typedef struct _Gens_Settings_t
 // Gens Pathnames
 typedef struct _Gens_PathNames_t
 {
-	// Default save path.
-	char Gens_Save_Path[GENS_PATH_MAX];
-	
-	// TODO: Implement proper multilingual support.
-	//char Language_Path[GENS_PATH_MAX];
-	
+	char Gens_Path[GENS_PATH_MAX];	// TODO: Rename to Gens_Save_Path.
+	char Language_Path[GENS_PATH_MAX];
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];
 	char Screenshot_Dir[GENS_PATH_MAX];
 	
 #ifdef GENS_OS_WIN32
 	// Win32-specific pathnames.
-	char Gens_EXE_Path[GENS_PATH_MAX];
+	TCHAR Gens_EXE_Path[GENS_PATH_MAX];
 #endif
 } Gens_PathNames_t;
 
@@ -112,14 +108,12 @@ typedef struct _Gens_VideoSettings_t
 	int VSync_W;
 	int borderColorEmulation;
 	int pauseTint;
-	int ntscV30rolling;
 #ifdef GENS_OPENGL
 	struct
 	{
 		int width;
 		int height;
 		int glLinearFilter;
-		int glOrthographicProjection;
 	} GL;
 #endif
 } Gens_VideoSettings_t;

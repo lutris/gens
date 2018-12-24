@@ -3,17 +3,22 @@
 #include "cd_file.h"
 #include "cdda_mp3.h"
 
+// CD-ROM drive access
+#ifdef GENS_CDROM
+#include "cd_aspi.h"
+#endif
+
 struct mpstr mp;
 
 extern int Sound_Rate;		// in G_dsound.h...
 
-static int Current_IN_Pos;
-int Current_OUT_Pos;
-int Current_OUT_Size;
+unsigned int Current_IN_Pos;
+unsigned int Current_OUT_Pos;
+unsigned int Current_OUT_Size;
 
 static char buf_out[8 * 1024];
 
-static const int freqs_mp3[9] =
+static int freqs_mp3[9] =
 {
 	44100, 48000, 32000,
 	22050, 24000, 16000,
@@ -172,70 +177,75 @@ MP3_Find_Frame (FILE * f, int pos_wanted)
 }
 
 
-static int MP3_Update_IN(void)
+int
+MP3_Update_IN (void)
 {
-	char buf_in[8 * 1024];
-	int size_read;
-	
-	if (Tracks[Track_Played].F == NULL)
-		return -1;
-	
-	fseek(Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
-	size_read = fread(buf_in, 1, sizeof(buf_in), Tracks[Track_Played].F);
-	Current_IN_Pos += size_read;
-	
-	if (size_read <= 0 || fatal_mp3_error)
+  char buf_in[8 * 1024];
+  int size_read;
+
+  if (Tracks[Track_Played].F == NULL)
+    return -1;
+
+  fseek (Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
+  size_read = fread (buf_in, 1, 8 * 1024, Tracks[Track_Played].F);
+  Current_IN_Pos += size_read;
+
+  if (size_read <= 0 || fatal_mp3_error)
+    {
+      // go to the next track
+
+      Track_Played++;
+      ResetMP3_Gens (&mp);
+
+      if (Track_Played > 99)
 	{
-		// go to the next track
-		
-		Track_Played++;
-		ResetMP3_Gens(&mp);
-		
-		if (Track_Played > 99)
-		{
-			return 3;
-		}
-		else if (Tracks[Track_Played].F == NULL)
-		{
-			return 3;
-		}
-		else if (Tracks[Track_Played].Type == TYPE_WAV)
-		{
-			// WAV_Play();
-			return 4;
-		}
-		else if (Tracks[Track_Played].Type != TYPE_MP3)
-		{
-			return 5;
-		}
-		
-		Current_IN_Pos = MP3_Find_Frame(Tracks[Track_Played].F, 0);
-		fseek(Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
-		size_read = fread(buf_in, 1, sizeof(buf_in), Tracks[Track_Played].F);
-		Current_IN_Pos += size_read;
+	  return 3;
 	}
-	
-	if (fatal_mp3_error)
+      else if (Tracks[Track_Played].F == NULL)
+	{
+	  return 3;
+	}
+      else if (Tracks[Track_Played].Type == TYPE_WAV)
+	{
+	  // WAV_Play();
+	  return 4;
+	}
+      else if (Tracks[Track_Played].Type != TYPE_MP3)
+	{
+	  return 5;
+	}
+
+      Current_IN_Pos = MP3_Find_Frame (Tracks[Track_Played].F, 0);
+      fseek (Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
+      size_read = fread (buf_in, 1, 8 * 1024, Tracks[Track_Played].F);
+      Current_IN_Pos += size_read;
+    }
+
+  if (fatal_mp3_error)
+	return 1;
+
+  if (decodeMP3 (&mp, buf_in, size_read, buf_out, 8 * 1024, &Current_OUT_Size)
+      != MP3_OK)
+    {
+      fseek (Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
+      size_read = fread (buf_in, 1, 8 * 1024, Tracks[Track_Played].F);
+      Current_IN_Pos += size_read;
+
+      if (decodeMP3
+	  (&mp, buf_in, size_read, buf_out, 8 * 1024,
+	   &Current_OUT_Size) != MP3_OK)
+	{
+		fatal_mp3_error = 1;
 		return 1;
-	
-	if (decodeMP3(&mp, buf_in, size_read, buf_out, sizeof(buf_out), &Current_OUT_Size) != MP3_OK)
-	{
-		fseek(Tracks[Track_Played].F, Current_IN_Pos, SEEK_SET);
-		size_read = fread(buf_in, 1, sizeof(buf_in), Tracks[Track_Played].F);
-		Current_IN_Pos += size_read;
-		
-		if (decodeMP3(&mp, buf_in, size_read, buf_out, sizeof(buf_out),  &Current_OUT_Size) != MP3_OK)
-		{
-			fatal_mp3_error = 1;
-			return 1;
-		}
 	}
-	
-	return 0;
+    }
+
+  return 0;
 }
 
 
-static int MP3_Update_OUT(void)
+int
+MP3_Update_OUT (void)
 {
   Current_OUT_Pos = 0;
 

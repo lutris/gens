@@ -88,9 +88,12 @@
 
 // Win32 includes.
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_shellapi.h"
-#include "libgsft/w32u/w32u_libc.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <shellapi.h>
 #endif
 
 // For some reason, these aren't extern'd anywhere...
@@ -210,7 +213,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			Settings.Paused = 1;
 			//Pause_Screen();
 			audio_clear_sound_buffer();
-			pShellExecuteU(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
+			ShellExecute(NULL, NULL, TEXT("http://www.youtube.com/watch?v=oHg5SJYRHA0"), NULL, NULL, SW_MAXIMIZE);
 			break;
 #endif /* GENS_OS_WIN32 */
 		
@@ -357,25 +360,29 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
+#ifdef GENS_OS_UNIX
 		case IDM_GRAPHICS_BPP_15:
-			Options::setBpp(15);
+			vdraw_set_bpp(15, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 15-bit (555)", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_16:
-			Options::setBpp(16);
+			vdraw_set_bpp(16, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 16-bit (565)", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_32:
-			Options::setBpp(32);
+			vdraw_set_bpp(32, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 32-bit", 1500);
 			break;
+#endif /* GENS_OS_UNIX */
 		
 #ifdef GENS_OPENGL
 		case IDM_GRAPHICS_OPENGL_FILTER:
 			Options::setOpenGL_LinearFilter(!state);
-			break;
-		
-		case IDM_GRAPHICS_OPENGL_ORTHOPROJ:
-			Options::setOpenGL_OrthographicProjection(!state);
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_320x240:
@@ -416,11 +423,6 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		
 		case IDM_GRAPHICS_OPENGL_RES_CUSTOM:
 			glres_window_show();
-			
-			// Synchronize the Graphics Menu;
-			// otherwise, "Custom" may be selected even if the resolution
-			// matches one of the predefined resolutions.
-			Sync_Gens_Window_GraphicsMenu();
 			break;
 #endif /* GENS_OPENGL */
 		
@@ -431,15 +433,6 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		case IDM_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Options::setSpriteLimit(!state);
-			Sync_Gens_Window_GraphicsMenu();
-			break;
-		
-		case IDM_GRAPHICS_INTREND_EVEN:
-		case IDM_GRAPHICS_INTREND_ODD:
-		case IDM_GRAPHICS_INTREND_FLICKER:
-		//case IDM_GRAPHICS_INTREND_2X:
-			// Interlaced Rendering Mode.
-			Options::setIntRend_Mode(menuID - IDM_GRAPHICS_INTREND_EVEN);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
@@ -655,6 +648,10 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 			Options::setSoundPSG(!state);
 			break;
 		
+		case IDM_SOUND_PSG_SINE:
+			Options::setSoundPSG_Sine(!state);
+			break;
+		
 		case IDM_SOUND_PCM:
 			Options::setSoundPCM(!state);
 			break;
@@ -813,9 +810,8 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 			
 #if defined(GENS_OS_WIN32)
 			// Manual should be "%EXEPATH%\\manual\\index.html".
-			string manual_paths[2];
-			manual_paths[0] = string(PathNames.Gens_EXE_Path) + "doc\\manual\\index.html";
-			manual_paths[1] = string(PathNames.Gens_EXE_Path) + "manual\\index.html";
+			string manual_paths[1];
+			manual_paths[0] = string(PathNames.Gens_EXE_Path) + "manual\\index.html";
 #else
 			// Manual could be in a few different places.
 			string manual_paths[2];
@@ -823,7 +819,7 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 			manual_paths[1] = GENS_DOC_DIR "-" + string(VERSION) + "/manual/index.html";
 #endif
 			
-			unsigned int i;
+			int i;
 			for (i = 0; i < (sizeof(manual_paths) / sizeof(manual_paths[0])); i++)
 			{
 				if (access(manual_paths[i].c_str(), R_OK) == 0)

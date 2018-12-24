@@ -2,17 +2,11 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
-
 #include "cd_file.h"
 
-// C includes.
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-
 #include "cd_sys.hpp"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"

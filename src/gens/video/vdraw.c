@@ -50,7 +50,6 @@
 
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
-#include "osd_charset.hpp"
 
 // Gens window.
 #include "gens/gens_window_sync.hpp"
@@ -110,16 +109,16 @@ VDRAW_BACKEND vdraw_cur_backend_id = -1;
 uint32_t vdraw_cur_backend_flags = 0;
 
 // Function pointers.
-static int	(*vdraw_flip_backend)(void) = NULL;
+int		(*vdraw_init_subsystem)(void) = NULL;
+int		(*vdraw_shutdown)(void) = NULL;
 void		(*vdraw_clear_screen)(void) = NULL;
 void		(*vdraw_update_vsync)(const int data) = NULL;
 int		(*vdraw_reinit_gens_window)(void) = NULL;
 #ifdef GENS_OS_WIN32
-int WINAPI	(*vdraw_clear_primary_screen)(void) = NULL;
-int WINAPI	(*vdraw_clear_back_screen)(void) = NULL;
-int WINAPI	(*vdraw_restore_primary)(void) = NULL;
-int WINAPI	(*vdraw_set_cooperative_level)(void) = NULL;
-void WINAPI	(*vdraw_adjust_RectDest)(void) = NULL;
+int		(*vdraw_clear_primary_screen)(void) = NULL;
+int		(*vdraw_clear_back_screen)(void) = NULL;
+int		(*vdraw_restore_primary)(void) = NULL;
+int		(*vdraw_set_cooperative_level)(void) = NULL;
 #endif /* GENS_OS_WIN32 */
 
 // Render functions.
@@ -133,25 +132,16 @@ mdp_render_info_t vdraw_rInfo = { .vmodeFlags = 0 };
 static uint8_t	vdraw_prop_stretch = 0;
 static uint8_t	vdraw_prop_intro_effect_color = 0;
 static BOOL	vdraw_prop_fullscreen = FALSE;
-#ifdef GENS_OS_WIN32
 static BOOL	vdraw_prop_sw_render = FALSE;
-#endif /* GENS_OS_WIN32 */
 static BOOL	vdraw_prop_fast_blur = FALSE;
 int		vdraw_scale = 1;
-
-typedef union
-{
-	uint32_t u32[2];
-	int64_t  s64;
-} u32_s64_t;
 
 // FPS counter.
 BOOL		vdraw_fps_enabled = FALSE;
 static float	vdraw_fps_value = 0;
 static float	vdraw_fps_frames[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static uint32_t	vdraw_fps_old_time = 0, vdraw_fps_view = 0, vdraw_fps_index = 0;
-static u32_s64_t vdraw_fps_freq_cpu = {.s64 = 0};
-static u32_s64_t vdraw_fps_new_time = {.s64 = 0};
+static uint32_t	vdraw_fps_freq_cpu[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
 vdraw_style_t	vdraw_fps_style;
 
 // On-screen message.
@@ -161,6 +151,8 @@ vdraw_style_t	vdraw_msg_style;
 
 // Screen border.
 int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
+uint16_t	vdraw_border_color_16 = ~0;
+uint32_t	vdraw_border_color_32 = ~0;
 
 // RGB color conversion functions.
 #include "vdraw_RGB.h"
@@ -173,13 +165,11 @@ BOOL		vdraw_needs_conversion = FALSE;
  */
 int vdraw_init(void)
 {
-	// Initialize the OSD subsystem.
-	osd_init();
-	
 	// Calculate the initial text styles.
 	memset(&vdraw_fps_style, 0x00, sizeof(vdraw_fps_style));
 	memset(&vdraw_msg_style, 0x00, sizeof(vdraw_msg_style));
 	
+	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
 	
@@ -200,10 +190,33 @@ int vdraw_end(void)
 		vdraw_cur_backend = NULL;
 	}
 	
-	// Shut down the OSD subsystem.
-	osd_end();
-	
 	// TODO: Do something here.
+	return 0;
+}
+
+
+/**
+ * vdraw_backend_init_subsystem(): Initialize a backend's subsystem.
+ * @param backend Backend to use.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_backend_init_subsystem(VDRAW_BACKEND backend)
+{
+	if (backend < 0 || backend >= VDRAW_BACKEND_MAX)
+	{
+		// Invalid backend.
+		return -1;
+	}
+	if (vdraw_backends_broken[backend])
+	{
+		// Backend is broken.
+		return -2;
+	}
+	
+	if (vdraw_backends[backend]->init_subsystem)
+		vdraw_backends[backend]->init_subsystem();
+	
+	// Initialized successfully.
 	return 0;
 }
 
@@ -220,11 +233,6 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		// Invalid backend.
 		return -1;
 	}
-	
-#ifdef GENS_OS_WIN32
-	// Initialize the display size.
-	vdraw_init_display_size();
-#endif
 	
 	// Initialize the backend.
 	if (vdraw_backends_broken[backend] != 0 ||
@@ -260,7 +268,8 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_cur_backend_id = backend;
 	
 	// Copy the function pointers.
-	vdraw_flip_backend		= vdraw_cur_backend->flip;
+	vdraw_init_subsystem		= vdraw_cur_backend->init_subsystem;
+	vdraw_shutdown			= vdraw_cur_backend->shutdown;
 	vdraw_clear_screen		= vdraw_cur_backend->clear_screen;
 	vdraw_update_vsync		= vdraw_cur_backend->update_vsync;
 	vdraw_reinit_gens_window	= vdraw_cur_backend->reinit_gens_window;
@@ -269,7 +278,6 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_clear_back_screen		= vdraw_cur_backend->clear_back_screen;
 	vdraw_restore_primary		= vdraw_cur_backend->restore_primary;
 	vdraw_set_cooperative_level	= vdraw_cur_backend->set_cooperative_level;
-	vdraw_adjust_RectDest		= vdraw_cur_backend->adjust_RectDest;
 #endif /* GENS_OS_WIN32 */
 	
 	// Set the backend flags.
@@ -280,7 +288,7 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		vdraw_prop_fullscreen = FALSE;
 	
 	// The Gens window must be reinitialized.
-	return vdraw_reinit_gens_window();
+	return vdraw_cur_backend->reinit_gens_window();
 }
 
 
@@ -299,47 +307,6 @@ int vdraw_backend_end(void)
 	vdraw_cur_backend = NULL;
 	return 0;
 }
-
-
-#ifdef GENS_OS_WIN32
-RECT vdraw_rectDisplay;
-/**
- * vdraw_init_display_size(): Initialize the Win32 display size variables.
- */
-void WINAPI vdraw_init_display_size(void)
-{
-	// Check if the system supports multiple monitors.
-	const int scrn_width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	const int scrn_height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-	
-	if (scrn_width == 0 || scrn_height == 0)
-	{
-		// System does not support multiple monitors.
-		vdraw_rectDisplay.left = 0;
-		vdraw_rectDisplay.top = 0;
-		
-		// Get the single-monitor size.
-		vdraw_rectDisplay.right = GetSystemMetrics(SM_CXSCREEN);
-		vdraw_rectDisplay.bottom = GetSystemMetrics(SM_CYSCREEN);
-	}
-	else
-	{
-		// System supports multiple monitors.
-		
-		// Get the left/top.
-		vdraw_rectDisplay.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
-		vdraw_rectDisplay.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
-		
-		// Calculate the right/bottom.
-		vdraw_rectDisplay.right = vdraw_rectDisplay.left + scrn_width;
-		vdraw_rectDisplay.bottom = vdraw_rectDisplay.top + scrn_height;
-	}
-	
-	// Update the destination rectangle.
-	if (vdraw_adjust_RectDest)
-		vdraw_adjust_RectDest();
-}
-#endif
 
 
 /**
@@ -385,19 +352,19 @@ int vdraw_flip(int md_screen_updated)
 		}
 		else if (vdraw_fps_enabled && (Game != NULL) && !Settings.Paused)
 		{
-			if (vdraw_fps_freq_cpu.u32[0] > 1)	// accurate timer ok
+			if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
 			{
 				if (++vdraw_fps_view >= 16)
 				{
 					#ifdef GENS_OS_WIN32
-						QueryPerformanceCounter((LARGE_INTEGER*)(&vdraw_fps_new_time.s64));
+						QueryPerformanceCounter((LARGE_INTEGER*)vdraw_fps_new_time);
 					#else
-						QueryPerformanceCounter(&vdraw_fps_new_time.s64);
+						QueryPerformanceCounter((long long*)vdraw_fps_new_time);
 					#endif
-					if (vdraw_fps_new_time.u32[0] != vdraw_fps_old_time)
+					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
 					{
-						vdraw_fps_value = (float)(vdraw_fps_freq_cpu.u32[0]) * 16.0f /
-								(float)(vdraw_fps_new_time.u32[0] - vdraw_fps_old_time);
+						vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
+								(float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
 						vdraw_text_printf(0, "%.1f", vdraw_fps_value);
 					}
 					else
@@ -406,18 +373,18 @@ int vdraw_flip(int md_screen_updated)
 						vdraw_text_write(">9000", 0);
 					}
 					
-					vdraw_fps_old_time = vdraw_fps_new_time.u32[0];
+					vdraw_fps_old_time = vdraw_fps_new_time[0];
 					vdraw_fps_view = 0;
 				}
 			}
-			else if (vdraw_fps_freq_cpu.u32[0] == 1)	// accurate timer not supported
+			else if (vdraw_fps_freq_cpu[0] == 1)	// accurate timer not supported
 			{
 				if (++vdraw_fps_view >= 10)
 				{
-					vdraw_fps_new_time.u32[0] = GetTickCount();
+					vdraw_fps_new_time[0] = GetTickCount();
 					
-					if (vdraw_fps_new_time.u32[0] != vdraw_fps_old_time)
-						vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time.u32[0] - vdraw_fps_old_time);
+					if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
+						vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
 					else
 						vdraw_fps_frames[vdraw_fps_index] = 2000;
 					
@@ -430,7 +397,7 @@ int vdraw_flip(int md_screen_updated)
 						vdraw_fps_value += vdraw_fps_frames[i];
 					
 					vdraw_fps_value /= 8.0f;
-					vdraw_fps_old_time = vdraw_fps_new_time.u32[0];
+					vdraw_fps_old_time = vdraw_fps_new_time[0];
 					vdraw_fps_view = 0;
 				}
 				vdraw_text_printf(0, "%.1f", vdraw_fps_value);
@@ -438,15 +405,15 @@ int vdraw_flip(int md_screen_updated)
 			else
 			{
 				#ifdef GENS_OS_WIN32
-					QueryPerformanceFrequency((LARGE_INTEGER*)(&vdraw_fps_freq_cpu.s64));
+					QueryPerformanceFrequency((LARGE_INTEGER*)vdraw_fps_freq_cpu);
 				#else
-					QueryPerformanceFrequency(&vdraw_fps_freq_cpu.s64);
+					QueryPerformanceFrequency((long long*)vdraw_fps_freq_cpu);
 				#endif
-				if (vdraw_fps_freq_cpu.u32[0] == 0)
-					vdraw_fps_freq_cpu.u32[0] = 1;
+				if (vdraw_fps_freq_cpu[0] == 0)
+					vdraw_fps_freq_cpu[0] = 1;
 				
 				// Clear the message text.
-				vdraw_text_clear();
+				vdraw_msg_text[0] = 0x00;
 			}
 		}
 		
@@ -456,9 +423,11 @@ int vdraw_flip(int md_screen_updated)
 	}
 	
 	// Check if the display width changed.
-	// TODO: Eliminate this.
 	vdraw_border_h_old = vdraw_border_h;
-	vdraw_border_h = vdp_getHPixBegin() * 2;
+	if (vdp_isH40())
+		vdraw_border_h = 0;	// 320x224
+	else
+		vdraw_border_h = 64;	// 256x224
 	
 	if (vdraw_border_h != vdraw_border_h_old)
 	{
@@ -467,16 +436,15 @@ int vdraw_flip(int md_screen_updated)
 			vdraw_cur_backend->stretch_adjust();
 	}
 	
-	// TODO: This check seems to be inverted...
 	if (vdraw_border_h > vdraw_border_h_old)
 	{
 		// New screen width is smaller than old screen width.
 		// Clear the screen.
-		vdraw_clear_screen();
+		vdraw_cur_backend->clear_screen();
 	}
 	
 	// Flip the screen buffer.
-	return vdraw_flip_backend();
+	return vdraw_cur_backend->flip();
 }
 
 
@@ -494,8 +462,7 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	
 	if (reset_video && vdraw_cur_backend)
 	{
-		if (vdraw_cur_backend->end)
-			vdraw_cur_backend->end();
+		vdraw_cur_backend->end();
 		vdraw_cur_backend->init();
 	}
 	
@@ -505,11 +472,8 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	// Recalculate palettes.
 	Recalculate_Palettes();
 	
-	// Readjust the 32X CRam, if necessary.
-	if (_32X_Started)
-		Adjust_CRam_32X();
-	
 	// Recalculate the text styles.
+	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
 	
@@ -525,6 +489,10 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
  */
 void vdraw_refresh_video(void)
 {
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+	
 	if (vdraw_cur_backend)
 	{
 		vdraw_cur_backend->end();
@@ -559,32 +527,14 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 }
 
 
-#ifdef GENS_OS_WIN32
-#include "plugins/render/normal/mdp_render_1x_plugin.h"
-//#include "plugins/render/double/mdp_render_2x_plugin.h"
 BOOL vdraw_get_sw_render(void)
 {
 	return (vdraw_prop_sw_render ? TRUE : FALSE);
 }
 void vdraw_set_sw_render(const BOOL new_sw_render)
 {
-	if (vdraw_prop_sw_render == new_sw_render)
-		return;
-	
 	vdraw_prop_sw_render = (new_sw_render ? TRUE : FALSE);
-	
-	// TODO: Make this DDraw-only.
-	if (vdraw_cur_backend_id != VDRAW_BACKEND_DDRAW)
-		return;
-	
-	// Check the renderer.
-	mdp_render_fn cur_render = (vdraw_get_fullscreen() ? vdraw_blitFS : vdraw_blitW);
-	if (cur_render == mdp_render_1x_render_t.blit)
-		vdraw_reset_renderer(TRUE);
-	//else if (cur_render == mdp_render_2x_render_t.blit)
-	//	vdraw_reset_renderer(TRUE);
 }
-#endif /* GENS_OS_WIN32 */
 
 
 BOOL vdraw_get_msg_enabled(void)
@@ -662,7 +612,7 @@ void vdraw_set_fast_blur(const BOOL new_fast_blur)
 /** Style properties **/
 
 
-uint8_t vdraw_get_msg_style(void)
+uint8_t	vdraw_get_msg_style(void)
 {
 	return vdraw_msg_style.style;
 }
@@ -676,7 +626,7 @@ void vdraw_set_msg_style(const uint8_t new_msg_style)
 }
 
 
-uint8_t vdraw_get_fps_style(void)
+uint8_t	vdraw_get_fps_style(void)
 {
 	return vdraw_fps_style.style;
 }
@@ -690,35 +640,7 @@ void vdraw_set_fps_style(const uint8_t new_fps_style)
 }
 
 
-uint32_t vdraw_get_msg_color(void)
-{
-	return vdraw_msg_style.color;
-}
-void vdraw_set_msg_color(const uint32_t new_msg_color)
-{
-	if (vdraw_msg_style.color == new_msg_color)
-		return;
-	
-	vdraw_msg_style.color = new_msg_color;
-	calc_text_style(&vdraw_msg_style);
-}
-
-
-uint32_t vdraw_get_fps_color(void)
-{
-	return vdraw_fps_style.color;
-}
-void vdraw_set_fps_color(const uint32_t new_fps_color)
-{
-	if (vdraw_fps_style.color == new_fps_color)
-		return;
-	
-	vdraw_fps_style.color = new_fps_color;
-	calc_text_style(&vdraw_fps_style);
-}
-
-
-uint8_t vdraw_get_intro_effect_color(void)
+uint8_t	vdraw_get_intro_effect_color(void)
 {
 	return vdraw_prop_intro_effect_color;
 }

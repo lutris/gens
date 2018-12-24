@@ -326,8 +326,8 @@ section .text align=64
 		cmp	ebx, 0x07FFFF
 		ja	short .Word_RAM
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Prg) + ebx]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Prg) + ebx]
 		pop	ebx
 		ret
 	
@@ -335,7 +335,7 @@ section .text align=64
 	
 	.Word_RAM:
 		mov	eax, [SYM(Ram_Word_State)]
-		and	eax, byte 0x3
+		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
 	align 16
@@ -351,8 +351,8 @@ section .text align=64
 		cmp	ebx, 0x0BFFFF
 		ja	short .bad
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_2M) + ebx - 0x080000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_2M) + ebx - 0x080000]
 		pop	ebx
 		ret
 	
@@ -364,8 +364,8 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x0C0000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x0C0000]
 		pop	ebx
 		ret
 	
@@ -375,26 +375,26 @@ section .text align=64
 		shr	ebx, 1
 		jnc	short .Even_Pix_0
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
-		and	eax, byte 0xF
+		and	al, 0xF
 		ret
 	
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.Even_Pix_0:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
-		shr	eax, 4
+		shr	al, 4
 		ret
 	
 	align 16
@@ -405,8 +405,8 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -416,19 +416,19 @@ section .text align=64
 		shr	ebx, 1
 		jnc	short .Even_Pix_1
 		
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
-		and	eax, byte 0xF
+		and	al, 0xF
 		ret
 	
 	align 16
 	
 	.Even_Pix_1:
 		xor	ebx, 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
-		shr	eax, 4
+		shr	al, 4
 		ret
 	
 	align 16
@@ -442,7 +442,7 @@ section .text align=64
 	.Backup:
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		movzx	eax, byte [SYM(Ram_Backup) + ebx]
+		mov	al, [SYM(Ram_Backup) + ebx]
 		pop	ebx
 		ret
 	
@@ -452,7 +452,7 @@ section .text align=64
 		cmp	ebx, 0xFF807F
 		ja	near .Subcode_Buffer
 		
-		and	ebx, byte 0x7F
+		and	ebx, 0x7F
 		jmp	[.Table_S68K_Reg + ebx * 4]
 	
 	align 16
@@ -518,21 +518,21 @@ section .text align=64
 	align 16
 	
 	.Reg_Reset_H:
-		movzx	eax, byte [SYM(LED_Status)]
+		mov	al, [SYM(LED_Status)]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.Reg_Reset_L:
-		mov	eax, 1
+		mov	al, 1
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Memory_Mode_H:
-		movzx	eax, byte [SYM(S68K_Mem_WP)]
+		mov	al, [SYM(S68K_Mem_WP)]
 		pop	ebx
 		ret
 	
@@ -540,30 +540,30 @@ section .text align=64
 	
 	.Reg_Memory_Mode_L:
 		mov	ebx, [SYM(Ram_Word_State)]
-		movzx	eax, byte [SYM(S68K_Mem_PM)]
-		and	ebx, byte 0x03
-		or	al, byte [SYM(Memory_Control_Status) + ebx]
+		mov	al, [SYM(S68K_Mem_PM)]
+		and	ebx, 0x3
+		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Mode_H:
-		movzx	eax, byte [SYM(CDC.RS0) + 1]
+		mov	al, [SYM(CDC.RS0) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Mode_L:
-		movzx	eax, byte [SYM(CDC.RS0)]
+		mov	al, [SYM(CDC.RS0)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_RS1_H:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
@@ -577,56 +577,56 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_Host_Data_H:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_Host_Data_L:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_DMA_Adr_H:
-		movzx	eax, byte [SYM(CDC.DMA_Adr) + 1]
+		mov	al, [SYM(CDC.DMA_Adr) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDC_DMA_Adr_L:
-		movzx	eax, byte [SYM(CDC.DMA_Adr)]
+		mov	al, [SYM(CDC.DMA_Adr)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch_H:
-		movzx	eax, byte [SYM(CDC.Stop_Watch) + 3]
+		mov	al, [SYM(CDC.Stop_Watch) + 3]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch_L:
-		movzx	eax, byte [SYM(CDC.Stop_Watch) + 2]
+		mov	al, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag_H:
-		movzx	eax, byte [SYM(COMM.Flag) + 1]
+		mov	al, [SYM(COMM.Flag) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag_L:
-		movzx	eax, byte [SYM(COMM.Flag)]
+		mov	al, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -648,8 +648,8 @@ section .text align=64
 	.Reg_Com_Data6_L:
 	.Reg_Com_Data7_H:
 	.Reg_Com_Data7_L:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(COMM.Command) + ebx - 0x10]
+		xor	ebx, 1
+		mov	al, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -671,65 +671,65 @@ section .text align=64
 	.Reg_Com_Stat6_L:
 	.Reg_Com_Stat7_H:
 	.Reg_Com_Stat7_L:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(COMM.Status) + ebx - 0x20]
+		xor	ebx, 1
+		mov	al, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Timer_H:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Timer_L:
-		movzx	eax, byte [SYM(Timer_INT3) + 2]
+		mov	al, [SYM(Timer_INT3) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Int_Mask_H:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Int_Mask_L:
-		movzx	eax, byte [SYM(Int_Mask_S68K)]
+		mov	al, [SYM(Int_Mask_S68K)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CD_Fader_H:
-		movzx	eax, byte [SYM(CDD.Fader) + 1]
-		and	eax, 0x80
+		mov	al, [SYM(CDD.Fader) + 1]
+		and	al, 0x80
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CD_Fader_L:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDD_Ctrl_H:
-		movzx	eax, byte [SYM(CDD.Control) + 1]
+		mov	al, [SYM(CDD.Control) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDD_Ctrl_L:
-		movzx	eax, byte [SYM(CDD.Control)]
+		mov	al, [SYM(CDD.Control)]
 		pop	ebx
 		ret
 	
@@ -745,8 +745,8 @@ section .text align=64
 	.Reg_CDD_Com3_L:
 	.Reg_CDD_Com4_H:
 	.Reg_CDD_Com4_L:
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(CDD.Rcv_Status) + ebx - 0x38]
+		xor	ebx, 1
+		mov	al, [SYM(CDD.Rcv_Status) + ebx - 0x38]
 		pop	ebx
 		ret
 	
@@ -763,14 +763,13 @@ section .text align=64
 	.Reg_CDD_Com9_H:
 	.Reg_CDD_Com9_L:
 	.Reg_Font_Color_H:
-		xor	eax, eax
+		mov	al, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Font_Color_L:
-		xor	eax, eax
 		mov	ah, [SYM(Font_COLOR) + 2]
 		mov	al, [SYM(Font_COLOR)]
 		shl	ah, 4
@@ -781,14 +780,14 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit_H:
-		movzx	eax, byte [SYM(Font_BITS) + 1]
+		mov	al, [SYM(Font_BITS) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Font_Bit_L:
-		movzx	eax, byte [SYM(Font_BITS)]
+		mov	al, [SYM(Font_BITS)]
 		pop	ebx
 		ret
 	
@@ -798,7 +797,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x80
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x40
 		setnz	bl
 		shl	al, 4
@@ -812,7 +811,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x20
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x10
 		setnz	bl
 		shl	al, 4
@@ -826,7 +825,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x8
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x4
 		setnz	bl
 		shl	al, 4
@@ -840,7 +839,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x2
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x1
 		setnz	bl
 		shl	al, 4
@@ -854,7 +853,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x80
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x40
 		setnz	bl
 		shl	al, 4
@@ -868,7 +867,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x20
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x10
 		setnz	bl
 		shl	al, 4
@@ -882,7 +881,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x8
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x4
 		setnz	bl
 		shl	al, 4
@@ -896,7 +895,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x2
 		setnz	bl
-		movzx	eax, byte [SYM(Font_COLOR) + ebx * 2]
+		mov	al, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x1
 		setnz	bl
 		shl	al, 4
@@ -907,98 +906,98 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Size_H:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_58) + 1]
+		mov	al, [SYM(Rot_Comp.Reg_58) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Size_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_58)]
+		mov	al, [SYM(Rot_Comp.Reg_58)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr_H:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_5A) + 1]
+		mov	al, [SYM(Rot_Comp.Reg_5A) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_5A)]
+		mov	al, [SYM(Rot_Comp.Reg_5A)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VCell_Size_H:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VCell_Size_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_5C)]
+		mov	al, [SYM(Rot_Comp.Reg_5C)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr_H:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_5E) + 1]
+		mov	al, [SYM(Rot_Comp.Reg_5E) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_5E)]
+		mov	al, [SYM(Rot_Comp.Reg_5E)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Offset_H:
-		xor	eax, eax
+		xor	al, al
 		pop	ebx
 		ret
 	
 	align 4
 
 	.Reg_IM_Offset_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_60)]
+		mov	al, [SYM(Rot_Comp.Reg_60)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size_H:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_62) + 1]
+		mov	al, [SYM(Rot_Comp.Reg_62) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_62)]
+		mov	al, [SYM(Rot_Comp.Reg_62)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size_H:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_64) + 1]
+		mov	al, [SYM(Rot_Comp.Reg_64) + 1]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size_L:
-		movzx	eax, byte [SYM(Rot_Comp.Reg_64)]
+		mov	al, [SYM(Rot_Comp.Reg_64)]
 		pop	ebx
 		ret
 	
@@ -1007,19 +1006,19 @@ section .text align=64
 	.Reg_Vector_Adr_H:
 	.Reg_Vector_Adr_L:
 	.Reg_Subcode_Adr_H:
-		xor	eax, eax
-		pop	ebx
+		xor al, al
+		pop ebx
 		ret
 	
 	align 4
 	
 	.Reg_Subcode_Adr_L:
-		push	ebx
-		call	_SCD_Read_Byte
-		add	esp, byte 4
+		push ebx
+		call _SCD_Read_Byte
+		add esp, 4
 		
-		xor	eax, eax
-		pop	ebx
+		mov al, 0
+		pop ebx
 		ret
 	
 	align 4
@@ -1028,12 +1027,12 @@ section .text align=64
 		cmp	ebx, 0xFF81FF
 		ja	near .bad
 		
-		push	ebx
-		call	_SCD_Read_Byte
-		add	esp, byte 4
+		push ebx
+		call _SCD_Read_Byte
+		add esp, 4
 		
-		;and	ebx, byte 0x7F
-		;mov	al, 0
+		;and ebx, 0x7F
+		;mov al, 0
 		
 		pop ebx
 		ret
@@ -1047,7 +1046,7 @@ section .text align=64
 		cmp	ebx, 0xFF0020
 		jb	near .bad
 		
-		and	ebx, byte 0x1E
+		and	ebx, 0x1E
 		jmp	[.Table_Read_PCM + ebx * 2]
 	
 	align 16
@@ -1208,7 +1207,7 @@ section .text align=64
 		shr	ebx, 1
 		and	ebx, 0xFFF
 		add	ebx, [PCM_Chip_Bank]
-		movzx	eax, byte [SYM(Ram_PCM) + ebx]
+		mov	al, [SYM(Ram_PCM) + ebx]
 		pop	ebx
 		;and	al, [SYM(PCM_Chip_Enable)]
 		ret
@@ -1231,7 +1230,7 @@ section .text align=64
 		cmp	ebx, 0x07FFFF
 		ja	short .Word_RAM
 		
-		movzx	eax, word [SYM(Ram_Prg) + ebx]
+		mov	ax, [SYM(Ram_Prg) + ebx]
 		pop	ebx
 		ret
 	
@@ -1239,7 +1238,7 @@ section .text align=64
 	
 	.Word_RAM:
 		mov	eax, [SYM(Ram_Word_State)]
-		and	eax, byte 0x03
+		and	eax, 0x3
 		jmp	[.Table_Word_Ram + eax * 4]
 	
 	align 16
@@ -1255,7 +1254,7 @@ section .text align=64
 		cmp	ebx, 0x0BFFFF
 		ja 	short .bad
 		
-		movzx	eax, word [SYM(Ram_Word_2M) + ebx - 0x080000]
+		mov	ax, [SYM(Ram_Word_2M) + ebx - 0x080000]
 		pop	ebx
 		ret
 	
@@ -1267,7 +1266,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x0C0000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x0C0000]
 		pop	ebx
 		ret
 	
@@ -1275,18 +1274,18 @@ section .text align=64
 	
 	.Dot_Img_0:
 		shr	ebx, 1
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000]
 		pop	ebx
 		mov	ah, al
-		and	al, 0x0F
+		and	al, 0xF
 		shr	ah, 4
 		ret
 	
 	align 4
 	
 	.bad:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
@@ -1298,7 +1297,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		movzx	eax, word [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
+		mov	ax, [SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000]
 		pop	ebx
 		ret
 	
@@ -1306,11 +1305,11 @@ section .text align=64
 	
 	.Dot_Img_1:
 		shr	ebx, 1
-		xor	ebx, byte 1
-		movzx	eax, byte [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
+		xor	ebx, 1
+		mov	al, [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000]
 		pop	ebx
 		mov	ah, al
-		and	al, 0x0F
+		and	al, 0xF
 		shr	ah, 4
 		ret
 	
@@ -1322,11 +1321,9 @@ section .text align=64
 		cmp	ebx, 0xFEFFFF
 		ja	near .PCM
 		
-		; TODO: This doesn't seem to be right.
-		; It should read a byte, not a word.
 		and	ebx, 0x3FFF
 		shr	ebx, 1
-		movzx	eax, word [SYM(Ram_Backup) + ebx]
+		mov	ax, [SYM(Ram_Backup) + ebx]
 		pop	ebx
 		ret
 	
@@ -1336,7 +1333,7 @@ section .text align=64
 		cmp	ebx, 0xFF807F
 		ja	near .Subcode_Buffer
 		
-		and	ebx, byte 0x7E
+		and	ebx, 0x7E
 		jmp	[.Table_S68K_Reg + ebx * 2]
 	
 	align 16
@@ -1375,7 +1372,6 @@ section .text align=64
 	align 16
 	
 	.Reg_Reset:
-		xor	eax, eax
 		mov	ah, [SYM(LED_Status)]
 		mov	al, 1
 		pop	ebx
@@ -1385,8 +1381,8 @@ section .text align=64
 	
 	.Reg_Memory_Mode:
 		mov	ebx, [SYM(Ram_Word_State)]
-		movzx	eax, byte [SYM(S68K_Mem_PM)]
-		and	ebx, 0x03
+		mov	al, [SYM(S68K_Mem_PM)]
+		and	ebx, 0x3
 		mov	ah, [SYM(S68K_Mem_WP)]
 		or	al, [SYM(Memory_Control_Status) + ebx]
 		pop	ebx
@@ -1395,7 +1391,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_Mode:
-		movzx	eax, word [SYM(CDC.RS0)]
+		mov	ax, [SYM(CDC.RS0)]
 		pop	ebx
 		ret
 	
@@ -1417,21 +1413,21 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_DMA_Adr:
-		movzx	eax, word [SYM(CDC.DMA_Adr)]
+		mov	ax, [SYM(CDC.DMA_Adr)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stopwatch:
-		movzx	eax, word [SYM(CDC.Stop_Watch) + 2]
+		mov	ax, [SYM(CDC.Stop_Watch) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Com_Flag:
-		movzx	eax, word [SYM(COMM.Flag)]
+		mov	ax, [SYM(COMM.Flag)]
 		pop	ebx
 		ret
 	
@@ -1445,7 +1441,7 @@ section .text align=64
 	.Reg_Com_Data5:
 	.Reg_Com_Data6:
 	.Reg_Com_Data7:
-		movzx	eax, word [SYM(COMM.Command) + ebx - 0x10]
+		mov	ax, [SYM(COMM.Command) + ebx - 0x10]
 		pop	ebx
 		ret
 	
@@ -1459,36 +1455,36 @@ section .text align=64
 	.Reg_Com_Stat5:
 	.Reg_Com_Stat6:
 	.Reg_Com_Stat7:
-		movzx	eax, word [SYM(COMM.Status) + ebx - 0x20]
+		mov	ax, [SYM(COMM.Status) + ebx - 0x20]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Timer:
-		movzx	eax, word [SYM(Timer_INT3) + 2]
+		mov	ax, [SYM(Timer_INT3) + 2]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Int_Mask:
-		movzx	eax, word [SYM(Int_Mask_S68K)]
+		mov	ax, [SYM(Int_Mask_S68K)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CD_Fader:
-		movzx	eax, word [SYM(CDD.Fader)]
-		and	eax, 0x8000
+		mov	ax, [SYM(CDD.Fader)]
+		and	ax, 0X8000
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_CDD_Ctrl:
-		movzx	eax, word [SYM(CDD.Control)]
+		mov	ax, [SYM(CDD.Control)]
 		pop	ebx
 		ret
 	
@@ -1499,7 +1495,7 @@ section .text align=64
 	.Reg_CDD_Com2:
 	.Reg_CDD_Com3:
 	.Reg_CDD_Com4:
-		movzx	eax, word [SYM(CDD.Rcv_Status) + ebx - 0x38]
+		mov	ax, [SYM(CDD.Rcv_Status) + ebx - 0x38]
 		pop	ebx
 		ret
 	
@@ -1510,14 +1506,13 @@ section .text align=64
 	.Reg_CDD_Com7:
 	.Reg_CDD_Com8:
 	.Reg_CDD_Com9:
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Font_Color:
-		xor	eax, eax
 		mov	ah, [SYM(Font_COLOR) + 2]
 		mov	al, [SYM(Font_COLOR)]
 		shl	ah, 4
@@ -1529,7 +1524,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Font_Bit:
-		movzx	eax, word [SYM(Font_BITS)]
+		mov	ax, [SYM(Font_BITS)]
 		pop	ebx
 		ret
 	
@@ -1539,7 +1534,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x80
 		setnz	bl
-		movzx	eax, word [SYM(Font_COLOR) + ebx * 2]
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x40
 		setnz	bl
 		shl	ax, 4
@@ -1561,7 +1556,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS) + 1], 0x8
 		setnz	bl
-		movzx	eax, word [SYM(Font_COLOR) + ebx * 2]
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS) + 1], 0x4
 		setnz	bl
 		shl	ax, 4
@@ -1583,7 +1578,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x80
 		setnz	bl
-		movzx	eax, word [SYM(Font_COLOR) + ebx * 2]
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x40
 		setnz	bl
 		shl	ax, 4
@@ -1605,7 +1600,7 @@ section .text align=64
 		xor	ebx, ebx
 		test	byte [SYM(Font_BITS)], 0x8
 		setnz	bl
-		movzx	eax, word [SYM(Font_COLOR) + ebx * 2]
+		mov	ax, [SYM(Font_COLOR) + ebx * 2]
 		test	byte [SYM(Font_BITS)], 0x4
 		setnz	bl
 		shl	ax, 4
@@ -1624,56 +1619,56 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Size:
-		movzx	eax, word [SYM(Rot_Comp.Reg_58)]
+		mov	ax, [SYM(Rot_Comp.Reg_58)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Stamp_Adr:
-		movzx	eax, word [SYM(Rot_Comp.Reg_5A)]
+		mov	ax, [SYM(Rot_Comp.Reg_5A)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VCell_Size:
-		movzx	eax, word [SYM(Rot_Comp.Reg_5C)]
+		mov	ax, [SYM(Rot_Comp.Reg_5C)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Adr:
-		movzx	eax, word [SYM(Rot_Comp.Reg_5E)]
+		mov	ax, [SYM(Rot_Comp.Reg_5E)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_Offset:
-		movzx	eax, word [SYM(Rot_Comp.Reg_60)]
+		mov	ax, [SYM(Rot_Comp.Reg_60)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_HDot_Size:
-		movzx	eax, word [SYM(Rot_Comp.Reg_62)]
+		mov	ax, [SYM(Rot_Comp.Reg_62)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_IM_VDot_Size:
-		movzx	eax, word [SYM(Rot_Comp.Reg_64)]
+		mov	ax, [SYM(Rot_Comp.Reg_64)]
 		pop	ebx
 		ret
 	
 	align 4
 	
 	.Reg_Vector_Adr:
-		xor	eax, eax
+		xor	ax, ax
 		pop	ebx
 		ret
 	
@@ -1682,9 +1677,9 @@ section .text align=64
 	.Reg_Subcode_Adr
 		;push	ebx
 		;call	_SCD_Read_Word
-		;add	esp, byte 4
+		;add	esp, 4
 		
-		xor	eax, eax
+		mov	ax, 0
 		pop	ebx
 		ret
 	
@@ -1696,9 +1691,9 @@ section .text align=64
 		
 		push	ebx
 		call	_SCD_Read_Word
-		add	esp, byte 4
+		add	esp, 4
 		
-		;and	ebx, byte 0x7F
+		;and	ebx, 0x7F
 		;mov	ax, 0
 		
 		pop	ebx
@@ -1716,7 +1711,7 @@ section .text align=64
 		cmp	ebx, 0xFF0020
 		jb	near .bad
 		
-		and	ebx, byte 0x1E
+		and	ebx, 0x1E
 		jmp	[.Table_Read_PCM + ebx * 2]
 	
 	align 16
@@ -1905,7 +1900,7 @@ section .text align=64
 		ja	short .Word_RAM
 		
 		shl	ecx, 8
-		xor	ebx, byte 1
+		xor	ebx, 1
 		cmp	ecx, ebx
 		ja	short .write_protected
 		
@@ -1920,7 +1915,7 @@ section .text align=64
 	
 	.Word_RAM:
 		mov	ecx, [SYM(Ram_Word_State)]
-		and	ecx, byte 0x03
+		and	ecx, 0x3
 		jmp	[.Table_Word_Ram + ecx * 4]
 	
 	align 16
@@ -1936,7 +1931,7 @@ section .text align=64
 		cmp	ebx, 0x0BFFFF
 		ja	short .bad3
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_2M) + ebx - 0x080000], al
 		
 	.bad3:
@@ -1952,7 +1947,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad3
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000], al
 		pop	ecx
 		pop	ebx
@@ -1964,7 +1959,7 @@ section .text align=64
 		shr	ebx, 1
 		jnc	short .Even_Pix_0
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Odd_0_Under
 		ja	short .Dot_Odd_0_Over
@@ -2015,7 +2010,7 @@ section .text align=64
 	align 16
 	
 	.Even_Pix_0:
-		xor	ebx, byte 1
+		xor	ebx, 1
 		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Even_0_Under
 		ja	short .Dot_Even_0_Over
@@ -2078,7 +2073,7 @@ section .text align=64
 		cmp	ebx, 0x0DFFFF
 		ja	short .bad
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(Ram_Word_1M) + ebx - 0x0C0000 + 0x20000], al
 		pop	ecx
 		pop	ebx
@@ -2090,7 +2085,7 @@ section .text align=64
 		shr	ebx, 1
 		jnc	short .Even_Pix_1
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Odd_1_Under
 		ja	short .Dot_Odd_1_Over
@@ -2141,7 +2136,7 @@ section .text align=64
 	align 16
 	
 	.Even_Pix_1:
-		xor	ebx, byte 1
+		xor	ebx, 1
 		cmp	byte [SYM(S68K_Mem_PM)], 0x08
 		je	short .Dot_Even_1_Under
 		ja	short .Dot_Even_1_Over
@@ -2219,7 +2214,7 @@ section .text align=64
 		push	ebx
 		
 		call	_PCM_Write_Reg
-		add	esp, byte 8
+		add	esp, 8
 	
 	.bad2:
 		pop	ecx
@@ -2248,7 +2243,7 @@ section .text align=64
 		cmp	ebx, 0xFF807F
 		ja	near .Subcode_Buffer
 		
-		and	ebx, byte 0x7F
+		and	ebx, 0x7F
 		jmp	[.Table_S68K_Reg + ebx * 4]
 	
 	align 16
@@ -2437,7 +2432,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDC_Mode_L:
-		and	al, 0x0F
+		and	al, 0xF
 		mov	[SYM(CDC.RS0)], al
 		pop	ecx
 		pop	ebx
@@ -2455,7 +2450,7 @@ section .text align=64
 	.Reg_CDC_RS1_L:
 		push	eax
 		call	SYM(CDC_Write_Reg)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -2584,7 +2579,7 @@ section .text align=64
 		;pop	eax
 		;popad
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(COMM.Status) + ebx - 0x20], al
 		pop	ecx
 		pop	ebx
@@ -2693,7 +2688,7 @@ section .text align=64
 	.Reg_CDD_Com8_H:
 	.Reg_CDD_Com8_L:
 	.Reg_CDD_Com9_H:
-		xor	ebx, byte 1
+		xor	ebx, 1
 		mov	[SYM(CDD.Trans_Comm) + ebx - 0x42], al
 		pop	ecx
 		pop	ebx
@@ -2763,7 +2758,7 @@ section .text align=64
 	align 4
 		
 	.Reg_Stamp_Size_L:
-		and	al, 0x07
+		and	al, 0x7
 		mov	[SYM(Rot_Comp.Reg_58)], al
 		pop	ecx
 		pop	ebx
@@ -2774,7 +2769,7 @@ section .text align=64
 	.Reg_Stamp_Adr_H:
 	.Reg_Stamp_Adr_L:
 		mov	ah, al
-		and	eax, 0xFFE0
+		and	ax, 0xFFE0
 		mov	[SYM(Rot_Comp.Reg_5A)], ax
 		pop	ecx
 		pop	ebx
@@ -2801,7 +2796,7 @@ section .text align=64
 	.Reg_IM_Adr_H:
 	.Reg_IM_Adr_L:
 		mov	ah, al
-		and	eax, 0xFFF8
+		and	ax, 0xFFF8
 		mov	[SYM(Rot_Comp.Reg_5E)], ax
 		pop	ecx
 		pop	ebx
@@ -2828,7 +2823,7 @@ section .text align=64
 	.Reg_IM_HDot_Size_H:
 	.Reg_IM_HDot_Size_L:
 		mov	ah, al
-		and	eax, 0x01FF
+		and	ax, 0x01FF
 		mov	[SYM(Rot_Comp.Reg_62)], ax
 		pop	ecx
 		pop	ebx
@@ -2850,7 +2845,7 @@ section .text align=64
 	.Reg_Vector_Adr_H:
 	.Reg_Vector_Adr_L:
 		mov	ah, al
-		and	eax, 0xFFFE
+		and	ax, 0xFFFE
 		mov	[SYM(Rot_Comp.Reg_66)], ax
 		call	SYM(Calcul_Rot_Comp)
 		pop	ecx
@@ -2863,7 +2858,7 @@ section .text align=64
 		cmp	ebx, 0xFF81FF
 		ja	near .bad
 		
-		and	ebx, byte 0x7F
+		and	ebx, 0x7F
 		
 		pop	ecx
 		pop	ebx
@@ -2954,7 +2949,7 @@ section .text align=64
 	.Dot_0_Norm:
 		and	al, 0x0F
 		shl	ah, 4
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
@@ -2966,7 +2961,7 @@ section .text align=64
 	.Dot_0_Under:
 		and	al, 0x0F
 		shl	ah, 4
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		test	byte [SYM(Ram_Word_1M) + ebx - 0x040000], 0xFF
 		jnz	.End_Dot_0
@@ -2987,7 +2982,7 @@ section .text align=64
 		shl	ah, 4
 		jz	short .End_Dot_0
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		mov	[SYM(Ram_Word_1M) + ebx - 0x040000], al
 		pop	ecx
@@ -3020,7 +3015,7 @@ section .text align=64
 	.Dot_1_Norm:
 		and	al, 0x0F
 		shl	ah, 4
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
@@ -3032,7 +3027,7 @@ section .text align=64
 	.Dot_1_Under:
 		and	al, 0x0F
 		shl	ah, 4
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		test	byte [SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], 0xFF
 		jnz	.End_Dot_1
@@ -3053,7 +3048,7 @@ section .text align=64
 		shl	ah, 4
 		jz	short .End_Dot_1
 		
-		xor	ebx, byte 1
+		xor	ebx, 1
 		or	al, ah
 		mov	[SYM(Ram_Word_1M) + ebx - 0x040000 + 0x20000], al
 		pop	ecx
@@ -3076,8 +3071,6 @@ section .text align=64
 		cmp	ebx, 0xFEFFFF
 		ja	short .PCM
 		
-		; TODO: This doesn't seem to be right.
-		; It should write a byte, not a word.
 		and	ebx, 0x3FFF
 		shr	ebx, 1
 		mov	[SYM(Ram_Backup) + ebx], ax
@@ -3100,7 +3093,7 @@ section .text align=64
 		push	ebx
 		
 		call	_PCM_Write_Reg
-		add	esp, byte 8
+		add	esp, 8
 		
 		pop	ecx
 		pop	ebx
@@ -3128,7 +3121,7 @@ section .text align=64
 		cmp	ebx, 0xFF807F
 		ja	near .Subcode_Buffer
 		
-		and	ebx, byte 0x7E
+		and	ebx, 0x7E
 		jmp	[.Table_S68K_Reg + ebx * 2]
 	
 	align 16
@@ -3265,9 +3258,9 @@ section .text align=64
 	align 16
 	
 	.Reg_CDC_Mode:
-		movzx	ecx, word [SYM(CDC.RS0)]
-		and	eax, 0x070F
-		and	ecx, 0xC000
+		mov	cx, [SYM(CDC.RS0)]
+		and	ax, 0x070F
+		and	cx, 0xC000
 		mov	dword [SYM(CDC.DMA_Adr)], 0
 		or	ax, cx
 		mov	[SYM(CDC.RS0)], ax
@@ -3280,7 +3273,7 @@ section .text align=64
 	.Reg_CDC_RS1:
 		push	eax
 		call	SYM(CDC_Write_Reg)
-		add	esp, byte 4
+		add	esp, 4
 		pop	ecx
 		pop	ebx
 		ret
@@ -3401,7 +3394,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CD_Fader:
-		and	eax, 0x7FFE
+		and	ax, 0x7FFE
 		mov	[SYM(CDD.Fader)], ax
 		pop	ecx
 		pop	ebx
@@ -3410,7 +3403,7 @@ section .text align=64
 	align 4
 	
 	.Reg_CDD_Ctrl:
-		and	al, 0x04
+		and	al, 0x4
 		jz	short .CDD_Halted_1
 		test	byte [SYM(CDD.Control)], 0x4
 		jnz	short .CDD_Halted_1
@@ -3491,7 +3484,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Size:
-		and	eax, byte 0x0007
+		and	ax, 0x7
 		mov	[SYM(Rot_Comp.Reg_58)], ax
 		pop	ecx
 		pop	ebx
@@ -3500,7 +3493,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Stamp_Adr:
-		and	eax, 0xFFE0
+		and	ax, 0xFFE0
 		mov	[SYM(Rot_Comp.Reg_5A)], ax
 		pop	ecx
 		pop	ebx
@@ -3509,7 +3502,7 @@ section .text align=64
 	align 4
 	
 	.Reg_IM_VCell_Size:
-		and	eax, byte 0x001F
+		and	ax, 0x1F
 		mov	[SYM(Rot_Comp.Reg_5C)], ax
 		pop	ecx
 		pop	ebx
@@ -3518,7 +3511,7 @@ section .text align=64
 	align 4
 	
 	.Reg_IM_Adr:
-		and	eax, 0xFFF8
+		and	ax, 0xFFF8
 		mov	[SYM(Rot_Comp.Reg_5E)], ax
 		pop	ecx
 		pop	ebx
@@ -3527,7 +3520,7 @@ section .text align=64
 	align 4
 	
 	.Reg_IM_Offset:
-		and	eax, byte 0x003F
+		and	ax, 0x003F
 		mov	[SYM(Rot_Comp.Reg_60)], ax
 		pop	ecx
 		pop	ebx
@@ -3536,7 +3529,7 @@ section .text align=64
 	align 4
 	
 	.Reg_IM_HDot_Size:
-		and	eax, 0x01FF
+		and	ax, 0x01FF
 		mov	[SYM(Rot_Comp.Reg_62)], ax
 		pop	ecx
 		pop	ebx
@@ -3554,7 +3547,7 @@ section .text align=64
 	align 4
 	
 	.Reg_Vector_Adr:
-		and	eax, 0xFFFE
+		and	ax, 0xFFFE
 		mov	[SYM(Rot_Comp.Reg_66)], ax
 		call	SYM(Calcul_Rot_Comp)
 		pop	ecx
@@ -3567,7 +3560,7 @@ section .text align=64
 		cmp	ebx, 0xFF81FF
 		ja	near .bad
 		
-		and	ebx, byte 0x7F
+		and	ebx, 0x7F
 		
 		pop	ecx
 		pop	ebx
@@ -3588,7 +3581,7 @@ section .text align=64
 		mov	eax, [SYM(CDC.Stop_Watch)]
 		mov	ebx, [SYM(Timer_INT3)]
 		add	eax, [SYM(Timer_Step)]
-		movzx	ecx, word [SYM(CD_Timer_Counter)]
+		mov	cx, [SYM(CD_Timer_Counter)]
 		and	eax, 0xFFFFFFF
 		add	cx, 10
 		mov	[SYM(CDC.Stop_Watch)], eax
@@ -3606,7 +3599,7 @@ section .text align=64
 		push	dword 3
 		add	ebx, eax
 		call	_sub68k_interrupt
-		add	esp, byte 8
+		add	esp, 8
 		
 	.No_INT3:
 		and	ebx, 0xFFFFFF
@@ -3646,7 +3639,7 @@ section .text align=64
 		
 		mov	esi, SYM(Ram_Word_2M)
 		mov	edi, SYM(Ram_Word_1M)
-		mov	ecx, ((256 * 1024) / 4)
+		mov	ecx, 256 * 1024 / 4
 		jmp	short .Loop
 	
 	align 32
@@ -3678,7 +3671,7 @@ section .text align=64
 		
 		mov	esi, SYM(Ram_Word_1M)
 		mov	edi, SYM(Ram_Word_2M)
-		mov	ecx, ((256 * 1024) / 4)
+		mov	ecx, 256 * 1024 / 4
 		jmp	short .Loop
 	
 	align 32

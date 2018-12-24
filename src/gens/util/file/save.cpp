@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -24,16 +24,12 @@
 #define GENS_DEBUG_SAVESTATE
 #include <assert.h>
 
-// C includes.
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdint.h>
-
 #include "save.hpp"
 
 #include "emulator/g_main.hpp"
-#include "emulator/md_palette.hpp"
 
 // CPU
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -81,12 +77,14 @@
 #include "gsx_struct.h"
 #include "gsx_v6.h"
 #include "gsx_v7.h"
-#include "gsx_v7_32X.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_libc.h"
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
 #endif /* GENS_OS_WIN32 */
 
 #ifdef GENS_MP3
@@ -98,6 +96,9 @@ extern char preloaded_tracks [100], played_tracks_linear [101]; // added for syn
 
 int Current_State = 0;
 char State_Dir[GENS_PATH_MAX] = "";
+char SRAM_Dir[GENS_PATH_MAX] = "";
+char BRAM_Dir[GENS_PATH_MAX] = "";
+unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
 
 // C++ includes
 using std::string;
@@ -156,110 +157,15 @@ string Savestate::GetStateFilename(void)
 /**
  * LoadState(): Load a savestate.
  * @param filename Filename of the savestate.
- * @return 0 on success; non-zero on error.
+ * @return 1 if successful; 0 on error.
  */
 int Savestate::LoadState(const string& filename)
 {
-	ice = 0;
-	
-	int len = GENESIS_STATE_LENGTH;
-	if (Genesis_Started);
-	else if (SegaCD_Started)
-		len += SEGACD_LENGTH_EX;
-	else if (_32X_Started)
-		len += G32X_LENGTH_EX;
-	else
-		return -1;
-	
-#ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
-	
-	FILE *f = fopen(filename.c_str(), "rb");
-	if (!f)
-		return -2;
-	
-	uint8_t *State_Buffer = (uint8_t*)malloc(MAX_STATE_FILE_LENGTH);
-	if (!State_Buffer)
-	{
-		fclose(f);
-		return -3;
-	}
-	memset(State_Buffer, 0, len);
-	
-	if (fread(State_Buffer, 1, len, f) == 0)
-	{
-		// No data read from the savestate. Don't do anything.
-		fclose(f);
-		free(State_Buffer);
-		return -4;
-	}
-	
-	// Verify that the savestate is in GSX format.
-	static const uint8_t gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
-	if (memcmp(&State_Buffer[0], &gsxHeader[0], sizeof(gsxHeader)))
-	{
-		// Header does not match GSX.
-		vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
-		fclose(f);
-		free(State_Buffer);
-		return -5;
-	}
-	
-	//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
-	/*
-	main68k_reset();
-	YM2612ResetChip(0);
-	Reset_VDP();
-	*/
-	
-	// Save functions updated from Gens Rerecording
-	uint8_t *buf = State_Buffer;
-	buf += GsxImportGenesis(buf);
-	if (SegaCD_Started)
-	{
-		GsxImportSegaCD(buf);
-		buf += SEGACD_LENGTH_EX;
-	}
-	if (_32X_Started)
-	{
-		GsxImport32X(buf);
-		buf += G32X_LENGTH_EX;
-	}
-	
-	// Make sure CRAM and VRAM are updated.
-	Flag_Clr_Scr = 1;
-	VDP_Flags.CRam = 1;
-	VDP_Flags.VRam = 1;
-	
-	vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
-	
-	fclose(f);
-	free(State_Buffer);
-	return 0;
-}
-
-
-/**
- * SaveState(): Save a savestate.
- * @param filename Filename of the savestate.
- * @return 0 on success; non-zero on error.
- */
-int Savestate::SaveState(const string& filename)
-{
+	FILE *f;
+	unsigned char *buf;
 	int len;
 	
 	ice = 0;
-	
-#ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
-	
-	FILE *f = fopen(filename.c_str(), "wb");
-	if (!f)
-		return -1;
 	
 	len = GENESIS_STATE_LENGTH;
 	if (Genesis_Started);
@@ -268,17 +174,98 @@ int Savestate::SaveState(const string& filename)
 	else if (_32X_Started)
 		len += G32X_LENGTH_EX;
 	else
-		return -2;
+		return 0;
 	
-	uint8_t *State_Buffer = (uint8_t*)malloc(MAX_STATE_FILE_LENGTH);
-	if (!State_Buffer)
+	buf = State_Buffer;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	if (!(f = fopen(filename.c_str(), "rb")))
+		return 0;
+	
+	memset(buf, 0, len);
+	if (fread(buf, 1, len, f))
 	{
-		fclose(f);
-		return -3;
+		// Verify that the savestate is in GSX format.
+		static const uint8_t gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
+		if (memcmp(&buf[0], &gsxHeader[0], sizeof(gsxHeader)))
+		{
+			// Header does not match GSX.
+			vdraw_text_printf(2000, "Error: State %d is not in GSX format.", Current_State);
+			fclose(f);
+			return 0;
+		}
+		
+		//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
+		/*
+		main68k_reset();
+		YM2612ResetChip(0);
+		Reset_VDP();
+		*/
+		
+		// Save functions updated from Gens Rerecording
+		buf += GsxImportGenesis(buf);
+		if (SegaCD_Started)
+		{
+			GsxImportSegaCD(buf);
+			buf += SEGACD_LENGTH_EX;
+		}
+		if (_32X_Started)
+		{
+			GsxImport32X(buf);
+			buf += G32X_LENGTH_EX;
+		}
+		
+		// Make sure CRAM and VRAM are updated.
+		Flag_Clr_Scr = 1;
+		CRam_Flag = 1;
+		VRam_Flag = 1;
+		
+		vdraw_text_printf(2000, "STATE %d LOADED", Current_State);
 	}
-	memset(State_Buffer, 0, len);
 	
-	uint8_t *buf = State_Buffer;
+	fclose(f);
+	
+	return 1;
+}
+
+
+/**
+ * SaveState(): Save a savestate.
+ * @param filename Filename of the savestate.
+ * @return 1 if successful; 0 on error.
+ */
+int Savestate::SaveState(const string& filename)
+{
+	FILE *f;
+	unsigned char *buf;
+	int len;
+	
+	ice = 0;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	buf = State_Buffer;
+	if ((f = fopen(filename.c_str(), "wb")) == NULL)
+		return 0;
+	
+	len = GENESIS_STATE_LENGTH;
+	if (Genesis_Started);
+	else if (SegaCD_Started)
+		len += SEGACD_LENGTH_EX;
+	else if (_32X_Started)
+		len += G32X_LENGTH_EX;
+	else
+		return 0;
+	
+	if (buf == NULL)
+		return 0;
+	memset(buf, 0, len);
+	
 	GsxExportGenesis(buf);
 	buf += GENESIS_STATE_LENGTH;
 	if (SegaCD_Started)
@@ -294,11 +281,10 @@ int Savestate::SaveState(const string& filename)
 	
 	fwrite(State_Buffer, 1, len, f);
 	fclose(f);
-	free(State_Buffer);
 	
 	vdraw_text_printf(2000, "STATE %d SAVED", Current_State);
 	
-	return 0;
+	return 1;
 }
 
 
@@ -309,7 +295,6 @@ int Savestate::SaveState(const string& filename)
 // Version field is initialized in GsxImportGenesis(),
 // but is also used in GsxImportSegaCD() and GsxImport32X().
 // TODO: Move this to the Savestate class.
-// TODO: Make this non-global.
 static unsigned char m_Version;
 
 
@@ -405,10 +390,10 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	if (m_Version < 6)
 		len -= 0x10000;
 	
-	// Copy the CRam, VSRam, and Z80 RAM.
-	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
-	memcpy(&CRam.u8, &md_save.cram, sizeof(CRam));
-	memcpy(&VSRam.u8, &md_save.vsram, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
+	// Copy the CRAM, VSRAM, and Z80 RAM.
+	// [TODO: Is CRAM supposed to be 16-bit byteswapped?]
+	memcpy(&CRam, &md_save.cram, sizeof(CRam));
+	memcpy(&VSRam, &md_save.vsram, sizeof(VSRam));
 	memcpy(&Ram_Z80, &md_save.z80_ram, sizeof(Ram_Z80));
 	
 	// 68000 RAM.
@@ -427,7 +412,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
 		// TODO: Create a struct fr this.
-		ImportData(&VDP_Ctrl, data, 0x30, 7 * 4);
+		ImportData(&Ctrl, data, 0x30, 7 * 4);
 		
 		// 0x440: Z80 busreq
 		// 0x444: Z80 reset
@@ -474,17 +459,17 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		}
 		
 		// Clear VDP control.
-		memset(&VDP_Ctrl, 0x00, sizeof(VDP_Ctrl));
+		memset(&Ctrl, 0x00, sizeof(Ctrl));
 		
 		// Load VDP control settings.
 		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
-		VDP_Write_Ctrl(lastCtrlData >> 16);
-		VDP_Write_Ctrl(lastCtrlData & 0xFFFF);
+		Write_VDP_Ctrl(lastCtrlData >> 16);
+		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
 		
-		VDP_Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
-		VDP_Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
-		VDP_Ctrl.Access = le16_to_cpu(md_save.vdp_ctrl.ctrl_access); //Nitsuja added this
-		VDP_Ctrl.Address = le32_to_cpu(md_save.vdp_ctrl.write_address) & 0xFFFF;
+		Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
+		Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
+		Ctrl.Access = le16_to_cpu(md_save.vdp_ctrl.ctrl_access); //Nitsuja added this
+		Ctrl.Address = le32_to_cpu(md_save.vdp_ctrl.write_address) & 0xFFFF;
 		
 		// Load the Z80 bank register.
 		Bank_Z80 = le32_to_cpu(md_save.z80_reg.bank);
@@ -522,9 +507,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	
 	// VDP registers.
 	for (int i = 0; i < 24; i++)
-	{
-		VDP_Set_Reg(i, md_save.vdp_reg[i]);
-	}
+		Set_VDP_Reg(i, md_save.vdp_reg[i]);
 	
 	// MC68000 registers.
 	for (int i = 0; i < 8; i++)
@@ -573,34 +556,34 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.sr		= le16_to_cpu(md_save_v6.mc68000_reg.sr);
 		Context_68K.contextfiller00 = le16_to_cpu(md_save_v6.mc68000_reg.contextfiller00);
 		
-		VDP_Reg.m5.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
-		VDP_Reg.m5.Set1			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set1);
-		VDP_Reg.m5.Set2			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set2);
-		VDP_Reg.m5.Pat_ScrA_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
-		VDP_Reg.m5.Pat_ScrA_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
-		VDP_Reg.m5.Pat_Win_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
-		VDP_Reg.m5.Pat_ScrB_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
-		VDP_Reg.m5.Spr_Att_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
-		VDP_Reg.m5.Reg6			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg6);
-		VDP_Reg.m5.BG_Color		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
-		VDP_Reg.m5.Reg8			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg8);
-		VDP_Reg.m5.Reg9			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg9);
-		VDP_Reg.m5.H_Int		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Int);
-		VDP_Reg.m5.Set3			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set3);
-		VDP_Reg.m5.Set4			= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Set4);
-		VDP_Reg.m5.H_Scr_Adr		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
-		VDP_Reg.m5.Reg14		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Reg14);
-		VDP_Reg.m5.Auto_Inc		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
-		VDP_Reg.m5.Scr_Size		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
-		VDP_Reg.m5.Win_H_Pos		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
-		VDP_Reg.m5.Win_V_Pos		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
-		VDP_Reg.m5.DMA_Length_L		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
-		VDP_Reg.m5.DMA_Length_H		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
-		VDP_Reg.m5.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
-		VDP_Reg.m5.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
-		VDP_Reg.m5.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
-		VDP_Reg.DMA_Length		= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
-		VDP_Reg.DMA_Address		= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
+		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
+		VDP_Reg.Set1		= le32_to_cpu(md_save_v6.vdp_reg.Set1);
+		VDP_Reg.Set2		= le32_to_cpu(md_save_v6.vdp_reg.Set2);
+		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
+		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
+		VDP_Reg.Pat_Win_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
+		VDP_Reg.Pat_ScrB_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
+		VDP_Reg.Spr_Att_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
+		VDP_Reg.Reg6		= le32_to_cpu(md_save_v6.vdp_reg.Reg6);
+		VDP_Reg.BG_Color	= le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
+		VDP_Reg.Reg8		= le32_to_cpu(md_save_v6.vdp_reg.Reg8);
+		VDP_Reg.Reg9		= le32_to_cpu(md_save_v6.vdp_reg.Reg9);
+		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.H_Int);
+		VDP_Reg.Set3		= le32_to_cpu(md_save_v6.vdp_reg.Set3);
+		VDP_Reg.Set4		= le32_to_cpu(md_save_v6.vdp_reg.Set4);
+		VDP_Reg.H_Scr_Adr	= le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
+		VDP_Reg.Reg14		= le32_to_cpu(md_save_v6.vdp_reg.Reg14);
+		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
+		VDP_Reg.Scr_Size	= le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
+		VDP_Reg.Win_H_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
+		VDP_Reg.Win_V_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
+		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
+		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
+		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
+		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
+		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
+		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
 		
 		// Control Port 1. (Port Information)
 		Controller_1_Counter	= le32_to_cpu(md_save_v6.control_port1.counter);
@@ -642,45 +625,41 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player1, 1);
 		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player2, 2);
 		
-		// Miscellaneous.
-		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
-		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
-		VDP_Reg.DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
-		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v6.vdp_current_line);
-		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
-		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
-		Bank_M68K			= le32_to_cpu(md_save_v6.bank_m68k);
-		S68K_State			= le32_to_cpu(md_save_v6.s68k_state);
-		Z80_State			= le32_to_cpu(md_save_v6.z80_state);
-		Last_BUS_REQ_Cnt		= le32_to_cpu(md_save_v6.last_bus_req_cnt);
-		Last_BUS_REQ_St			= le32_to_cpu(md_save_v6.last_bus_req_st);
-		Fake_Fetch			= le32_to_cpu(md_save_v6.fake_fetch);
-		Game_Mode			= le32_to_cpu(md_save_v6.game_mode);
-		CPU_Mode			= le32_to_cpu(md_save_v6.cpu_mode);
-		CPL_M68K			= le32_to_cpu(md_save_v6.cpl_m68k);
-		CPL_S68K			= le32_to_cpu(md_save_v6.cpl_s68k);
-		CPL_Z80				= le32_to_cpu(md_save_v6.cpl_z80);
-		Cycles_S68K			= le32_to_cpu(md_save_v6.cycles_s68k);
-		Cycles_M68K			= le32_to_cpu(md_save_v6.cycles_m68k);
-		Cycles_Z80			= le32_to_cpu(md_save_v6.cycles_z80);
-		VDP_Status			= le32_to_cpu(md_save_v6.vdp_status);
-		VDP_Int				= le32_to_cpu(md_save_v6.vdp_int);
-		VDP_Ctrl.Write			= le32_to_cpu(md_save_v6.vdp_ctrl_write);
-		VDP_Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
-		VDP_Ctrl.DMA			= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
+		// MIscellaneous.
+		DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
+		DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
+		DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
+		VDP_Current_Line	= le32_to_cpu(md_save_v6.vdp_current_line);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
+		Bank_M68K		= le32_to_cpu(md_save_v6.bank_m68k);
+		S68K_State		= le32_to_cpu(md_save_v6.s68k_state);
+		Z80_State		= le32_to_cpu(md_save_v6.z80_state);
+		Last_BUS_REQ_Cnt	= le32_to_cpu(md_save_v6.last_bus_req_cnt);
+		Last_BUS_REQ_St		= le32_to_cpu(md_save_v6.last_bus_req_st);
+		Fake_Fetch		= le32_to_cpu(md_save_v6.fake_fetch);
+		Game_Mode		= le32_to_cpu(md_save_v6.game_mode);
+		CPU_Mode		= le32_to_cpu(md_save_v6.cpu_mode);
+		CPL_M68K		= le32_to_cpu(md_save_v6.cpl_m68k);
+		CPL_S68K		= le32_to_cpu(md_save_v6.cpl_s68k);
+		CPL_Z80			= le32_to_cpu(md_save_v6.cpl_z80);
+		Cycles_S68K		= le32_to_cpu(md_save_v6.cycles_s68k);
+		Cycles_M68K		= le32_to_cpu(md_save_v6.cycles_m68k);
+		Cycles_Z80		= le32_to_cpu(md_save_v6.cycles_z80);
+		VDP_Status		= le32_to_cpu(md_save_v6.vdp_status);
+		VDP_Int			= le32_to_cpu(md_save_v6.vdp_int);
+		Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
+		Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
+		Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
 		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
 		// TODO: LagCount from Gens Rerecording.
 		//LadCount		= le32_to_cpu(md_save_v6.lag_count);
 		
-		// VRam Flag.
-		unsigned int tmp	= le32_to_cpu(md_save_v6.vram_flag);
-		VDP_Flags.VRam		= (tmp & 1);
-		VDP_Flags.VRam_Spr	= ((tmp >> 1) & 1);
-		
+		VRam_Flag		= le32_to_cpu(md_save_v6.vram_flag);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE1_vdp_reg_dma_length);
-		VDP_Reg.m5.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
+		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
 		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE2_vdp_reg_dma_length);
 		//ImportDataAuto(VRam, data, offset, sizeof(VRam));
 		memcpy(&CRam, &md_save_v6.cram, sizeof(CRam));
@@ -690,13 +669,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		//extern int DMAT_Tmp, VSRam_Over;
 		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
 		//ImportDataAuto(&VSRam_Over, data, offset, 4);
-		VDP_Reg.m5.DMA_Length_L		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
-		VDP_Reg.m5.DMA_Length_H		= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
-		VDP_Reg.m5.DMA_Src_Adr_L	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
-		VDP_Reg.m5.DMA_Src_Adr_M	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
-		VDP_Reg.m5.DMA_Src_Adr_H	= (uint8_t)le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
-		VDP_Reg.DMA_Length		= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
-		VDP_Reg.DMA_Address		= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
+		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
+		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
+		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
+		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
+		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
+		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
 	}
 	else if (m_Version >= 7)
 	{
@@ -819,22 +798,18 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
 		
 		// Miscellaneous. (apparently necessary)
-		VDP_Status			= le32_to_cpu(md_save_v7.vdp_status);
-		VDP_Int				= le32_to_cpu(md_save_v7.vdp_int);
-		VDP_Lines.Display.Current	= le32_to_cpu(md_save_v7.vdp_current_line);
-		VDP_Lines.Display.Total		= le32_to_cpu(md_save_v7.vdp_num_lines);
-		VDP_Lines.Visible.Total		= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
-		VDP_Reg.DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
-		VDP_Reg.DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
+		VDP_Status		= le32_to_cpu(md_save_v7.vdp_status);
+		VDP_Int			= le32_to_cpu(md_save_v7.vdp_int);
+		VDP_Current_Line	= le32_to_cpu(md_save_v7.vdp_current_line);
+		VDP_Num_Lines		= le32_to_cpu(md_save_v7.vdp_num_lines);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
+		DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
+		DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
 		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
 		//Lag_Count		= le32_to_cpu(md_save_v7.lag_count);
-		
-		// VRam Flag.
-		unsigned int tmp	= le32_to_cpu(md_save_v7.vram_flag);
-		VDP_Flags.VRam		= (tmp & 1);
-		VDP_Flags.VRam_Spr	= ((tmp >> 1) & 1);
+		VRam_Flag		= le32_to_cpu(md_save_v7.vram_flag);
 		
 		// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 		memcpy(&CRam, &md_save_v7.cram, sizeof(CRam));
@@ -866,24 +841,26 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Cycles_M68K		= le32_to_cpu(md_save_v7.cycles_m68k);
 		Cycles_Z80		= le32_to_cpu(md_save_v7.cycles_z80);
 		Gen_Mode		= le32_to_cpu(md_save_v7.gen_mode);
+		Gen_Version		= le32_to_cpu(md_save_v7.gen_version);
 		
 		// TODO: Is this supposed to be 16-bit bytewapped?
 		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, sizeof(H_Counter_Table));
 		
 		// VDP registers.
+		uint32_t *reg = (uint32_t*)&VDP_Reg;
 		for (unsigned int i = 0; i < 26; i++)
 		{
-			VDP_Reg.reg[i] = (uint8_t)le32_to_cpu(md_save_v7.vdp_reg[i]);
+			*reg = le32_to_cpu(md_save_v7.vdp_reg[i]);
+			reg++;
 		}
 		
-		// VDP control data.
-		VDP_Ctrl.Flag		= le32_to_cpu(md_save_v7.vdp_ctrl.Flag);
-		VDP_Ctrl.Data.d		= le32_to_cpu(md_save_v7.vdp_ctrl.Data);
-		VDP_Ctrl.Write		= le32_to_cpu(md_save_v7.vdp_ctrl.Write);
-		VDP_Ctrl.Access		= le32_to_cpu(md_save_v7.vdp_ctrl.Access);
-		VDP_Ctrl.Address	= le32_to_cpu(md_save_v7.vdp_ctrl.Address);
-		VDP_Ctrl.DMA_Mode	= le32_to_cpu(md_save_v7.vdp_ctrl.DMA_Mode);
-		VDP_Ctrl.DMA		= le32_to_cpu(md_save_v7.vdp_ctrl.DMA);
+		// VDP control.
+		reg = (uint32_t*)&Ctrl;
+		for (unsigned int i = 0; i < 7; i++)
+		{
+			*reg = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
+			reg++;
+		}
 		
 		// Extra Starscream MC68000 information.
 		Context_68K.cycles_needed		= le32_to_cpu(md_save_v7.starscream_extra.cycles_needed);
@@ -901,10 +878,6 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.save_01			= le32_to_cpu(md_save_v7.starscream_extra.save_01);
 		Context_68K.save_02			= le32_to_cpu(md_save_v7.starscream_extra.save_02);
 	}
-	
-	// If the Z80 is RESET, reset the YM2612.
-	if (Z80_State & Z80_STATE_RESET)
-		YM2612_Reset();
 	
 	main68k_SetContext(&Context_68K);
 	return len;
@@ -993,35 +966,39 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	}
 	
 	// VDP control data.
-	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(VDP_Ctrl.Data.d);
+	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(Ctrl.Data);
 	
-	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(VDP_Ctrl.Flag);
-	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((VDP_Ctrl.DMA >> 2) & 1);
+	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(Ctrl.Flag);
+	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((Ctrl.DMA >> 2) & 1);
 	
-	// VDP_Ctrl.Access added by Gens Rerecording.
-	md_save.vdp_ctrl.ctrl_access = cpu_to_le16((uint16_t)(VDP_Ctrl.Access));
+	// Ctrl.Access added by Gens Rerecording.
+	md_save.vdp_ctrl.ctrl_access = cpu_to_le16((uint16_t)(Ctrl.Access));
 	
-	md_save.vdp_ctrl.write_address = cpu_to_le32(VDP_Ctrl.Address & 0xFFFF);
+	md_save.vdp_ctrl.write_address = cpu_to_le32(Ctrl.Address & 0xFFFF);
 	
 	// VDP registers.
-	VDP_Reg.m5.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
-	VDP_Reg.m5.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
+	VDP_Reg.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
+	VDP_Reg.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
 	
-	VDP_Reg.m5.DMA_Src_Adr_L = VDP_Reg.DMA_Address & 0xFF;
-	VDP_Reg.m5.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
-	VDP_Reg.m5.DMA_Src_Adr_H = (VDP_Reg.DMA_Address >> 16) & 0xFF;
+	VDP_Reg.DMA_Src_Adr_L = VDP_Reg.DMA_Address & 0xFF;
+	VDP_Reg.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
+	VDP_Reg.DMA_Src_Adr_H = (VDP_Reg.DMA_Address >> 16) & 0xFF;
 	
-	VDP_Reg.m5.DMA_Src_Adr_H |= VDP_Ctrl.DMA_Mode & 0xC0;
+	VDP_Reg.DMA_Src_Adr_H |= Ctrl.DMA_Mode & 0xC0;
 	
+	// Registers are currently stored as 32-bit unsigned int,
+	// but only the lower byte is used.
+	uint32_t *vdp_src = (uint32_t*)&(VDP_Reg.Set1);
 	for (unsigned int i = 0; i < 24; i++)
 	{
-		md_save.vdp_reg[i] = VDP_Reg.reg[i];
+		md_save.vdp_reg[i] = (uint8_t)(*vdp_src);
+		vdp_src++;
 	}
 	
-	// CRam and VSRam.
-	// [TODO: Are CRam and VSRam supposed to be 16-bit byteswapped?]
-	memcpy(&md_save.cram, CRam.u8, sizeof(md_save.cram));
-	memcpy(&md_save.vsram, VSRam.u8, sizeof(md_save.vsram));	// VSRam is 80 bytes in GSX!
+	// CRAM and VSRAM.
+	// [TODO: Is CRAM supposed to be 16-bit byteswapped?]
+	memcpy(&md_save.cram, CRam, sizeof(md_save.cram));
+	memcpy(&md_save.vsram, VSRam, sizeof(md_save.vsram));
 	
 	// YM2612 registers.
 	YM2612_Save(&md_save.ym2612[0]);
@@ -1193,17 +1170,15 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// Miscellaneous.
 	md_save_v7.vdp_status		= cpu_to_le32(VDP_Status);
 	md_save_v7.vdp_int		= cpu_to_le32(VDP_Int);
-	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Lines.Display.Current);
-	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Lines.Display.Total);
-	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Lines.Visible.Total);
-	md_save_v7.dmat_length		= cpu_to_le32(VDP_Reg.DMAT_Length);
-	md_save_v7.dmat_type		= cpu_to_le32(VDP_Reg.DMAT_Type);
+	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Current_Line);
+	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Num_Lines);
+	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Num_Vis_Lines);
+	md_save_v7.dmat_length		= cpu_to_le32(DMAT_Length);
+	md_save_v7.dmat_type		= cpu_to_le32(DMAT_Type);
 	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]
 	// TODO: LagCount for Gens Rerecording.
 	//md_save_v7.lag_count		= cpu_to_le32(LagCount);
-	
-	// VRam Flag.
-	md_save_v7.vram_flag		= cpu_to_le32(VDP_Flags.VRam | (VDP_Flags.VRam_Spr << 1));
+	md_save_v7.vram_flag		= cpu_to_le32(VRam_Flag);
 	
 	// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 	memcpy(&md_save_v7.cram, &CRam, sizeof(CRam));
@@ -1235,25 +1210,26 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.cycles_m68k		= cpu_to_le32(Cycles_M68K);
 	md_save_v7.cycles_z80		= cpu_to_le32(Cycles_Z80);
 	md_save_v7.gen_mode		= cpu_to_le32(Gen_Mode);
-	md_save_v7.gen_version		= cpu_to_le32(0x20);	// old value of Gen_Version.
+	md_save_v7.gen_version		= cpu_to_le32(Gen_Version);
 	
 	// TODO: Is this supposed to be 16-bit byteswapped?
 	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(H_Counter_Table));
 	
 	// VDP registers.
+	uint32_t *reg = (uint32_t*)&VDP_Reg;
 	for (unsigned int i = 0; i < 26; i++)
 	{
-		md_save_v7.vdp_reg[i] = (uint8_t)cpu_to_le32(VDP_Reg.reg[i]);
+		md_save_v7.vdp_reg[i] = cpu_to_le32(*reg);
+		reg++;
 	}
 	
-	// VDP control data.
-	md_save_v7.vdp_ctrl.Flag	= cpu_to_le32(VDP_Ctrl.Flag);
-	md_save_v7.vdp_ctrl.Data	= cpu_to_le32(VDP_Ctrl.Data.d);
-	md_save_v7.vdp_ctrl.Write	= cpu_to_le32(VDP_Ctrl.Write);
-	md_save_v7.vdp_ctrl.Access	= cpu_to_le32(VDP_Ctrl.Access);
-	md_save_v7.vdp_ctrl.Address	= cpu_to_le32(VDP_Ctrl.Address);
-	md_save_v7.vdp_ctrl.DMA_Mode	= cpu_to_le32(VDP_Ctrl.DMA_Mode);
-	md_save_v7.vdp_ctrl.DMA		= cpu_to_le32(VDP_Ctrl.DMA);
+	// VDP control.
+	reg = (uint32_t*)&Ctrl;
+	for (unsigned int i = 0; i < 7; i++)
+	{
+		md_save_v7.vdp_ctrl[i] = cpu_to_le32(*reg);
+		reg++;
+	}
 	
 	// Extra Starscream MC68000 information.
 	md_save_v7.starscream_extra.cycles_needed	= cpu_to_le32(Context_68K.cycles_needed);
@@ -1392,14 +1368,14 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 	//Word RAM state
 	
 	//Prg RAM
-	ImportData(Ram_Prg.u8, data, 0x1000, 0x80000);
+	ImportData(Ram_Prg, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		ImportData(Ram_Word_1M.u8, data, 0x81000, 0x40000); //1M mode
+		ImportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
 	else
-		ImportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
-		//ImportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
+		ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		//ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
 	ImportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
@@ -1476,7 +1452,7 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 		ImportDataAuto(&COMM, data, offset, sizeof(COMM));
 		
 		ImportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-		ImportDataAuto(Ram_Backup_Ex, data, offset, 65536);	// GSXv7 only supports 64 KB.
+		ImportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
 		
 		ImportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
 		ImportDataAuto(&Stamp_Map_Adr, data, offset, 4);
@@ -1495,7 +1471,7 @@ void Savestate::GsxImportSegaCD(const unsigned char* data)
 		ImportDataAuto(&H_Dot, data, offset, 4);
 		
 		ImportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-		ImportDataAuto(&Rom_Data.u8[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+		ImportDataAuto(&Rom_Data[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 		
 #ifdef GENS_MP3
 		ImportDataAuto(&fatal_mp3_error, data, offset, 4);
@@ -1628,13 +1604,13 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	//Word RAM state
 	
 	//Prg RAM
-	ExportData(Ram_Prg.u8, data, 0x1000, 0x80000);
+	ExportData(Ram_Prg, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		ExportData(Ram_Word_1M.u8, data, 0x81000, 0x40000); //1M mode
+		ExportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
 	else
-		ExportData(Ram_Word_2M.u8, data, 0x81000, 0x40000); //2M mode
+		ExportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
 	ExportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
@@ -1700,7 +1676,7 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	ExportDataAuto(&COMM, data, offset, sizeof(COMM));
 	
 	ExportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-	ExportDataAuto(Ram_Backup_Ex, data, offset, 65536);	// GSXv7 only supports 64 KB.
+	ExportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
 	
 	ExportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
 	ExportDataAuto(&Stamp_Map_Adr, data, offset, 4);
@@ -1719,7 +1695,7 @@ void Savestate::GsxExportSegaCD(unsigned char* data)
 	ExportDataAuto(&H_Dot, data, offset, 4);
 	
 	ExportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-	ExportDataAuto(&Rom_Data.u8[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+	ExportDataAuto(&Rom_Data[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 	
 #ifdef GENS_MP3
 	ExportDataAuto(&fatal_mp3_error, data, offset, 4);
@@ -1750,208 +1726,147 @@ void Savestate::GsxImport32X(const unsigned char* data)
 {
 	// TODO: Reimplement v5 support.
 	
-	gsx_v7_32X sv;
-	memcpy(&sv, data, sizeof(sv));
+	unsigned int offset = 0;
+	int i, contextNum;
 	
-	for (int contextNum = 0; contextNum < 2; contextNum++)
+	for (contextNum = 0; contextNum < 2; contextNum++)
 	{
 		SH2_CONTEXT* context = (contextNum == 0) ? &M_SH2 : &S_SH2;
-		
-		// TODO: Verify byteswapping.
-		// le32_to_cpu() does nothing on x86, so it's "ok" for now.
-		memcpy(context->Cache, sv.cpu[contextNum].Cache, sizeof(context->Cache));
-		
-		for (int i = 0; i < 0x10; i++)
-			context->R[i] = le32_to_cpu(sv.cpu[contextNum].R[i]);
-		
-		context->SR.T		= sv.cpu[contextNum].SR.T;
-		context->SR.S		= sv.cpu[contextNum].SR.S;
-		context->SR.IMask	= sv.cpu[contextNum].SR.IMask;
-		context->SR.MQ		= sv.cpu[contextNum].SR.MQ;
-		
-		context->INT.Vect	= sv.cpu[contextNum].INT.Vect;
-		context->INT.Prio	= sv.cpu[contextNum].INT.Prio;
-		context->INT.res1	= sv.cpu[contextNum].INT.res1;
-		context->INT.res2	= sv.cpu[contextNum].INT.res2;
-		
-		context->GBR		= le32_to_cpu(sv.cpu[contextNum].GBR);
-		context->VBR		= le32_to_cpu(sv.cpu[contextNum].VBR);
-		
-		
-		memcpy(context->INT_QUEUE, sv.cpu[contextNum].INT_QUEUE, sizeof(context->INT_QUEUE));
-		
-		context->MACH		= le32_to_cpu(sv.cpu[contextNum].MACH);
-		context->MACL		= le32_to_cpu(sv.cpu[contextNum].MACL);
-		context->PR		= le32_to_cpu(sv.cpu[contextNum].PR);
-		context->PC		= le32_to_cpu(sv.cpu[contextNum].PC);		// Linked to Base_PC.
-		
-		context->Status		= le32_to_cpu(sv.cpu[contextNum].Status);
-		context->Base_PC	= le32_to_cpu(sv.cpu[contextNum].Base_PC);
-		context->Fetch_Start	= le32_to_cpu(sv.cpu[contextNum].Fetch_Start);
-		context->Fetch_End	= le32_to_cpu(sv.cpu[contextNum].Fetch_End);
-		
-		context->DS_Inst	= le32_to_cpu(sv.cpu[contextNum].DS_Inst);
-		context->DS_PC		= le32_to_cpu(sv.cpu[contextNum].DS_PC);	// WARNING: This is affected by a different Base_PC!
-		
-		context->Odometer	= le32_to_cpu(sv.cpu[contextNum].Odometer);
-		context->Cycle_TD	= le32_to_cpu(sv.cpu[contextNum].Cycle_TD);
-		context->Cycle_IO	= le32_to_cpu(sv.cpu[contextNum].Cycle_IO);
-		context->Cycle_Sup	= le32_to_cpu(sv.cpu[contextNum].Cycle_Sup);
-		
-		memcpy(context->IO_Reg, sv.cpu[contextNum].IO_Reg, sizeof(context->IO_Reg));
-		
-		context->DVCR		= le32_to_cpu(sv.cpu[contextNum].DVCR);
-		context->DVSR		= le32_to_cpu(sv.cpu[contextNum].DVSR);
-		context->DVDNTH		= le32_to_cpu(sv.cpu[contextNum].DVDNTH);
-		context->DVDNTL		= le32_to_cpu(sv.cpu[contextNum].DVDNTL);
-		
-		context->DRCR0		= sv.cpu[contextNum].DRCR0;
-		context->DRCR1		= sv.cpu[contextNum].DRCR1;
-		context->DREQ0		= sv.cpu[contextNum].DREQ0;
-		context->DREQ1		= sv.cpu[contextNum].DREQ1;
-		
-		context->DMAOR		= le32_to_cpu(sv.cpu[contextNum].DMAOR);
-		
-		context->SAR0		= le32_to_cpu(sv.cpu[contextNum].SAR0);
-		context->DAR0		= le32_to_cpu(sv.cpu[contextNum].DAR0);
-		context->TCR0		= le32_to_cpu(sv.cpu[contextNum].TCR0);
-		context->CHCR0		= le32_to_cpu(sv.cpu[contextNum].CHCR0);
-		
-		context->SAR1		= le32_to_cpu(sv.cpu[contextNum].SAR1);
-		context->DAR1		= le32_to_cpu(sv.cpu[contextNum].DAR1);
-		context->TCR1		= le32_to_cpu(sv.cpu[contextNum].TCR1);
-		context->CHCR1		= le32_to_cpu(sv.cpu[contextNum].CHCR1);
-		
-		context->VCRDIV		= le32_to_cpu(sv.cpu[contextNum].VCRDIV);
-		context->VCRDMA0	= le32_to_cpu(sv.cpu[contextNum].VCRDMA0);
-		context->VCRDMA1	= le32_to_cpu(sv.cpu[contextNum].VCRDMA1);
-		context->VCRWDT		= le32_to_cpu(sv.cpu[contextNum].VCRWDT);
-		
-		context->IPDIV		= le32_to_cpu(sv.cpu[contextNum].IPDIV);
-		context->IPDMA		= le32_to_cpu(sv.cpu[contextNum].IPDMA);
-		context->IPWDT		= le32_to_cpu(sv.cpu[contextNum].IPWDT);
-		context->IPBSC		= le32_to_cpu(sv.cpu[contextNum].IPBSC);
-		
-		context->BARA		= le32_to_cpu(sv.cpu[contextNum].BARA);
-		context->BAMRA		= le32_to_cpu(sv.cpu[contextNum].BAMRA);
-		
-		memcpy(context->WDT_Tab, sv.cpu[contextNum].WDT_Tab, sizeof(context->WDT_Tab));
-		context->WDTCNT		= le32_to_cpu(sv.cpu[contextNum].WDTCNT);
-		context->WDT_Sft	= sv.cpu[contextNum].WDT_Sft;
-		context->WDTSR		= sv.cpu[contextNum].WDTSR;
-		context->WDTRST		= sv.cpu[contextNum].WDTRST;
-		
-		memcpy(context->FRT_Tab, sv.cpu[contextNum].FRT_Tab, sizeof(context->FRT_Tab));
-		context->FRTCNT		= le32_to_cpu(sv.cpu[contextNum].FRTCNT);
-		context->FRTOCRA	= le32_to_cpu(sv.cpu[contextNum].FRTOCRA);
-		context->FRTOCRB	= le32_to_cpu(sv.cpu[contextNum].FRTOCRB);
-		
-		context->FRTTIER	= sv.cpu[contextNum].FRTTIER;
-		context->FRTCSR		= sv.cpu[contextNum].DUPE1_FRTCSR;	// Same as FRTCSR.
-		context->FRTTCR		= sv.cpu[contextNum].FRTTCR;
-		context->FRTTOCR	= sv.cpu[contextNum].FRTTOCR;
-		context->FRTICR		= le32_to_cpu(sv.cpu[contextNum].FRTICR);
-		context->FRT_Sft	= le32_to_cpu(sv.cpu[contextNum].FRT_Sft);
-		context->BCR1		= le32_to_cpu(sv.cpu[contextNum].BCR1);
-		context->FRTCSR		= sv.cpu[contextNum].FRTCSR;
-		
-		// Load the PC value correctly.
-		SH2_Set_PC(context, (context->PC - context->Base_PC));
+
+		ImportDataAuto(context->Cache, data, offset, sizeof(context->Cache));
+		ImportDataAuto(context->R, data, offset, sizeof(context->R));
+		ImportDataAuto(&context->SR, data, offset, sizeof(context->SR));
+		ImportDataAuto(&context->INT, data, offset, sizeof(context->INT));
+		ImportDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
+		ImportDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
+		ImportDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
+		ImportDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
+		ImportDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
+		ImportDataAuto(&context->PR, data, offset, sizeof(context->PR));
+		ImportDataAuto(&context->PC, data, offset, sizeof(context->PC));
+		ImportDataAuto(&context->Status, data, offset, sizeof(context->Status));
+		ImportDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
+		ImportDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
+		ImportDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
+		ImportDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
+		ImportDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
+		ImportDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
+		ImportDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
+		ImportDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
+		ImportDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
+		ImportDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
+		ImportDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
+		ImportDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
+		ImportDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
+		ImportDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
+		ImportDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
+		ImportDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
+		ImportDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
+		ImportDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
+		ImportDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
+		ImportDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
+		ImportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
+		ImportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
+		ImportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
+		ImportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
+		ImportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
+		ImportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
+		ImportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
+		ImportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
+		ImportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
+		ImportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
+		ImportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
+		ImportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
+		ImportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
+		ImportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
+		ImportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
+		ImportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
+		ImportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
+		ImportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
+		ImportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
+		ImportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
+		ImportDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
+		ImportDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
+		ImportDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
+		ImportDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
+		ImportDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
+		ImportDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
+		ImportDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
+		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		ImportDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
+		ImportDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
+		ImportDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
+		ImportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
+		ImportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
+		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
 	}
-	
-	// TODO: Proper byteswapping for e.g. 32X RAM.
-	memcpy(&_32X_Ram.u8[0], sv._32x_ram, sizeof(_32X_Ram));
-	memcpy(_MSH2_Reg, sv.msh2_reg, sizeof(_MSH2_Reg));
-	memcpy(_SSH2_Reg, sv.ssh2_reg, sizeof(_SSH2_Reg));
-	memcpy(_SH2_VDP_Reg, sv.sh2_vdp_reg, sizeof(_SH2_VDP_Reg));
-	
-	memcpy(_32X_Comm, sv._32x_comm, sizeof(_32X_Comm));
-	_32X_ADEN		= sv._32x_aden;
-	_32X_RES		= sv._32x_res;
-	_32X_FM			= sv._32x_fm;
-	_32X_RV			= sv._32x_rv;
-	
-	_32X_DREQ_ST		= le32_to_cpu(sv._32x_dreq_st);
-	_32X_DREQ_SRC		= le32_to_cpu(sv._32x_dreq_src);
-	_32X_DREQ_DST		= le32_to_cpu(sv._32x_dreq_dst);
-	_32X_DREQ_LEN		= le32_to_cpu(sv._32x_dreq_len);
-	
-	for (int i = 0; i < 4; i++)
-	{
-		_32X_FIFO_A[i] = le16_to_cpu(sv._32x_fifo_A[i]);
-		_32X_FIFO_B[i] = le16_to_cpu(sv._32x_fifo_B[i]);
-	}
-	
-	_32X_FIFO_Block		= le32_to_cpu(sv._32x_fifo_block);
-	_32X_FIFO_Read		= le32_to_cpu(sv._32x_fifo_read);
-	_32X_FIFO_Write		= le32_to_cpu(sv._32x_fifo_write);
-	
-	_32X_MINT		= sv._32x_mint;
-	_32X_SINT		= sv._32x_sint;
-	_32X_HIC		= sv._32x_hic;
-	
-	CPL_SSH2		= le32_to_cpu(sv.cpl_ssh2);
-	CPL_MSH2		= le32_to_cpu(sv.cpl_msh2);
-	Cycles_MSH2		= le32_to_cpu(sv.cycles_msh2);
-	Cycles_SSH2		= le32_to_cpu(sv.cycles_ssh2);
-	
-	_32X_VDP.Mode		= le32_to_cpu(sv.vdp.mode);
-	_32X_VDP.State		= le32_to_cpu(sv.vdp.state);
-	_32X_VDP.AF_Data	= le32_to_cpu(sv.vdp.af_data);
-	_32X_VDP.AF_St		= le32_to_cpu(sv.vdp.af_st);
-	_32X_VDP.AF_Len		= le32_to_cpu(sv.vdp.af_len);
-	_32X_VDP.AF_Line	= le32_to_cpu(sv.vdp.af_line);
-	
-	// TODO: Is VDP RAM byteswapped? (CRAM probably is...)
-	memcpy(&_32X_VDP_Ram.u8[0], sv.vdp_ram, sizeof(_32X_VDP_Ram));
-	memcpy(_32X_VDP_CRam, sv.vdp_cram, sizeof(_32X_VDP_CRam));
-	le16_to_cpu_array(_32X_VDP_CRam, sizeof(_32X_VDP_CRam));
-	
-	memcpy(Set_SR_Table, sv.set_sr_table, sizeof(Set_SR_Table));
-	le32_to_cpu_array(Set_SR_Table, sizeof(Set_SR_Table));
-	Bank_SH2		= le32_to_cpu(sv.bank_sh2);
-	
-	memcpy(PWM_FIFO_R, sv.pwm_fifo_R, sizeof(PWM_FIFO_R));
-	le16_to_cpu_array(PWM_FIFO_R, sizeof(PWM_FIFO_R));
-	memcpy(PWM_FIFO_L, sv.pwm_fifo_L, sizeof(PWM_FIFO_L));
-	le16_to_cpu_array(PWM_FIFO_L, sizeof(PWM_FIFO_L));
-	PWM_RP_R		= le32_to_cpu(sv.pwm_rp_R);
-	PWM_WP_R		= le32_to_cpu(sv.pwm_wp_R);
-	PWM_RP_L		= le32_to_cpu(sv.pwm_rp_L);
-	PWM_WP_L		= le32_to_cpu(sv.pwm_wp_L);
-	PWM_Cycles		= le32_to_cpu(sv.pwm_cycles);
-	PWM_Cycle		= le32_to_cpu(sv.pwm_cycle);
-	PWM_Cycle_Cnt		= le32_to_cpu(sv.pwm_cycle_cnt);
-	PWM_Int			= le32_to_cpu(sv.pwm_int);
-	PWM_Int_Cnt		= le32_to_cpu(sv.pwm_int_cnt);
-	PWM_Mode		= le32_to_cpu(sv.pwm_mode);
-	PWM_Out_R		= le32_to_cpu(sv.pwm_out_R);
-	PWM_Out_L		= le32_to_cpu(sv.pwm_out_L);
-	
-#if 0
-	// TODO: Fix Chilly Willy's new scaling algorithm.
+
+	ImportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
+	ImportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
+	ImportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
+	ImportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
+	ImportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
+	ImportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
+	ImportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
+	ImportDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
+	ImportDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
+	ImportDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
+	ImportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
+	ImportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
+	ImportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
+	ImportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
+	ImportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
+	ImportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
+	ImportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
+	ImportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
+	ImportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
+	ImportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
+	ImportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
+	ImportDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
+	ImportDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
+	ImportDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
+	ImportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
+
+	ImportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
+	ImportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
+	ImportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
+
+	ImportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
+	ImportDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
+
+	ImportDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
+	ImportDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
+	ImportDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
+	ImportDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
+	ImportDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
+	ImportDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
+	ImportDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
+	ImportDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
+	ImportDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
+	ImportDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
+	ImportDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
+	ImportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
+	ImportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
+	ImportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
 	PWM_Recalc_Scale();
-#endif
 	
-	// just in case some of these bytes are not in fact read-only
-	// as was apparently the case with Sega CD games (1024 seems acceptably small)
-	// NOTE: This is the 32X (non-swapped) version.
-	// TODO: Should this also be copied to the MD ROM?
-	memcpy(&_32X_Rom.u8[0], sv.rom_header, sizeof(sv.rom_header));
-	
-	// MSH2 and SSH2 firmware. (non-swapped for now)
-	memcpy(&_32X_MSH2_Rom.u8[0], sv._32x_msh2_rom, sizeof(_32X_MSH2_Rom));
-	memcpy(&_32X_SSH2_Rom.u8[0], sv._32x_ssh2_rom, sizeof(_32X_SSH2_Rom));
+	ImportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
+	ImportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
+	ImportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
 
 	M68K_32X_Mode();
 	_32X_Set_FB();
 	M68K_Set_32X_Rom_Bank();
 
-	// Readjust the 32X CRam.
-	Adjust_CRam_32X();
+	//Recalculate_Palettes();
+	for (i = 0; i < 0x100; i++)
+	{
+		_32X_VDP_CRam_Adjusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
+		_32X_VDP_CRam_Adjusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
+	}
 
 #ifdef GENS_DEBUG_SAVESTATE
-	assert(sizeof(gsx_v7_32X) == G32X_LENGTH_EX);
+	assert(offset == G32X_LENGTH_EX);
 #endif
 }
 
@@ -2006,25 +1921,20 @@ void Savestate::GsxExport32X(unsigned char* data)
 		ExportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
 		ExportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
 		ExportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
-		
 		ExportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
 		ExportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
 		ExportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
 		ExportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
-		
 		ExportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
 		ExportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
 		ExportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
 		ExportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
-		
 		ExportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
 		ExportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
 		ExportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
 		ExportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
-		
 		ExportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
 		ExportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
-		
 		ExportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
 		ExportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
 		ExportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
@@ -2044,11 +1954,10 @@ void Savestate::GsxExport32X(unsigned char* data)
 		ExportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
 	}
 	
-	ExportDataAuto(&_32X_Ram.u8[0], data, offset, sizeof(_32X_Ram));
+	ExportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
 	ExportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
 	ExportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
 	ExportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
-	
 	ExportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
 	ExportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
 	ExportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
@@ -2058,14 +1967,11 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
 	ExportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
 	ExportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
-	
 	ExportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
 	ExportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
-	
 	ExportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
 	ExportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
 	ExportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
-	
 	ExportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
 	ExportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
 	ExportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
@@ -2075,7 +1981,7 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
 	
 	ExportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
-	ExportDataAuto(&_32X_VDP_Ram.u8[0], data, offset, sizeof(_32X_VDP_Ram));
+	ExportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
 	ExportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
 	
 	ExportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
@@ -2096,11 +2002,201 @@ void Savestate::GsxExport32X(unsigned char* data)
 	ExportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
 	ExportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
 	
-	ExportDataAuto(&_32X_Rom.u8[0], data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
-	ExportDataAuto(&_32X_MSH2_Rom.u8[0], data, offset, sizeof(_32X_MSH2_Rom));
-	ExportDataAuto(&_32X_SSH2_Rom.u8[0], data, offset, sizeof(_32X_SSH2_Rom));
+	ExportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
+	ExportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
+	ExportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
 	
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);
 #endif
+}
+
+
+/**
+ * GetSRAMFilename(): Get the filename of the SRAM file.
+ * @return Filename of the SRAM file.
+ */
+inline string Savestate::GetSRAMFilename(void)
+{
+	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
+		return "";
+	
+	return string(State_Dir) + string(ROM_Filename) + ".srm";
+}
+
+
+/**
+ * LoadSRAM(): Load the SRAM file.
+ * @return 1 on success; 0 on error.
+ */
+int Savestate::LoadSRAM(void)
+{
+	FILE* SRAM_File = 0;
+	
+	memset(SRAM, 0x00, sizeof(SRAM));
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	string filename = GetSRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((SRAM_File = fopen(filename.c_str(), "rb")) == 0)
+		return 0;
+	
+	fread(SRAM, sizeof(SRAM), 1, SRAM_File);
+	fclose(SRAM_File);
+	
+	string msg = "SRAM loaded from " + filename;
+	vdraw_text_write(msg.c_str(), 2000);
+	return 1;
+}
+
+
+/**
+ * SaveSRAM(): Save the SRAM file.
+ * @return 1 on success; 0 on error.
+ */
+int Savestate::SaveSRAM(void)
+{
+	FILE* SRAM_File = 0;
+	int size_to_save, i;
+	
+	i = (64 * 1024) - 1;
+	while ((i >= 0) && (SRAM[i] == 0))
+		i--;
+	
+	if (i < 0)
+		return 0;
+	
+	i++;
+	
+	size_to_save = 1;
+	while (i > size_to_save)
+		size_to_save <<= 1;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	string filename = GetSRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
+		return 0;
+	
+	fwrite(SRAM, size_to_save, 1, SRAM_File);
+	fclose(SRAM_File);
+	
+	string dispText = "SRAM saved in " + filename;
+	vdraw_text_write(dispText.c_str(), 2000);
+	return 1;
+}
+
+
+/**
+ * FormatSegaCD_BRAM(): Format the internal SegaCD BRAM.
+ * @param buf Pointer to location 0x1FC0 in the internal SegaCD BRAM.
+ */
+void Savestate::FormatSegaCD_BRAM(unsigned char *buf)
+{
+	// TODO: Format cartridge BRAM.
+	static const char brmHeader[0x40] =
+	{
+		0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F, 0x5F,
+		0x5F, 0x5F, 0x5F, 0x00, 0x00, 0x00, 0x00, 0x40,
+		0x00, 0x7D, 0x00, 0x7D, 0x00, 0x7D, 0x00, 0x7D,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		
+		'S', 'E', 'G', 'A', 0x5F, 'C', 'D', 0x5F, 'R', 'O', 'M', 0x00, 0x01, 0x00, 0x00, 0x00,
+		'R', 'A', 'M', 0x5F, 'C', 'A', 'R', 'T', 'R', 'I', 'D', 'G', 'E', 0x5F, 0x5F, 0x5F
+	};
+	
+	memcpy(buf, brmHeader, sizeof(brmHeader));
+}
+
+
+/**
+ * FormatSegaCD_BackupRAM(): Format the SegaCD backup RAM.
+ */
+void Savestate::FormatSegaCD_BackupRAM(void)
+{
+	// SegaCD internal BRAM.
+	memset(Ram_Backup, 0x00, sizeof(Ram_Backup));
+	FormatSegaCD_BRAM(&Ram_Backup[0x1FC0]);
+	
+	// SegaCD cartridge memory.
+	// TODO: Format the cartridge memory.
+	memset(Ram_Backup_Ex, 0x00, sizeof(Ram_Backup_Ex));
+}
+
+
+/**
+ * GetSRAMFilename(): Get the filename of the BRAM file.
+ * @return Filename of the BRAM file.
+ */
+inline string Savestate::GetBRAMFilename(void)
+{
+	if (ROM_Filename[0] == 0x00)	// (strlen(ROM_Filename) == 0)
+		return "";
+	
+	return string(State_Dir) + string(ROM_Filename) + ".brm";
+}
+
+
+/**
+ * LoadBRAM(): Load the BRAM file.
+ * @return 1 on success; 0 on error.
+ */
+int Savestate::LoadBRAM(void)
+{
+	FILE* BRAM_File = 0;
+	
+	Savestate::FormatSegaCD_BackupRAM();
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	string filename = GetBRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((BRAM_File = fopen(filename.c_str(), "rb")) == 0)
+		return 0;
+	
+	fread(Ram_Backup, sizeof(Ram_Backup), 1, BRAM_File);
+	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	fclose(BRAM_File);
+	
+	string dispText = "BRAM loaded from " + filename;
+	vdraw_text_write(dispText.c_str(), 2000);
+	return 1;
+}
+
+/**
+ * SaveBRAM(): Save the BRAM file.
+ * @return 1 on success; 0 on error.
+ */
+int Savestate::SaveBRAM(void)
+{
+	FILE* BRAM_File = 0;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
+	string filename = GetBRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((BRAM_File = fopen(filename.c_str(), "wb")) == 0)
+		return 0;
+	
+	fwrite(Ram_Backup, 8 * 1024, 1, BRAM_File);
+	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	fclose(BRAM_File);
+	
+	string dispText = "BRAM saved in " + filename;
+	vdraw_text_write(dispText.c_str(), 2000);
+	return 1;
 }

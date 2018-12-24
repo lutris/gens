@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -31,11 +31,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_windows.h"
-#include "libgsft/w32u/w32u_libc.h"
-#endif
 
 // libgsft includes.
 #include "libgsft/gsft_szprintf.h"
@@ -101,9 +96,9 @@ static FILE *WAV_File = NULL;
  */
 int wav_dump_start(void)
 {
+	/* Make sure relative pathnames are handled correctly on Win32. */
 #ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif
 	
 	/* A game must be loaded in order to dump a WAV. */

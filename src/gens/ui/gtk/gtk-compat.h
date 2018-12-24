@@ -25,10 +25,9 @@
 
 /* Functions added in GTK+ 2.14. */
 #if (GTK_MAJOR_VERSION < 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION < 14))
-#define gtk_widget_get_window(widget)				((widget)->window)
-#define gtk_selection_data_get_length(selection_data)		((selection_data)->length)
-#define gtk_selection_data_get_data(selection_data)		((selection_data)->data)
-#define gtk_color_selection_dialog_get_color_selection(widget)	((widget)->colorsel)
+#define gtk_widget_get_window(widget)			((widget)->window)
+#define gtk_selection_data_get_length(selection_data)	((selection_data)->length)
+#define gtk_selection_data_get_data(selection_data)	((selection_data)->data)
 #endif
 
 #endif /* GENS_GTK_COMPAT_H */

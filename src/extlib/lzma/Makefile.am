@@ -1,12 +1,11 @@
 # lzma: LZMA SDK.
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LTLIBRARIES = liblzma.la
 
-liblzma_la_CFLAGS	= $(AM_CFLAGS) -O3 -funroll-loops
-liblzma_la_LDFLAGS	= $(AM_LDFLAGS)
-liblzma_la_LIBTOOLFLAGS	= $(AM_LIBTOOLFLAGS) --tag=disable-shared
+liblzma_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
+liblzma_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 liblzma_la_SOURCES = \
 		7zBuf.c \

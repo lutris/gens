@@ -111,8 +111,9 @@ int main(int argc, char *argv[])
 	// Initialize the UI.
 	GensUI::init(&argc, &argv);
 	
-	// Initialize VDraw.
+	// Initialize vdraw_sdl.
 	vdraw_init();
+	vdraw_backend_init_subsystem(VDRAW_BACKEND_HAIKU);
 	
 	// Initialize input_sdl.
 	input_init(INPUT_BACKEND_HAIKU);

@@ -27,10 +27,9 @@
 extern "C" {
 #endif
 
-void Cell_8x8_Dump(unsigned char *Adr, int Palette);	// MD VDP, normal.
-void Cell_8x16_Dump(unsigned char *Adr, int Palette);	// MD VDP, interlaced.
-void Cell_16x16_Dump(unsigned char *Adr, int Palette);	// SegaCD Work RAM.
-void Cell_32x32_Dump(unsigned char *Adr, int Palette);	// SegaCD Work RAM.
+void Cell_8x8_Dump(unsigned char *Adr, int Palette);
+void Cell_16x16_Dump(unsigned char *Adr, int Palette);
+void Cell_32x32_Dump(unsigned char *Adr, int Palette);
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008 by David Korth                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -25,7 +25,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "gens_menu.h"
-#include "emulator/gens.hpp"
 
 #include <unistd.h>
 #ifndef NULL
@@ -109,8 +108,9 @@ static const GensMenuItem_t gmiGraphics_Stretch[];
 #ifdef GENS_OPENGL
 static const GensMenuItem_t gmiGraphics_GLRes[];
 #endif
+#ifdef GENS_OS_UNIX
 static const GensMenuItem_t gmiGraphics_bpp[];
-static const GensMenuItem_t gmiGraphics_IntRend[];
+#endif
 static const GensMenuItem_t gmiGraphics_FrameSkip[];
 
 static const GensMenuItem_t gmiGraphics[] =
@@ -123,16 +123,16 @@ static const GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_BACKEND,		GMF_ITEM_SUBMENU,	"&Backend",			NULL,	GMAM_SHIFT, 'R', 0},
 #ifdef GENS_OPENGL
 	{IDM_GRAPHICS_OPENGL_FILTER,	GMF_ITEM_CHECK,		"OpenGL &Linear Filter",	NULL,	0, 0, 0},
-	{IDM_GRAPHICS_OPENGL_ORTHOPROJ,	GMF_ITEM_CHECK,		"Orthographic &Projection",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_OPENGL_RES,	GMF_ITEM_SUBMENU,	"OpenGL Resolution",		&gmiGraphics_GLRes[0],	0, 0, 0},
 #endif /* GENS_OPENGL */
-	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Color &Depth",			&gmiGraphics_bpp[0],	0, 0, 0},
+#ifdef GENS_OS_UNIX
+	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Bits per pixel",		&gmiGraphics_bpp[0],	0, 0, 0},
+#endif /* GENS_OS_UNIX */
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
-	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Ad&just...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
+	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Adjust...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
 	{IDM_GRAPHICS_RENDER,		GMF_ITEM_SUBMENU,	"&Render",			NULL,	0, 0, IDIM_RENDER},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_SPRITELIMIT,	GMF_ITEM_CHECK,		"Sprite Limit",			NULL,	0, 0, 0},
- 	{IDM_GRAPHICS_INTREND,		GMF_ITEM_SUBMENU,	"Interlaced Display",		&gmiGraphics_IntRend[0], 0, 0, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_FRAMESKIP,	GMF_ITEM_SUBMENU,	"Frame Skip",			&gmiGraphics_FrameSkip[0], 0, 0, IDIM_FRAMESKIP},
 	{IDM_GRAPHICS_SCREENSHOT,	GMF_ITEM_NORMAL,	"Screenshot",			NULL,	GMAM_SHIFT, GMAK_BACKSPACE, IDIM_SCREENSHOT},
@@ -165,6 +165,7 @@ static const GensMenuItem_t gmiGraphics_GLRes[] =
 };
 #endif
 
+#ifdef GENS_OS_UNIX
 static const GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, 0},
@@ -172,15 +173,7 @@ static const GensMenuItem_t gmiGraphics_bpp[] =
 	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
-
-static const GensMenuItem_t gmiGraphics_IntRend[] =
-{
-	{IDM_GRAPHICS_INTREND_EVEN,	GMF_ITEM_RADIO,		"Even Fields Only",	NULL,	0, 0, 0},
-	{IDM_GRAPHICS_INTREND_ODD,	GMF_ITEM_RADIO,		"Odd Fields Only",	NULL,	0, 0, 0},
-	{IDM_GRAPHICS_INTREND_FLICKER,	GMF_ITEM_RADIO,		"Alternating Fields",	NULL,	0, 0, 0},
-	//{IDM_GRAPHICS_INTREND_2X,	GMF_ITEM_RADIO,		"2x Resolution",	NULL,	0, 0, 0},
-	{0, 0, NULL, NULL, 0, 0, 0}
-};
+#endif
 
 static const GensMenuItem_t gmiGraphics_FrameSkip[] =
 {
@@ -275,6 +268,7 @@ static const GensMenuItem_t gmiSound[] =
 	{IDM_SOUND_YM2612_IMPROVED,	GMF_ITEM_CHECK,		"YM2612 Improved",	NULL, 0, 0, 0},
 	{IDM_SOUND_DAC,			GMF_ITEM_CHECK,		"&DAC",			NULL, 0, 0, 0},
 	{IDM_SOUND_PSG,			GMF_ITEM_CHECK,		"&PSG",			NULL, 0, 0, 0},
+	{IDM_SOUND_PSG_SINE,		GMF_ITEM_CHECK,		"PSG (Sine Wave)",	NULL, 0, 0, 0},
 	{IDM_SOUND_PCM,			GMF_ITEM_CHECK,		"P&CM",			NULL, 0, 0, 0},
 	{IDM_SOUND_PWM,			GMF_ITEM_CHECK,		"P&WM",			NULL, 0, 0, 0},
 	{IDM_SOUND_CDDA,		GMF_ITEM_CHECK,		"CDD&A (CD Audio)",	NULL, 0, 0, 0},
@@ -324,9 +318,6 @@ static const GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 	{IDM_OPTIONS_SEGACDSRAMSIZE_16KB,	GMF_ITEM_RADIO, "16 KB", NULL, 0, 0, 0},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_32KB,	GMF_ITEM_RADIO, "32 KB", NULL, 0, 0, 0},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_64KB,	GMF_ITEM_RADIO, "64 KB", NULL, 0, 0, 0},
-	{IDM_OPTIONS_SEGACDSRAMSIZE_128KB,	GMF_ITEM_RADIO, "128 KB", NULL, 0, 0, 0},
-	{IDM_OPTIONS_SEGACDSRAMSIZE_256KB,	GMF_ITEM_RADIO, "256 KB", NULL, 0, 0, 0},
-	{IDM_OPTIONS_SEGACDSRAMSIZE_512KB,	GMF_ITEM_RADIO, "512 KB", NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
@@ -350,6 +341,6 @@ static const GensMenuItem_t gmiHelp[] =
 	{IDM_HELP_REPORTABUG,	GMF_ITEM_NORMAL,	"Report a &Bug",	NULL,	0, 0, IDIM_REPORTABUG},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, 0},
 #endif
-	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About " GENS_APPNAME,	NULL,	0, 0, IDIM_GENSGS},
+	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About",		NULL,	0, 0, IDIM_GENSGS},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };

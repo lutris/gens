@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008-2010 by David Korth                                  *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -32,13 +32,9 @@
 #include <string>
 using std::string;
 
+#include "save.hpp"
 #include "config_file.hpp"
 #include "port/ini.hpp"
-
-// Save file handlers.
-#include "save.hpp"
-#include "sram.h"
-#include "mcd_bram.h"
 
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
@@ -65,7 +61,6 @@ using std::string;
 // VDP
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 // Audio
@@ -108,21 +103,15 @@ using std::list;
 // libgsft includes.
 #include "libgsft/gsft_file.h"
 #include "libgsft/gsft_szprintf.h"
-#include "libgsft/gsft_unused.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
-#include "libgsft/w32u/w32u_windows.h"
-#endif /* GENS_OS_WIN32 */
-
-// RAR stuff.
-#ifdef _WIN32
-static const char rar_binary_key[] = "UnRAR DLL";
-static const char rar_binary_default[] = ".\\unrar.dll";
-#else
-static const char rar_binary_key[] = "RAR Binary";
-static const char rar_binary_default[] = "/usr/bin/rar";
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
 #endif
+#include <windows.h>
+#endif /* GENS_OS_WIN32 */
 
 
 /**
@@ -134,9 +123,8 @@ int Config::save(const string& filename)
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
@@ -167,7 +155,7 @@ int Config::save(const string& filename)
 #ifdef GENS_OS_WIN32
 		// Convert the directory from an absolute pathname to a
 		// relative pathname, if possible.
-		gsft_file_abs_to_rel(dir_buf, PathNames.Gens_Save_Path,
+		gsft_file_abs_to_rel(dir_buf, PathNames.Gens_EXE_Path,
 				     dir_buf_rel, sizeof(dir_buf_rel));
 		
 		// Save the setting.
@@ -266,16 +254,16 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
-	cfg.writeBool("Graphics", "NTSC V30 Rolling", Video.ntscV30rolling);
-	cfg.writeInt("Graphics", "Interlaced Display", (int)VDP_IntRend_Mode);
+	
+#ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
+#endif /* GENS_OS_WIN32 */
 	
 	cfg.writeString("Graphics", "Backend", vdraw_backends[vdraw_cur_backend_id]->name);
 #ifdef GENS_OPENGL
 	cfg.writeInt("Graphics", "OpenGL Width", Video.GL.width);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.GL.height);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.GL.glLinearFilter);
-	cfg.writeInt("Graphics", "OpenGL Orthographic Projection", Video.GL.glOrthographicProjection);
 #endif /* GENS_OPENGL */
 	
 	cfg.writeInt("Graphics", "Stretch", Options::stretch());
@@ -300,6 +288,7 @@ int Config::save(const string& filename)
 	
 	// Improved sound options.
 	cfg.writeInt("Sound", "YM2612 Improvement", YM2612_Improv & 1);
+	cfg.writeInt("Sound", "PSG Improvement", PSG_Improv & 1);
 	
 	// Country codes.
 	cfg.writeInt("CPU", "Country", Country);
@@ -316,10 +305,8 @@ int Config::save(const string& filename)
 	cfg.writeBool("Options", "Fast Blur", Options::fastBlur());
 	cfg.writeBool("Options", "FPS", vdraw_get_fps_enabled());
 	cfg.writeInt("Options", "FPS Style", vdraw_get_fps_style(), true, 2);
-	cfg.writeInt("Options", "FPS Color", vdraw_get_fps_color(), true, 6);
 	cfg.writeBool("Options", "Message", vdraw_get_msg_enabled());
 	cfg.writeInt("Options", "Message Style", vdraw_get_msg_style(), true, 2);
-	cfg.writeInt("Options", "Message Color", vdraw_get_msg_color(), true, 6);
 	cfg.writeInt("Options", "LED", Show_LED & 1);
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
@@ -334,7 +321,7 @@ int Config::save(const string& filename)
 		cfg.writeInt("Options", "RAM Cart Size", -1);
 	
 	// Miscellaneous files.
-	cfg.writeString("Options", rar_binary_key, Misc_Filenames.RAR_Binary);
+	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
 	
 	// Controller settings.
 	cfg.writeInt("Input", "P1.Type", (Controller_1_Type & 0x11), true, 2);
@@ -412,19 +399,21 @@ int Config::save(const string& filename)
 
 /**
  * saveAs(): Save the current configuration using a user-selected filename.
- * @return 0 on success; non-zero on error (or if no file was selected).
+ * @return 1 if a file was selected.
  */
 int Config::saveAs(void)
 {
-	string filename = GensUI::saveFile("Save Config As", "", ConfigFile);
+	string filename;
+	
+	filename = GensUI::saveFile("Save Config As", "", ConfigFile);
 	if (filename.length() == 0)
-		return -1;
+		return 0;
 	
 	// Filename selected for the config file.
 	save(filename);
-	
-	vdraw_text_printf(2000, "Config saved in %s", filename.c_str());
-	return 0;
+	string dispText = "Config saved in " + filename;
+	vdraw_text_write(dispText.c_str(), 2000);
+	return 1;
 }
 
 
@@ -435,28 +424,24 @@ int Config::saveAs(void)
  */
 int Config::load(const string& filename, void* gameActive)
 {
-	GSFT_UNUSED_PARAMETER(gameActive);
-	
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
-	// Make sure relative pathnames are handled correctly on Win32.
-	pSetCurrentDirectoryU(PathNames.Gens_Save_Path);
-#endif
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	INI cfg(filename);
 	
-	// Force a palette update after the configuration is loaded.
-	VDP_Flags.CRam = 1;
+	CRam_Flag = 1;
 	
 	// Paths.
-	cfg.getString("Directories", "ROM Path", PathNames.Gens_Save_Path, Rom_Dir, sizeof(Rom_Dir));
-	cfg.getString("Directories", "Save Path", PathNames.Gens_Save_Path, State_Dir, sizeof(State_Dir));
-	cfg.getString("Directories", "SRAM Path", PathNames.Gens_Save_Path, SRAM_Dir, sizeof(SRAM_Dir));
-	cfg.getString("Directories", "BRAM Path", PathNames.Gens_Save_Path, BRAM_Dir, sizeof(BRAM_Dir));
-	cfg.getString("Directories", "Dump WAV Path", PathNames.Gens_Save_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
-	cfg.getString("Directories", "Dump GYM Path", PathNames.Gens_Save_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
-	cfg.getString("Directories", "Screenshot Path", PathNames.Gens_Save_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
+	cfg.getString("Directories", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));
+	cfg.getString("Directories", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
+	cfg.getString("Directories", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
+	cfg.getString("Directories", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
+	cfg.getString("Directories", "Dump WAV Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
+	cfg.getString("Directories", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
+	cfg.getString("Directories", "Screenshot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
 	
 	// Plugin directories.
 	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
@@ -472,7 +457,7 @@ int Config::load(const string& filename, void* gameActive)
 		{
 #ifdef GENS_OS_WIN32
 			// If the pathname is relative, convert it to absolute.
-			gsft_file_rel_to_abs(dir_buf.c_str(), PathNames.Gens_Save_Path,
+			gsft_file_rel_to_abs(dir_buf.c_str(), PathNames.Gens_EXE_Path,
 					     dir_buf_abs, sizeof(dir_buf_abs));
 			
 			// Set the plugin directory.
@@ -552,10 +537,6 @@ int Config::load(const string& filename, void* gameActive)
 	vdraw_set_fullscreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
-	Video.ntscV30rolling = cfg.getBool("Graphics", "NTSC V30 Rolling", true);
-	
-	// TODO: Change default to INTREND_2X once it's implemented.
-	VDP_IntRend_Mode = (IntRend_Mode_t)cfg.getInt("Graphics", "Interlaced Display", INTREND_FLICKER);
 	
 	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "Double");
@@ -575,6 +556,7 @@ int Config::load(const string& filename, void* gameActive)
 		rendMode_W = RenderMgr::begin();
 	}
 	
+#ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
 	bppOut = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 16));
 	if (bppOut != 15 && bppOut != 16 && bppOut != 32)
@@ -583,6 +565,7 @@ int Config::load(const string& filename, void* gameActive)
 		bppOut = 16;
 	}
 	bppMD = bppOut;
+#endif /* GENS_OS_WIN32 */
 	
 	string backend = cfg.getString("Graphics", "Backend", "");
 	// Determine the initial backend ID.
@@ -620,7 +603,12 @@ int Config::load(const string& filename, void* gameActive)
 	Video.GL.width = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.GL.height = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.GL.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
-	Video.GL.glOrthographicProjection = cfg.getInt("Graphics", "OpenGL Orthographic Projection", 0);
+	
+	// Set the OpenGL renderer.
+	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
+	// because the window hasn't been created yet.
+//	if (is_gens_running())
+// TODO		Options::setOpenGL(Video.OpenGL);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);
@@ -650,16 +638,21 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Only load the IC sound settings if sound can be initialized.
 	// TODO: Change it to load the settings unconditionally?
-	Options::setSoundEnable(cfg.getInt("Sound", "State", 1));
-	YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
-	PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
-	DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
-	PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
-	PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
-	CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
-	
-	// Improved sound options
-	YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
+	int new_val = cfg.getInt("Sound", "State", 1);
+	if (new_val == audio_get_enabled() ||
+	    (new_val != audio_get_enabled() && Options::setSoundEnable(true)))
+	{
+		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
+		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
+		DAC_Enable = cfg.getInt("Sound", "DAC State", 1);
+		PCM_Enable = cfg.getInt("Sound", "PCM State", 1);
+		PWM_Enable = cfg.getInt("Sound", "PWM State", 1);
+		CDDA_Enable = cfg.getInt("Sound", "CDDA State", 1);
+		
+		// Improved sound options
+		YM2612_Improv = cfg.getInt("Sound", "YM2612 Improvement", 0);
+		PSG_Improv = cfg.getInt("Sound", "PSG Improvement", 0);
+	}
 	
 	// Country codes.
 	Country = cfg.getInt("CPU", "Country", -1);
@@ -683,10 +676,8 @@ int Config::load(const string& filename, void* gameActive)
 	Options::setFastBlur(cfg.getBool("Options", "Fast Blur", false));
 	vdraw_set_fps_enabled(cfg.getBool("Options", "FPS", false));
 	vdraw_set_fps_style(cfg.getInt("Options", "FPS Style", 0x10));
-	vdraw_set_fps_color(cfg.getInt("Options", "FPS Color", 0xFFFFFF));
 	vdraw_set_msg_enabled(cfg.getBool("Options", "Message", true));
 	vdraw_set_msg_style(cfg.getInt("Options", "Message Style", 0x10));
-	vdraw_set_msg_color(cfg.getInt("Options", "Message Color", 0xFFFFFF));
 	Show_LED = cfg.getInt("Options", "LED", 1);
 	Auto_Fix_CS = cfg.getInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = cfg.getInt("Options", "Auto Pause", 0);
@@ -697,22 +688,24 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// SegaCD BRAM cartridge size
 	BRAM_Ex_Size = cfg.getInt("Options", "RAM Cart Size", 3);
-	if (BRAM_Ex_Size < 0)
+	if (BRAM_Ex_Size == -1)
 	{
 		BRAM_Ex_State &= 1;
 		BRAM_Ex_Size = 0;
 	}
+	else if (BRAM_Ex_Size < -1 || BRAM_Ex_Size > 3)
+		BRAM_Ex_Size = 3;
 	else
-	{
-		if (BRAM_Ex_Size > 6)
-			BRAM_Ex_Size = 3;
-		
 		BRAM_Ex_State |= 0x100;
-	}
 	
 	// Miscellaneous files.
-	cfg.getString("Options", rar_binary_key, rar_binary_default,
+#if defined(__WIN32__)
+	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\rar.exe",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
+#else /* !defined(__WIN32__) */
+	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
+		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
+#endif	
 	
 	// Controller settings.
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 0x01);
@@ -791,21 +784,21 @@ int Config::load(const string& filename, void* gameActive)
 
 
 /**
- * loadAs(): Load a user-selected configuration file.
+ * Load_As_Config(): Load a user-selected configuration file.
  * @param Game_Active ???
- * @return 0 on success; non-zero on error (or if no file was selected).
+ * @return 1 if a file was selected.
  */
 int Config::loadAs(void* gameActive)
 {
-	GSFT_UNUSED_PARAMETER(gameActive);
+	string filename;
 	
-	string filename = GensUI::openFile("Load Config", "", ConfigFile);
+	filename = GensUI::openFile("Load Config", "", ConfigFile);
 	if (filename.length() == 0)
-		return -1;
+		return 0;
 	
 	// Filename selected for the config file.
 	load(filename, gameActive);
-	
-	vdraw_text_printf(2000, "Config loaded from %s", filename.c_str());
-	return 0;
+	string dispText = "Config loaded from " + filename;
+	vdraw_text_write(dispText.c_str(), 2000);
+	return 1;
 }

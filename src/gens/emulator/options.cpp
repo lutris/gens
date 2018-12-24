@@ -58,7 +58,6 @@ using std::list;
 
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/vdp/vdp_rend_m5.hpp"
 #include "gens_core/vdp/vdp_32x.h"
 
 #include "gens_core/cpu/sh2/cpu_sh2.h"
@@ -77,10 +76,6 @@ using std::list;
 
 // Render Manager.
 #include "plugins/rendermgr.hpp"
-
-#ifdef _WIN32
-#include "libgsft/w32u/w32u_libc.h"
-#endif
 
 
 /**
@@ -149,60 +144,6 @@ void Options::setSaveSlot(const int newSaveSlot)
 			// Error checking the file.
 			vdraw_text_printf(1500, "SLOT %d [ERROR]", Current_State);
 		}
-	}
-}
-
-
-/**
- * bpp(): Get the output color depth.
- * @return Output color depth.
- */
-int Options::bpp(void)
-{
-	return bppOut;
-}
-
-/**
- * setBpp(): Set the output color depth.
- * @param newBpp New output color depth.
- */
-void Options::setBpp(uint8_t newBpp)
-{
-	if (newBpp == bppOut)
-		 return;
-	if (newBpp != 15 && newBpp != 16 && newBpp != 32)
-		return;
-	
-	// Set the new color depth.
-	vdraw_set_bpp(newBpp, true);
-	Sync_Gens_Window_GraphicsMenu();
-	
-	// Color depth setting.
-	const char *s_depth = "";
-	if (bppOut == 15)
-		s_depth = "15-bit (555)";
-	else if (bppOut == 16)
-		s_depth = "16-bit (565)";
-	else //if (bppOut == 32)
-		s_depth = "32-bit";
-	
-	if (newBpp != bppOut)
-	{
-		// Couldn't adjust color depth.
-		const char *s_req = "";
-		if (newBpp == 15)
-			s_req = "15-bit (555)";
-		else if (newBpp == 16)
-			s_req = "16-bit (565)";
-		else //if (newBpp == 32)
-			s_req = "32-bit";
-		
-		vdraw_text_printf(1500, "Can't set %s. Reverted to %s.", s_req, s_depth);
-	}
-	else
-	{
-		// Color depth set.
-		vdraw_text_printf(1500, "Color depth set to %s.", s_depth);
 	}
 }
 
@@ -329,7 +270,7 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Lines.Display.Total = 312;	// TODO: Change to 313!
+		VDP_Num_Lines = 312;
 		VDP_Status |= 0x0001;
 		_32X_VDP.Mode &= ~0x8000;
 		
@@ -345,8 +286,8 @@ void Options::setCountry(const int newCountry)
 		CPL_SSH2 = (int)rint(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
 					(double)SSH2_Speed) / 100.0);
 		
-		VDP_Lines.Display.Total = 262;
-		VDP_Status &= ~0x0001;
+		VDP_Num_Lines = 262;
+		VDP_Status &= 0xFFFE;
 		_32X_VDP.Mode |= 0x8000;
 		
 		CD_Access_Timer = 2096;
@@ -424,12 +365,12 @@ bool Options::soundEnable(void)
 /**
  * setSoundEnable(): Enable or disable sound.
  * @param newSoundEnable New sound enable setting.
- * @return 0 on success; non-zero on error.
+ * @return 1 on success; 0 on error.
  */
 int Options::setSoundEnable(const bool newSoundEnable)
 {
 	if (newSoundEnable == audio_get_enabled())
-		return -1;
+		return 0;
 	
 	// Make sure WAV dumping has stopped.
 	if (WAV_Dumping)
@@ -440,7 +381,13 @@ int Options::setSoundEnable(const bool newSoundEnable)
 	if (!audio_get_enabled())
 	{
 		audio_end();
-		vdraw_text_write("Sound Disabled.", 1500);
+		YM2612_Enable = 0;
+		PSG_Enable = 0;
+		DAC_Enable = 0;
+		PCM_Enable = 0;
+		PWM_Enable = 0;
+		CDDA_Enable = 0;
+		vdraw_text_write("Sound Disabled", 1500);
 	}
 	else
 	{
@@ -448,7 +395,13 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		{
 			// Error initializing sound.
 			audio_set_enabled(false);
-			return -2;
+			YM2612_Enable = 0;
+			PSG_Enable = 0;
+			DAC_Enable = 0;
+			PCM_Enable = 0;
+			PWM_Enable = 0;
+			CDDA_Enable = 0;
+			return 0;
 		}
 		
 		if (audio_play_sound)
@@ -458,10 +411,17 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		if (!(Z80_State & Z80_STATE_ENABLED))
 			setSoundZ80(true);
 		
-		vdraw_text_write("Sound Enabled.", 1500);
+		YM2612_Enable = 1;
+		PSG_Enable = 1;
+		DAC_Enable = 1;
+		PCM_Enable = 1;
+		PWM_Enable = 1;
+		CDDA_Enable = 1;
+		
+		vdraw_text_write("Sound Enabled", 1500);
 	}
 	
-	return 0;
+	return 1;
 }
 
 
@@ -684,6 +644,30 @@ void Options::setSoundPSG(const bool newSoundPSG)
 		vdraw_text_write("PSG Enabled", 1000);
 	else
 		vdraw_text_write("PSG Disabled", 1000);
+}
+
+
+/**
+ * soundPSG_Sine(): Get the sine wave PSG sound emulation setting.
+ * @return Sine wave PSG sound emulation setting.
+ */
+bool Options::soundPSG_Sine(void)
+{
+	return PSG_Improv;
+}
+
+/**
+ * setSoundPSG_Sine(): Enable or disable sine wave PSG sound emulation.
+ * @param newSoundPSG_Sine New sine wave PSG sound emulation setting.
+ */
+void Options::setSoundPSG_Sine(const bool newSoundPSG_Sine)
+{
+	PSG_Improv = newSoundPSG_Sine;
+	
+	if (PSG_Improv)
+		vdraw_text_write("Sine wave PSG sound", 1000);
+	else
+		vdraw_text_write("Normal PSG sound", 1000);
 }
 
 
@@ -941,7 +925,7 @@ int Options::segaCD_SRAMSize(void)
  */
 void Options::setSegaCD_SRAMSize(const int num)
 {
-	if (num < -1 || num > 6)
+	if (num < -1 || num > 3)
 		return;
 	
 	if (num == -1)
@@ -1162,9 +1146,10 @@ bool Options::OpenGL_LinearFilter(void)
 	return Video.GL.glLinearFilter;
 }
 
+
 /**
  * setOpenGL_LinearFilter(): Set the OpenGL Linear Filter state.
- * @param newFilter New OpenGL Linear Filter state.
+ * @param newFilter New linear filter state.
  */
 void Options::setOpenGL_LinearFilter(bool newFilter)
 {
@@ -1181,88 +1166,7 @@ void Options::setOpenGL_LinearFilter(bool newFilter)
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
 }
-
-
-/**
- * OpenGL_OrthographicProjection(): Get the current OpenGL Orthographic Projection state.
- * @return OpenGL Orthographic Projection state.
- */
-bool Options::OpenGL_OrthographicProjection(void)
-{
-	return Video.GL.glOrthographicProjection;
-}
-
-/**
- * setOpenGL_LinearFilter(): Set the OpenGL Orthographic Projection state.
- * @param newOrthoProj New OpenGL Orthographic Projection state.
- */
-void Options::setOpenGL_OrthographicProjection(bool newOrthoProj)
-{
-	if (Video.GL.glOrthographicProjection == newOrthoProj)
-		return;
-	
-	Video.GL.glOrthographicProjection = newOrthoProj;
-	
-	if (Video.GL.glOrthographicProjection)
-		vdraw_text_write("Enabled Orthographic Projection.", 1500);
-	else
-		vdraw_text_write("Disabled Orthographic Projection.", 1500);
-	
-	// If OpenGL is in use, reinitialize the renderer.
-	if (vdraw_cur_backend_id == VDRAW_BACKEND_SDL_GL)
-		vdraw_cur_backend->update_renderer();
-	
-	// Synchronize the Graphics Menu.
-	Sync_Gens_Window_GraphicsMenu();
-}
 #endif /* GENS_OPENGL */
-
-
-/**
- * IntRend_Mode(): Get the interlaced rendering mode.
- * @return Interlaced rendering mode.
- */
-int Options::IntRend_Mode(void)
-{
-	return VDP_IntRend_Mode;
-}
-
-/**
- * setIntRend_Mode(): Set the interlaced rendering mode.
- * @param newIntRend_Mode New interlaced rendering mode.
- */
-void Options::setIntRend_Mode(const int newIntRend_Mode)
-{
-	if ((VDP_IntRend_Mode == newIntRend_Mode) ||
-	    (newIntRend_Mode < 0) ||
-	    (newIntRend_Mode > (int)(INTREND_FLICKER)))
-	{
-		// Same setting, or invalid setting.
-		return;
-	}
-	
-	VDP_IntRend_Mode = (IntRend_Mode_t)newIntRend_Mode;
-	
-	switch (VDP_IntRend_Mode)
-	{
-		case INTREND_EVEN:
-		default:
-			vdraw_text_write("Interlaced: Even fields only.", 1500);
-			break;
-		
-		case INTREND_ODD:
-			vdraw_text_write("Interlaced: Odd fields only.", 1500);
-			break;
-		
-		case INTREND_FLICKER:
-			vdraw_text_write("Interlaced: Alternating fields.", 1500);
-			break;
-		
-		case INTREND_2X:
-			vdraw_text_write("Interlaced: 2x resolution.", 1500);
-			break;
-	}
-}
 
 
 #ifdef GENS_OS_WIN32
@@ -1276,20 +1180,21 @@ bool Options::swRender(void)
 }
 
 /**
- * setSwRender(): Force software rendering for 1x mode. (Win32 only)
+ * setSwRender(): Force software rendering in fullscreen mode. (Win32 only)
  * @param newSwRender New software rendering setting.
  */
 void Options::setSwRender(const bool newSwRender)
 {
-	// TODO: Change to "setHwRender".
+	// TODO: Specify software blit in the parameter.
 	
 	Flag_Clr_Scr = 1;
+	
 	vdraw_set_sw_render(newSwRender);
 	
 	if (vdraw_get_sw_render())
-		vdraw_text_write("Disabled HW blit for 1x rendering.", 1000);
+		vdraw_text_write("Force software blit for Full-Screen", 1000);
 	else
-		vdraw_text_write("Enabled HW blit for 1x rendering.", 1000);
+		vdraw_text_write("Enable hardware blit for Full-Screen", 1000);
 }
 #endif /* GENS_OS_WIN32 */
 
@@ -1369,7 +1274,6 @@ void Options::setGameName(int system)
 		else
 			systemName = "Genesis";
 		gameName = ROM::getRomName(Game, Game_Mode);
-		emptyGameName = string(ROM_Filename);
 	}
 	else if (_32X_Started || system == 2)
 	{
@@ -1378,7 +1282,6 @@ void Options::setGameName(int system)
 		else
 			systemName = "32X (NTSC)";
 		gameName = ROM::getRomName(Game, Game_Mode);
-		emptyGameName = string(ROM_Filename);
 	}
 	else if (SegaCD_Started || system == 1)
 	{
