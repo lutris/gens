@@ -19,13 +19,11 @@ before_install:
 #    - texinfo
 jobs:
   include:
-  - stage: setup
-    script:
-    - pwd
-    - ls ../
-  - stage: build
+  - stage: test build
     script:
     - docker run -w /code/gens -it --rm -v `pwd`/..:/code ubuntu:bionic /bin/bash -c "./build.sh"
+    - echo "Test build:"
+    - ls ../
       #- export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
       #- dpkg-buildpackage -v $TRAVIS_TAG
   - stage: release to github
